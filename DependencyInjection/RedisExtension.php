@@ -2,32 +2,32 @@
 
 namespace Bundle\RedisBundle\DependencyInjection;
 
-use Symfony\Components\DependencyInjection\Loader\LoaderExtension;
+use Symfony\Components\DependencyInjection\Extension\Extension;
 use Symfony\Components\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Components\DependencyInjection\BuilderConfiguration;
+use Symfony\Components\DependencyInjection\ContainerBuilder;
 
-class RedisExtension extends LoaderExtension
+class RedisExtension extends Extension
 {
     /**
      * Loads the configuration.
      *
-     * @param array $config A configuration array
-     * @param BuilderConfiguration $configuration A BuilderConfiguration instance
+     * @param array $config An array of configuration settings
+     * @param \Symfony\Components\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
      */
-    public function configLoad($config, BuilderConfiguration $configuration)
+    public function configLoad($config, ContainerBuilder $container)
     {
-        if (!$configuration->hasDefinition('redis')) {
-            $loader = new XmlFileLoader(__DIR__ . '/../Resources/config');
-            $configuration->merge($loader->load('redis.xml'));
+        if (!$container->hasDefinition('redis')) {
+            $loader = new XmlFileLoader($container, __DIR__ . '/../Resources/config');
+            $loader->load('redis.xml');
         }
         if (isset($config['host'])) {
-            $configuration->setParameter('redis.connection.host', $config['host']);
+            $container->setParameter('redis.connection.host', $config['host']);
         }
         if (isset($config['port'])) {
-            $configuration->setParameter('redis.connection.port', $config['port']);
+            $container->setParameter('redis.connection.port', $config['port']);
         }
         if (isset($config['database'])) {
-            $configuration->setParameter('redis.database.number', $config['database']);
+            $container->setParameter('redis.database.number', $config['database']);
         }
     }
 
