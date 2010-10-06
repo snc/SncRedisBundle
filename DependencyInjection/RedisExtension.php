@@ -12,7 +12,7 @@ class RedisExtension extends Extension
      * Loads the configuration.
      *
      * @param array $config An array of configuration settings
-     * @param \Symfony\Components\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
+     * @param ContainerBuilder $container A ContainerBuilder instance
      */
     public function configLoad($config, ContainerBuilder $container)
     {
