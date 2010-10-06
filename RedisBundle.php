@@ -3,7 +3,7 @@
 namespace Bundle\RedisBundle;
 
 use Bundle\RedisBundle\DependencyInjection\RedisExtension;
-use Symfony\Framework\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Components\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Components\DependencyInjection\ContainerBuilder;
 
