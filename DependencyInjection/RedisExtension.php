@@ -32,6 +32,21 @@ class RedisExtension extends Extension
     }
 
     /**
+     * Loads the configuration.
+     *
+     * @param array $config An array of configuration settings
+     * @param \Symfony\Components\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
+     */
+    public function sessionLoad($config, ContainerBuilder $container)
+    {
+        foreach ($config AS $key => $value) {
+            $container->setParameter('redis.session.options.' . $key, $value);
+        }
+        
+        $container->setAlias('session.storage', 'session.storage.redis');
+    }
+
+    /**
      * Returns the namespace to be used for this extension (XML namespace).
      *
      * @return string The XML namespace

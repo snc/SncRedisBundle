@@ -6,14 +6,31 @@
         <parameter key="redis.connection.host">127.0.0.1</parameter>
         <parameter key="redis.connection.port">6379</parameter>
         <parameter key="redis.database.number">0</parameter>
+
+		<parameter key="redis.session.class">Bundle\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
+		<parameter key="redis.session.options.prefix">local</parameter>
     </parameters>
 
     <services>
-        <service id="redis" class="Predis\Client">
+        <service id="redis_connection" class="Predis\Client">
             <argument type="collection">
                 <argument key="host">%redis.connection.host%</argument>
                 <argument key="port">%redis.connection.port%</argument>
                 <argument key="database">%redis.database.number%</argument>
+            </argument>
+        </service>
+
+        <service id="session.storage.redis" class="%redis.session.class%">
+            <argument type="service" id="redis_connection" />
+            <argument type="collection">
+                <argument key="session_name">%session.options.name%</argument>
+                <argument key="session_cookie_lifetime">%session.options.lifetime%</argument>
+                <argument key="session_cookie_path">%session.options.path%</argument>
+                <argument key="session_cookie_domain">%session.options.domain%</argument>
+                <argument key="session_cookie_secure">%session.options.secure%</argument>
+                <argument key="session_cookie_httponly">%session.options.httponly%</argument>
+                <argument key="session_cache_limiter">%session.options.cache_limiter%</argument>
+				<argument key="prefix">%redis.session.options.prefix%</argument>
             </argument>
         </service>
     </services>
