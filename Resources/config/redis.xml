@@ -11,7 +11,7 @@
     </parameters>
 
     <services>
-        <service id="redis_connection" class="Predis\Client">
+        <service id="redis_connection" class="Bundle\RedisBundle\RedisClient">
 			<argument>%redis.connection.servers%</argument>
         </service>
 
