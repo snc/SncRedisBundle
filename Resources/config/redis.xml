@@ -3,8 +3,7 @@
 <container xmlns="http://www.symfony-project.org/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="redis.connection.host">127.0.0.1</parameter>
-        <parameter key="redis.connection.port">6379</parameter>
+        <parameter key="redis.connection.servers"></parameter>
         <parameter key="redis.database.number">0</parameter>
 
 		<parameter key="redis.session.class">Bundle\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
@@ -13,11 +12,7 @@
 
     <services>
         <service id="redis_connection" class="Predis\Client">
-            <argument type="collection">
-                <argument key="host">%redis.connection.host%</argument>
-                <argument key="port">%redis.connection.port%</argument>
-                <argument key="database">%redis.database.number%</argument>
-            </argument>
+			<argument>%redis.connection.servers%</argument>
         </service>
 
         <service id="session.storage.redis" class="%redis.session.class%">

@@ -20,14 +20,8 @@ class RedisExtension extends Extension
             $loader = new XmlFileLoader($container, __DIR__ . '/../Resources/config');
             $loader->load('redis.xml');
         }
-        if (isset($config['host'])) {
-            $container->setParameter('redis.connection.host', $config['host']);
-        }
-        if (isset($config['port'])) {
-            $container->setParameter('redis.connection.port', $config['port']);
-        }
-        if (isset($config['database'])) {
-            $container->setParameter('redis.database.number', $config['database']);
+        if (isset($config['servers'])) {
+            $container->setParameter('redis.connection.servers', $config['servers']);
         }
     }
 
