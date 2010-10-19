@@ -18,6 +18,7 @@
         <service id="session.storage.redis" class="%redis.session.class%">
             <argument type="service" id="redis_connection" />
             <argument type="collection">
+				<argument key="session_id">%session.options.session_id%</argument>
                 <argument key="session_name">%session.options.name%</argument>
                 <argument key="session_cookie_lifetime">%session.options.lifetime%</argument>
                 <argument key="session_cookie_path">%session.options.path%</argument>
