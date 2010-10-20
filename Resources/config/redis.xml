@@ -8,6 +8,7 @@
 
 		<parameter key="redis.session.class">Bundle\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
 		<parameter key="redis.session.options.prefix">local</parameter>
+		<parameter key="session.options.session_id"></parameter>
     </parameters>
 
     <services>
