@@ -5,20 +5,23 @@ namespace Bundle\RedisBundle\SessionStorage;
 use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use Bundle\RedisBundle\RedisClient;
+
 class RedisSessionStorage extends NativeSessionStorage
 {
     /**
+     * Instance of RedisClient
      * 
+     * @var RedisClient
      */
-    protected $container;
     protected $db;
 
     /**
      * @throws \InvalidArgumentException When "db_table" option is not provided
      */
-    public function __construct(ContainerInterface $container, $options = null)
+    public function __construct(RedisClient $db, $options = null)
     {
-        $this->container = $container;
+        $this->db = $db;
 
         parent::__construct($options);
     }
@@ -80,7 +83,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function sessionDestroy($id)
     {
-        $this->getDb()->delete($this->getId($id));
+        $this->db->delete($this->getId($id));
 
         return true;
     }
@@ -110,7 +113,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function sessionRead($id)
     {
-        return $this->getDb()->get($this->getId($id));
+        return $this->db->get($this->getId($id));
     }
 
     /**
@@ -125,7 +128,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function sessionWrite($id, $data)
     {
-        return $this->getDb()->set($this->getId($id), $data);
+        return $this->db->set($this->getId($id), $data);
     }
 
 	/**
@@ -143,13 +146,5 @@ class RedisSessionStorage extends NativeSessionStorage
 		}
 		
 		return $this->options['prefix'] . ':' . $id;
-	}
-	
-	protected function getDb()
-	{
-	    if (!$this->db) {
-	        $this->db = $this->container->get('redis_connection');
-	    }
-	    return $this->db;
 	}
 }
