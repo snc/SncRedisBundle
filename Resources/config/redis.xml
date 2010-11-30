@@ -6,15 +6,30 @@
         <parameter key="redis.connection.host">127.0.0.1</parameter>
         <parameter key="redis.connection.port">6379</parameter>
         <parameter key="redis.database.number">0</parameter>
+        <parameter key="redis.class">Predis\Client</parameter>
+        <parameter key="redis.connection.class">Bundle\RedisBundle\Client\Predis\LoggingConnection</parameter>
+        <parameter key="redis.logger.class">Bundle\RedisBundle\Logger\RedisLogger</parameter>
+        <parameter key="redis.data_collector.class">Bundle\RedisBundle\DataCollector\RedisDataCollector</parameter>
     </parameters>
 
     <services>
-        <service id="redis" class="Predis\Client">
+        <service id="redis" class="%redis.class%">
+            <argument type="service" id="redis.connection" />
+        </service>
+        <service id="redis.connection" class="%redis.connection.class%">
+            <argument type="service" id="redis.logger" />
             <argument type="collection">
                 <argument key="host">%redis.connection.host%</argument>
                 <argument key="port">%redis.connection.port%</argument>
                 <argument key="database">%redis.database.number%</argument>
             </argument>
+        </service>
+        <service id="redis.logger" class="%redis.logger.class%">
+            <argument type="service" id="logger" on-invalid="null" />
+        </service>
+        <service id="redis.data_collector" class="%redis.data_collector.class%">
+            <tag name="data_collector" template="RedisBundle:Collector:redis" />
+            <argument type="service" id="redis.logger" />
         </service>
     </services>
 

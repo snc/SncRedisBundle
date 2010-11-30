@@ -24,10 +24,10 @@ or as a submodule:
 
 Add the [Predis](http://github.com/nrk/predis) autoloading to your project's bootstrap script (src/autoload.php):
 
-    spl_autoload_register(function($class)
+    spl_autoload_register(function($class) use ($vendorDir)
     {
-      if ('Predis\Client' == $class) {
-          require_once __DIR__.'/vendor/predis/lib/Predis.php';
+      if (strpos($class, 'Predis\\') === 0) {
+          require_once $vendorDir.'/predis/lib/Predis.php';
           return true;
       }
     });
