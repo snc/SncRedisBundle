@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container 
+    xmlns="http://www.symfony-project.org/schema/dic/services" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services 
+    http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+		<parameter key="redis.session.class">Bundle\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
+		
+		<parameter key="session.storage.redis.options" type="collection">
+			<parameter key="prefix">session</parameter>
+		</parameter>
+    </parameters>
+
+    <services>
+        <service id="session.storage.redis" class="%redis.session.class%">
+            <argument type="service" id="redis_connection" />
+            <argument>%session.storage.redis.options%</argument>
+        </service>
+    </services>
+
+</container>

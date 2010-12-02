@@ -33,8 +33,13 @@ class RedisExtension extends Extension
      */
     public function sessionLoad($config, ContainerBuilder $container)
     {
+        if (!$container->hasDefinition('session.storage.redis')) {
+            $loader = new XmlFileLoader($container, __DIR__ . '/../Resources/config');
+            $loader->load('session.xml');
+        }
+        
         foreach ($config AS $key => $value) {
-            $container->setParameter('redis.session.options.' . $key, $value);
+            $container->setParameter('session.storage.redis.options.' . $key, $value);
         }
         
         $container->setAlias('session.storage', 'session.storage.redis');

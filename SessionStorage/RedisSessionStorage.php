@@ -19,10 +19,12 @@ class RedisSessionStorage extends NativeSessionStorage
     /**
      * @throws \InvalidArgumentException When "db_table" option is not provided
      */
-    public function __construct(RedisClient $db, $options = null)
+    public function __construct(RedisClient $db, $options = null, $prefix = 'session')
     {
         $this->db = $db;
-
+        
+        $options['prefix'] = $prefix;
+        
         parent::__construct($options);
     }
 

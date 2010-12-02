@@ -10,22 +10,12 @@
         <parameter key="redis.connection.servers"></parameter>
         <parameter key="redis.database.number">0</parameter>
 
-		<parameter key="redis.session.class">Bundle\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
 		<parameter key="redis.connection.class">Bundle\RedisBundle\RedisClient</parameter>
-		<parameter key="session.storage.redis.options" type="collection">
-			
-		</parameter>
-		<parameter key="session.options.session_id"></parameter>
     </parameters>
 
     <services>
         <service id="redis_connection" class="%redis.connection.class%">
 			<argument>%redis.connection.servers%</argument>
-        </service>
-
-        <service id="session.storage.redis" class="%redis.session.class%">
-            <argument type="service" id="redis_connection" />
-            <argument>%session.storage.redis.options%</argument>
         </service>
     </services>
 
