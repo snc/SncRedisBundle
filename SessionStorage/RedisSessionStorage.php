@@ -2,12 +2,12 @@
 
 namespace Bundle\RedisBundle\SessionStorage;
 
-use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
+use Symfony\Component\HttpFoundation\SessionStorage\SessionStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Bundle\RedisBundle\RedisClient;
 
-class RedisSessionStorage extends NativeSessionStorage
+class RedisSessionStorage implements SessionStorageInterface
 {
     /**
      * Instance of RedisClient
@@ -23,9 +23,16 @@ class RedisSessionStorage extends NativeSessionStorage
     {
         $this->db = $db;
         
-        $options['prefix'] = $prefix;
+        if (session_id() !== '' && isset($options['id']) && $options['id'] !== '') {
+            session_id($options['id']);
+        }
         
-        parent::__construct($options);
+        $options['prefix'] = $prefix;
+        $this->options = $options;
+        
+        session_start();
+        
+        $this->options['id'] = session_id();
     }
 
     /**
@@ -33,75 +40,6 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function start()
     {
-        if (self::$sessionStarted) {
-            return;
-        }
-
-        // use this object as the session handler
-        session_set_save_handler(
-            array($this, 'sessionOpen'),
-            array($this, 'sessionClose'),
-            array($this, 'sessionRead'),
-            array($this, 'sessionWrite'),
-            array($this, 'sessionDestroy'),
-            array($this, 'sessionGC')
-        );
-
-        parent::start();
-    }
-
-    /**
-     * Opens a session.
-     *
-     * @param  string $path  (ignored)
-     * @param  string $name  (ignored)
-     *
-     * @return boolean true, if the session was opened, otherwise an exception is thrown
-     */
-    public function sessionOpen($path = null, $name = null)
-    {
-        return true;
-    }
-
-    /**
-     * Closes a session.
-     *
-     * @return boolean true, if the session was closed, otherwise false
-     */
-    public function sessionClose()
-    {
-        // do nothing
-        return true;
-    }
-
-    /**
-     * Destroys a session.
-     *
-     * @param  string $id  A session ID
-     *
-     * @return bool   true, if the session was destroyed, otherwise an exception is thrown
-     *
-     * @throws \RuntimeException If the session cannot be destroyed
-     */
-    public function sessionDestroy($id)
-    {
-        $this->db->delete($this->getId($id));
-
-        return true;
-    }
-
-    /**
-     * Cleans up old sessions.
-     *
-     * @param  int $lifetime  The lifetime of a session
-     *
-     * @return bool true, if old sessions have been cleaned, otherwise an exception is thrown
-     *
-     * @throws \RuntimeException If any old sessions cannot be cleaned
-     */
-    public function sessionGC($lifetime)
-    {
-        return true;
     }
 
     /**
@@ -113,9 +51,9 @@ class RedisSessionStorage extends NativeSessionStorage
      *
      * @throws \RuntimeException If the session cannot be read
      */
-    public function sessionRead($id)
+    public function read($id)
     {
-        return $this->db->get($this->getId($id));
+        return unserialize($this->db->get($this->getId($id)));
     }
 
     /**
@@ -128,9 +66,19 @@ class RedisSessionStorage extends NativeSessionStorage
      *
      * @throws \RuntimeException If the session data cannot be written
      */
-    public function sessionWrite($id, $data)
+    public function write($id, $data)
     {
-        return $this->db->set($this->getId($id), $data);
+        return $this->db->set($this->getId($id), serialize($data));
+    }
+    
+    function remove($key)
+    {
+        
+    }
+    
+    function regenerate($destroy = false)
+    {
+        
     }
 
 	/**
@@ -144,9 +92,9 @@ class RedisSessionStorage extends NativeSessionStorage
 	{
 		if (!isset($this->options['prefix']))
 		{
-			return $id;
+			return $this->options['id'] . ':' . $id;
 		}
 		
-		return $this->options['prefix'] . ':' . $id;
+		return $this->options['prefix'] . ':' . $this->options['id'] . ':' . $id;
 	}
 }
