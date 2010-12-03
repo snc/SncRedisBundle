@@ -2,12 +2,12 @@
 
 namespace Bundle\RedisBundle\SessionStorage;
 
-use Symfony\Component\HttpFoundation\SessionStorage\SessionStorageInterface;
+use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Bundle\RedisBundle\RedisClient;
 
-class RedisSessionStorage implements SessionStorageInterface
+class RedisSessionStorage extends NativeSessionStorage
 {
     /**
      * Instance of RedisClient
@@ -23,23 +23,33 @@ class RedisSessionStorage implements SessionStorageInterface
     {
         $this->db = $db;
         
-        if (session_id() !== '' && isset($options['id']) && $options['id'] !== '') {
-            session_id($options['id']);
-        }
-        
-        $options['prefix'] = $prefix;
-        $this->options = $options;
-        
-        session_start();
-        
-        $this->options['id'] = session_id();
+        $cookieDefaults = session_get_cookie_params();
+
+        $this->options = array_merge(array(
+            'name'          => '_SESSION',
+            'lifetime'      => $cookieDefaults['lifetime'],
+            'path'          => $cookieDefaults['path'],
+            'domain'        => $cookieDefaults['domain'],
+            'secure'        => $cookieDefaults['secure'],
+            'httponly'      => isset($cookieDefaults['httponly']) ? $cookieDefaults['httponly'] : false,
+            'prefix'        => $prefix,
+        ), $options);
+
+        session_name($this->options['name']);
     }
 
     /**
      * Starts the session.
      */
     public function start()
-    {
+    {    
+        if (self::$sessionStarted) {
+            return;
+        }
+
+        parent::start();
+        
+        $this->options['id'] = session_id();
     }
 
     /**
@@ -51,9 +61,13 @@ class RedisSessionStorage implements SessionStorageInterface
      *
      * @throws \RuntimeException If the session cannot be read
      */
-    public function read($id)
+    public function read($key, $default = null)
     {
-        return unserialize($this->db->get($this->getId($id)));
+        if (null !== $data = $this->db->get($this->getId($key)))
+        {
+            return unserialize($data);
+        }
+        return $default;
     }
 
     /**
@@ -66,19 +80,14 @@ class RedisSessionStorage implements SessionStorageInterface
      *
      * @throws \RuntimeException If the session data cannot be written
      */
-    public function write($id, $data)
+    public function write($key, $data)
     {
-        return $this->db->set($this->getId($id), serialize($data));
+        return $this->db->set($this->getId($key), serialize($data));
     }
     
-    function remove($key)
+    public function remove($key)
     {
-        
-    }
-    
-    function regenerate($destroy = false)
-    {
-        
+        $this->db->del($this->getId($key));
     }
 
 	/**
