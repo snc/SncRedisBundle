@@ -16,7 +16,7 @@
 
     <services>
         <service id="session.storage.redis" class="%redis.session.class%">
-            <argument type="service" id="redis_connection" />
+            <argument type="service" id="redis.connection" />
             <argument>%session.storage.redis.options%</argument>
         </service>
     </services>

@@ -4,7 +4,7 @@ namespace Bundle\RedisBundle\SessionStorage;
 
 use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
+use Bundle\RedisBundle\Client\Predis\LoggingConnection;
 use Bundle\RedisBundle\RedisClient;
 
 class RedisSessionStorage extends NativeSessionStorage
@@ -19,7 +19,7 @@ class RedisSessionStorage extends NativeSessionStorage
     /**
      * @throws \InvalidArgumentException When "db_table" option is not provided
      */
-    public function __construct(RedisClient $db, $options = null, $prefix = 'session')
+    public function __construct(LoggingConnection $db, $options = null, $prefix = 'session')
     {
         $this->db = $db;
         
@@ -63,7 +63,10 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        if (null !== $data = $this->db->get($this->getId($key)))
+        $cmd = new \Predis\Commands\Get();
+        $cmd->setArgumentsArray(array($this->getId($key)));
+        $this->db->writeCommand($cmd);
+        if (null !== $data = $this->db->readResponse($cmd))
         {
             return unserialize($data);
         }
@@ -82,7 +85,10 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        return $this->db->set($this->getId($key), serialize($data));
+        $cmd = new \Predis\Commands\Set();
+        $cmd->setArgumentsArray(array($this->getId($key), serialize($data)));
+        $this->db->writeCommand($cmd);
+        return $this->db->readResponse($cmd);
     }
     
     public function remove($key)

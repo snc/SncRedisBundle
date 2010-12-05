@@ -7,7 +7,7 @@ use Bundle\RedisBundle\Logger\RedisLogger;
 /**
  * LoggingConnection
  */
-class LoggingConnection extends \Predis\TcpConnection
+class LoggingConnection extends \Predis\ConnectionCluster
 {
     /**
      * @var RedisLogger
@@ -23,7 +23,11 @@ class LoggingConnection extends \Predis\TcpConnection
     public function __construct(RedisLogger $logger, array $options = array())
     {
         $this->logger = $logger;
-        parent::__construct(new \Predis\ConnectionParameters($options));
+        parent::__construct();
+        
+        foreach ($options AS $config) {
+            $this->add(new \Predis\TCPConnection(new \Predis\ConnectionParameters($config)));
+        }
     }
 
     /**
