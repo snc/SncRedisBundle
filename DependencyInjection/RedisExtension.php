@@ -6,6 +6,9 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+/**
+ * RedisExtension
+ */
 class RedisExtension extends Extension
 {
     /**
@@ -22,6 +25,15 @@ class RedisExtension extends Extension
         }
         if (isset($config['servers'])) {
             $container->setParameter('redis.connection.servers', $config['servers']);
+        }
+        if (isset($config['host'])) {
+            $container->setParameter('redis.connection.host', (string) $config['host']);
+        }
+        if (isset($config['port'])) {
+            $container->setParameter('redis.connection.port', (int) $config['port']);
+        }
+        if (isset($config['database'])) {
+            $container->setParameter('redis.database.number', (int) $config['database']);
         }
     }
 
@@ -46,31 +58,23 @@ class RedisExtension extends Extension
     }
 
     /**
-     * Returns the namespace to be used for this extension (XML namespace).
-     *
-     * @return string The XML namespace
+     * {@inheritdoc}
      */
     public function getNamespace()
     {
-        return 'http://www.symfony-project.org/schema/dic/symfony';
+        return 'http://www.symfony-project.org/schema/dic/redis';
     }
 
     /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
+     * {@inheritdoc}
      */
     public function getXsdValidationBasePath()
     {
-        return __DIR__ . '/../Resources/config/';
+        return __DIR__ . '/../Resources/config/schema';
     }
 
     /**
-     * Returns the recommended alias to use in XML.
-     *
-     * This alias is also the mandatory prefix to use when using YAML.
-     *
-     * @return string The alias
+     * {@inheritdoc}
      */
     public function getAlias()
     {
