@@ -23,39 +23,43 @@ namespace Bundle\RedisBundle\Doctrine\Cache;
 
 use Doctrine\Common\Cache\AbstractCache;
 
-use \Predis;
+use Bundle\RedisBundle\Client\Predis\LoggingConnection;
+use Predis\Commands\Get,
+    Predis\Commands\Set,
+    Predis\Commands\Delete,
+    Predis\Commands\TimeToLive;
 
 /**
- * Memcache cache driver.
+ * Redis cache driver.
  *
  * @link    http://github.com/justinrainbow/
  * @author  Justin Rainbow <justin.rainbow@sheknows.com>
  */
-class Redis extends AbstractCache
+class RedisCache extends AbstractCache
 {
     /**
-     * @var Memcache
+     * @var Redis
      */
-    private $_memcache;
+    private $_redis;
 
     /**
-     * Sets the memcache instance to use.
+     * Sets the redis instance to use.
      *
-     * @param Memcache $memcache
+     * @param Redis $redis
      */
-    public function setMemcache(Memcache $memcache)
+    public function setRedisConnection(LoggingConnection $redis)
     {
-        $this->_memcache = $memcache;
+        $this->_redis = $redis;
     }
 
     /**
-     * Gets the memcache instance used by the cache.
+     * Gets the redis instance used by the cache.
      *
-     * @return Memcache
+     * @return Redis
      */
-    public function getMemcache()
+    public function getRedis()
     {
-        return $this->_memcache;
+        return $this->_redis;
     }
 
     /**
@@ -64,12 +68,12 @@ class Redis extends AbstractCache
     public function getIds()
     {
         $keys = array();
-        $allSlabs = $this->_memcache->getExtendedStats('slabs');
+        $allSlabs = $this->_redis->getExtendedStats('slabs');
 
         foreach ($allSlabs as $server => $slabs) {
             if (is_array($slabs)) {
                 foreach (array_keys($slabs) as $slabId) {
-                    $dump = $this->_memcache->getExtendedStats('cachedump', (int) $slabId);
+                    $dump = $this->_redis->getExtendedStats('cachedump', (int) $slabId);
 
                     if ($dump) {
                         foreach ($dump as $entries) {
@@ -89,7 +93,10 @@ class Redis extends AbstractCache
      */
     protected function _doFetch($id)
     {
-        return $this->_memcache->get($id);
+        $cmd = new Get();
+        $cmd->setArgumentsArray(array($id));
+
+        return unserialize($this->_doExec($cmd));
     }
 
     /**
@@ -97,7 +104,7 @@ class Redis extends AbstractCache
      */
     protected function _doContains($id)
     {
-        return (bool) $this->_memcache->get($id);
+        return (bool) $this->_doFetch($id);
     }
 
     /**
@@ -105,7 +112,17 @@ class Redis extends AbstractCache
      */
     protected function _doSave($id, $data, $lifeTime = 0)
     {
-        return $this->_memcache->set($id, $data, 0, (int) $lifeTime);
+        $set = new Set();
+        $set->setArgumentsArray(array($id, serialize($data)));
+        $result = $this->_doExec($set);
+        
+        if ($lifeTime > 0) {
+            $ttl = new TimeToLive();
+            $ttl->setArgumentsArray(array($id, (int) $lifeTime));
+            $this->_doExec($ttl);
+        }
+
+        return $result;
     }
 
     /**
@@ -113,6 +130,12 @@ class Redis extends AbstractCache
      */
     protected function _doDelete($id)
     {
-        return $this->_memcache->delete($id);
+        return $this->_redis->delete($id);
+    }
+    
+    protected function _doExec($cmd)
+    {
+        $this->_redis->writeCommand($cmd);
+        return $this->_redis->readResponse($cmd);
     }
 }

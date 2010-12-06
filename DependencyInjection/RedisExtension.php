@@ -5,6 +5,8 @@ namespace Bundle\RedisBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * RedisExtension
@@ -55,6 +57,23 @@ class RedisExtension extends Extension
         }
         
         $container->setAlias('session.storage', 'session.storage.redis');
+    }
+
+    /**
+     * Loads the Doctrine configuration.
+     *
+     * @param array $config An array of configuration settings
+     * @param \Symfony\Components\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
+     */
+    public function doctrineLoad($config, ContainerBuilder $container)
+    {
+        foreach ($config AS $cacheType => $configBlock) {
+            foreach ((array) $configBlock AS $name) {
+                $def = new Definition('Bundle\\RedisBundle\\Doctrine\\Cache\\RedisCache');
+                $def->addMethodCall('setRedisConnection', array(new Reference('redis.connection')));
+                $container->setDefinition(sprintf('doctrine.orm.%s_%s', $name, $cacheType), $def);
+            }
+        }
     }
 
     /**
