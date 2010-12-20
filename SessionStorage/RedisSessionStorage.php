@@ -85,10 +85,15 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        $cmd = new \Predis\Commands\Set();
-        $cmd->setArgumentsArray(array($this->getId($key), serialize($data)));
-        $this->db->writeCommand($cmd);
-        return $this->db->readResponse($cmd);
+        try {
+            $cmd = new \Predis\Commands\Set();
+            $cmd->setArgumentsArray(array($this->getId($key), serialize($data)));
+            $this->db->writeCommand($cmd);
+            return $this->db->readResponse($cmd);
+        }
+        catch (\Exception $e) {
+            
+        }
     }
     
     public function remove($key)
