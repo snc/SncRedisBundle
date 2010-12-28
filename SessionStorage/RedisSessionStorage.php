@@ -7,6 +7,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Bundle\RedisBundle\Client\Predis\LoggingConnection;
 use Bundle\RedisBundle\RedisClient;
 
+use Predis\Commands\Set,
+    Predis\Commands\Get,
+    Predis\Commands\Expire;
+
+/**
+ * Redis based session storage
+ *
+ * @link    http://github.com/justinrainbow/
+ * @author  Justin Rainbow <justin.rainbow@gmail.com>
+ */
 class RedisSessionStorage extends NativeSessionStorage
 {
     /**
@@ -17,7 +27,11 @@ class RedisSessionStorage extends NativeSessionStorage
     protected $db;
 
     /**
-     * @throws \InvalidArgumentException When "db_table" option is not provided
+     * Redis session storage constructor
+     *
+     * @param  LoggingConnection $db      Redis database connection
+     * @param  array             $options Session options
+     * @param  string            $prefix  Prefix to use when writing session data
      */
     public function __construct(LoggingConnection $db, $options = null, $prefix = 'session')
     {
@@ -63,9 +77,10 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        $cmd = new \Predis\Commands\Get();
+        $cmd = new Get();
         $cmd->setArgumentsArray(array($this->getId($key)));
         $this->db->writeCommand($cmd);
+        
         if (null !== $data = $this->db->readResponse($cmd))
         {
             return unserialize($data);
@@ -86,7 +101,7 @@ class RedisSessionStorage extends NativeSessionStorage
     public function write($key, $data)
     {
         try {
-            $cmd = new \Predis\Commands\Set();
+            $cmd = new Set();
             $cmd->setArgumentsArray(array($this->getId($key), serialize($data)));
             $this->db->writeCommand($cmd);
             return $this->db->readResponse($cmd);
@@ -96,25 +111,36 @@ class RedisSessionStorage extends NativeSessionStorage
         }
     }
     
+    /**
+     * Deletes the provided session key.
+     *
+     * @param  string $id   A session ID
+     * 
+     * @return bool   true, if the session data was deleted
+     */
     public function remove($key)
     {
-        $this->db->del($this->getId($key));
+        $cmd = new Del();
+        $cmd->setArgumentsArray(array($this->getId($key)));
+        $this->db->writeCommand($cmd);
+        
+        return $this->db->readResponse($cmd);
     }
 
-	/**
-	 * Prepends the Session ID with a user-defined prefix (if any).
-	 *
-	 * @param  string $id   A session ID
-	 * 
-	 * @return string prefixed session ID
-	 */
-	protected function getId($id)
-	{
-		if (!isset($this->options['prefix']))
-		{
-			return $this->options['id'] . ':' . $id;
-		}
-		
-		return $this->options['prefix'] . ':' . $this->options['id'] . ':' . $id;
-	}
+    /**
+     * Prepends the Session ID with a user-defined prefix (if any).
+     *
+     * @param  string $id   A session ID
+     * 
+     * @return string prefixed session ID
+     */
+    protected function getId($id)
+    {
+        if (!isset($this->options['prefix']))
+        {
+            return $this->options['id'] . ':' . $id;
+        }
+        
+        return $this->options['prefix'] . ':' . $this->options['id'] . ':' . $id;
+    }
 }

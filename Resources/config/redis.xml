@@ -17,8 +17,6 @@
         
         <parameter key="doctrine.orm.cache.redis_class">Bundle\RedisBundle\Doctrine\Cache\RedisCache</parameter>
 
-		<!-- <parameter key="redis.connection.class">Bundle\RedisBundle\RedisClient</parameter> -->
-
         <parameter key="redis.class">Predis\Client</parameter>
         <parameter key="redis.connection.class">Bundle\RedisBundle\Client\Predis\LoggingConnection</parameter>
         <parameter key="redis.logger.class">Bundle\RedisBundle\Logger\RedisLogger</parameter>
@@ -26,10 +24,6 @@
     </parameters>
 
     <services>
-        <!-- <service id="redis_connection" class="%redis.connection.class%">
-            <argument>%redis.connection.servers%</argument>
-        </service> -->
-		
         <service id="redis" class="%redis.class%">
             <argument type="service" id="redis.connection" />
         </service>

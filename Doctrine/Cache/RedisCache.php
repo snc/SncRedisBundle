@@ -33,7 +33,7 @@ use Predis\Commands\Get,
  * Redis cache driver.
  *
  * @link    http://github.com/justinrainbow/
- * @author  Justin Rainbow <justin.rainbow@sheknows.com>
+ * @author  Justin Rainbow <justin.rainbow@gmail.com>
  */
 class RedisCache extends AbstractCache
 {
@@ -67,25 +67,7 @@ class RedisCache extends AbstractCache
      */
     public function getIds()
     {
-        $keys = array();
-        $allSlabs = $this->_redis->getExtendedStats('slabs');
-
-        foreach ($allSlabs as $server => $slabs) {
-            if (is_array($slabs)) {
-                foreach (array_keys($slabs) as $slabId) {
-                    $dump = $this->_redis->getExtendedStats('cachedump', (int) $slabId);
-
-                    if ($dump) {
-                        foreach ($dump as $entries) {
-                            if ($entries) {
-                                $keys = array_merge($keys, array_keys($entries));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $keys;
+        throw new \RuntimeException('Method not yet implemented.');
     }
 
     /**
