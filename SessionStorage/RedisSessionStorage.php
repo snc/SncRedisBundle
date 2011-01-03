@@ -40,7 +40,7 @@ class RedisSessionStorage extends NativeSessionStorage
         $cookieDefaults = session_get_cookie_params();
 
         $this->options = array_merge(array(
-            'name'          => '_SESSION',
+            'name'          => '_SESS',
             'lifetime'      => $cookieDefaults['lifetime'],
             'path'          => $cookieDefaults['path'],
             'domain'        => $cookieDefaults['domain'],
