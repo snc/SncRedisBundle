@@ -78,7 +78,7 @@ class RedisSessionStorage extends NativeSessionStorage
     public function read($key, $default = null)
     {
         $cmd = new Get();
-        $cmd->setArgumentsArray(array($this->getId($key)));
+        $cmd->setArgumentsArray(array($this->getKey($key)));
         $this->db->writeCommand($cmd);
         
         if (null !== $data = $this->db->readResponse($cmd))
@@ -102,7 +102,7 @@ class RedisSessionStorage extends NativeSessionStorage
     {
         try {
             $cmd = new Set();
-            $cmd->setArgumentsArray(array($this->getId($key), serialize($data)));
+            $cmd->setArgumentsArray(array($this->getKey($key), serialize($data)));
             $this->db->writeCommand($cmd);
             return $this->db->readResponse($cmd);
         }
@@ -121,7 +121,7 @@ class RedisSessionStorage extends NativeSessionStorage
     public function remove($key)
     {
         $cmd = new Del();
-        $cmd->setArgumentsArray(array($this->getId($key)));
+        $cmd->setArgumentsArray(array($this->getKey($key)));
         $this->db->writeCommand($cmd);
         
         return $this->db->readResponse($cmd);
@@ -134,7 +134,7 @@ class RedisSessionStorage extends NativeSessionStorage
      * 
      * @return string prefixed session ID
      */
-    protected function getId($id)
+    protected function getKey($id)
     {
         if (!isset($this->options['prefix']))
         {
