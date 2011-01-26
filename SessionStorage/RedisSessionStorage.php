@@ -136,6 +136,9 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     protected function getKey($id)
     {
+        if (!isset($this->options['id'])) {
+            $this->options['id'] = session_id();
+        }
         if (!isset($this->options['prefix']))
         {
             return $this->options['id'] . ':' . $id;
