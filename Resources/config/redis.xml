@@ -1,47 +1,27 @@
 <?xml version="1.0" ?>
 
-<container 
-    xmlns="http://www.symfony-project.org/schema/dic/services" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services 
+<container
+    xmlns="http://www.symfony-project.org/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services
     http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="redis.connection.servers" type="collection">
-            <parameter key="host">%redis.connection.host%</parameter>
-            <parameter key="port">%redis.connection.port%</parameter>
-            <parameter key="database">%redis.database.number%</parameter>
-        </parameter>
-        <parameter key="redis.database.number">0</parameter>
-        
-        
-        <parameter key="doctrine.orm.cache.redis_class">Bundle\RedisBundle\Doctrine\Cache\RedisCache</parameter>
-
-        <parameter key="redis.class">Predis\Client</parameter>
+        <parameter key="redis.client.class">Predis\Client</parameter>
         <parameter key="redis.connection.class">Bundle\RedisBundle\Client\Predis\LoggingConnection</parameter>
+        <parameter key="redis.connection_parameters.class">Predis\ConnectionParameters</parameter>
         <parameter key="redis.logger.class">Bundle\RedisBundle\Logger\RedisLogger</parameter>
         <parameter key="redis.data_collector.class">Bundle\RedisBundle\DataCollector\RedisDataCollector</parameter>
+        <parameter key="doctrine.orm.cache.redis_class">Bundle\RedisBundle\Doctrine\Cache\RedisCache</parameter>
     </parameters>
 
     <services>
-        <service id="redis" class="%redis.class%">
-            <argument type="service" id="redis.connection" />
-        </service>
-        
-        <service id="redis.connection" class="%redis.connection.class%">
-            <argument type="service" id="redis.logger" />
-            <argument>%redis.connection.servers%</argument>
-        </service>
-        
-        <service id="redis_connection" alias="redis.connection" />
-
-        
         <service id="redis.logger" class="%redis.logger.class%">
             <argument type="service" id="logger" on-invalid="null" />
         </service>
-        
-        <service id="redis.data_collector" class="%redis.data_collector.class%">
-            <tag name="data_collector" template="RedisBundle:Collector:redis" />
+
+        <service id="redis.data_collector" class="%redis.data_collector.class%" public="false">
+            <tag name="data_collector" template="RedisBundle:Collector:redis" id="redis" />
             <argument type="service" id="redis.logger" />
         </service>
     </services>
