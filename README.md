@@ -2,7 +2,7 @@
 
 ## About ##
 
-The RedisBundle adds a `redis` service to your project's service container using [Predis](http://github.com/nrk/predis).
+The RedisBundle adds `redis` services to your project's service container using [Predis](http://github.com/nrk/predis).
 
 ## Installation ##
 
@@ -50,17 +50,82 @@ Add the RedisBundle to your application's kernel:
 Configure the `redis` service in your config:
 
     redis.config:
-      host: localhost
-      port: 6379
-      database: 0
+        connections:
+            default:
+                host: localhost
+                port: 6379
+                database: 0
+        clients:
+            default: ~
 
-To use multiple `redis` servers:
+You have to configure at least one connection and one client. In the above
+example your service container will contain the service `redis.default_client`.
+
+If you don't specify a connection for the client as above, the client will
+look for a connection with the same alias. The following example is the same
+as above:
 
     redis.config:
-      servers:
-        - { host: localhost, port: 6379, database: 0 }
-        - { host: otherhost, post: 6379, database: 0 }
+        connections:
+            default:
+                host: localhost
+                port: 6379
+                database: 0
+        clients:
+            default:
+                connection: default
 
+A more complex setup which contains a clustered client could look like this:
+
+    redis.config:
+        connections:
+            default:
+                host: localhost
+                port: 6379
+                database: 0
+                logging: %kernel.debug%
+            cache:
+                host: localhost
+                port: 6379
+                database: 1
+                password: secret
+                connection_timeout: 10
+                read_write_timeout: 30
+            session:
+                host: localhost
+                port: 6379
+                database: 2
+            cluster1:
+                host: localhost
+                port: 6379
+                database: 3
+                weight: 10
+            cluster2:
+                host: localhost
+                port: 6379
+                database: 4
+                weight: 5
+            cluster3:
+                host: localhost
+                port: 6379
+                database: 5
+                weight: 1
+        clients:
+            default: ~
+            cache:
+                connection: cache
+            session: ~
+            cluster:
+                connection: [ cluster1, cluster2, cluster3 ]
+
+In your controllers you can now access all your configured clients:
+
+    $redis = $this->container->get('redis.default_client');
+    $val = $redis->incr('foo:bar');
+    $redis_cluster = $this->container->get('redis.cluster_client');
+    $val = $redis_cluster->get('ab:cd');
+    $val = $redis_cluster->get('ef:gh');
+    $val = $redis_cluster->get('ij:kl');
 
 ### Sessions ###
 
@@ -72,7 +137,6 @@ Additionally, you may specify a `prefix` to use when storing session data.
 
     redis.session:
       prefix: someuniquename
-
 
 ### Doctrine caching ###
 
