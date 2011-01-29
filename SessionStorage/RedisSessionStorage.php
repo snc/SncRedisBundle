@@ -7,10 +7,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Bundle\RedisBundle\Client\Predis\LoggingConnection;
 use Predis\Client;
 
-use Predis\Commands\Set,
-    Predis\Commands\Get,
-    Predis\Commands\Expire;
-
 /**
  * Redis based session storage
  *
@@ -29,11 +25,11 @@ class RedisSessionStorage extends NativeSessionStorage
     /**
      * Redis session storage constructor
      *
-     * @param  Client $db      Redis database connection
-     * @param  array             $options Session options
-     * @param  string            $prefix  Prefix to use when writing session data
+     * @param Client $db      Redis database connection
+     * @param array  $options Session options
+     * @param string $prefix  Prefix to use when writing session data
      */
-    public function __construct(Client $db, $options = null, $prefix = 'session')
+    public function __construct(Client $db, $options = array(), $prefix = 'session')
     {
         $this->db = $db;
 
@@ -92,11 +88,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        $cmd = new Get();
-        $cmd->setArgumentsArray(array($this->createId($key)));
-        $this->db->writeCommand($cmd);
-
-        if (null !== $data = $this->db->readResponse($cmd))
+        if (null !== ($data = $this->db->get($this->createId($key))))
         {
             return unserialize($data);
         }
@@ -115,15 +107,8 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        try {
-            $cmd = new Set();
-            $cmd->setArgumentsArray(array($this->createId($key), serialize($data)));
-            $this->db->writeCommand($cmd);
-            return $this->db->readResponse($cmd);
-        }
-        catch (\Exception $e) {
-
-        }
+        // TODO Use SETEX with Redis 2.x or SET and EXPIRE with Redis 1.x
+        return $this->db->set($this->createId($key), serialize($data));
     }
 
     /**
@@ -135,11 +120,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function remove($key)
     {
-        $cmd = new Del();
-        $cmd->setArgumentsArray(array($this->createId($key)));
-        $this->db->writeCommand($cmd);
-
-        return $this->db->readResponse($cmd);
+        return $this->db->del($this->createId($key));
     }
 
     /**

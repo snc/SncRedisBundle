@@ -151,29 +151,26 @@ class RedisExtension extends Extension
     }
 
     /**
-     * Loads the configuration.
+     * Loads the session configuration.
      *
-     * @param array $config An array of configuration settings
-     * @param \Symfony\Components\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
+     * @param array $configs An array of configurations
+     * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function sessionLoad($config, ContainerBuilder $container)
+    public function sessionLoad(array $configs, ContainerBuilder $container)
     {
         $loader = new XmlFileLoader($container, __DIR__ . '/../Resources/config');
         $loader->load('session.xml');
 
-        $config = $this->flattenConfigs($config);
+        $config = $this->flattenConfigs($configs);
 
-        if (!isset($config['client'])) {
-            throw new \UnexpectedValueException('Missing client parameter');
+        if (isset($config['client'])) {
+            $container->setParameter('redis.session.client', $config['client']);
         }
-        $client = sprintf('redis.%s_client', $config['client']);
-        unset($config['client']);
-
-        foreach ($config as $key => $value) {
-            $container->setParameter('session.storage.redis.options.' . $key, $value);
+        if (isset($config['prefix'])) {
+            $container->setParameter('redis.session.prefix', $config['prefix']);
         }
 
-        $container->getDefinition('session.storage.redis')->setArgument(0, new Reference($client));
+        $container->setAlias('redis.session.client', sprintf('redis.%s_client', $container->getParameter('redis.session.client')));
         $container->setAlias('session.storage', 'session.storage.redis');
     }
 
