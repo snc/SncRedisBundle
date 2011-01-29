@@ -5,7 +5,7 @@ namespace Bundle\RedisBundle\SessionStorage;
 use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Bundle\RedisBundle\Client\Predis\LoggingConnection;
-use Bundle\RedisBundle\RedisClient;
+use Predis\Client;
 
 use Predis\Commands\Set,
     Predis\Commands\Get,
@@ -20,20 +20,20 @@ use Predis\Commands\Set,
 class RedisSessionStorage extends NativeSessionStorage
 {
     /**
-     * Instance of RedisClient
+     * Instance of Client
      *
-     * @var RedisClient
+     * @var Client
      */
     protected $db;
 
     /**
      * Redis session storage constructor
      *
-     * @param  LoggingConnection $db      Redis database connection
+     * @param  Client $db      Redis database connection
      * @param  array             $options Session options
      * @param  string            $prefix  Prefix to use when writing session data
      */
-    public function __construct(LoggingConnection $db, $options = null, $prefix = 'session')
+    public function __construct(Client $db, $options = null, $prefix = 'session')
     {
         $this->db = $db;
 

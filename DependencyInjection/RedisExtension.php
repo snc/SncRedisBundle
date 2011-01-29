@@ -163,10 +163,17 @@ class RedisExtension extends Extension
 
         $config = $this->flattenConfigs($config);
 
+        if (!isset($config['client'])) {
+            throw new \UnexpectedValueException('Missing client parameter');
+        }
+        $client = sprintf('redis.%s_client', $config['client']);
+        unset($config['client']);
+
         foreach ($config as $key => $value) {
             $container->setParameter('session.storage.redis.options.' . $key, $value);
         }
 
+        $container->getDefinition('session.storage.redis')->setArgument(0, new Reference($client));
         $container->setAlias('session.storage', 'session.storage.redis');
     }
 
