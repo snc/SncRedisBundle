@@ -133,10 +133,13 @@ Use Redis sessions by adding the following to your config:
 
     redis.session: ~
 
-Additionally, you may specify a `prefix` to use when storing session data.
+This will use the default client `session` with the default prefix `session`.
+
+You may specify another `client` and `prefix` when storing session data.
 
     redis.session:
-        prefix: someuniquename
+        client: session
+        prefix: foo
 
 ### Doctrine caching ###
 
