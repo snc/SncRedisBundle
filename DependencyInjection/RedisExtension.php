@@ -158,12 +158,12 @@ class RedisExtension extends Extension
      */
     public function sessionLoad($config, ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('session.storage.redis')) {
-            $loader = new XmlFileLoader($container, __DIR__ . '/../Resources/config');
-            $loader->load('session.xml');
-        }
+        $loader = new XmlFileLoader($container, __DIR__ . '/../Resources/config');
+        $loader->load('session.xml');
 
-        foreach ($config AS $key => $value) {
+        $config = $this->flattenConfigs($config);
+
+        foreach ($config as $key => $value) {
             $container->setParameter('session.storage.redis.options.' . $key, $value);
         }
 
@@ -178,13 +178,24 @@ class RedisExtension extends Extension
      */
     public function doctrineLoad($config, ContainerBuilder $container)
     {
-        foreach ($config AS $cacheType => $configBlock) {
+        $config = $this->mergeConfigs($config);
+
+        foreach ($config as $cacheType => $configBlock) {
             foreach ((array) $configBlock AS $name) {
                 $def = new Definition('Bundle\\RedisBundle\\Doctrine\\Cache\\RedisCache');
                 $def->addMethodCall('setRedisConnection', array(new Reference('redis.connection')));
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $name, $cacheType), $def);
             }
         }
+    }
+
+    protected function flattenConfigs($configs)
+    {
+        $config = array();
+        foreach ($configs as $conf) {
+            $config = array_merge($config, $conf);
+        }
+        return $config;
     }
 
     /**

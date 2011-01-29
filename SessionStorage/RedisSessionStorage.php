@@ -21,7 +21,7 @@ class RedisSessionStorage extends NativeSessionStorage
 {
     /**
      * Instance of RedisClient
-     * 
+     *
      * @var RedisClient
      */
     protected $db;
@@ -36,7 +36,7 @@ class RedisSessionStorage extends NativeSessionStorage
     public function __construct(LoggingConnection $db, $options = null, $prefix = 'session')
     {
         $this->db = $db;
-        
+
         $cookieDefaults = session_get_cookie_params();
 
         $this->options = array_merge(array(
@@ -56,14 +56,29 @@ class RedisSessionStorage extends NativeSessionStorage
      * Starts the session.
      */
     public function start()
-    {    
+    {
         if (self::$sessionStarted) {
             return;
         }
 
         parent::start();
-        
+
         $this->options['id'] = session_id();
+    }
+
+    /**
+     * Returns the session ID
+     *
+     * @return mixed  The session ID
+     *
+     * @throws \RuntimeException If the session was not started yet
+     */
+    public function getId()
+    {
+        if (!self::$sessionStarted) {
+             throw new \RuntimeException('The session has not been started yet');
+        }
+        return $this->options['id'];
     }
 
     /**
@@ -78,9 +93,9 @@ class RedisSessionStorage extends NativeSessionStorage
     public function read($key, $default = null)
     {
         $cmd = new Get();
-        $cmd->setArgumentsArray(array($this->getId($key)));
+        $cmd->setArgumentsArray(array($this->createId($key)));
         $this->db->writeCommand($cmd);
-        
+
         if (null !== $data = $this->db->readResponse($cmd))
         {
             return unserialize($data);
@@ -102,28 +117,28 @@ class RedisSessionStorage extends NativeSessionStorage
     {
         try {
             $cmd = new Set();
-            $cmd->setArgumentsArray(array($this->getId($key), serialize($data)));
+            $cmd->setArgumentsArray(array($this->createId($key), serialize($data)));
             $this->db->writeCommand($cmd);
             return $this->db->readResponse($cmd);
         }
         catch (\Exception $e) {
-            
+
         }
     }
-    
+
     /**
      * Deletes the provided session key.
      *
      * @param  string $id   A session ID
-     * 
+     *
      * @return bool   true, if the session data was deleted
      */
     public function remove($key)
     {
         $cmd = new Del();
-        $cmd->setArgumentsArray(array($this->getId($key)));
+        $cmd->setArgumentsArray(array($this->createId($key)));
         $this->db->writeCommand($cmd);
-        
+
         return $this->db->readResponse($cmd);
     }
 
@@ -131,16 +146,16 @@ class RedisSessionStorage extends NativeSessionStorage
      * Prepends the Session ID with a user-defined prefix (if any).
      *
      * @param  string $id   A session ID
-     * 
+     *
      * @return string prefixed session ID
      */
-    protected function getId($id)
+    protected function createId($id)
     {
         if (!isset($this->options['prefix']))
         {
             return $this->options['id'] . ':' . $id;
         }
-        
+
         return $this->options['prefix'] . ':' . $this->options['id'] . ':' . $id;
     }
 }
