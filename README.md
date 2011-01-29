@@ -26,10 +26,10 @@ Add the [Predis](http://github.com/nrk/predis) autoloading to your project's boo
 
     spl_autoload_register(function($class) use ($vendorDir)
     {
-      if (strpos($class, 'Predis\\') === 0) {
-          require_once $vendorDir.'/predis/lib/Predis.php';
-          return true;
-      }
+        if (strpos($class, 'Predis\\') === 0) {
+            require_once $vendorDir.'/predis/lib/Predis.php';
+            return true;
+        }
     });
 
 Add the RedisBundle to your application's kernel:
@@ -136,13 +136,13 @@ Use Redis sessions by adding the following to your config:
 Additionally, you may specify a `prefix` to use when storing session data.
 
     redis.session:
-      prefix: someuniquename
+        prefix: someuniquename
 
 ### Doctrine caching ###
 
 Use Redis caching for Doctrine by adding this to your config:
 
     redis.doctrine:
-      metadata_cache:  default           # <-- the name of your entity_manager connection
-      result_cache:    [default, read]   # you may also specify multiple entity_manager connections
-      query_cache:     default
+        metadata_cache:  default           # <-- the name of your entity_manager connection
+        result_cache:    [default, read]   # you may also specify multiple entity_manager connections
+        query_cache:     default
