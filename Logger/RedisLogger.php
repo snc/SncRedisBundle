@@ -32,13 +32,13 @@ class RedisLogger
      * @param string $command Redis command
      * @param float $time Start time
      */
-    public function startCommand($command, $time = null)
+    public function startCommand($command, $time = null, $connection = null)
     {
         ++$this->nbCommands;
 
         if (null !== $this->logger) {
-            $this->commands[] = array('cmd' => $command, 'executionMS' => 0);
-            $this->logger->info(static::LOG_PREFIX . $command, array('foo' => 'bar'));
+            $this->commands[] = array('cmd' => $command, 'executionMS' => 0, 'conn' => $connection);
+            $this->logger->info(static::LOG_PREFIX . $command);
             $this->start = $time ? : microtime(true);
         }
     }

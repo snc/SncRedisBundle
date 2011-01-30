@@ -2,12 +2,15 @@
 
 namespace Bundle\RedisBundle\Client\Predis;
 
+use Predis\ConnectionParameters;
+use Predis\ICommand;
+use Predis\TcpConnection;
 use Bundle\RedisBundle\Logger\RedisLogger;
 
 /**
  * LoggingConnection
  */
-class LoggingConnection extends \Predis\ConnectionCluster
+class LoggingConnection extends TcpConnection
 {
     /**
      * @var RedisLogger
@@ -17,35 +20,31 @@ class LoggingConnection extends \Predis\ConnectionCluster
     /**
      * Constructor.
      *
+     * @param ConnectionParameters $parameters A ConnectionParameters instance
      * @param RedisLogger $logger A RedisLogger instance
-     * @param array $options An array of options
      */
-    public function __construct(RedisLogger $logger, array $options = array())
+    public function __construct(ConnectionParameters $parameters, RedisLogger $logger = null)
     {
         $this->logger = $logger;
-        parent::__construct();
-        
-        foreach ($options AS $config) {
-            $this->add(new \Predis\TCPConnection(new \Predis\ConnectionParameters($config)));
-        }
+        parent::__construct($parameters);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(\Predis\ICommand $command)
+    public function writeCommand(ICommand $command)
     {
         $time = microtime(true);
         parent::writeCommand($command);
         if (null !== $this->logger) {
-            $this->logger->startCommand($this->serializeCommand($command), $time);
+            $this->logger->startCommand($this->serializeCommand($command), $time, $this->_params->alias);
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function readResponse(\Predis\ICommand $command)
+    public function readResponse(ICommand $command)
     {
         $result = parent::readResponse($command);
         if (null !== $this->logger) {
