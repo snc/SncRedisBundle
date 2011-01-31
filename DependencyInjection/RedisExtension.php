@@ -182,7 +182,7 @@ class RedisExtension extends Extension
      */
     public function doctrineLoad($config, ContainerBuilder $container)
     {
-        $config = $this->mergeConfigs($config);
+        // $config = $this->mergeConfigs($config);
 
         foreach ($config as $cacheType => $configBlock) {
             foreach ((array) $configBlock AS $name) {
