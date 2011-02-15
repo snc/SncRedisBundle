@@ -21,12 +21,12 @@ class RedisExtension extends Extension
      * @param array $configs An array of configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function configLoad(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('redis.xml');
 
-        $config = $this->mergeConfig($configs, $container);
+        $config = $this->mergeConfig(self::normalizeKeys($configs), $container);
 
         foreach ($config['connections'] as $name => $connection) {
             $this->loadConnection($connection, $container);
@@ -35,6 +35,38 @@ class RedisExtension extends Extension
         foreach ($config['clients'] as $name => $client) {
             $this->loadClient($client, $container);
         }
+
+        if (isset($config['session'])) {
+            $this->loadSession($config, $container, $loader);
+        }
+
+        if (0 < count($config['doctrine'])) {
+            $this->loadDoctrine($config, $container);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNamespace()
+    {
+        return 'http://www.symfony-project.org/schema/dic/redis';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getXsdValidationBasePath()
+    {
+        return __DIR__ . '/../Resources/config/schema';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAlias()
+    {
+        return 'redis';
     }
 
     /**
@@ -49,6 +81,8 @@ class RedisExtension extends Extension
         $mergedConfig = array(
             'connections' => array(),
             'clients' => array(),
+            'session' => null,
+            'doctrine' => array(),
         );
 
         $connectionDefaults = array(
@@ -68,6 +102,16 @@ class RedisExtension extends Extension
 
         $clientDefaults = array(
             'connection' => null,
+        );
+
+        $sessionDefaults = array(
+            'client' => 'session',
+            'prefix' => null,
+        );
+
+        $doctrineCacheDefaults = array(
+            'client' => 'cache',
+            'entity_manager' => 'default',
         );
 
         foreach ($configs as $config) {
@@ -95,6 +139,28 @@ class RedisExtension extends Extension
                             if (array_key_exists($k, $clientDefaults)) {
                                 $mergedConfig['clients'][$name][$k] = $v;
                             }
+                        }
+                    }
+                }
+            }
+            if (isset($config['session'])) {
+                if (!isset($mergedConfig['session'])) {
+                    $mergedConfig['session'] = $sessionDefaults;
+                }
+                foreach ($config['session'] as $k => $v) {
+                    if (array_key_exists($k, $sessionDefaults)) {
+                        $mergedConfig['session'][$k] = $v;
+                    }
+                }
+            }
+            if (isset($config['doctrine'])) {
+                foreach ($config['doctrine'] as $name => $cache) {
+                    if (!isset($mergedConfig['doctrine'][$name])) {
+                        $mergedConfig['doctrine'][$name] = $doctrineCacheDefaults;
+                    }
+                    foreach ($cache as $k => $v) {
+                        if (array_key_exists($k, $doctrineCacheDefaults)) {
+                            $mergedConfig['doctrine'][$name][$k] = $v;
                         }
                     }
                 }
@@ -155,21 +221,19 @@ class RedisExtension extends Extension
     /**
      * Loads the session configuration.
      *
-     * @param array $configs An array of configurations
+     * @param array $config A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param XmlFileLoader $loader
      */
-    public function sessionLoad(array $configs, ContainerBuilder $container)
+    protected function loadSession(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('session.xml');
 
-        $config = $this->flattenConfigs($configs);
-
-        if (isset($config['client'])) {
-            $container->setParameter('redis.session.client', $config['client']);
+        if (isset($config['session']['client'])) {
+            $container->setParameter('redis.session.client', $config['session']['client']);
         }
-        if (isset($config['prefix'])) {
-            $container->setParameter('redis.session.prefix', $config['prefix']);
+        if (isset($config['session']['prefix'])) {
+            $container->setParameter('redis.session.prefix', $config['session']['prefix']);
         }
 
         $container->setAlias('redis.session.client', sprintf('redis.%s_client', $container->getParameter('redis.session.client')));
@@ -179,61 +243,18 @@ class RedisExtension extends Extension
     /**
      * Loads the Doctrine configuration.
      *
-     * @param array $configs An array of configurations
+     * @param array $config A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function doctrineLoad(array $configs, ContainerBuilder $container)
+    protected function loadDoctrine(array $config, ContainerBuilder $container)
     {
-        $config = $this->flattenConfigs($configs);
-
-        $clientName = isset($config['client']) ? $config['client'] : 'cache';
-        unset($config['client']);
-
-        foreach ($config as $cacheType => $configBlock) {
-            foreach ((array) $configBlock as $name) {
+        foreach ($config['doctrine'] as $name => $cache) {
+            $client = new Reference(sprintf('redis.%s_client', $cache['client']));
+            foreach ((array) $cache['entity_manager'] as $em) {
                 $def = new Definition($container->getParameter('doctrine.orm.cache.redis_class'));
-                $def->addMethodCall('setRedis', array(new Reference(sprintf('redis.%s_client', $clientName))));
-                $container->setDefinition(sprintf('doctrine.orm.%s_%s', $name, $cacheType), $def);
+                $def->addMethodCall('setRedis', array($client));
+                $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);
             }
         }
-    }
-
-    /**
-     * Temporary function to merge session/doctrine configurations.
-     *
-     * @param array $configs An array of configurations
-     * @return array A merged configuration array
-     */
-    protected function flattenConfigs(array $configs)
-    {
-        $config = array();
-        foreach ($configs as $conf) {
-            $config = array_merge($config, $conf);
-        }
-        return $config;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace()
-    {
-        return 'http://www.symfony-project.org/schema/dic/redis';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getXsdValidationBasePath()
-    {
-        return __DIR__ . '/../Resources/config/schema';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAlias()
-    {
-        return 'redis';
     }
 }
