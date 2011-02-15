@@ -14,20 +14,28 @@ or as a submodule:
 
     $ git submodule add git://github.com/snc/RedisBundle.git src/Bundle/RedisBundle
 
-Put the [Predis](http://github.com/nrk/predis) library into the src/vendor dir:
+Put the [Predis](http://github.com/nrk/predis) library into the vendor dir:
 
-    $ git clone git://github.com/nrk/predis.git src/vendor/predis
+    $ git clone git://github.com/nrk/predis.git vendor/predis
 
 or as a submodule:
 
-    $ git submodule add git://github.com/nrk/predis.git src/vendor/predis
+    $ git submodule add git://github.com/nrk/predis.git vendor/predis
 
-Add the [Predis](http://github.com/nrk/predis) autoloading to your project's bootstrap script (src/autoload.php):
+Register the `Bundle` namespace in your project's autoload script (app/autoload.php):
 
-    spl_autoload_register(function($class) use ($vendorDir)
+    $loader->registerNamespaces(array(
+        ...
+        'Bundle'                         => __DIR__.'/../src',
+        ...
+    ));
+
+Add the [Predis](http://github.com/nrk/predis) autoloading to your project's autoload script (app/autoload.php):
+
+    spl_autoload_register(function($class)
     {
         if (strpos($class, 'Predis\\') === 0) {
-            require_once $vendorDir.'/predis/lib/Predis.php';
+            require_once __DIR__.'/../vendor/predis/lib/Predis.php';
             return true;
         }
     });
@@ -146,6 +154,9 @@ You may specify another `client` and `prefix` when storing session data.
 Use Redis caching for Doctrine by adding this to your config:
 
     redis.doctrine:
+        client: cache
         metadata_cache:  default           # <-- the name of your entity_manager connection
         result_cache:    [default, read]   # you may also specify multiple entity_manager connections
         query_cache:     default
+
+If you omit the `client` setting then the bundle will use the client named `cache`.
