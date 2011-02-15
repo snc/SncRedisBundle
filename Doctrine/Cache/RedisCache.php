@@ -4,40 +4,45 @@ namespace Bundle\RedisBundle\Doctrine\Cache;
 
 use Doctrine\Common\Cache\AbstractCache;
 
-use Bundle\RedisBundle\Client\Predis\LoggingConnection;
-use Predis\Commands\Get,
-    Predis\Commands\Set,
-    Predis\Commands\Delete,
-    Predis\Commands\TimeToLive,
-    Predis\Commands\Expires;
-
 /**
  * Redis cache driver.
  *
  * @link    http://github.com/justinrainbow/
  * @author  Justin Rainbow <justin.rainbow@gmail.com>
+ * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
 class RedisCache extends AbstractCache
 {
     /**
-     * @var Redis
+     * @var \Predis\Client
      */
     private $_redis;
 
     /**
+     * @var string The namespace to prefix all cache ids with
+     */
+    private $_namespace = null;
+
+    /**
+     * @var boolean
+     */
+    private $_supportsSetExpire = false;
+
+    /**
      * Sets the redis instance to use.
      *
-     * @param Redis $redis
+     * @param \Predis\Client $redis
      */
-    public function setRedisConnection(LoggingConnection $redis)
+    public function setRedis(\Predis\Client $redis)
     {
         $this->_redis = $redis;
+        $this->_supportsSetExpire = $redis->getProfile()->supportsCommand('setex');
     }
 
     /**
      * Gets the redis instance used by the cache.
      *
-     * @return Redis
+     * @return \Predis\Client
      */
     public function getRedis()
     {
@@ -47,9 +52,18 @@ class RedisCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
+    public function setNamespace($namespace)
+    {
+        $this->_namespace = $namespace;
+        parent::setNamespace($namespace);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getIds()
     {
-        throw new \RuntimeException('Method not yet implemented.');
+        return $this->_redis->keys($this->_namespace . '*');
     }
 
     /**
@@ -57,10 +71,7 @@ class RedisCache extends AbstractCache
      */
     protected function _doFetch($id)
     {
-        $cmd = new Get();
-        $cmd->setArgumentsArray(array($id));
-
-        return unserialize($this->_doExec($cmd));
+        return $this->_redis->get($id);
     }
 
     /**
@@ -68,7 +79,7 @@ class RedisCache extends AbstractCache
      */
     protected function _doContains($id)
     {
-        return (bool) $this->_doFetch($id);
+        return (bool) $this->_redis->exists($id);
     }
 
     /**
@@ -76,14 +87,13 @@ class RedisCache extends AbstractCache
      */
     protected function _doSave($id, $data, $lifeTime = 0)
     {
-        $set = new Set();
-        $set->setArgumentsArray(array($id, serialize($data)));
-        $result = $this->_doExec($set);
-        
-        if ($lifeTime > 0) {
-            $ttl = new Expires();
-            $ttl->setArgumentsArray(array($id, (int) $lifeTime));
-            $this->_doExec($ttl);
+        if ($this->_supportsSetExpire && 0 < $lifeTime) {
+            $result = (bool) $this->_redis->setex($id, (int) $lifeTime, $data);
+        } else {
+            $result = (bool) $this->_redis->set($id, $data);
+            if (0 < $lifeTime) {
+                $result = $result && (bool) $this->_redis->expire($id, (int) $lifeTime);
+            }
         }
 
         return $result;
@@ -94,20 +104,6 @@ class RedisCache extends AbstractCache
      */
     protected function _doDelete($id)
     {
-        return $this->_redis->delete($id);
-    }
-    
-    /**
-     * Perform both the writeCommand and readResponse for a
-     * given Redis Command.
-     * 
-     * @param  object  $cmd  Redis command object
-     * 
-     * @return mixed response
-     */
-    protected function _doExec($cmd)
-    {
-        $this->_redis->writeCommand($cmd);
-        return $this->_redis->readResponse($cmd);
+        return (bool) $this->_redis->del($id);
     }
 }

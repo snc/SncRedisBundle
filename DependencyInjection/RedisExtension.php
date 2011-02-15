@@ -41,6 +41,7 @@ class RedisExtension extends Extension
      *
      * @param array $configs An array of configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
+     * @return array A merged configuration array
      */
     protected function mergeConfig(array $configs, ContainerBuilder $container)
     {
@@ -177,23 +178,32 @@ class RedisExtension extends Extension
     /**
      * Loads the Doctrine configuration.
      *
-     * @param array $config An array of configuration settings
-     * @param \Symfony\Components\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
+     * @param array $configs An array of configurations
+     * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function doctrineLoad($config, ContainerBuilder $container)
+    public function doctrineLoad(array $configs, ContainerBuilder $container)
     {
-        $config = $this->mergeConfigs($config);
+        $config = $this->flattenConfigs($configs);
+
+        $clientName = isset($config['client']) ? $config['client'] : 'cache';
+        unset($config['client']);
 
         foreach ($config as $cacheType => $configBlock) {
-            foreach ((array) $configBlock AS $name) {
-                $def = new Definition('Bundle\\RedisBundle\\Doctrine\\Cache\\RedisCache');
-                $def->addMethodCall('setRedisConnection', array(new Reference('redis.connection')));
+            foreach ((array) $configBlock as $name) {
+                $def = new Definition($container->getParameter('doctrine.orm.cache.redis_class'));
+                $def->addMethodCall('setRedis', array(new Reference(sprintf('redis.%s_client', $clientName))));
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $name, $cacheType), $def);
             }
         }
     }
 
-    protected function flattenConfigs($configs)
+    /**
+     * Temporary function to merge session/doctrine configurations.
+     *
+     * @param array $configs An array of configurations
+     * @return array A merged configuration array
+     */
+    protected function flattenConfigs(array $configs)
     {
         $config = array();
         foreach ($configs as $conf) {
