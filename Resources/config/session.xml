@@ -7,7 +7,7 @@
     http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="redis.session.class">Bundle\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
+        <parameter key="redis.session.class">Snc\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
         <parameter key="redis.session.client">session</parameter>
         <parameter key="redis.session.options" type="collection" />
         <parameter key="redis.session.prefix">session</parameter>

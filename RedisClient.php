@@ -1,13 +1,9 @@
 <?php
 
-namespace Bundle\RedisBundle;
+namespace Snc\RedisBundle;
 
-use \Predis\Client;
-
-
-class RedisClient extends Client
+class RedisClient extends \Predis\Client
 {
-
     /**
      * Putting session_write_close() to fix bug caused by APC where object 
      * destruction occurs in the wrong order
@@ -19,5 +15,4 @@ class RedisClient extends Client
     {
         session_write_close();
     }
-	
 }

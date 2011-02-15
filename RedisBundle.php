@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\RedisBundle;
+namespace Snc\RedisBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

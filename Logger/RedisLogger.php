@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\RedisBundle\Logger;
+namespace Snc\RedisBundle\Logger;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 

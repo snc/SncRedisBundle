@@ -1,11 +1,11 @@
 <?php
 
-namespace Bundle\RedisBundle\Client\Predis;
+namespace Snc\RedisBundle\Client\Predis;
 
 use Predis\ConnectionParameters;
 use Predis\ICommand;
 use Predis\TcpConnection;
-use Bundle\RedisBundle\Logger\RedisLogger;
+use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * LoggingConnection
@@ -56,10 +56,10 @@ class LoggingConnection extends TcpConnection
     /**
      * Serializes a command for the logger.
      *
-     * @param \Predis\ICommand $command
+     * @param ICommand $command
      * @return string
      */
-    protected function serializeCommand(\Predis\ICommand $command)
+    protected function serializeCommand(ICommand $command)
     {
         return trim(sprintf('%s %s', $command->getCommandId(), implode(' ', $command->getArguments())));
     }

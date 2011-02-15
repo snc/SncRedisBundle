@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\RedisBundle\DependencyInjection;
+namespace Snc\RedisBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;

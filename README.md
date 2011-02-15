@@ -6,13 +6,13 @@ The RedisBundle adds `redis` services to your project's service container using 
 
 ## Installation ##
 
-Put the RedisBundle into the src/Bundle dir:
+Put the RedisBundle into the src/Snc dir:
 
-    $ git clone git://github.com/snc/RedisBundle.git src/Bundle/RedisBundle
+    $ git clone git://github.com/snc/RedisBundle.git src/Snc/RedisBundle
 
 or as a submodule:
 
-    $ git submodule add git://github.com/snc/RedisBundle.git src/Bundle/RedisBundle
+    $ git submodule add git://github.com/snc/RedisBundle.git src/Snc/RedisBundle
 
 Put the [Predis](http://github.com/nrk/predis) library into the vendor dir:
 
@@ -22,11 +22,11 @@ or as a submodule:
 
     $ git submodule add git://github.com/nrk/predis.git vendor/predis
 
-Register the `Bundle` namespace in your project's autoload script (app/autoload.php):
+Register the `Snc` namespace in your project's autoload script (app/autoload.php):
 
     $loader->registerNamespaces(array(
         ...
-        'Bundle'                         => __DIR__.'/../src',
+        'Snc'                            => __DIR__.'/../src',
         ...
     ));
 
@@ -46,7 +46,7 @@ Add the RedisBundle to your application's kernel:
     {
         $bundles = array(
             ...
-            new Bundle\RedisBundle\RedisBundle(),
+            new Snc\RedisBundle\RedisBundle(),
             ...
         );
         ...

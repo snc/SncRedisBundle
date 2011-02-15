@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\RedisBundle\Doctrine\Cache;
+namespace Snc\RedisBundle\Doctrine\Cache;
 
 use Doctrine\Common\Cache\AbstractCache;
 

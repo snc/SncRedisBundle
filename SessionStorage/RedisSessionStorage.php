@@ -1,10 +1,10 @@
 <?php
 
-namespace Bundle\RedisBundle\SessionStorage;
+namespace Snc\RedisBundle\SessionStorage;
 
 use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Bundle\RedisBundle\Client\Predis\LoggingConnection;
+use Snc\RedisBundle\Client\Predis\LoggingConnection;
 use Predis\Client;
 
 /**

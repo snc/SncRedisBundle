@@ -1,8 +1,8 @@
 <?php
 
-namespace Bundle\RedisBundle\DataCollector;
+namespace Snc\RedisBundle\DataCollector;
 
-use Bundle\RedisBundle\Logger\RedisLogger;
+use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
