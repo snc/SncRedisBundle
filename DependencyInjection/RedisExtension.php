@@ -21,7 +21,7 @@ class RedisExtension extends Extension
      * @param array $configs An array of configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function configLoad(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('redis.xml');
