@@ -57,7 +57,7 @@ Add the RedisBundle to your application's kernel:
 
 Configure the `redis` service in your config:
 
-    redis.config:
+    redis:
         connections:
             default:
                 host: localhost
@@ -73,7 +73,7 @@ If you don't specify a connection for the client as above, the client will
 look for a connection with the same alias. The following example is the same
 as above:
 
-    redis.config:
+    redis:
         connections:
             default:
                 host: localhost
@@ -85,7 +85,7 @@ as above:
 
 A more complex setup which contains a clustered client could look like this:
 
-    redis.config:
+    redis:
         connections:
             default:
                 host: localhost
@@ -139,24 +139,90 @@ In your controllers you can now access all your configured clients:
 
 Use Redis sessions by adding the following to your config:
 
-    redis.session: ~
+    redis:
+        ...
+        session: ~
 
 This will use the default client `session` with the default prefix `session`.
 
 You may specify another `client` and `prefix` when storing session data.
 
-    redis.session:
-        client: session
-        prefix: foo
+    redis:
+        ...
+        session:
+            client: session
+            prefix: foo
 
 ### Doctrine caching ###
 
 Use Redis caching for Doctrine by adding this to your config:
 
-    redis.doctrine:
-        client: cache
-        metadata_cache:  default           # <-- the name of your entity_manager connection
-        result_cache:    [default, read]   # you may also specify multiple entity_manager connections
-        query_cache:     default
+    redis:
+        ...
+        doctrine:
+            metadata_cache:
+                client: cache
+                entity_manager: default          # the name of your entity_manager connection
+            result_cache:
+                client: cache
+                entity_manager: [default, read]  # you may also specify multiple entity_manager connections
+            query_cache: ~
 
 If you omit the `client` setting then the bundle will use the client named `cache`.
+If you don't specify an `entity_manager` connection name then the `default` one will be used.
+
+### Complete configuration example ###
+
+    redis:
+        connections:
+            default:
+                host: localhost
+                port: 6379
+                database: 0
+                logging: %kernel.debug%
+            cache:
+                host: localhost
+                port: 6379
+                database: 1
+                password: secret
+                connection_timeout: 10
+                read_write_timeout: 30
+            session:
+                host: localhost
+                port: 6379
+                database: 2
+            cluster1:
+                host: localhost
+                port: 6379
+                database: 3
+                weight: 10
+            cluster2:
+                host: localhost
+                port: 6379
+                database: 4
+                weight: 5
+            cluster3:
+                host: localhost
+                port: 6379
+                database: 5
+                weight: 1
+        clients:
+            default: ~
+            cache:
+                connection: cache
+            session: ~
+            cluster:
+                connection: [ cluster1, cluster2, cluster3 ]
+        session:
+            client: session
+            prefix: foo
+        doctrine:
+            metadata_cache:
+                client: cache
+                entity_manager: default
+            result_cache:
+                client: cache
+                entity_manager: [default, read]
+            query_cache:
+                client: cache
+                entity_manager: default
