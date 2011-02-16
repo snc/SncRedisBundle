@@ -8,9 +8,7 @@
 
     <parameters>
         <parameter key="redis.session.class">Snc\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
-        <parameter key="redis.session.client">session</parameter>
         <parameter key="redis.session.options" type="collection" />
-        <parameter key="redis.session.prefix">session</parameter>
     </parameters>
 
     <services>
