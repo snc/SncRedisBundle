@@ -4,7 +4,7 @@ namespace Snc\RedisBundle\Client\Predis;
 
 use Predis\ConnectionParameters;
 use Predis\ICommand;
-use Predis\TcpConnection;
+use Predis\Network\TcpConnection;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
