@@ -44,7 +44,7 @@ class RedisExtension extends Extension
             $this->loadSession($config, $container, $loader);
         }
 
-        if (0 < count($config['doctrine'])) {
+        if (isset($config['doctrine']) && 0 < count($config['doctrine'])) {
             $this->loadDoctrine($config, $container);
         }
     }
