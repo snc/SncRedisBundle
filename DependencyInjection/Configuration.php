@@ -43,10 +43,6 @@ class Configuration
                 ->isRequired()
                 ->requiresAtLeastOneElement()
                 ->useAttributeAsKey('alias')
-                ->beforeNormalization()
-                    ->ifTrue(function() { return true; })
-                    ->then(function($v) { foreach ($v as $k => $d) { if (false === isset($d['alias'])) { $v[$k]['alias'] = $k; } } return $v; })
-                ->end()
                 ->prototype('array')
                     ->scalarNode('scheme')->defaultValue('tcp')->end()
                     ->scalarNode('host')->defaultValue('localhost')->end()
@@ -61,7 +57,8 @@ class Configuration
                     ->scalarNode('weight')->defaultNull()->end()
                     ->booleanNode('logging')->defaultFalse()->end()
                     ->scalarNode('alias')->isRequired()->end()
-                ->end();
+                ->end()
+            ->end();
     }
 
     /**
@@ -77,28 +74,16 @@ class Configuration
                 ->isRequired()
                 ->requiresAtLeastOneElement()
                 ->useAttributeAsKey('alias')
-                ->beforeNormalization()
-                    ->ifTrue(function() { return true; })
-                    ->then(function($clients) {
-                        foreach ($clients as $name => $connection) {
-                            if (false === isset($connection['connection'])) {
-                                $clients[$name]['connection'] = array($name);
-                            }
-                            if (false === isset($connection['alias'])) {
-                                $clients[$name]['alias'] = $name;
-                            }
-                        }
-                        return $clients;
-                    })
-                ->end()
                 ->prototype('array')
                     ->fixXmlConfig('connection')
                     ->arrayNode('connections')
+                        ->isRequired()
                         ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
                         ->prototype('scalar')->end()
                     ->end()
                     ->scalarNode('alias')->isRequired()->end()
-                ->end();
+                ->end()
+            ->end();
     }
 
     /**
@@ -111,9 +96,9 @@ class Configuration
         $rootNode
             ->arrayNode('session')
                 ->canBeUnset()
-                ->scalarNode('client')->treatNullLike('session')->defaultValue('session')->end()
-                ->scalarNode('prefix')->treatNullLike('session')->defaultValue('session')->end()
-                ->end();
+                ->scalarNode('client')->isRequired()->end()
+                ->scalarNode('prefix')->defaultValue('session')->end()
+            ->end();
     }
 
     /**
@@ -128,14 +113,14 @@ class Configuration
             $doctrineNode
                 ->arrayNode($type)
                     ->canBeUnset()
-                    ->scalarNode('client')->treatNullLike('cache')->defaultValue('cache')->end()
+                    ->scalarNode('client')->isRequired()->end()
                     ->fixXmlConfig('entity_manager')
                     ->arrayNode('entity_managers')
+                        ->defaultValue(array('default'))
                         ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
                         ->prototype('scalar')->end()
                     ->end()
                 ->end();
         }
-        $doctrineNode->end();
     }
 }

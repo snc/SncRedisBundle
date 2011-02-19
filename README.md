@@ -64,24 +64,12 @@ Configure the `redis` service in your config:
                 port: 6379
                 database: 0
         clients:
-            default: ~
+            default:
+                alias: default
+                connection: default
 
 You have to configure at least one connection and one client. In the above
 example your service container will contain the service `redis.default_client`.
-
-If you don't specify a connection for the client as above, the client will
-look for a connection with the same alias. The following example is the same
-as above:
-
-    redis:
-        connections:
-            default:
-                host: localhost
-                port: 6379
-                database: 0
-        clients:
-            default:
-                connection: default
 
 A more complex setup which contains a clustered client could look like this:
 
@@ -119,11 +107,17 @@ A more complex setup which contains a clustered client could look like this:
                 database: 5
                 weight: 1
         clients:
-            default: ~
+            default:
+                alias: default
+                connection: default
             cache:
+                alias: cache
                 connection: cache
-            session: ~
+            session:
+                alias: session
+                connection: session
             cluster:
+                alias: cluster
                 connection: [ cluster1, cluster2, cluster3 ]
 
 In your controllers you can now access all your configured clients:
@@ -141,11 +135,12 @@ Use Redis sessions by adding the following to your config:
 
     redis:
         ...
-        session: ~
+        session:
+            client: session
 
-This will use the default client `session` with the default prefix `session`.
+This will use the default prefix `session`.
 
-You may specify another `client` and `prefix` when storing session data.
+You may specify another `prefix`:
 
     redis:
         ...
@@ -166,9 +161,9 @@ Use Redis caching for Doctrine by adding this to your config:
             result_cache:
                 client: cache
                 entity_manager: [default, read]  # you may also specify multiple entity_manager connections
-            query_cache: ~
+            query_cache:
+                client: cache
 
-If you omit the `client` setting then the bundle will use the client named `cache`.
 If you don't specify an `entity_manager` connection name then the `default` one will be used.
 
 ### Complete configuration example ###
@@ -207,11 +202,17 @@ If you don't specify an `entity_manager` connection name then the `default` one 
                 database: 5
                 weight: 1
         clients:
-            default: ~
+            default:
+                alias: default
+                connection: default
             cache:
+                alias: cache
                 connection: cache
-            session: ~
+            session:
+                alias: session
+                connection: session
             cluster:
+                alias: cluster
                 connection: [ cluster1, cluster2, cluster3 ]
         session:
             client: session
@@ -225,4 +226,3 @@ If you don't specify an `entity_manager` connection name then the `default` one 
                 entity_manager: [default, read]
             query_cache:
                 client: cache
-                entity_manager: default
