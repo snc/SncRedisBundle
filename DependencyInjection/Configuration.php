@@ -22,6 +22,17 @@ class Configuration
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('redis', 'array');
 
+        $rootNode
+            ->arrayNode('class')
+                ->addDefaultsIfNotSet()
+                    ->scalarNode('client')->defaultValue('Predis\Client')->end()
+                    ->scalarNode('connection')->defaultValue('Snc\RedisBundle\Client\Predis\LoggingConnection')->end()
+                    ->scalarNode('connection_parameters')->defaultValue('Predis\ConnectionParameters')->end()
+                    ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
+                    ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
+                    ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
+            ->end();
+
         $this->addConnectionsSection($rootNode);
         $this->addClientsSection($rootNode);
         $this->addSessionSection($rootNode);

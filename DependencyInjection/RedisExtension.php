@@ -32,6 +32,10 @@ class RedisExtension extends Extension
 
         $config = $processor->process($configuration->getConfigTree(), $configs);
 
+        foreach ($config['class'] as $name => $class) {
+            $container->setParameter(sprintf('redis.%s.class', $name), $class);
+        }
+
         foreach ($config['connections'] as $connection) {
             $this->loadConnection($connection, $container);
         }
@@ -140,7 +144,7 @@ class RedisExtension extends Extension
         foreach ($config['doctrine'] as $name => $cache) {
             $client = new Reference(sprintf('redis.%s_client', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
-                $def = new Definition($container->getParameter('doctrine.orm.cache.redis_class'));
+                $def = new Definition($container->getParameter('redis.doctrine_cache.class'));
                 $def->setScope('container');
                 $def->addMethodCall('setRedis', array($client));
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);

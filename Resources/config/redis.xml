@@ -6,15 +6,6 @@
     xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services
     http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="redis.client.class">Predis\Client</parameter>
-        <parameter key="redis.connection.class">Snc\RedisBundle\Client\Predis\LoggingConnection</parameter>
-        <parameter key="redis.connection_parameters.class">Predis\ConnectionParameters</parameter>
-        <parameter key="redis.logger.class">Snc\RedisBundle\Logger\RedisLogger</parameter>
-        <parameter key="redis.data_collector.class">Snc\RedisBundle\DataCollector\RedisDataCollector</parameter>
-        <parameter key="doctrine.orm.cache.redis_class">Snc\RedisBundle\Doctrine\Cache\RedisCache</parameter>
-    </parameters>
-
     <services>
         <service id="redis.logger" class="%redis.logger.class%">
             <argument type="service" id="logger" on-invalid="null" />
