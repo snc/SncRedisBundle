@@ -2,7 +2,7 @@
 
 namespace Snc\RedisBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
@@ -63,14 +63,6 @@ class RedisExtension extends Extension
     public function getXsdValidationBasePath()
     {
         return __DIR__ . '/../Resources/config/schema';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAlias()
-    {
-        return 'redis';
     }
 
     /**
