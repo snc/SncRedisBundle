@@ -76,10 +76,12 @@ class RedisExtension extends Extension
         $parameterId = sprintf('redis.connection.%s_parameters', $connection['alias']);
         $parameterDef = new Definition($container->getParameter('redis.connection_parameters.class'));
         $parameterDef->setPublic(false);
+        $parameterDef->setScope('container');
         $parameterDef->addArgument($connection);
         $container->setDefinition($parameterId, $parameterDef);
         $connectionDef = new Definition($container->getParameter('redis.connection.class'));
         $connectionDef->setPublic(false);
+        $connectionDef->setScope('container');
         $connectionDef->addArgument(new Reference($parameterId));
         if ($connection['logging']) {
             $connectionDef->addArgument(new Reference('redis.logger'));
@@ -96,6 +98,7 @@ class RedisExtension extends Extension
     protected function loadClient(array $client, ContainerBuilder $container)
     {
         $containerDef = new Definition($container->getParameter('redis.client.class'));
+        $containerDef->setScope('container');
         if (1 === count($client['connections'])) {
             $containerDef->addArgument(new Reference(sprintf('redis.connection.%s', $client['connections'][0])));
         } else {
@@ -138,6 +141,7 @@ class RedisExtension extends Extension
             $client = new Reference(sprintf('redis.%s_client', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
                 $def = new Definition($container->getParameter('doctrine.orm.cache.redis_class'));
+                $def->setScope('container');
                 $def->addMethodCall('setRedis', array($client));
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);
             }
