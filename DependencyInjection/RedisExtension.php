@@ -147,6 +147,9 @@ class RedisExtension extends Extension
                 $def = new Definition($container->getParameter('redis.doctrine_cache.class'));
                 $def->setScope('container');
                 $def->addMethodCall('setRedis', array($client));
+                if ($cache['namespace']) {
+                    $def->addMethodCall('setNamespace', array($cache['namespace']));
+                }
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);
             }
         }

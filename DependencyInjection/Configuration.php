@@ -125,6 +125,7 @@ class Configuration
                 ->arrayNode($type)
                     ->canBeUnset()
                     ->scalarNode('client')->isRequired()->end()
+                    ->scalarNode('namespace')->defaultNull()->end()
                     ->fixXmlConfig('entity_manager')
                     ->arrayNode('entity_managers')
                         ->defaultValue(array('default'))
