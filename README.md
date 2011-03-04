@@ -22,23 +22,14 @@ or as a submodule:
 
     $ git submodule add git://github.com/nrk/predis.git vendor/predis
 
-Register the `Snc` namespace in your project's autoload script (app/autoload.php):
+Register the `Snc` and `Predis` namespace in your project's autoload script (app/autoload.php):
 
     $loader->registerNamespaces(array(
         ...
         'Snc'                            => __DIR__.'/../src',
+        'Predis'                         => __DIR__.'/../vendor/predis/lib',
         ...
     ));
-
-Add the [Predis](http://github.com/nrk/predis) autoloading to your project's autoload script (app/autoload.php):
-
-    spl_autoload_register(function($class)
-    {
-        if (strpos($class, 'Predis\\') === 0) {
-            require_once __DIR__.'/../vendor/predis/lib/Predis.php';
-            return true;
-        }
-    });
 
 Add the RedisBundle to your application's kernel:
 
@@ -51,7 +42,6 @@ Add the RedisBundle to your application's kernel:
         );
         ...
     }
-
 
 ## Usage ##
 

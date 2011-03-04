@@ -4,13 +4,13 @@ namespace Snc\RedisBundle\Client\Predis;
 
 use Predis\ConnectionParameters;
 use Predis\ICommand;
-use Predis\Network\TcpConnection;
+use Predis\Network\StreamConnection;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * LoggingConnection
  */
-class LoggingConnection extends TcpConnection
+class LoggingConnection extends StreamConnection
 {
     /**
      * @var RedisLogger
