@@ -101,18 +101,25 @@ class RedisExtension extends Extension
      */
     protected function loadClient(array $client, ContainerBuilder $container)
     {
-        $containerDef = new Definition($container->getParameter('redis.client.class'));
-        $containerDef->setScope('container');
+        $optionId = sprintf('redis.client.%s_options', $client['alias']);
+        $optionDef = new Definition($container->getParameter('redis.client_options.class'));
+        $optionDef->setPublic(false);
+        $optionDef->setScope('container');
+        $optionDef->addArgument($client['options']);
+        $container->setDefinition($optionId, $optionDef);
+        $clientDef = new Definition($container->getParameter('redis.client.class'));
+        $clientDef->setScope('container');
         if (1 === count($client['connections'])) {
-            $containerDef->addArgument(new Reference(sprintf('redis.connection.%s', $client['connections'][0])));
+            $clientDef->addArgument(new Reference(sprintf('redis.connection.%s', $client['connections'][0])));
         } else {
             $connections = array();
             foreach ($client['connections'] as $name) {
                 $connections[] = new Reference(sprintf('redis.connection.%s', $name));
             }
-            $containerDef->addArgument($connections);
+            $clientDef->addArgument($connections);
         }
-        $container->setDefinition(sprintf('redis.%s_client', $client['alias']), $containerDef);
+        $clientDef->addArgument(new Reference($optionId));
+        $container->setDefinition(sprintf('redis.%s_client', $client['alias']), $clientDef);
     }
 
     /**

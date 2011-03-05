@@ -103,6 +103,8 @@ A more complex setup which contains a clustered client could look like this:
             cache:
                 alias: cache
                 connection: cache
+                options:
+                    profile: 2.2
             session:
                 alias: session
                 connection: session
@@ -195,15 +197,23 @@ If you don't specify an `entity_manager` connection name then the `default` one 
             default:
                 alias: default
                 connection: default
+                options:
+                    profile: 2.0
             cache:
                 alias: cache
                 connection: cache
+                options:
+                    profile: 2.2
             session:
                 alias: session
                 connection: session
+                options:
+                    profile: 1.2
             cluster:
                 alias: cluster
                 connection: [ cluster1, cluster2, cluster3 ]
+                options:
+                    profile: DEV
         session:
             client: session
             prefix: foo

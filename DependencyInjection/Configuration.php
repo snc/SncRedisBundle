@@ -25,12 +25,13 @@ class Configuration
         $rootNode
             ->arrayNode('class')
                 ->addDefaultsIfNotSet()
-                    ->scalarNode('client')->defaultValue('Predis\Client')->end()
-                    ->scalarNode('connection')->defaultValue('Snc\RedisBundle\Client\Predis\LoggingStreamConnection')->end()
-                    ->scalarNode('connection_parameters')->defaultValue('Predis\ConnectionParameters')->end()
-                    ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
-                    ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                    ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
+                ->scalarNode('client')->defaultValue('Predis\Client')->end()
+                ->scalarNode('client_options')->defaultValue('Predis\ClientOptions')->end()
+                ->scalarNode('connection')->defaultValue('Snc\RedisBundle\Client\Predis\LoggingStreamConnection')->end()
+                ->scalarNode('connection_parameters')->defaultValue('Predis\ConnectionParameters')->end()
+                ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
+                ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
+                ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
             ->end();
 
         $this->addConnectionsSection($rootNode);
@@ -93,6 +94,15 @@ class Configuration
                         ->prototype('scalar')->end()
                     ->end()
                     ->scalarNode('alias')->isRequired()->end()
+                    ->arrayNode('options')
+                        ->addDefaultsIfNotSet()
+                        ->scalarNode('profile')->defaultValue('2.0')
+                            ->beforeNormalization()
+                                ->ifTrue(function($v) { return false === is_string($v); })
+                                ->then(function($v) { return sprintf('%.1f', $v); })
+                            ->end()
+                        ->end()
+                    ->end()
                 ->end()
             ->end();
     }
