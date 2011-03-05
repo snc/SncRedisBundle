@@ -3,14 +3,14 @@
 namespace Snc\RedisBundle\Client\Predis;
 
 use Predis\ConnectionParameters;
-use Predis\ICommand;
+use Predis\Commands\ICommand;
 use Predis\Network\StreamConnection;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
- * LoggingConnection
+ * LoggingStreamConnection
  */
-class LoggingConnection extends StreamConnection
+class LoggingStreamConnection extends StreamConnection
 {
     /**
      * @var RedisLogger
@@ -37,7 +37,7 @@ class LoggingConnection extends StreamConnection
         $time = microtime(true);
         parent::writeCommand($command);
         if (null !== $this->logger) {
-            $this->logger->startCommand($this->serializeCommand($command), $time, $this->_params->alias);
+            $this->logger->startCommand((string) $command, $time, $this->_params->alias);
         }
     }
 
@@ -51,16 +51,5 @@ class LoggingConnection extends StreamConnection
             $this->logger->stopCommand();
         }
         return $result;
-    }
-
-    /**
-     * Serializes a command for the logger.
-     *
-     * @param ICommand $command
-     * @return string
-     */
-    protected function serializeCommand(ICommand $command)
-    {
-        return trim(sprintf('%s %s', $command->getCommandId(), implode(' ', $command->getArguments())));
     }
 }
