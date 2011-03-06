@@ -50,6 +50,7 @@ Configure the `redis` service in your config:
     redis:
         connections:
             default:
+                alias: default
                 host: localhost
                 port: 6379
                 database: 0
@@ -66,11 +67,13 @@ A more complex setup which contains a clustered client could look like this:
     redis:
         connections:
             default:
+                alias: default
                 host: localhost
                 port: 6379
                 database: 0
                 logging: %kernel.debug%
             cache:
+                alias: cache
                 host: localhost
                 port: 6379
                 database: 1
@@ -78,20 +81,24 @@ A more complex setup which contains a clustered client could look like this:
                 connection_timeout: 10
                 read_write_timeout: 30
             session:
+                alias: session
                 host: localhost
                 port: 6379
                 database: 2
             cluster1:
+                alias: cluster1
                 host: localhost
                 port: 6379
                 database: 3
                 weight: 10
             cluster2:
+                alias: cluster2
                 host: localhost
                 port: 6379
                 database: 4
                 weight: 5
             cluster3:
+                alias: cluster3
                 host: localhost
                 port: 6379
                 database: 5
@@ -163,11 +170,13 @@ If you don't specify an `entity_manager` connection name then the `default` one 
     redis:
         connections:
             default:
+                alias: default
                 host: localhost
                 port: 6379
                 database: 0
                 logging: %kernel.debug%
             cache:
+                alias: cache
                 host: localhost
                 port: 6379
                 database: 1
@@ -175,20 +184,24 @@ If you don't specify an `entity_manager` connection name then the `default` one 
                 connection_timeout: 10
                 read_write_timeout: 30
             session:
+                alias: session
                 host: localhost
                 port: 6379
                 database: 2
             cluster1:
+                alias: cluster1
                 host: localhost
                 port: 6379
                 database: 3
                 weight: 10
             cluster2:
+                alias: cluster2
                 host: localhost
                 port: 6379
                 database: 4
                 weight: 5
             cluster3:
+                alias: cluster3
                 host: localhost
                 port: 6379
                 database: 5
