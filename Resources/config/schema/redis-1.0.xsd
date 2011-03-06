@@ -9,11 +9,22 @@
 
     <xsd:complexType name="config">
         <xsd:sequence>
+            <xsd:element name="class" type="class" minOccurs="0" maxOccurs="1" />
             <xsd:element name="connection" type="connection" minOccurs="1" maxOccurs="unbounded" />
             <xsd:element name="client" type="client" minOccurs="1" maxOccurs="unbounded" />
             <xsd:element name="session" type="session" minOccurs="0" maxOccurs="1" />
             <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="class">
+        <xsd:attribute name="client" type="xsd:string" />
+        <xsd:attribute name="client-options" type="xsd:string" />
+        <xsd:attribute name="connection" type="xsd:string" />
+        <xsd:attribute name="connection-parameters" type="xsd:string" />
+        <xsd:attribute name="logger" type="xsd:string" />
+        <xsd:attribute name="data-collector" type="xsd:string" />
+        <xsd:attribute name="doctrine-cache" type="xsd:string" />
     </xsd:complexType>
 
     <xsd:complexType name="connection">
@@ -32,12 +43,32 @@
         <xsd:attribute name="alias" type="xsd:string" use="required" />
     </xsd:complexType>
 
+    <xsd:simpleType name="connection-scheme">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="tcp" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
     <xsd:complexType name="client">
         <xsd:sequence>
             <xsd:element name="connection" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="options" type="client-options" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
         <xsd:attribute name="alias" type="xsd:string" use="required" />
     </xsd:complexType>
+
+    <xsd:complexType name="client-options">
+        <xsd:attribute name="profile" type="client-profile" />
+    </xsd:complexType>
+
+    <xsd:simpleType name="client-profile">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1.2" />
+            <xsd:enumeration value="2.0" />
+            <xsd:enumeration value="2.2" />
+            <xsd:enumeration value="DEV" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:complexType name="session">
         <xsd:attribute name="client" type="xsd:string" use="required" />
@@ -57,11 +88,6 @@
             <xsd:element name="entity-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
         <xsd:attribute name="client" type="xsd:string" use="required" />
+        <xsd:attribute name="namespace" type="xsd:string" />
     </xsd:complexType>
-
-    <xsd:simpleType name="connection-scheme">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="tcp" />
-        </xsd:restriction>
-    </xsd:simpleType>
 </xsd:schema>
