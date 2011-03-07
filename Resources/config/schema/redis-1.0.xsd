@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<xsd:schema xmlns="http://www.symfony-project.org/schema/dic/redis"
+<xsd:schema xmlns="http://symfony.com/schema/dic/redis"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.symfony-project.org/schema/dic/redis"
+    targetNamespace="http://symfony.com/schema/dic/redis"
     elementFormDefault="qualified">
 
     <xsd:element name="config" type="config" />
