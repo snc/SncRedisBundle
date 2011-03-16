@@ -183,6 +183,8 @@ If you don't specify an `entity_manager` connection name then the `default` one 
                 password: secret
                 connection_timeout: 10
                 read_write_timeout: 30
+                iterable_multibulk: false
+                throw_errors: true
             session:
                 alias: session
                 host: localhost

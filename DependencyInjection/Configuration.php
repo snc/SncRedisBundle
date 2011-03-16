@@ -57,7 +57,7 @@ class Configuration
                 ->useAttributeAsKey('alias', false)
                 ->prototype('array')
                     ->scalarNode('scheme')->defaultValue('tcp')->end()
-                    ->scalarNode('host')->defaultValue('localhost')->end()
+                    ->scalarNode('host')->defaultValue('127.0.0.1')->end()
                     ->scalarNode('port')->defaultValue(6379)->end()
                     ->scalarNode('path')->defaultNull()->end()
                     ->scalarNode('database')->defaultValue(0)->end()
@@ -66,9 +66,11 @@ class Configuration
                     ->booleanNode('connection_persistent')->defaultFalse()->end()
                     ->scalarNode('connection_timeout')->defaultValue(5)->end()
                     ->scalarNode('read_write_timeout')->defaultNull()->end()
-                    ->scalarNode('weight')->defaultNull()->end()
-                    ->booleanNode('logging')->defaultFalse()->end()
                     ->scalarNode('alias')->isRequired()->end()
+                    ->scalarNode('weight')->defaultNull()->end()
+                    ->booleanNode('iterable_multibulk')->defaultFalse()->end()
+                    ->booleanNode('throw_errors')->defaultTrue()->end()
+                    ->booleanNode('logging')->defaultFalse()->end()
                 ->end()
             ->end();
     }
