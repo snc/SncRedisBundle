@@ -38,18 +38,26 @@ class RedisLogger
 
         if (null !== $this->logger) {
             $this->commands[] = array('cmd' => $command, 'executionMS' => 0, 'conn' => $connection);
-            $this->logger->info(static::LOG_PREFIX . $command);
             $this->start = $time ? : microtime(true);
         }
     }
 
     /**
      * Logs a command stop.
+     *
+     * @param string $error Error message or false if command was successful
      */
-    public function stopCommand()
+    public function stopCommand($error = false)
     {
         if (null !== $this->logger) {
-            $this->commands[(count($this->commands) - 1)]['executionMS'] = (microtime(true) - $this->start) * 1000;
+            $index = count($this->commands) - 1;
+            $this->commands[$index]['executionMS'] = (microtime(true) - $this->start) * 1000;
+            $this->commands[$index]['error'] = $error;
+            if ($error) {
+                $this->logger->err(static::LOG_PREFIX . $this->commands[$index]['cmd'] . ' (' . $error . ')');
+            } else {
+                $this->logger->info(static::LOG_PREFIX . $this->commands[$index]['cmd']);
+            }
         }
     }
 

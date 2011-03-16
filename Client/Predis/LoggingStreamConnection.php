@@ -4,6 +4,7 @@ namespace Snc\RedisBundle\Client\Predis;
 
 use Predis\ConnectionParameters;
 use Predis\Commands\ICommand;
+use Predis\ResponseError;
 use Predis\Network\StreamConnection;
 use Snc\RedisBundle\Logger\RedisLogger;
 
@@ -37,7 +38,7 @@ class LoggingStreamConnection extends StreamConnection
         $time = microtime(true);
         parent::writeCommand($command);
         if (null !== $this->logger) {
-            $this->logger->startCommand((string) $command, $time, $this->_params->alias);
+            $this->logger->startCommand((string)$command, $time, $this->_params->alias);
         }
     }
 
@@ -48,7 +49,8 @@ class LoggingStreamConnection extends StreamConnection
     {
         $result = parent::readResponse($command);
         if (null !== $this->logger) {
-            $this->logger->stopCommand();
+            $error = $result instanceof ResponseError ? (string)$result : false;
+            $this->logger->stopCommand($error);
         }
         return $result;
     }
