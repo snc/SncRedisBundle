@@ -24,7 +24,7 @@ class RedisExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('redis.xml');
 
         $processor = new Processor();
@@ -88,7 +88,7 @@ class RedisExtension extends Extension
         $connectionDef->setScope('container');
         $connectionDef->addArgument(new Reference($parameterId));
         if ($connection['logging']) {
-            $connectionDef->addArgument(new Reference('redis.logger'));
+            $connectionDef->addMethodCall('setLogger', array(new Reference('redis.logger')));
         }
         $container->setDefinition(sprintf('redis.connection.%s', $connection['alias']), $connectionDef);
     }

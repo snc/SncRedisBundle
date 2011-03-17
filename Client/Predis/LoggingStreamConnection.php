@@ -19,15 +19,13 @@ class LoggingStreamConnection extends StreamConnection
     protected $logger;
 
     /**
-     * Constructor.
+     * Sets the logger
      *
-     * @param ConnectionParameters $parameters A ConnectionParameters instance
      * @param RedisLogger $logger A RedisLogger instance
      */
-    public function __construct(ConnectionParameters $parameters, RedisLogger $logger = null)
+    public function setLogger(RedisLogger $logger)
     {
         $this->logger = $logger;
-        parent::__construct($parameters);
     }
 
     /**
