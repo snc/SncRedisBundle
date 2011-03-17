@@ -25,7 +25,7 @@ class Configuration
         $rootNode
             ->arrayNode('class')
                 ->addDefaultsIfNotSet()
-                ->scalarNode('client')->defaultValue('Predis\Client')->end()
+                ->scalarNode('client')->defaultValue('Snc\RedisBundle\Client\Predis\Client')->end()
                 ->scalarNode('client_options')->defaultValue('Predis\ClientOptions')->end()
                 ->scalarNode('connection')->defaultValue('Snc\RedisBundle\Client\Predis\LoggingStreamConnection')->end()
                 ->scalarNode('connection_parameters')->defaultValue('Predis\ConnectionParameters')->end()
