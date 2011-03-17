@@ -27,6 +27,17 @@ class Client extends \Predis\Client
     }
 
     /**
+     * Calls session_write_close() to fix bug a bug in PHP < 5.3.3 (caused by APC)
+     * where object destruction occurs in the wrong order.
+     *
+     * @see http://pecl.php.net/bugs/bug.php?id=16745
+     */
+    public function __destruct()
+    {
+        session_write_close();
+    }
+
+    /**
      * Pushes required initialization commands
      *
      * @param \Predis\Network\IConnectionSingle $connection An IConnectionSingle instance
@@ -40,16 +51,5 @@ class Client extends \Predis\Client
         if (null !== $params->database) {
             $connection->pushInitCommand($this->createCommand('select', array($params->database)));
         }
-    }
-
-    /**
-     * Calls session_write_close() to fix bug a bug in PHP < 5.3.3 (caused by APC)
-     * where object destruction occurs in the wrong order.
-     *
-     * @see http://pecl.php.net/bugs/bug.php?id=16745
-     */
-    public function __destruct()
-    {
-        session_write_close();
     }
 }
