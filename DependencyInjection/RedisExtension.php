@@ -36,6 +36,18 @@ class RedisExtension extends Extension
             $container->setParameter(sprintf('redis.%s.class', $name), $class);
         }
 
+        $schemesMap = array(
+            'tcp' => $container->getParameter('redis.connection.class'),
+            'unix' => $container->getParameter('redis.connection.class'),
+        );
+
+        $schemesDef = new Definition($container->getParameter('redis.schemes.class'));
+        $schemesDef->setPublic(false);
+        $schemesDef->setScope('container');
+        $schemesDef->addArgument($schemesMap);
+        $schemesDef->addMethodCall('setLogger', array(new Reference('redis.logger')));
+        $container->setDefinition('redis.connectionschemes', $schemesDef);
+
         foreach ($config['connections'] as $connection) {
             $this->loadConnection($connection, $container);
         }
@@ -83,14 +95,6 @@ class RedisExtension extends Extension
         $parameterDef->setScope('container');
         $parameterDef->addArgument($connection);
         $container->setDefinition($parameterId, $parameterDef);
-        $connectionDef = new Definition($container->getParameter('redis.connection.class'));
-        $connectionDef->setPublic(false);
-        $connectionDef->setScope('container');
-        $connectionDef->addArgument(new Reference($parameterId));
-        if ($connection['logging']) {
-            $connectionDef->addMethodCall('setLogger', array(new Reference('redis.logger')));
-        }
-        $container->setDefinition(sprintf('redis.connection.%s', $connection['alias']), $connectionDef);
     }
 
     /**
@@ -105,16 +109,17 @@ class RedisExtension extends Extension
         $optionDef = new Definition($container->getParameter('redis.client_options.class'));
         $optionDef->setPublic(false);
         $optionDef->setScope('container');
+        $client['options']['connections'] = new Reference('redis.connectionschemes');
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('redis.client.class'));
         $clientDef->setScope('container');
         if (1 === count($client['connections'])) {
-            $clientDef->addArgument(new Reference(sprintf('redis.connection.%s', $client['connections'][0])));
+            $clientDef->addArgument(new Reference(sprintf('redis.connection.%s_parameters', $client['connections'][0])));
         } else {
             $connections = array();
             foreach ($client['connections'] as $name) {
-                $connections[] = new Reference(sprintf('redis.connection.%s', $name));
+                $connections[] = new Reference(sprintf('redis.connection.%s_parameters', $name));
             }
             $clientDef->addArgument($connections);
         }
