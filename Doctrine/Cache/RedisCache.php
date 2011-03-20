@@ -64,7 +64,8 @@ class RedisCache implements Cache
      */
     public function fetch($id)
     {
-        return $this->_redis->get($this->_getNamespacedId($id));
+        $result = $this->_redis->get($this->_getNamespacedId($id));
+        return null === $result ? false : unserialize($result);
     }
 
     /**
@@ -81,6 +82,7 @@ class RedisCache implements Cache
     public function save($id, $data, $lifeTime = 0)
     {
         $id = $this->_getNamespacedId($id);
+        $data = serialize($data);
 
         if ($this->_supportsSetExpire && 0 < $lifeTime) {
             $result = $this->_redis->setex($id, (int) $lifeTime, $data);
