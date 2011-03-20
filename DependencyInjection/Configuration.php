@@ -168,6 +168,14 @@ class Configuration
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()
+                        ->fixXmlConfig('document_manager')
+                        ->children()
+                            ->arrayNode('document_managers')
+                                ->defaultValue(array('default'))
+                                ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
+                                ->prototype('scalar')->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end();
         }

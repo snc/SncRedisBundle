@@ -89,6 +89,7 @@
     <xsd:complexType name="doctrine-cache">
         <xsd:sequence>
             <xsd:element name="entity-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="document-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
         <xsd:attribute name="client" type="xsd:string" use="required" />
         <xsd:attribute name="namespace" type="xsd:string" />

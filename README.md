@@ -157,6 +157,7 @@ Use Redis caching for Doctrine by adding this to your config:
             metadata_cache:
                 client: cache
                 entity_manager: default          # the name of your entity_manager connection
+                document_manager: default        # the name of your document_manager connection
             result_cache:
                 client: cache
                 entity_manager: [default, read]  # you may also specify multiple entity_manager connections
@@ -236,8 +237,11 @@ If you don't specify an `entity_manager` connection name then the `default` one 
             metadata_cache:
                 client: cache
                 entity_manager: default
+                document_manager: default
             result_cache:
                 client: cache
                 entity_manager: [default, read]
+                document_manager: [default, slave1, slave2]
+                namespace: "dcrc:"
             query_cache:
                 client: cache
