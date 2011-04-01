@@ -1,10 +1,13 @@
-{% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
+{% extends 'WebProfiler:Profiler:layout.html.twig' %}
 
 {% block toolbar %}
-<span style="white-space:nowrap; color:#2f2f2f; display:inline-block; min-height:24px; border-right:1px solid #cdcdcd; padding:5px 10px 5px 10px; ">
-    <img width="24" height="24" alt="Redis" style="vertical-align: middle; margin-right: 10px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAX1QTFRFfHx8dXV1XFxcfn5+eHh4dnZ2cXFxc3NzX19fe3t7XV1dXl5eYWFhY2Njb29va2treXl5enp6bm5uampq////YGBgZmZmcHBwjo6OYmJij4+Pd3d3Z2dnurq6ZGRkW1tbdHR08vLy09PTjY2NwsLCgICAaGhoycnJ/Pz8lZWV+fn5ZWVlhISE0NDQjIyMbW1tpqamg4ODqKiocnJyf39/iYmJ9vb2oqKi7Ozs5ubmp6en3d3dhYWFaWlpbGxsnZ2dkpKS+vr6h4eHl5eXSkpKsrKyu7u7x8fHqqqq6Ojo6urqmZmZzMzM8/Pz9/f3zc3Ntra2/v7+4ODgnp6ezs7OrKysvb29gYGB9PT00tLSoKCgoaGhi4uLysrK1tbWn5+fQEBAm5ubnJyco6Oj1dXVxMTETExMwcHBSUlJk5OTv7+/tLS0y8vL1NTU29vb3NzcsLCwmpqatbW1vr6+7e3t5+fnuLi4mJiYVVVVfX19WlpaWVlZV1dXWFhY////PGuDsQAAAH90Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AP/hPAkAAAGYSURBVHjajFJVz9xAEJtkN5wLXJJjxo+ZGcrMzMxMC3O/vTm1UquC2nmzLM9YY8PgLwP/JnbXz8z1V34jPjwbvbFzuT0792DsJ2Ls6gzTutWzzdcTIdt5fPQ78bE6tdEuLC6+mRw5PbOgZJW95daVAbxaJtqnlaVTzQsE1rR8xT1w58s8K/Vh2yLlh7txHN/qzhuaN548euJSpu9Dwc1SKB3fv3d+7X3rxEKoGMDyRV6AuwKdiq4ps51mHN8vExL4JmKtCjc9EyXP6DSYOPicQqOionQi1oFtAD1Tl8L0FaWhZ7jkrhdC/jO0za2AaJs2SrWYpNqcwaysiyW4LlCtKEMgpLR7ZUYjB2XtElTziZC86FnMiKYD0hhXJZrT5BC8pczI1SU6ESXpNZQio0PgP4UpNadAEKXWVNMRMkWs3FNFCY7YOFxkDQ2h41MwahzrGy9hMDlqCmFvakzZ8qwwmwi0Cy++vX31osFRrRkh9W0h/NvnfgR1sr+XpLI6cu3dsV+iXb/W47zbGflDGVYPt5b+oyVfBRgAlIWlTkJ5svUAAAAASUVORK5CYII="/>
-    <span style="color: {{ collector.commandcount < 10 ? '#000' : '#d22' }}" title="{{ '%0.2f'|format(collector.time) }} ms">{{ collector.commandcount }}</span>
-</span>
+    {% set icon %}
+        <img width="20" height="28" alt="Redis" style="border-width: 0; vertical-align: middle; margin-right: 5px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAcCAYAAABh2p9gAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAv5JREFUeNrsVd9L01EUP9/tbm5ubtI2VqAOYpJP0WCYNOilQAiySbICHyp67CXqrf8jqKeejAVJ9GAUmUEMfYjSl5IYexqM1G3Mn1O3uT6fy+4QMV/yoQe/cLi7557zOZ/zOder1Ww25Tg/mxzzdwL4HwKqZDJ51Pkpy7JGtre3r9dqtbMul2vB4XBM4qp9gr962JVTBx0IcsIS+HkL64jP5zuTSqWkXq9LPp+/MDs7e1cp9QuAk4h5iZgfhwIioB8sxvb29m673e7z2Eu1WpVwOCwDAwMSi8VkZmZGcrmcFIvFc7u7u09sNttjgH8B6CvYW8AUrdHR0SvYPETA1Wg06hofH5dQKMQCUqlUZGJiQhYXFyWRSMj8/Lxsbm7KxsZG27q7u3W80+ksAeepWltbe9TZ2XmNLDs6OiQQCEhvb6/Y7Xa2r1uFhjI3Nycej0dQWPtZEJoKutGxOzs7ARRIWWjlPdCHASoQXAd4vV4N1NPTI0NDQxKJRHSR6elpSafTgjbboCxApltbW9JoNL4qv9//HVoNsz1WIksGoIgUCgXJZrPS19cny8vLMjU1pWOQqPUlCJi12fIWKLQRwSR1WwTiykACMolAmUxGF+LeALEDMu3q6tJSsDvkDqqlpaUg26ST4mLSWngmQV/BJDU4pq/P2Cr36EzLQ3aMLZfLZGtXSMgRgMZAApMxE8iGftMWWZIR2yPD9fV1fW7YImdBBYNBDydsWLESmXFINJxrzfi1psl7qKUhaxYhAbJFXL8qlUqnmcjKPDCsWJ3WElsDmiFQBiMTAenjUFHEr4D6e3V1VQ+EiYYV2yCwGQS1o/C8yIwhKP0rKyvmbjbhe8c/vQf48Rn7+wC4BBY2JjKJjM0NMBqyTRYnGIvCX4K9gT0D1jcrHo/vf8oGcXAP4DeQGKZmbI1mWjZsEfcTrhd8IGCF9puwD9A8ElxCSLqJ9Q7Wi3S3jhs4/4D1OewjrHrwtfoboLTeOjvsMmwMVoO9hmWOekCtk//L//z9EWAADA/Sh+MqnZ4AAAAASUVORK5CYII="/>
+    {% endset %}
+    {% set text %}
+        <span title="{{ '%0.2f'|format(collector.time) }} ms">{{ collector.commandcount }}</span>
+    {% endset %}
+    {% include 'WebProfiler:Profiler:toolbar_item.html.twig' with { 'link': profiler_url } %}
 {% endblock %}
 
 {% block menu %}
@@ -25,8 +28,8 @@
         <p><em>No commands.</em></p>
     {% else %}
         <ul class="alt">
-            {% for i, command in collector.commands %}
-                <li class="{{ i is odd ? 'odd' : 'even' }}">
+            {% for command in collector.commands %}
+                <li class="{{ cycle(['odd', 'even'], loop.index) }}">
                     <div>
                         <code>{{ command.cmd }}</code>
                     </div>

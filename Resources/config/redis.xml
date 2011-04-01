@@ -12,7 +12,7 @@
         </service>
 
         <service id="redis.data_collector" class="%redis.data_collector.class%" public="false">
-            <tag name="data_collector" template="RedisBundle:Collector:redis" id="redis" />
+            <tag name="data_collector" template="Redis:Collector:redis" id="redis" />
             <argument type="service" id="redis.logger" />
         </service>
     </services>
