@@ -2,7 +2,6 @@
 
 namespace Snc\RedisBundle\Client\Predis;
 
-use Predis\ConnectionParameters;
 use Predis\Commands\ICommand;
 use Predis\ResponseError;
 use Predis\Network\StreamConnection;
@@ -31,24 +30,13 @@ class LoggingStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(ICommand $command)
-    {
-        $time = microtime(true);
-        parent::writeCommand($command);
+    public function executeCommand(ICommand $command) {
+        $startTime = microtime(true);
+        $result = parent::executeCommand($command);
+        $duration = (microtime(true) - $startTime) * 1000;
         if (null !== $this->logger) {
-            $this->logger->startCommand((string)$command, $time, $this->_params->alias);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function readResponse(ICommand $command)
-    {
-        $result = parent::readResponse($command);
-        if (null !== $this->logger) {
-            $error = $result instanceof ResponseError ? (string)$result : false;
-            $this->logger->stopCommand($error);
+            $error = $result instanceof ResponseError ? (string) $result : false;
+            $this->logger->logCommand((string) $command, $duration, $this->_params->alias, $error);
         }
         return $result;
     }

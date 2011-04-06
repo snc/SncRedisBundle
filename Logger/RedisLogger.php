@@ -27,36 +27,24 @@ class RedisLogger
     }
 
     /**
-     * Logs a command start.
+     * Logs a command
      *
      * @param string $command Redis command
-     * @param float $time Start time
+     * @param float $duration Duration in milliseconds
+     * @param string $connection Connection alias
+     * @param string $error Error message or false if command was successful
+     * @return void
      */
-    public function startCommand($command, $time = null, $connection = null)
+    public function logCommand($command, $duration, $connection, $error = false)
     {
         ++$this->nbCommands;
 
         if (null !== $this->logger) {
-            $this->commands[] = array('cmd' => $command, 'executionMS' => 0, 'conn' => $connection);
-            $this->start = $time ? : microtime(true);
-        }
-    }
-
-    /**
-     * Logs a command stop.
-     *
-     * @param string $error Error message or false if command was successful
-     */
-    public function stopCommand($error = false)
-    {
-        if (null !== $this->logger) {
-            $index = count($this->commands) - 1;
-            $this->commands[$index]['executionMS'] = (microtime(true) - $this->start) * 1000;
-            $this->commands[$index]['error'] = $error;
+            $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
             if ($error) {
-                $this->logger->err(static::LOG_PREFIX . $this->commands[$index]['cmd'] . ' (' . $error . ')');
+                $this->logger->err(static::LOG_PREFIX . $command . ' (' . $error . ')');
             } else {
-                $this->logger->info(static::LOG_PREFIX . $this->commands[$index]['cmd']);
+                $this->logger->info(static::LOG_PREFIX . $command);
             }
         }
     }
