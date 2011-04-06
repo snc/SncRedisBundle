@@ -4,20 +4,21 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * RedisBundle configuration class.
  *
  * @author Henrik Westphal <henrik.westphal@gmail.com>
  */
-class Configuration
+class Configuration implements ConfigurationInterface
 {
     /**
-     * Returns the redis configuration tree.
+     * Generates the configuration tree builder.
      *
-     * @return \Symfony\Component\DependencyInjection\Configuration\NodeInterface
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
      */
-    public function getConfigTree()
+    public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('redis');
@@ -44,7 +45,7 @@ class Configuration
         $this->addSessionSection($rootNode);
         $this->addDoctrineSection($rootNode);
 
-        return $treeBuilder->buildTree();
+        return $treeBuilder;
     }
 
     /**

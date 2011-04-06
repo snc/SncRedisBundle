@@ -30,7 +30,7 @@ class RedisExtension extends Extension
         $processor = new Processor();
         $configuration = new Configuration();
 
-        $config = $processor->process($configuration->getConfigTree(), $configs);
+        $config = $processor->processConfiguration($configuration, $configs);
 
         foreach ($config['class'] as $name => $class) {
             $container->setParameter(sprintf('redis.%s.class', $name), $class);
