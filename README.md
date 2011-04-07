@@ -6,31 +6,30 @@ The RedisBundle adds `redis` services to your project's service container using 
 
 ## Installation ##
 
-Put the RedisBundle into the src/Bundle dir:
+Put the RedisBundle into the src/Snc dir:
 
-    $ git clone git://github.com/snc/RedisBundle.git src/Bundle/RedisBundle
-
-or as a submodule:
-
-    $ git submodule add git://github.com/snc/RedisBundle.git src/Bundle/RedisBundle
-
-Put the [Predis](http://github.com/nrk/predis) library into the src/vendor dir:
-
-    $ git clone git://github.com/nrk/predis.git src/vendor/predis
+    $ git clone git://github.com/snc/RedisBundle.git src/Snc/RedisBundle
 
 or as a submodule:
 
-    $ git submodule add git://github.com/nrk/predis.git src/vendor/predis
+    $ git submodule add git://github.com/snc/RedisBundle.git src/Snc/RedisBundle
 
-Add the [Predis](http://github.com/nrk/predis) autoloading to your project's bootstrap script (src/autoload.php):
+Put the [Predis](http://github.com/nrk/predis) library into the vendor dir:
 
-    spl_autoload_register(function($class) use ($vendorDir)
-    {
-        if (strpos($class, 'Predis\\') === 0) {
-            require_once $vendorDir.'/predis/lib/Predis.php';
-            return true;
-        }
-    });
+    $ git clone git://github.com/nrk/predis.git vendor/predis
+
+or as a submodule:
+
+    $ git submodule add git://github.com/nrk/predis.git vendor/predis
+
+Register the `Snc` and `Predis` namespace in your project's autoload script (app/autoload.php):
+
+    $loader->registerNamespaces(array(
+        ...
+        'Snc'                            => __DIR__.'/../src',
+        'Predis'                         => __DIR__.'/../vendor/predis/lib',
+        ...
+    ));
 
 Add the RedisBundle to your application's kernel:
 
@@ -38,53 +37,43 @@ Add the RedisBundle to your application's kernel:
     {
         $bundles = array(
             ...
-            new Bundle\RedisBundle\RedisBundle(),
+            new Snc\RedisBundle\RedisBundle(),
             ...
         );
         ...
     }
 
-
 ## Usage ##
 
 Configure the `redis` service in your config:
 
-    redis.config:
+    redis:
         connections:
             default:
+                alias: default
                 host: localhost
                 port: 6379
                 database: 0
         clients:
-            default: ~
+            default:
+                alias: default
+                connection: default
 
 You have to configure at least one connection and one client. In the above
 example your service container will contain the service `redis.default_client`.
 
-If you don't specify a connection for the client as above, the client will
-look for a connection with the same alias. The following example is the same
-as above:
-
-    redis.config:
-        connections:
-            default:
-                host: localhost
-                port: 6379
-                database: 0
-        clients:
-            default:
-                connection: default
-
 A more complex setup which contains a clustered client could look like this:
 
-    redis.config:
+    redis:
         connections:
             default:
+                alias: default
                 host: localhost
                 port: 6379
                 database: 0
                 logging: %kernel.debug%
             cache:
+                alias: cache
                 host: localhost
                 port: 6379
                 database: 1
@@ -92,30 +81,42 @@ A more complex setup which contains a clustered client could look like this:
                 connection_timeout: 10
                 read_write_timeout: 30
             session:
+                alias: session
                 host: localhost
                 port: 6379
                 database: 2
             cluster1:
+                alias: cluster1
                 host: localhost
                 port: 6379
                 database: 3
                 weight: 10
             cluster2:
+                alias: cluster2
                 host: localhost
                 port: 6379
                 database: 4
                 weight: 5
             cluster3:
+                alias: cluster3
                 host: localhost
                 port: 6379
                 database: 5
                 weight: 1
         clients:
-            default: ~
+            default:
+                alias: default
+                connection: default
             cache:
+                alias: cache
                 connection: cache
-            session: ~
+                options:
+                    profile: 2.2
+            session:
+                alias: session
+                connection: session
             cluster:
+                alias: cluster
                 connection: [ cluster1, cluster2, cluster3 ]
 
 In your controllers you can now access all your configured clients:
@@ -131,21 +132,116 @@ In your controllers you can now access all your configured clients:
 
 Use Redis sessions by adding the following to your config:
 
-    redis.session: ~
+    redis:
+        ...
+        session:
+            client: session
 
-This will use the default client `session` with the default prefix `session`.
+This will use the default prefix `session`.
 
-You may specify another `client` and `prefix` when storing session data.
+You may specify another `prefix`:
 
-    redis.session:
-        client: session
-        prefix: foo
+    redis:
+        ...
+        session:
+            client: session
+            prefix: foo
 
 ### Doctrine caching ###
 
 Use Redis caching for Doctrine by adding this to your config:
 
-    redis.doctrine:
-        metadata_cache:  default           # <-- the name of your entity_manager connection
-        result_cache:    [default, read]   # you may also specify multiple entity_manager connections
-        query_cache:     default
+    redis:
+        ...
+        doctrine:
+            metadata_cache:
+                client: cache
+                entity_manager: default          # the name of your entity_manager connection
+                document_manager: default        # the name of your document_manager connection
+            result_cache:
+                client: cache
+                entity_manager: [default, read]  # you may also specify multiple entity_manager connections
+            query_cache:
+                client: cache
+
+If you don't specify an `entity_manager` connection name then the `default` one will be used.
+
+### Complete configuration example ###
+
+    redis:
+        connections:
+            default:
+                alias: default
+                host: localhost
+                port: 6379
+                database: 0
+                logging: %kernel.debug%
+            cache:
+                alias: cache
+                host: localhost
+                port: 6379
+                database: 1
+                password: secret
+                connection_timeout: 10
+                read_write_timeout: 30
+                iterable_multibulk: false
+                throw_errors: true
+            session:
+                alias: session
+                host: localhost
+                port: 6379
+                database: 2
+            cluster1:
+                alias: cluster1
+                host: localhost
+                port: 6379
+                database: 3
+                weight: 10
+            cluster2:
+                alias: cluster2
+                host: localhost
+                port: 6379
+                database: 4
+                weight: 5
+            cluster3:
+                alias: cluster3
+                host: localhost
+                port: 6379
+                database: 5
+                weight: 1
+        clients:
+            default:
+                alias: default
+                connection: default
+                options:
+                    profile: 2.0
+            cache:
+                alias: cache
+                connection: cache
+                options:
+                    profile: 2.2
+            session:
+                alias: session
+                connection: session
+                options:
+                    profile: 1.2
+            cluster:
+                alias: cluster
+                connection: [ cluster1, cluster2, cluster3 ]
+                options:
+                    profile: DEV
+        session:
+            client: session
+            prefix: foo
+        doctrine:
+            metadata_cache:
+                client: cache
+                entity_manager: default
+                document_manager: default
+            result_cache:
+                client: cache
+                entity_manager: [default, read]
+                document_manager: [default, slave1, slave2]
+                namespace: "dcrc:"
+            query_cache:
+                client: cache

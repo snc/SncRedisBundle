@@ -1,16 +1,97 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<xsd:schema xmlns="http://www.symfony-project.org/schema/dic/redis"
+<xsd:schema xmlns="http://symfony.com/schema/dic/redis"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.symfony-project.org/schema/dic/redis"
+    targetNamespace="http://symfony.com/schema/dic/redis"
     elementFormDefault="qualified">
 
     <xsd:element name="config" type="config" />
 
     <xsd:complexType name="config">
-        <xsd:attribute name="host" type="xsd:string" />
-        <xsd:attribute name="port" type="xsd:integer" />
-        <xsd:attribute name="database" type="xsd:integer" />
+        <xsd:sequence>
+            <xsd:element name="class" type="class" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="connection" type="connection" minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="client" type="client" minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="session" type="session" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:complexType name="class">
+        <xsd:attribute name="client" type="xsd:string" />
+        <xsd:attribute name="client-options" type="xsd:string" />
+        <xsd:attribute name="connection" type="xsd:string" />
+        <xsd:attribute name="connection-parameters" type="xsd:string" />
+        <xsd:attribute name="schemes" type="xsd:string" />
+        <xsd:attribute name="logger" type="xsd:string" />
+        <xsd:attribute name="data-collector" type="xsd:string" />
+        <xsd:attribute name="doctrine-cache" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="connection">
+        <xsd:attribute name="scheme" type="connection-scheme" />
+        <xsd:attribute name="host" type="xsd:string" />
+        <xsd:attribute name="port" type="xsd:int" />
+        <xsd:attribute name="path" type="xsd:string" />
+        <xsd:attribute name="database" type="xsd:int" />
+        <xsd:attribute name="password" type="xsd:string" />
+        <xsd:attribute name="connection-async" type="xsd:boolean" />
+        <xsd:attribute name="connection-persistent" type="xsd:boolean" />
+        <xsd:attribute name="connection-timeout" type="xsd:int" />
+        <xsd:attribute name="read-write-timeout" type="xsd:int" />
+        <xsd:attribute name="alias" type="xsd:string" use="required" />
+        <xsd:attribute name="weight" type="xsd:int" />
+        <xsd:attribute name="iterable-multibulk" type="xsd:boolean" />
+        <xsd:attribute name="throw-errors" type="xsd:boolean" />
+        <xsd:attribute name="logging" type="xsd:boolean" />
+    </xsd:complexType>
+
+    <xsd:simpleType name="connection-scheme">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="tcp" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="client">
+        <xsd:sequence>
+            <xsd:element name="connection" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="options" type="client-options" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="alias" type="xsd:string" use="required" />
+    </xsd:complexType>
+
+    <xsd:complexType name="client-options">
+        <xsd:attribute name="profile" type="client-profile" />
+    </xsd:complexType>
+
+    <xsd:simpleType name="client-profile">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1.2" />
+            <xsd:enumeration value="2.0" />
+            <xsd:enumeration value="2.2" />
+            <xsd:enumeration value="DEV" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="session">
+        <xsd:attribute name="client" type="xsd:string" use="required" />
+        <xsd:attribute name="prefix" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="doctrine">
+        <xsd:sequence>
+            <xsd:element name="metadata-cache" type="doctrine-cache" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="result-cache" type="doctrine-cache" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="query-cache" type="doctrine-cache" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="doctrine-cache">
+        <xsd:sequence>
+            <xsd:element name="entity-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="document-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="client" type="xsd:string" use="required" />
+        <xsd:attribute name="namespace" type="xsd:string" />
+    </xsd:complexType>
 </xsd:schema>

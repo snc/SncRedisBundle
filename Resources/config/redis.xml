@@ -1,22 +1,14 @@
 <?xml version="1.0" ?>
 
 <container
-    xmlns="http://www.symfony-project.org/schema/dic/services"
+    xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services
-    http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
-
-    <parameters>
-        <parameter key="redis.client.class">Predis\Client</parameter>
-        <parameter key="redis.connection.class">Bundle\RedisBundle\Client\Predis\LoggingConnection</parameter>
-        <parameter key="redis.connection_parameters.class">Predis\ConnectionParameters</parameter>
-        <parameter key="redis.logger.class">Bundle\RedisBundle\Logger\RedisLogger</parameter>
-        <parameter key="redis.data_collector.class">Bundle\RedisBundle\DataCollector\RedisDataCollector</parameter>
-        <parameter key="doctrine.orm.cache.redis_class">Bundle\RedisBundle\Doctrine\Cache\RedisCache</parameter>
-    </parameters>
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+    http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
         <service id="redis.logger" class="%redis.logger.class%">
+            <tag name="monolog.logger" channel="redis" />
             <argument type="service" id="logger" on-invalid="null" />
         </service>
 

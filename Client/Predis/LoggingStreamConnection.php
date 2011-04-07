@@ -1,0 +1,43 @@
+<?php
+
+namespace Snc\RedisBundle\Client\Predis;
+
+use Predis\Commands\ICommand;
+use Predis\ResponseError;
+use Predis\Network\StreamConnection;
+use Snc\RedisBundle\Logger\RedisLogger;
+
+/**
+ * LoggingStreamConnection
+ */
+class LoggingStreamConnection extends StreamConnection
+{
+    /**
+     * @var RedisLogger
+     */
+    protected $logger;
+
+    /**
+     * Sets the logger
+     *
+     * @param RedisLogger $logger A RedisLogger instance
+     */
+    public function setLogger(RedisLogger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommand(ICommand $command) {
+        $startTime = microtime(true);
+        $result = parent::executeCommand($command);
+        $duration = (microtime(true) - $startTime) * 1000;
+        if (null !== $this->logger) {
+            $error = $result instanceof ResponseError ? (string) $result : false;
+            $this->logger->logCommand((string) $command, $duration, $this->_params->alias, $error);
+        }
+        return $result;
+    }
+}

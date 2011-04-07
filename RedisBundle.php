@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\RedisBundle;
+namespace Snc\RedisBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -9,19 +9,4 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class RedisBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace()
-    {
-        return __NAMESPACE__;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPath()
-    {
-        return strtr(__DIR__, '\\', '/');
-    }
 }

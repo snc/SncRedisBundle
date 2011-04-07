@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\RedisBundle\Logger;
+namespace Snc\RedisBundle\Logger;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 
@@ -27,29 +27,25 @@ class RedisLogger
     }
 
     /**
-     * Logs a command start.
+     * Logs a command
      *
      * @param string $command Redis command
-     * @param float $time Start time
+     * @param float $duration Duration in milliseconds
+     * @param string $connection Connection alias
+     * @param string $error Error message or false if command was successful
+     * @return void
      */
-    public function startCommand($command, $time = null, $connection = null)
+    public function logCommand($command, $duration, $connection, $error = false)
     {
         ++$this->nbCommands;
 
         if (null !== $this->logger) {
-            $this->commands[] = array('cmd' => $command, 'executionMS' => 0, 'conn' => $connection);
-            $this->logger->info(static::LOG_PREFIX . $command);
-            $this->start = $time ? : microtime(true);
-        }
-    }
-
-    /**
-     * Logs a command stop.
-     */
-    public function stopCommand()
-    {
-        if (null !== $this->logger) {
-            $this->commands[(count($this->commands) - 1)]['executionMS'] = (microtime(true) - $this->start) * 1000;
+            $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
+            if ($error) {
+                $this->logger->err(static::LOG_PREFIX . $command . ' (' . $error . ')');
+            } else {
+                $this->logger->info(static::LOG_PREFIX . $command);
+            }
         }
     }
 
