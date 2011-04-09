@@ -41,7 +41,7 @@ class RedisExtension extends Extension
             'unix' => $container->getParameter('redis.connection.class'),
         );
 
-        $connectionFactoryDef = new Definition($container->getParameter('redis.connection-factory.class'));
+        $connectionFactoryDef = new Definition($container->getParameter('redis.connection_factory.class'));
         $connectionFactoryDef->setPublic(false);
         $connectionFactoryDef->setScope('container');
         $connectionFactoryDef->addArgument($schemesMap);
