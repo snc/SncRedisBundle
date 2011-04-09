@@ -41,12 +41,12 @@ class RedisExtension extends Extension
             'unix' => $container->getParameter('redis.connection.class'),
         );
 
-        $schemesDef = new Definition($container->getParameter('redis.schemes.class'));
-        $schemesDef->setPublic(false);
-        $schemesDef->setScope('container');
-        $schemesDef->addArgument($schemesMap);
-        $schemesDef->addMethodCall('setLogger', array(new Reference('redis.logger')));
-        $container->setDefinition('redis.connectionschemes', $schemesDef);
+        $connectionFactoryDef = new Definition($container->getParameter('redis.connection-factory.class'));
+        $connectionFactoryDef->setPublic(false);
+        $connectionFactoryDef->setScope('container');
+        $connectionFactoryDef->addArgument($schemesMap);
+        $connectionFactoryDef->addMethodCall('setLogger', array(new Reference('redis.logger')));
+        $container->setDefinition('redis.connectionfactory', $connectionFactoryDef);
 
         foreach ($config['connections'] as $connection) {
             $this->loadConnection($connection, $container);
@@ -109,7 +109,7 @@ class RedisExtension extends Extension
         $optionDef = new Definition($container->getParameter('redis.client_options.class'));
         $optionDef->setPublic(false);
         $optionDef->setScope('container');
-        $client['options']['connections'] = new Reference('redis.connectionschemes');
+        $client['options']['connections'] = new Reference('redis.connectionfactory');
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('redis.client.class'));

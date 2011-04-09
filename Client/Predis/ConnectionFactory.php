@@ -4,7 +4,7 @@ namespace Snc\RedisBundle\Client\Predis;
 
 use Snc\RedisBundle\Logger\RedisLogger;
 
-class ConnectionSchemes extends \Predis\ConnectionSchemes
+class ConnectionFactory extends \Predis\ConnectionFactory
 {
     /**
      * @var RedisLogger
@@ -24,9 +24,9 @@ class ConnectionSchemes extends \Predis\ConnectionSchemes
     /**
      * {@inheritdoc}
      */
-    public function newConnection($parameters)
+    public function create($parameters)
     {
-        $connection = parent::newConnection($parameters);
+        $connection = parent::create($parameters);
         if ($parameters->logging) {
             $connection->setLogger($this->logger);
         }
