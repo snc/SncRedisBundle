@@ -29,13 +29,14 @@
     {% else %}
         <ul class="alt">
             {% for command in collector.commands %}
-                <li class="{{ cycle(['odd', 'even'], loop.index) }}">
+                <li class="{{ cycle(['odd', 'even'], loop.index) }}{% if command.error %} error{% endif %}">
                     <div>
                         <code>{{ command.cmd }}</code>
                     </div>
                     <small>
                         <strong>Time</strong>: {{ '%0.2f'|format(command.executionMS) }} ms
                         <strong>Connection</strong>: {{ command.conn }}
+                        {% if command.error %}<strong>Error</strong>: {{ command.error }}{% endif %}
                     </small>
                 </li>
             {% endfor %}
