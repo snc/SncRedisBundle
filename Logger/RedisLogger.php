@@ -9,8 +9,6 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface;
  */
 class RedisLogger
 {
-    const LOG_PREFIX = 'Redis command: ';
-
     protected $logger;
     protected $nbCommands = 0;
     protected $commands = array();
@@ -42,9 +40,9 @@ class RedisLogger
         if (null !== $this->logger) {
             $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
             if ($error) {
-                $this->logger->err(static::LOG_PREFIX . $command . ' (' . $error . ')');
+                $this->logger->err('Command "' . $command . '" failed (' . $error . ')');
             } else {
-                $this->logger->info(static::LOG_PREFIX . $command);
+                $this->logger->info('Executing command "' . $command . '"');
             }
         }
     }
