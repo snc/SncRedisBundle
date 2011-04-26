@@ -106,8 +106,13 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        // TODO Use SETEX with Redis 2.x or SET and EXPIRE with Redis 1.x
-        return $this->db->set($this->createId($key), serialize($data));
+        $id = $this->createId($key);
+        
+        $result = $this->db->set($id, serialize($data));
+        
+        $this->db->expire($id, (int) $this->options['lifetime']);
+        
+        return $result;
     }
 
     /**
