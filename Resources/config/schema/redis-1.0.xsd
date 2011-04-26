@@ -22,7 +22,7 @@
         <xsd:attribute name="client-options" type="xsd:string" />
         <xsd:attribute name="connection" type="xsd:string" />
         <xsd:attribute name="connection-parameters" type="xsd:string" />
-        <xsd:attribute name="schemes" type="xsd:string" />
+        <xsd:attribute name="connection-factory" type="xsd:string" />
         <xsd:attribute name="logger" type="xsd:string" />
         <xsd:attribute name="data-collector" type="xsd:string" />
         <xsd:attribute name="doctrine-cache" type="xsd:string" />
