@@ -48,11 +48,12 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        if (null !== ($data = $this->db->get($this->createId($key))))
-        {
+        
+        if (null !== ($data = $this->db->get($this->createId($key)))) {
             return unserialize($data);
         }
-        return $default;
+        
+        return parent::read($key, $default);
     }
 
     /**
@@ -73,7 +74,7 @@ class RedisSessionStorage extends NativeSessionStorage
         
         $this->db->expire($id, (int) $this->options['lifetime']);
         
-        return $result;
+        return parent::write($key, $data);
     }
 
     /**
@@ -85,7 +86,9 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function remove($key)
     {
-        return $this->db->del($this->createId($key));
+        $this->db->del($this->createId($key));
+        
+        return parent::remove($key);
     }
 
     /**
