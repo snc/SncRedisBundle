@@ -143,7 +143,7 @@ class RedisExtension extends Extension
         $container->setParameter('redis.session.prefix', $config['session']['prefix']);
 
         $container->setAlias('redis.session.client', sprintf('redis.%s_client', $container->getParameter('redis.session.client')));
-        $container->setAlias('session.storage', 'session.storage.redis');
+        $container->setAlias('session.storage', 'redis.session.storage');
     }
 
     /**

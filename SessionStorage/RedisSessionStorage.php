@@ -31,49 +31,10 @@ class RedisSessionStorage extends NativeSessionStorage
     public function __construct(Client $db, $options = array(), $prefix = 'session')
     {
         $this->db = $db;
-
-        $cookieDefaults = session_get_cookie_params();
-
-        $this->options = array_merge(array(
-            'name'          => '_SESS',
-            'lifetime'      => $cookieDefaults['lifetime'],
-            'path'          => $cookieDefaults['path'],
-            'domain'        => $cookieDefaults['domain'],
-            'secure'        => $cookieDefaults['secure'],
-            'httponly'      => isset($cookieDefaults['httponly']) ? $cookieDefaults['httponly'] : false,
-            'prefix'        => $prefix,
-        ), $options);
-
-        session_name($this->options['name']);
-    }
-
-    /**
-     * Starts the session.
-     */
-    public function start()
-    {
-        if (self::$sessionStarted) {
-            return;
-        }
-
-        parent::start();
-
-        $this->options['id'] = session_id();
-    }
-
-    /**
-     * Returns the session ID
-     *
-     * @return mixed  The session ID
-     *
-     * @throws \RuntimeException If the session was not started yet
-     */
-    public function getId()
-    {
-        if (!self::$sessionStarted) {
-             throw new \RuntimeException('The session has not been started yet');
-        }
-        return $this->options['id'];
+        
+        $options['prefix'] = $prefix;
+        
+        parent::__construct($options);
     }
 
     /**
@@ -136,14 +97,10 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     protected function createId($id)
     {
-        if (!isset($this->options['id'])) {
-            $this->options['id'] = session_id();
-        }
-        if (!isset($this->options['prefix']))
-        {
-            return $this->options['id'] . ':' . $id;
+        if (!isset($this->options['prefix'])) {
+            return $this->getId() . ':' . $id;
         }
 
-        return $this->options['prefix'] . ':' . $this->options['id'] . ':' . $id;
+        return $this->options['prefix'] . ':' . $this->getId() . ':' . $id;
     }
 }
