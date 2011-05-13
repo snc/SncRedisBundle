@@ -87,6 +87,13 @@ class RedisSessionStorage extends NativeSessionStorage
     {
         return $this->db->del($this->createId($key));
     }
+    
+    public function regenerate($destroy = false)
+    {
+        $this->db->del($this->createId('_symfony2'));
+        
+        return parent::regenerate($destroy);
+    }
 
     /**
      * Prepends the Session ID with a user-defined prefix (if any).
