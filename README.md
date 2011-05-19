@@ -230,6 +230,7 @@ If you don't specify an `entity_manager` connection name then the `default` one 
                 connection: [ cluster1, cluster2, cluster3 ]
                 options:
                     profile: DEV
+                    cluster: Snc\RedisBundle\Client\Predis\Network\PredisCluster
         session:
             client: session
             prefix: foo
