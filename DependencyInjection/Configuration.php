@@ -117,6 +117,7 @@ class Configuration implements ConfigurationInterface
                                             ->then(function($v) { return sprintf('%.1f', $v); })
                                         ->end()
                                     ->end()
+                                    ->scalarNode('cluster')->defaultNull()->end()
                                 ->end()
                             ->end()
                         ->end()

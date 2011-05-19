@@ -62,6 +62,7 @@
 
     <xsd:complexType name="client-options">
         <xsd:attribute name="profile" type="client-profile" />
+        <xsd:attribute name="cluster" type="xsd:string" />
     </xsd:complexType>
 
     <xsd:simpleType name="client-profile">
