@@ -1,6 +1,6 @@
 <?php
 
-namespace Snc\RedisBundle\Client\Predis;
+namespace Snc\RedisBundle\Client\Predis\Network;
 
 use Predis\Commands\ICommand;
 use Predis\ResponseError;

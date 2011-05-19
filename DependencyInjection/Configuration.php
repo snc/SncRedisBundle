@@ -30,7 +30,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('client')->defaultValue('Predis\Client')->end()
                         ->scalarNode('client_options')->defaultValue('Predis\ClientOptions')->end()
-                        ->scalarNode('connection')->defaultValue('Snc\RedisBundle\Client\Predis\LoggingStreamConnection')->end()
+                        ->scalarNode('connection')->defaultValue('Snc\RedisBundle\Client\Predis\Network\LoggingStreamConnection')->end()
                         ->scalarNode('connection_parameters')->defaultValue('Predis\ConnectionParameters')->end()
                         ->scalarNode('connection_factory')->defaultValue('Snc\RedisBundle\Client\Predis\ConnectionFactory')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
