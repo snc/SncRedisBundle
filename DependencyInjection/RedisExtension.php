@@ -110,6 +110,9 @@ class RedisExtension extends Extension
         $optionDef->setPublic(false);
         $optionDef->setScope('container');
         $client['options']['connections'] = new Reference('redis.connectionfactory');
+        if (null === $client['options']['cluster']) {
+            unset($client['options']['cluster']);
+        }
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('redis.client.class'));
