@@ -127,6 +127,18 @@ class RateLimit
     }
 
     /**
+     * Resets the counter for the specified subject.
+     *
+     * @param string $subject A unique identifier, for example a session id or an IP
+     * @return bool
+     */
+    public function reset($subject)
+    {
+        $subject = $this->key . ':' . $subject;
+        return (bool)$this->client->del($subject);
+    }
+
+    /**
      * Get the bucket associated with the current time.
      *
      * @param int $time (optional) - default is the current time (seconds since epoch)
