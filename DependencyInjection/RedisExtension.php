@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
@@ -43,7 +44,7 @@ class RedisExtension extends Extension
 
         $connectionFactoryDef = new Definition($container->getParameter('redis.connection_factory.class'));
         $connectionFactoryDef->setPublic(false);
-        $connectionFactoryDef->setScope('container');
+        $connectionFactoryDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $connectionFactoryDef->addArgument($schemesMap);
         $connectionFactoryDef->addMethodCall('setLogger', array(new Reference('redis.logger')));
         $container->setDefinition('redis.connectionfactory', $connectionFactoryDef);
@@ -92,7 +93,7 @@ class RedisExtension extends Extension
         $parameterId = sprintf('redis.connection.%s_parameters', $connection['alias']);
         $parameterDef = new Definition($container->getParameter('redis.connection_parameters.class'));
         $parameterDef->setPublic(false);
-        $parameterDef->setScope('container');
+        $parameterDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $parameterDef->addArgument($connection);
         $container->setDefinition($parameterId, $parameterDef);
     }
@@ -108,7 +109,7 @@ class RedisExtension extends Extension
         $optionId = sprintf('redis.client.%s_options', $client['alias']);
         $optionDef = new Definition($container->getParameter('redis.client_options.class'));
         $optionDef->setPublic(false);
-        $optionDef->setScope('container');
+        $optionDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $client['options']['connections'] = new Reference('redis.connectionfactory');
         if (null === $client['options']['cluster']) {
             unset($client['options']['cluster']);
@@ -116,7 +117,7 @@ class RedisExtension extends Extension
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('redis.client.class'));
-        $clientDef->setScope('container');
+        $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         if (1 === count($client['connections'])) {
             $clientDef->addArgument(new Reference(sprintf('redis.connection.%s_parameters', $client['connections'][0])));
         } else {
@@ -160,7 +161,7 @@ class RedisExtension extends Extension
             $client = new Reference(sprintf('redis.%s_client', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
                 $def = new Definition($container->getParameter('redis.doctrine_cache.class'));
-                $def->setScope('container');
+                $def->setScope(ContainerInterface::SCOPE_CONTAINER);
                 $def->addMethodCall('setRedis', array($client));
                 if ($cache['namespace']) {
                     $def->addMethodCall('setNamespace', array($cache['namespace']));
@@ -169,7 +170,7 @@ class RedisExtension extends Extension
             }
             foreach ($cache['document_managers'] as $dm) {
                 $def = new Definition($container->getParameter('redis.doctrine_cache.class'));
-                $def->setScope('container');
+                $def->setScope(ContainerInterface::SCOPE_CONTAINER);
                 $def->addMethodCall('setRedis', array($client));
                 if ($cache['namespace']) {
                     $def->addMethodCall('setNamespace', array($cache['namespace']));
