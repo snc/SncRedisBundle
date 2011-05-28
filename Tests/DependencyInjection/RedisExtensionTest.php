@@ -101,6 +101,18 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave2_result_cache'));
     }
 
+    public function testClientProfileOption()
+    {
+        $extension = new RedisExtension();
+        $config = $this->parseYaml($this->getFullYamlConfig());
+        $extension->load(array($config), $container = new ContainerBuilder());
+
+        $options = $container->getDefinition('redis.client.default_options')->getArgument(0);
+
+        $this->assertSame((float)2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
+        $this->assertSame('2.0', $options['profile'], 'Profile option was converted to a string');
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
