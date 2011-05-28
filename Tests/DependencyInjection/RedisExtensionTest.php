@@ -3,7 +3,9 @@
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use Snc\RedisBundle\DependencyInjection\RedisExtension;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Yaml\Parser;
 
 class RedisExtensionTest extends \PHPUnit_Framework_TestCase
@@ -111,6 +113,30 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame((float)2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
         $this->assertSame('2.0', $options['profile'], 'Profile option was converted to a string');
+    }
+
+    public function testValidXmlConfig()
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension(new RedisExtension());
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
+        $loader->load('valid.xml');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidXmlConfig()
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension(new RedisExtension());
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
+        try {
+            $loader->load('invalid.xml');
+        } catch (\Exception $e) {
+            $this->assertContains("The attribute 'alias' is required but missing.", $e->getMessage());
+            throw $e;
+        }
     }
 
     private function parseYaml($yaml)
