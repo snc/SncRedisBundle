@@ -22,7 +22,7 @@ class LoggingStreamConnection extends StreamConnection
      *
      * @param RedisLogger $logger A RedisLogger instance
      */
-    public function setLogger(RedisLogger $logger)
+    public function setLogger(RedisLogger $logger = null)
     {
         $this->logger = $logger;
     }
