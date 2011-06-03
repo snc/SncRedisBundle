@@ -3,7 +3,7 @@
 namespace Snc\RedisBundle\Extra;
 
 use Predis\Client;
-use Predis\MultiExecContext;
+use Predis\Transaction\MultiExecContext;
 
 /**
  * This class is a PHP port of the RateLimit structure from the high-level
@@ -154,7 +154,7 @@ class RateLimit
     /**
      * Adds the commands needed for the increment function
      *
-     * @param \Predis\MultiExecContext $multi
+     * @param \Predis\Transaction\MultiExecContext $multi
      * @param string $subject A unique identifier, for example a session id or an IP
      * @param int $bucket
      * @return void
@@ -172,7 +172,7 @@ class RateLimit
     /**
      * Adds the commands needed for the count function
      *
-     * @param \Predis\MultiExecContext $multi
+     * @param \Predis\Transaction\MultiExecContext $multi
      * @param string $subject A unique identifier, for example a session id or an IP
      * @param int $bucket
      * @param int $count
