@@ -229,6 +229,12 @@ redis:
             port: 6379
             database: 5
             weight: 1
+        socket:
+            alias: socket
+            scheme: unix
+            path: /tmp/socket.sock
+            database: 0
+            logging: true
     clients:
         default:
             alias: default
@@ -251,6 +257,9 @@ redis:
             options:
                 profile: DEV
                 cluster: Snc\RedisBundle\Client\Predis\Network\PredisCluster
+        socket:
+            alias: socket
+            connection: socket
     session:
         client: session
         prefix: foo
