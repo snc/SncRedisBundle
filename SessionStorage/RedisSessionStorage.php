@@ -31,9 +31,9 @@ class RedisSessionStorage extends NativeSessionStorage
     public function __construct(Client $db, $options = array(), $prefix = 'session')
     {
         $this->db = $db;
-        
+
         $options['prefix'] = $prefix;
-        
+
         parent::__construct($options);
     }
 
@@ -48,10 +48,10 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        if (null !== ($data = $this->db->get($this->createId($key))))
-        {
+        if (null !== ($data = $this->db->hget($this->getHashKey(), $key))) {
             return @unserialize($data);
         }
+
         return $default;
     }
 
@@ -67,12 +67,14 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        $id = $this->createId($key);
-        
-        $result = $this->db->set($id, serialize($data));
-        
-        $this->db->expire($id, (int) $this->options['lifetime']);
-        
+        $result = $this->db->hset($this->getHashKey(), $key, serialize($data));
+
+        $expires = (int) $this->options['lifetime'];
+
+        if ($expires > 0) {
+            $this->db->expire($this->getHashKey(), $expires);
+        }
+
         return $result;
     }
 
@@ -85,29 +87,30 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function remove($key)
     {
-        return $this->db->del($this->createId($key));
+        return $this->db->hdel($this->getHashKey(), $key);
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
     public function regenerate($destroy = false)
     {
-        $this->db->del($this->createId('_symfony2'));
-        
+        $this->db->del($this->getHashKey());
+
         return parent::regenerate($destroy);
     }
 
     /**
      * Prepends the Session ID with a user-defined prefix (if any).
      *
-     * @param  string $id   A session ID
-     *
      * @return string prefixed session ID
      */
-    protected function createId($id)
+    protected function getHashKey()
     {
         if (!isset($this->options['prefix'])) {
-            return $this->getId() . ':' . $id;
+            return $this->getId();
         }
 
-        return $this->options['prefix'] . ':' . $this->getId() . ':' . $id;
+        return $this->options['prefix'] . ':' . $this->getId();
     }
 }
