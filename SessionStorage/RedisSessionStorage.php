@@ -32,48 +32,9 @@ class RedisSessionStorage extends NativeSessionStorage
     {
         $this->db = $db;
 
-        $cookieDefaults = session_get_cookie_params();
+        $options['prefix'] = $prefix;
 
-        $this->options = array_merge(array(
-            'name'          => '_SESS',
-            'lifetime'      => $cookieDefaults['lifetime'],
-            'path'          => $cookieDefaults['path'],
-            'domain'        => $cookieDefaults['domain'],
-            'secure'        => $cookieDefaults['secure'],
-            'httponly'      => isset($cookieDefaults['httponly']) ? $cookieDefaults['httponly'] : false,
-            'prefix'        => $prefix,
-        ), $options);
-
-        session_name($this->options['name']);
-    }
-
-    /**
-     * Starts the session.
-     */
-    public function start()
-    {
-        if (self::$sessionStarted) {
-            return;
-        }
-
-        parent::start();
-
-        $this->options['id'] = session_id();
-    }
-
-    /**
-     * Returns the session ID
-     *
-     * @return mixed  The session ID
-     *
-     * @throws \RuntimeException If the session was not started yet
-     */
-    public function getId()
-    {
-        if (!self::$sessionStarted) {
-             throw new \RuntimeException('The session has not been started yet');
-        }
-        return $this->options['id'];
+        parent::__construct($options);
     }
 
     /**
@@ -87,10 +48,10 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        if (null !== ($data = $this->db->get($this->createId($key))))
-        {
-            return unserialize($data);
+        if (null !== ($data = $this->db->hget($this->getHashKey(), $key))) {
+            return @unserialize($data);
         }
+
         return $default;
     }
 
@@ -106,8 +67,15 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        // TODO Use SETEX with Redis 2.x or SET and EXPIRE with Redis 1.x
-        return $this->db->set($this->createId($key), serialize($data));
+        $result = $this->db->hset($this->getHashKey(), $key, serialize($data));
+
+        $expires = (int) $this->options['lifetime'];
+
+        if ($expires > 0) {
+            $this->db->expire($this->getHashKey(), $expires);
+        }
+
+        return $result;
     }
 
     /**
@@ -119,23 +87,30 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function remove($key)
     {
-        return $this->db->del($this->createId($key));
+        return $this->db->hdel($this->getHashKey(), $key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function regenerate($destroy = false)
+    {
+        $this->db->del($this->getHashKey());
+
+        return parent::regenerate($destroy);
     }
 
     /**
      * Prepends the Session ID with a user-defined prefix (if any).
      *
-     * @param  string $id   A session ID
-     *
      * @return string prefixed session ID
      */
-    protected function createId($id)
+    protected function getHashKey()
     {
-        if (!isset($this->options['prefix']))
-        {
-            return $this->options['id'] . ':' . $id;
+        if (!isset($this->options['prefix'])) {
+            return $this->getId();
         }
 
-        return $this->options['prefix'] . ':' . $this->options['id'] . ':' . $id;
+        return $this->options['prefix'] . ':' . $this->getId();
     }
 }

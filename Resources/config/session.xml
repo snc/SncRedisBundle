@@ -8,13 +8,12 @@
 
     <parameters>
         <parameter key="redis.session.class">Snc\RedisBundle\SessionStorage\RedisSessionStorage</parameter>
-        <parameter key="redis.session.options" type="collection" />
     </parameters>
 
     <services>
-        <service id="session.storage.redis" class="%redis.session.class%">
+        <service id="redis.session.storage" class="%redis.session.class%">
             <argument type="service" id="redis.session.client" />
-            <argument>%redis.session.options%</argument>
+            <argument>%session.storage.options%</argument>
             <argument>%redis.session.prefix%</argument>
         </service>
     </services>
