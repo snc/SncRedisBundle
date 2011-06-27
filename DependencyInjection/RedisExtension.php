@@ -140,6 +140,7 @@ class RedisExtension extends Extension
      */
     protected function loadSession(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('session.xml');
 
         $container->setParameter('redis.session.client', $config['session']['client']);
