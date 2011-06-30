@@ -6,21 +6,32 @@ The RedisBundle adds `redis` services to your project's service container using 
 
 ## Installation ##
 
-Put the RedisBundle into the src/Snc dir:
+### Using the symfony-standard vendor script ###
 
-    $ git clone git://github.com/snc/RedisBundle.git src/Snc/RedisBundle
+Append the following lines to your `deps` file:
 
-or as a submodule:
+    [RedisBundle]
+        git=git://github.com/snc/RedisBundle.git
+        target=/bundles/Snc/RedisBundle
 
-    $ git submodule add git://github.com/snc/RedisBundle.git src/Snc/RedisBundle
+    [predis]
+        git=git://github.com/nrk/predis.git
 
-Put the [Predis](http://github.com/nrk/predis) library into the vendor dir:
+then run the `./bin/vendors install` command.
 
-    $ git clone git://github.com/nrk/predis.git vendor/predis
+### Using git submodule ###
 
-or as a submodule:
+Run the following commands:
 
+    $ git submodule add git://github.com/snc/RedisBundle.git vendor/bundles/Snc/RedisBundle
     $ git submodule add git://github.com/nrk/predis.git vendor/predis
+
+### Using git clone ###
+
+Run the following commands:
+
+    $ git clone git://github.com/snc/RedisBundle.git vendor/bundles/Snc/RedisBundle
+    $ git clone git://github.com/nrk/predis.git vendor/predis
 
 Register the `Snc` and `Predis` namespace in your project's autoload script (app/autoload.php):
 
@@ -28,7 +39,7 @@ Register the `Snc` and `Predis` namespace in your project's autoload script (app
 <?php
 $loader->registerNamespaces(array(
     // ...
-    'Snc'                            => __DIR__.'/../src',
+    'Snc'                            => __DIR__.'/../vendor/bundles',
     'Predis'                         => __DIR__.'/../vendor/predis/lib',
     // ...
 ));
