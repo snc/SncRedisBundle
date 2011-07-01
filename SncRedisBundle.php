@@ -5,8 +5,8 @@ namespace Snc\RedisBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * RedisBundle
+ * SncRedisBundle
  */
-class RedisBundle extends Bundle
+class SncRedisBundle extends Bundle
 {
 }

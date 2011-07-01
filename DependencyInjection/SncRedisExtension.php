@@ -13,9 +13,9 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 /**
- * RedisExtension
+ * SncRedisExtension
  */
-class RedisExtension extends Extension
+class SncRedisExtension extends Extension
 {
     /**
      * Loads the configuration.

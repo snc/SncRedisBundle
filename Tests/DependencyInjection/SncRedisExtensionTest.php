@@ -2,13 +2,13 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
-use Snc\RedisBundle\DependencyInjection\RedisExtension;
+use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Yaml\Parser;
 
-class RedisExtensionTest extends \PHPUnit_Framework_TestCase
+class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 {
     public static function parameterValues()
     {
@@ -29,7 +29,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testEmptyConfigLoad()
     {
-        $extension = new RedisExtension();
+        $extension = new SncRedisExtension();
         $config = array();
         $extension->load(array($config), $container = new ContainerBuilder());
     }
@@ -39,7 +39,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testDefaultParameterConfigLoad($name, $expected)
     {
-        $extension = new RedisExtension();
+        $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getMinimalYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
@@ -48,7 +48,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testMinimalConfigLoad()
     {
-        $extension = new RedisExtension();
+        $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getMinimalYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
@@ -63,7 +63,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testFullConfigLoad()
     {
-        $extension = new RedisExtension();
+        $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getFullYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
@@ -105,7 +105,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testClientProfileOption()
     {
-        $extension = new RedisExtension();
+        $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getFullYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
@@ -118,7 +118,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
     public function testValidXmlConfig()
     {
         $container = new ContainerBuilder();
-        $container->registerExtension(new RedisExtension());
+        $container->registerExtension(new SncRedisExtension());
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
         $loader->load('valid.xml');
     }
@@ -129,7 +129,7 @@ class RedisExtensionTest extends \PHPUnit_Framework_TestCase
     public function testInvalidXmlConfig()
     {
         $container = new ContainerBuilder();
-        $container->registerExtension(new RedisExtension());
+        $container->registerExtension(new SncRedisExtension());
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
         try {
             $loader->load('invalid.xml');

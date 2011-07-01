@@ -1,4 +1,4 @@
-# RedisBundle ![project status](http://stillmaintained.com/snc/RedisBundle.png) #
+# RedisBundle ![project status](http://stillmaintained.com/snc/SncRedisBundle.png) #
 
 ## About ##
 
@@ -10,8 +10,8 @@ The RedisBundle adds `redis` services to your project's service container using 
 
 Append the following lines to your `deps` file:
 
-    [RedisBundle]
-        git=git://github.com/snc/RedisBundle.git
+    [SncRedisBundle]
+        git=git://github.com/snc/SncRedisBundle.git
         target=/bundles/Snc/RedisBundle
 
     [predis]
@@ -23,14 +23,14 @@ then run the `./bin/vendors install` command.
 
 Run the following commands:
 
-    $ git submodule add git://github.com/snc/RedisBundle.git vendor/bundles/Snc/RedisBundle
+    $ git submodule add git://github.com/snc/SncRedisBundle.git vendor/bundles/Snc/RedisBundle
     $ git submodule add git://github.com/nrk/predis.git vendor/predis
 
 ### Using git clone ###
 
 Run the following commands:
 
-    $ git clone git://github.com/snc/RedisBundle.git vendor/bundles/Snc/RedisBundle
+    $ git clone git://github.com/snc/SncRedisBundle.git vendor/bundles/Snc/RedisBundle
     $ git clone git://github.com/nrk/predis.git vendor/predis
 
 Register the `Snc` and `Predis` namespace in your project's autoload script (app/autoload.php):
@@ -53,7 +53,7 @@ public function registerBundles()
 {
     $bundles = array(
         // ...
-        new Snc\RedisBundle\RedisBundle(),
+        new Snc\RedisBundle\SncRedisBundle(),
         // ...
     );
     ...
@@ -65,7 +65,7 @@ public function registerBundles()
 Configure the `redis` service in your config:
 
 ``` yaml
-redis:
+snc_redis:
     connections:
         default:
             alias: default
@@ -84,7 +84,7 @@ example your service container will contain the service `redis.default_client`.
 A more complex setup which contains a clustered client could look like this:
 
 ``` yaml
-redis:
+snc_redis:
     connections:
         default:
             alias: default
@@ -157,7 +157,7 @@ $val = $redis_cluster->get('ij:kl');
 Use Redis sessions by adding the following to your config:
 
 ``` yaml
-redis:
+snc_redis:
     ...
     session:
         client: session
@@ -168,7 +168,7 @@ This will use the default prefix `session`.
 You may specify another `prefix`:
 
 ``` yaml
-redis:
+snc_redis:
     ...
     session:
         client: session
@@ -180,7 +180,7 @@ redis:
 Use Redis caching for Doctrine by adding this to your config:
 
 ``` yaml
-redis:
+snc_redis:
     ...
     doctrine:
         metadata_cache:
@@ -199,7 +199,7 @@ If you don't specify an `entity_manager` connection name then the `default` one 
 ### Complete configuration example ###
 
 ``` yaml
-redis:
+snc_redis:
     connections:
         default:
             alias: default
