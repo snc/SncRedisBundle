@@ -1,6 +1,6 @@
 <?php
 
-$vendorDir = __DIR__.'/../../../../vendor';
+$vendorDir = __DIR__.'/../../../..';
 require_once $vendorDir.'/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
 use Symfony\Component\ClassLoader\UniversalClassLoader;
@@ -8,7 +8,7 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
     'Symfony'                  => $vendorDir . '/symfony/src',
-    'Snc'                      => $vendorDir . '/../src',
+    'Snc'                      => $vendorDir . '/bundles',
     'Predis'                   => $vendorDir . '/predis/lib',
     'Doctrine\\Tests\\Common'  => $vendorDir . '/doctrine-common/tests',
     'Doctrine\\Common'         => $vendorDir . '/doctrine-common/lib',
