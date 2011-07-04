@@ -13,14 +13,14 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     public static function parameterValues()
     {
         return array(
-            array('redis.client.class', 'Predis\Client'),
-            array('redis.client_options.class', 'Predis\ClientOptions'),
-            array('redis.connection.class', 'Snc\RedisBundle\Client\Predis\Network\LoggingStreamConnection'),
-            array('redis.connection_parameters.class', 'Predis\ConnectionParameters'),
-            array('redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\ConnectionFactory'),
-            array('redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
-            array('redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
-            array('redis.doctrine_cache.class', 'Snc\RedisBundle\Doctrine\Cache\RedisCache'),
+            array('snc_redis.client.class', 'Predis\Client'),
+            array('snc_redis.client_options.class', 'Predis\ClientOptions'),
+            array('snc_redis.connection.class', 'Snc\RedisBundle\Client\Predis\Network\LoggingStreamConnection'),
+            array('snc_redis.connection_parameters.class', 'Predis\ConnectionParameters'),
+            array('snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\ConnectionFactory'),
+            array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
+            array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
+            array('snc_redis.doctrine_cache.class', 'Snc\RedisBundle\Doctrine\Cache\RedisCache'),
         );
     }
 
@@ -52,13 +52,13 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $config = $this->parseYaml($this->getMinimalYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
-        $this->assertTrue($container->hasDefinition('redis.logger'));
-        $this->assertTrue($container->hasDefinition('redis.data_collector'));
-        $this->assertTrue($container->hasDefinition('redis.connectionfactory'));
+        $this->assertTrue($container->hasDefinition('snc_redis.logger'));
+        $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connectionfactory'));
 
-        $this->assertTrue($container->hasDefinition('redis.connection.default_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.client.default_options'));
-        $this->assertTrue($container->hasDefinition('redis.default_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
+        $this->assertTrue($container->hasDefinition('snc_redis.default_client'));
     }
 
     public function testFullConfigLoad()
@@ -67,29 +67,29 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $config = $this->parseYaml($this->getFullYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
-        $this->assertTrue($container->hasDefinition('redis.logger'));
-        $this->assertTrue($container->hasDefinition('redis.data_collector'));
-        $this->assertTrue($container->hasDefinition('redis.connectionfactory'));
+        $this->assertTrue($container->hasDefinition('snc_redis.logger'));
+        $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connectionfactory'));
 
-        $this->assertTrue($container->hasDefinition('redis.connection.default_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.client.default_options'));
-        $this->assertTrue($container->hasDefinition('redis.default_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
+        $this->assertTrue($container->hasDefinition('snc_redis.default_client'));
 
-        $this->assertTrue($container->hasDefinition('redis.connection.cache_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.client.cache_options'));
-        $this->assertTrue($container->hasDefinition('redis.cache_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.cache_options'));
+        $this->assertTrue($container->hasDefinition('snc_redis.cache_client'));
 
-        $this->assertTrue($container->hasDefinition('redis.connection.session_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.client.session_options'));
-        $this->assertTrue($container->hasDefinition('redis.session_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.session_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.session_options'));
+        $this->assertTrue($container->hasDefinition('snc_redis.session_client'));
 
-        $this->assertTrue($container->hasDefinition('redis.connection.cluster1_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.connection.cluster2_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.connection.cluster3_parameters'));
-        $this->assertTrue($container->hasDefinition('redis.client.cluster_options'));
-        $this->assertTrue($container->hasDefinition('redis.cluster_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster1_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster2_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster3_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_options'));
+        $this->assertTrue($container->hasDefinition('snc_redis.cluster_client'));
 
-        $this->assertTrue($container->hasDefinition('redis.session.storage'));
+        $this->assertTrue($container->hasDefinition('snc_redis.session.storage'));
 
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_metadata_cache'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_result_cache'));
@@ -109,7 +109,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $config = $this->parseYaml($this->getFullYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
-        $options = $container->getDefinition('redis.client.default_options')->getArgument(0);
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
 
         $this->assertSame((float)2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
         $this->assertSame('2.0', $options['profile'], 'Profile option was converted to a string');

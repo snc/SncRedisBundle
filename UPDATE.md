@@ -10,3 +10,7 @@ Replace `new Snc\RedisBundle\RedisBundle()` with `new Snc\RedisBundle\SncRedisBu
 ### Update your config files ###
 
 Replace `redis:` with `snc_redis:` in all of you `.yml` config files.
+
+### Update your code ###
+
+All services are now prefixed by `snc_redis.` instead of `redis.`.

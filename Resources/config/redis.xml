@@ -7,14 +7,14 @@
     http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="redis.logger" class="%redis.logger.class%">
-            <tag name="monolog.logger" channel="redis" />
+        <service id="snc_redis.logger" class="%snc_redis.logger.class%">
+            <tag name="monolog.logger" channel="snc_redis" />
             <argument type="service" id="logger" on-invalid="null" />
         </service>
 
-        <service id="redis.data_collector" class="%redis.data_collector.class%" public="false">
+        <service id="snc_redis.data_collector" class="%snc_redis.data_collector.class%" public="false">
             <tag name="data_collector" template="SncRedisBundle:Collector:redis" id="redis" />
-            <argument type="service" id="redis.logger" />
+            <argument type="service" id="snc_redis.logger" />
         </service>
     </services>
 

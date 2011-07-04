@@ -49,7 +49,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Adds the redis.connections configuration
+     * Adds the snc_redis.connections configuration
      *
      * @param ArrayNodeDefinition $rootNode
      */
@@ -86,7 +86,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Adds the redis.clients configuration
+     * Adds the snc_redis.clients configuration
      *
      * @param ArrayNodeDefinition $rootNode
      */
@@ -127,7 +127,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Adds the redis.session configuration
+     * Adds the snc_redis.session configuration
      *
      * @param ArrayNodeDefinition $rootNode
      */
@@ -146,7 +146,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Adds the redis.doctrine configuration
+     * Adds the snc_redis.doctrine configuration
      *
      * @param ArrayNodeDefinition $rootNode
      */

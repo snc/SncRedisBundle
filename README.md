@@ -79,7 +79,7 @@ snc_redis:
 ```
 
 You have to configure at least one connection and one client. In the above
-example your service container will contain the service `redis.default_client`.
+example your service container will contain the service `snc_redis.default_client`.
 
 A more complex setup which contains a clustered client could look like this:
 
@@ -144,9 +144,9 @@ In your controllers you can now access all your configured clients:
 
 ``` php
 <?php
-$redis = $this->container->get('redis.default_client');
+$redis = $this->container->get('snc_redis.default_client');
 $val = $redis->incr('foo:bar');
-$redis_cluster = $this->container->get('redis.cluster_client');
+$redis_cluster = $this->container->get('snc_redis.cluster_client');
 $val = $redis_cluster->get('ab:cd');
 $val = $redis_cluster->get('ef:gh');
 $val = $redis_cluster->get('ij:kl');
