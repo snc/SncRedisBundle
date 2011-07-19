@@ -28,10 +28,7 @@ class SncRedisExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('redis.xml');
 
-        $processor = new Processor();
-        $configuration = new Configuration();
-
-        $config = $processor->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration(new Configuration(), $configs);
 
         foreach ($config['class'] as $name => $class) {
             $container->setParameter(sprintf('snc_redis.%s.class', $name), $class);
