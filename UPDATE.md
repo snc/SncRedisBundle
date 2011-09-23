@@ -1,6 +1,14 @@
-## Update Notes ##
+# Update Notes #
 
-The `RedisBundle` is vendor prefixed since 2011-07-01.
+## 2011-09-23 ##
+
+If you want to use any of the doctrine caches, you now have to
+configure the `entity_manager` and/or `document_manager` parameters.
+Previously the bundle registered the caches for the `default` managers.
+
+## 2011-07-01 ##
+
+The `RedisBundle` is now vendor prefixed.
 Please follow the following steps to update your Symfony2 project.
 
 ### Update your kernel class ###

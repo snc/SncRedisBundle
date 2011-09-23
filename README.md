@@ -192,6 +192,7 @@ snc_redis:
             entity_manager: [default, read]  # you may also specify multiple entity_manager connections
         query_cache:
             client: cache
+            entity_manager: default
 ```
 
 If you don't specify an `entity_manager` connection name then the `default` one will be used.
@@ -286,4 +287,5 @@ snc_redis:
             namespace: "dcrc:"
         query_cache:
             client: cache
+            entity_manager: default
 ```
