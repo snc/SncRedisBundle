@@ -1,0 +1,21 @@
+{
+    "name": "snc/redis-bundle",
+    "type": "library",
+    "description": "A Redis bundle for Symfony2",
+    "keywords": ["redis", "nosql", "symfony"],
+    "homepage": "http://github.com/snc/SncRedisBundle",
+    "version": "1.0.1",
+    "license": "MIT",
+    "authors": [{
+        "name": "Henrik Westphal",
+        "email": "henrik.westphal@gmail.com"
+    }],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/symfony": ">=2.0.4",
+        "predis/predis": ">=0.7.0-dev"
+    },
+    "suggest": {
+        "doctrine/common": ">=2.0.x-dev"
+    }
+}
