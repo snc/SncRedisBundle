@@ -70,6 +70,10 @@ class SncRedisExtension extends Extension
         if (isset($config['doctrine']) && count($config['doctrine'])) {
             $this->loadDoctrine($config, $container);
         }
+
+        if (isset($config['monolog'])) {
+            $this->loadMonolog($config, $container);
+        }
     }
 
     /**
@@ -184,5 +188,24 @@ class SncRedisExtension extends Extension
                 $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_%s', $dm, $name), $def);
             }
         }
+    }
+
+    /**
+     * Loads the Monolog configuration.
+     *
+     * @param array $config A configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     */
+    protected function loadMonolog(array $config, ContainerBuilder $container)
+    {
+        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'));
+        $def->setPublic(false);
+        $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
+        $clientDef->setPublic(false);
+        $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters', $config['monolog']['connection'])));
+        $container->setDefinition('snc_redis.monolog_client', $clientDef);
+        $def->addMethodCall('setRedis', array(new Reference('snc_redis.monolog_client')));
+        $def->addMethodCall('setKey', array($config['monolog']['key']));
+        $container->setDefinition('monolog.handler.redis', $def);
     }
 }

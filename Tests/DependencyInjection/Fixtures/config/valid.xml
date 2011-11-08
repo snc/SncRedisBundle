@@ -36,5 +36,6 @@
                 <redis:entity-manager>default</redis:entity-manager>
             </redis:query-cache>
         </redis:doctrine>
+        <redis:monolog connection="monolog" key="monolog" />
     </redis:config>
 </container>

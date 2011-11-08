@@ -14,5 +14,6 @@ $loader->registerNamespaces(array(
     'Doctrine\\Common'         => $vendorDir . '/doctrine-common/lib',
     'Doctrine\\Tests'          => $vendorDir . '/doctrine/tests',
     'Doctrine'                 => $vendorDir . '/doctrine/lib',
+    'Monolog'                  => $vendorDir . '/monolog/src',
 ));
 $loader->register();

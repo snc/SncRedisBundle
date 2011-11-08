@@ -195,7 +195,31 @@ snc_redis:
             entity_manager: default
 ```
 
-If you don't specify an `entity_manager` connection name then the `default` one will be used.
+### Monolog logging ###
+
+You can store your logs in a redis `LIST` by adding this to your config:
+
+``` yaml
+snc_redis:
+    connections:
+        monolog:
+            alias: monolog
+            scheme: unix
+            path: /tmp/socket.sock
+            database: 1
+            logging: false
+            connection_persistent: true
+    monolog:
+        connection: monolog
+        key: monolog
+
+monolog:
+    handlers:
+        main:
+            type: service
+            id: monolog.handler.redis
+            level: debug
+```
 
 ### Complete configuration example ###
 
@@ -247,6 +271,13 @@ snc_redis:
             path: /tmp/socket.sock
             database: 0
             logging: true
+        monolog:
+            alias: monolog
+            scheme: unix
+            path: /tmp/socket.sock
+            database: 1
+            logging: false
+            connection_persistent: true
     clients:
         default:
             alias: default
@@ -288,4 +319,7 @@ snc_redis:
         query_cache:
             client: cache
             entity_manager: default
+    monolog:
+        connection: monolog
+        key: monolog
 ```

@@ -45,6 +45,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
                         ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
+                        ->scalarNode('monolog_handler')->defaultValue('Snc\RedisBundle\Monolog\Handler\RedisHandler')->end()
                     ->end()
                 ->end()
             ->end();
@@ -53,6 +54,7 @@ class Configuration implements ConfigurationInterface
         $this->addClientsSection($rootNode);
         $this->addSessionSection($rootNode);
         $this->addDoctrineSection($rootNode);
+        $this->addMonologSection($rootNode);
 
         return $treeBuilder;
     }
@@ -190,5 +192,24 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end();
         }
+    }
+
+    /**
+     * Adds the snc_redis.monolog configuration
+     *
+     * @param ArrayNodeDefinition $rootNode
+     */
+    private function addMonologSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('monolog')
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('connection')->isRequired()->end()
+                        ->scalarNode('key')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end();
     }
 }
