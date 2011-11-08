@@ -249,6 +249,8 @@ doctrine:
         namespace: "dcrc:"
     query_cache:
         client: cache
+        entity_manager: default
+        document_manager: default
 EOF;
     }
 }
