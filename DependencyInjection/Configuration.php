@@ -89,7 +89,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('weight')->defaultNull()->end()
                             ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                             ->booleanNode('throw_errors')->defaultTrue()->end()
-                            ->booleanNode('logging')->defaultFalse()->end()
+                            ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
                         ->end()
                     ->end()
                 ->end()
