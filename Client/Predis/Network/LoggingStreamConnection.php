@@ -45,7 +45,7 @@ class LoggingStreamConnection extends StreamConnection
         $duration = (microtime(true) - $startTime) * 1000;
         if (null !== $this->logger) {
             $error = $result instanceof ResponseError ? (string) $result : false;
-            $this->logger->logCommand((string) $command, $duration, $this->_params->alias, $error);
+            $this->logger->logCommand((string) $command, $duration, $this->parameters->alias, $error);
         }
         return $result;
     }
