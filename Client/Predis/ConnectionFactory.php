@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\Client\Predis;
 
+use Predis\Profiles\IServerProfile;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 class ConnectionFactory extends \Predis\ConnectionFactory
@@ -33,7 +34,7 @@ class ConnectionFactory extends \Predis\ConnectionFactory
     /**
      * {@inheritdoc}
      */
-    public function create($parameters)
+    public function create($parameters, IServerProfile $profile = null)
     {
         $connection = parent::create($parameters);
         if ($parameters->logging) {
