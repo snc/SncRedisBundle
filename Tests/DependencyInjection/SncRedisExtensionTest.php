@@ -23,7 +23,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('snc_redis.client.class', 'Predis\Client'),
-            array('snc_redis.client_options.class', 'Predis\ClientOptions'),
+            array('snc_redis.client_options.class', 'Predis\Options\ClientOptions'),
             array('snc_redis.connection_parameters.class', 'Predis\ConnectionParameters'),
             array('snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\ConnectionFactory'),
             array('snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Network\ConnectionWrapper'),
