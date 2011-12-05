@@ -8,6 +8,9 @@
     "authors": [{
         "name": "Henrik Westphal",
         "email": "henrik.westphal@gmail.com"
+    },{
+        "name": "Community contributors",
+        "homepage": "https://github.com/snc/SncRedisBundle/contributors"
     }],
     "require": {
         "php": ">=5.3.2",
