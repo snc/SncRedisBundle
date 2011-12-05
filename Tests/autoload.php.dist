@@ -1,19 +1,5 @@
 <?php
 
-$vendorDir = __DIR__.'/../../../..';
-require_once $vendorDir.'/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php';
-
-use Symfony\Component\ClassLoader\UniversalClassLoader;
-
-$loader = new UniversalClassLoader();
-$loader->registerNamespaces(array(
-    'Symfony'                  => $vendorDir . '/symfony/src',
-    'Snc'                      => $vendorDir . '/bundles',
-    'Predis'                   => $vendorDir . '/predis/lib',
-    'Doctrine\\Tests\\Common'  => $vendorDir . '/doctrine-common/tests',
-    'Doctrine\\Common'         => $vendorDir . '/doctrine-common/lib',
-    'Doctrine\\Tests'          => $vendorDir . '/doctrine/tests',
-    'Doctrine'                 => $vendorDir . '/doctrine/lib',
-    'Monolog'                  => $vendorDir . '/monolog/src',
-));
-$loader->register();
+$vendorDir = __DIR__ . '/../vendor';
+$loader = require $vendorDir . '/.composer/autoload.php';
+$loader->add('Doctrine\\Tests', $vendorDir . '/doctrine/common/tests');

@@ -1,4 +1,4 @@
-# RedisBundle ![project status](http://stillmaintained.com/snc/SncRedisBundle.png) #
+# RedisBundle ![project status](http://stillmaintained.com/snc/SncRedisBundle.png) [![build status](https://secure.travis-ci.org/snc/SncRedisBundle.png?branch=master)](https://secure.travis-ci.org/snc/SncRedisBundle) #
 
 ## About ##
 

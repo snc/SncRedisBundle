@@ -21,11 +21,11 @@ class RedisCacheTest extends CacheTest
     public function setUp()
     {
         if (class_exists('\Predis\Client')) {
-            $config = 'tcp://127.0.0.1:63790';
+            $config = 'tcp://127.0.0.1:6379';
             $this->_redis = new \Predis\Client($config);
             try {
                 $ok = $this->_redis->ping();
-            } catch (\Predis\ConnectionException $e) {
+            } catch (\Exception $e) {
                 $ok = false;
             }
             if (!$ok) {
