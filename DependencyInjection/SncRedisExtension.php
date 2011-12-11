@@ -43,15 +43,10 @@ class SncRedisExtension extends Extension
             $container->setParameter(sprintf('snc_redis.%s.class', $name), $class);
         }
 
-        $schemesMap = array(
-            'tcp' => $container->getParameter('snc_redis.connection.class'),
-            'unix' => $container->getParameter('snc_redis.connection.class'),
-        );
-
         $connectionFactoryDef = new Definition($container->getParameter('snc_redis.connection_factory.class'));
         $connectionFactoryDef->setPublic(false);
         $connectionFactoryDef->setScope(ContainerInterface::SCOPE_CONTAINER);
-        $connectionFactoryDef->addArgument($schemesMap);
+        $connectionFactoryDef->addMethodCall('setConnectionWrapperClass', array($container->getParameter('snc_redis.connection_wrapper.class')));
         $connectionFactoryDef->addMethodCall('setLogger', array(new Reference('snc_redis.logger')));
         $container->setDefinition('snc_redis.connectionfactory', $connectionFactoryDef);
 
