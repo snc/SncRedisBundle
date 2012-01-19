@@ -125,8 +125,10 @@ class RedisCache implements Cache
     public function deleteAll()
     {
         $ids = $this->getIds();
-
-        $this->_doDelete($ids);
+        
+        if(count($ids) > 0) {
+            $this->_doDelete($ids);
+        }
 
         return $ids;
     }
