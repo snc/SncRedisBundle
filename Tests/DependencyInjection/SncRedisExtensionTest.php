@@ -240,6 +240,7 @@ clients:
 session:
     client: session
     prefix: foo
+    use_as_default: false
 doctrine:
     metadata_cache:
         client: cache

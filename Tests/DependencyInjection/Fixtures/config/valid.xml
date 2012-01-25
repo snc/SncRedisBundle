@@ -23,7 +23,7 @@
             <redis:connection>cluster2</redis:connection>
             <redis:connection>cluster3</redis:connection>
         </redis:client>
-        <redis:session client="session" prefix="foo" />
+        <redis:session client="session" prefix="foo" use-as-default="false" />
         <redis:doctrine>
             <redis:metadata-cache client="cache" namespace="myNameSpace:">
                 <redis:entity-manager>default</redis:entity-manager>

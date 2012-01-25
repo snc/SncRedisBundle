@@ -175,6 +175,18 @@ snc_redis:
         prefix: foo
 ```
 
+You can disable the automatic registration of the `session.storage` alias
+by setting `use_as_default` to `false`:
+
+``` yaml
+snc_redis:
+    ...
+    session:
+        client: session
+        prefix: foo
+        use_as_default: false
+```
+
 ### Doctrine caching ###
 
 Use Redis caching for Doctrine by adding this to your config:
@@ -306,6 +318,7 @@ snc_redis:
     session:
         client: session
         prefix: foo
+        use_as_default: false
     doctrine:
         metadata_cache:
             client: cache
