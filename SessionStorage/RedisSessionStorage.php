@@ -18,8 +18,8 @@ use Predis\Client;
 /**
  * Redis based session storage
  *
- * @link    http://github.com/justinrainbow/
  * @author  Justin Rainbow <justin.rainbow@gmail.com>
+ * @author  Jordi Boggiano <j.boggiano@seld.be>
  */
 class RedisSessionStorage extends NativeSessionStorage
 {
@@ -47,66 +47,111 @@ class RedisSessionStorage extends NativeSessionStorage
     }
 
     /**
-     * Reads a session.
-     *
-     * @param  string $id  A session ID
-     *
-     * @return string      The session data if the session was read or created, otherwise an exception is thrown
-     *
-     * @throws \RuntimeException If the session cannot be read
+     * Starts the session and registers session save handlers.
+     */
+    public function start()
+    {
+        if (self::$sessionStarted) {
+            return;
+        }
+
+        // use this object as the session handler
+        session_set_save_handler(
+            array($this, 'sessionDummy'), // open
+            array($this, 'sessionDummy'), // close
+            array($this, 'sessionRead'),
+            array($this, 'sessionDummy'), // write
+            array($this, 'sessionDestroy'),
+            array($this, 'sessionDummy') // gc
+        );
+
+        parent::start();
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function read($key, $default = null)
     {
         if (null !== ($data = $this->db->hget($this->getHashKey(), $key))) {
-            return @unserialize($data);
+            return unserialize($data);
         }
 
         return $default;
     }
 
     /**
-     * Writes session data.
-     *
-     * @param  string $id    A session ID
-     * @param  string $data  A serialized chunk of session data
-     *
-     * @return bool true, if the session was written, otherwise an exception is thrown
-     *
-     * @throws \RuntimeException If the session data cannot be written
-     */
-    public function write($key, $data)
-    {
-        $result = $this->db->hset($this->getHashKey(), $key, serialize($data));
-
-        $expires = (int) $this->options['lifetime'];
-
-        if ($expires > 0) {
-            $this->db->expire($this->getHashKey(), $expires);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Deletes the provided session key.
-     *
-     * @param  string $id   A session ID
-     *
-     * @return bool   true, if the session data was deleted
+     * {@inheritDoc}
      */
     public function remove($key)
     {
-        return $this->db->hdel($this->getHashKey(), $key);
+        $retval = $this->db->hget($this->getHashKey(), $key);
+        if (null !== $retval) {
+            $this->db->hdel($this->getHashKey(), $key);
+        }
+
+        return $retval;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function regenerate($destroy = false)
+    public function write($key, $data)
     {
-        $this->db->del($this->getHashKey());
+        $this->db->hset($this->getHashKey(), $key, serialize($data));
 
-        return parent::regenerate($destroy);
+        $expires = (int) $this->options['lifetime'];
+        if ($expires > 0) {
+            $this->db->expire($this->getHashKey(), $expires);
+        }
+    }
+
+    /**
+     * Dummy session handler for callbacks that don't need to do anything
+     */
+    public function sessionDummy()
+    {
+        return true;
+    }
+
+    /**
+     * Destroys a session.
+     *
+     * @param  string $id  A session ID
+     *
+     * @return Boolean  true
+     */
+    public function sessionDestroy($id)
+    {
+        $this->db->del($this->getHashKeyForId($id));
+
+        return true;
+    }
+
+    /**
+     * Reads a session.
+     *
+     * @param  string $id  A session ID
+     * @return string The session data if the session was read or created
+     */
+    public function sessionRead($id)
+    {
+        return '';
+    }
+
+    /**
+     * Prepends the Session ID with a user-defined prefix (if any).
+     *
+     * @param string $id session id
+     * @return string prefixed session ID
+     */
+    protected function getHashKeyForId($id)
+    {
+        if (!isset($this->options['prefix'])) {
+            return $id;
+        }
+
+        return $this->options['prefix'] . ':' . $id;
     }
 
     /**
@@ -116,10 +161,6 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     protected function getHashKey()
     {
-        if (!isset($this->options['prefix'])) {
-            return $this->getId();
-        }
-
-        return $this->options['prefix'] . ':' . $this->getId();
+        return $this->getHashKeyForId($this->getId());
     }
 }
