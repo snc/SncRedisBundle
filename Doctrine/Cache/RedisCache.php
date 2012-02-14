@@ -125,7 +125,7 @@ class RedisCache implements Cache
     public function deleteAll()
     {
         $ids = $this->getIds();
-        
+
         if(count($ids) > 0) {
             $this->_doDelete($ids);
         }
@@ -207,6 +207,22 @@ class RedisCache implements Cache
         } else {
             return $this->_redis->keys($this->_getNamespacedId('*'));
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStats()
+    {
+        $stats = $this->_redis->info();
+
+        return array(
+            Cache::STATS_HITS => $stats['keyspace_hits'],
+            Cache::STATS_MISSES => $stats['keyspace_misses'],
+            Cache::STATS_UPTIME => $stats['uptime_in_seconds'],
+            Cache::STATS_MEMORY_USAGE => $stats['used_memory'],
+            Cache::STATS_MEMORY_AVAILIABLE => null,
+        );
     }
 
     /**
