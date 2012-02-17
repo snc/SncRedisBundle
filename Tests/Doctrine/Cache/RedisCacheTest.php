@@ -16,7 +16,7 @@ use Snc\RedisBundle\Doctrine\Cache\RedisCache;
 
 class RedisCacheTest extends CacheTest
 {
-    private $_redis;
+    protected $_redis;
 
     public function setUp()
     {

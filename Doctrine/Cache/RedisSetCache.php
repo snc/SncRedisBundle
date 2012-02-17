@@ -14,7 +14,7 @@ namespace Snc\RedisBundle\Doctrine\Cache;
 /**
  * Redis cache class using a SET to manage cache ids
  *
- * @author  Henrik Westphal <henrik.westphal@gmail.com>
+ * @author Henrik Westphal <henrik.westphal@gmail.com>
  */
 class RedisSetCache extends RedisCache
 {
@@ -24,28 +24,37 @@ class RedisSetCache extends RedisCache
     private $_setKey = 'doctrine_cache_ids';
 
     /**
-     * {@inheritdoc}
+     * Sets the SET key
+     *
+     * @param $key
      */
-    public function contains($id)
+    public function setSetKey($key)
     {
-        $result = parent::contains($id);
-
-        if ($result) {
-            $result = $this->_redis->sismember($this->_getNamespacedId($this->_setKey), $this->_getNamespacedId($id));
-        }
-
-        return (bool) $result;
+        $this->_setKey = $key;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = 0)
+    protected function doContains($id)
+    {
+        if (parent::contains($id)) {
+            return $this->_redis->sismember($this->getNamespacedSetKey(), $id);
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doSave($id, $data, $lifeTime = false)
     {
         $result = parent::save($id, $data, $lifeTime);
 
         if ($result) {
-            $this->_redis->sadd($this->_getNamespacedId($this->_setKey), $this->_getNamespacedId($id));
+            // SADD may return 0 if the key is already part of the set
+            $this->_redis->sadd($this->getNamespacedSetKey(), $id);
         }
 
         return $result;
@@ -54,55 +63,25 @@ class RedisSetCache extends RedisCache
     /**
      * {@inheritdoc}
      */
-    public function deleteAll()
+    protected function doDelete($id)
     {
-        $ids = $this->getIds();
-        $ids[] = $this->_getNamespacedId($this->_setKey);
-
-        $this->_redis->del($ids);
-
-        return $ids;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIds($prefix = null)
-    {
-        if ($prefix) {
-            $prefix = $this->_getNamespacedId($prefix);
-            $result = array();
-            foreach ($this->_redis->smembers($this->_getNamespacedId($this->_setKey)) as $id) {
-                if (0 === strpos($id, $prefix)) {
-                    $result[] = $id;
-                }
-            }
-            return $result;
-        } else {
-            return $this->_redis->smembers($this->_getNamespacedId($this->_setKey));
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doDelete($id)
-    {
-        $result = parent::_doDelete($id);
+        $result = parent::doDelete($id);
 
         if ($result) {
-            if (is_array($id)) {
-                $key = $this->_getNamespacedId($this->_setKey);
-                $this->_redis->pipeline(function($pipe) use ($key, $id) {
-                    foreach($id as $value) {
-                        $pipe->srem($key, $value);
-                    }
-                });
-            } else {
-                $this->_redis->srem($this->_getNamespacedId($this->_setKey), $id);
-            }
+            // SREM may return 0 if the key is not part of the set
+            $this->_redis->srem($this->getNamespacedSetKey(), $id);
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the SET key prefixed by the namespace
+     *
+     * @return string
+     */
+    private function getNamespacedSetKey()
+    {
+        return $this->getNamespace() . ':' . $this->_setKey;
     }
 }
