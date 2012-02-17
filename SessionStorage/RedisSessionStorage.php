@@ -11,7 +11,8 @@
 
 namespace Snc\RedisBundle\SessionStorage;
 
-use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
+use Symfony\Component\HttpFoundation\Session\Storage\AbstractSessionStorage;
+use Symfony\Component\HttpFoundation\Session\Storage\SessionHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Predis\Client;
 
@@ -20,8 +21,9 @@ use Predis\Client;
  *
  * @author  Justin Rainbow <justin.rainbow@gmail.com>
  * @author  Jordi Boggiano <j.boggiano@seld.be>
+ * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
-class RedisSessionStorage extends NativeSessionStorage
+class RedisSessionStorage extends AbstractSessionStorage implements SessionHandlerInterface
 {
     /**
      * Instance of Client
@@ -47,120 +49,71 @@ class RedisSessionStorage extends NativeSessionStorage
     }
 
     /**
-     * Starts the session and registers session save handlers.
-     */
-    public function start()
-    {
-        if (self::$sessionStarted) {
-            return;
-        }
-
-        // use this object as the session handler
-        session_set_save_handler(
-            array($this, 'sessionDummy'), // open
-            array($this, 'sessionDummy'), // close
-            array($this, 'sessionRead'),
-            array($this, 'sessionDummy'), // write
-            array($this, 'sessionDestroy'),
-            array($this, 'sessionDummy') // gc
-        );
-
-        parent::start();
-    }
-
-    /**
      * {@inheritDoc}
      */
-    public function read($key, $default = null)
-    {
-        if (null !== ($data = $this->db->hget($this->getHashKey(), $key))) {
-            return unserialize($data);
-        }
-
-        return $default;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function remove($key)
-    {
-        $retval = $this->db->hget($this->getHashKey(), $key);
-        if (null !== $retval) {
-            $this->db->hdel($this->getHashKey(), $key);
-        }
-
-        return $retval;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function write($key, $data)
-    {
-        $this->db->hset($this->getHashKey(), $key, serialize($data));
-
-        $expires = (int) $this->options['lifetime'];
-        if ($expires > 0) {
-            $this->db->expire($this->getHashKey(), $expires);
-        }
-    }
-
-    /**
-     * Dummy session handler for callbacks that don't need to do anything
-     */
-    public function sessionDummy()
+    public function open($savePath, $sessionName)
     {
         return true;
     }
 
     /**
-     * Destroys a session.
-     *
-     * @param  string $id  A session ID
-     *
-     * @return Boolean  true
+     * {@inheritDoc}
      */
-    public function sessionDestroy($id)
+    public function close()
     {
-        $this->db->del($this->getHashKeyForId($id));
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function read($sessionId)
+    {
+        return $this->db->get($this->getRedisKey($sessionId)) ?: '';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function write($sessionId, $data)
+    {
+        $this->db->set($this->getRedisKey($sessionId), $data);
+
+        if (0 < ($expires = (int) $this->options['lifetime'])) {
+            $this->db->expire($this->getRedisKey($sessionId), $expires);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function destroy($sessionId)
+    {
+        $this->db->del($this->getRedisKey($sessionId));
 
         return true;
     }
 
     /**
-     * Reads a session.
-     *
-     * @param  string $id  A session ID
-     * @return string The session data if the session was read or created
+     * {@inheritDoc}
      */
-    public function sessionRead($id)
+    public function gc($lifetime)
     {
-        return '';
+        return true;
     }
 
     /**
-     * Prepends the Session ID with a user-defined prefix (if any).
+     * Prepends the session ID with a user-defined prefix (if any).
      *
      * @param string $id session id
      * @return string prefixed session ID
      */
-    protected function getHashKeyForId($id)
+    protected function getRedisKey($sessionId)
     {
         if (!isset($this->options['prefix'])) {
-            return $id;
+            return $sessionId;
         }
 
-        return $this->options['prefix'] . ':' . $id;
-    }
-
-    /**
-     * Prepends the Session ID with a user-defined prefix (if any).
-     *
-     * @return string prefixed session ID
-     */
-    protected function getHashKey()
-    {
-        return $this->getHashKeyForId($this->getId());
+        return $this->options['prefix'] . ':' . $sessionId;
     }
 }
