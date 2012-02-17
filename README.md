@@ -1,5 +1,7 @@
 # RedisBundle ![project status](http://stillmaintained.com/snc/SncRedisBundle.png) [![build status](https://secure.travis-ci.org/snc/SncRedisBundle.png?branch=master)](https://secure.travis-ci.org/snc/SncRedisBundle) #
 
+**Caution:** You have to use the `2.0` branch of this bundle if you work with Symfony 2.0.
+
 ## About ##
 
 The RedisBundle adds `redis` services to your project's service container using [Predis](http://github.com/nrk/predis).
