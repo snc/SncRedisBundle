@@ -13,7 +13,7 @@ namespace Snc\RedisBundle\Client\Predis;
 
 use Predis\Profiles\IServerProfile;
 use Snc\RedisBundle\Logger\RedisLogger;
-use Snc\RedisBundle\Client\Predis\Network\WrappedConnection;
+use Snc\RedisBundle\Client\Predis\Network\ConnectionWrapper;
 
 class ConnectionFactory extends \Predis\ConnectionFactory
 {
