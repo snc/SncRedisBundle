@@ -37,5 +37,6 @@
             </redis:query-cache>
         </redis:doctrine>
         <redis:monolog connection="monolog" key="monolog" />
+        <redis:swiftmailer connection="swiftmailer" key="swiftmailer" />
     </redis:config>
 </container>

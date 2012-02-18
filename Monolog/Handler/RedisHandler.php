@@ -54,10 +54,11 @@ class RedisHandler extends AbstractProcessingHandler
      */
     public function close()
     {
+        $key =& $this->key;
         $buffer =& $this->buffer;
-        $this->redis->multiExec(function($multi) use ($buffer) {
+        $this->redis->multiExec(function($multi) use ($key, $buffer) {
             foreach ($buffer as $record) {
-                $multi->rpush('monolog', $record);
+                $multi->rpush($key, $record);
             }
         });
     }

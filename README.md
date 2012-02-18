@@ -235,6 +235,26 @@ monolog:
             level: debug
 ```
 
+### SwiftMailer spooling ###
+
+You can spool your mails in a redis `LIST` by adding this to your config:
+
+``` yaml
+snc_redis:
+    connections:
+        default:
+            alias: default
+            host: localhost
+            port: 6379
+            database: 0
+            logging: false
+    swiftmailer:
+        connection: default
+        key: swiftmailer
+```
+
+Please note that you don't have to configure the `swiftmailer.spool` property.
+
 ### Complete configuration example ###
 
 ``` yaml
@@ -337,4 +357,7 @@ snc_redis:
     monolog:
         connection: monolog
         key: monolog
+    swiftmailer:
+        connection: default
+        key: swiftmailer
 ```

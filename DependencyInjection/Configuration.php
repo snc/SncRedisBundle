@@ -46,6 +46,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
                         ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
                         ->scalarNode('monolog_handler')->defaultValue('Snc\RedisBundle\Monolog\Handler\RedisHandler')->end()
+                        ->scalarNode('swiftmailer_spool')->defaultValue('Snc\RedisBundle\SwiftMailer\RedisSpool')->end()
                     ->end()
                 ->end()
             ->end();
@@ -55,6 +56,7 @@ class Configuration implements ConfigurationInterface
         $this->addSessionSection($rootNode);
         $this->addDoctrineSection($rootNode);
         $this->addMonologSection($rootNode);
+        $this->addSwiftMailerSection($rootNode);
 
         return $treeBuilder;
     }
@@ -205,6 +207,25 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('monolog')
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('connection')->isRequired()->end()
+                        ->scalarNode('key')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    /**
+     * Adds the snc_redis.swiftmailer configuration
+     *
+     * @param ArrayNodeDefinition $rootNode
+     */
+    private function addSwiftMailerSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('swiftmailer')
                     ->canBeUnset()
                     ->children()
                         ->scalarNode('connection')->isRequired()->end()

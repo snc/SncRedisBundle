@@ -69,6 +69,10 @@ class SncRedisExtension extends Extension
         if (isset($config['monolog'])) {
             $this->loadMonolog($config, $container);
         }
+
+        if (isset($config['swiftmailer'])) {
+            $this->loadSwiftMailer($config, $container);
+        }
     }
 
     /**
@@ -205,5 +209,25 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setRedis', array(new Reference('snc_redis.monolog_client')));
         $def->addMethodCall('setKey', array($config['monolog']['key']));
         $container->setDefinition('monolog.handler.redis', $def);
+    }
+
+    /**
+     * Loads the SwiftMailer configuration.
+     *
+     * @param array $config A configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     */
+    protected function loadSwiftMailer(array $config, ContainerBuilder $container)
+    {
+        $def = new Definition($container->getParameter('snc_redis.swiftmailer_spool.class'));
+        $def->setPublic(false);
+        $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
+        $clientDef->setPublic(false);
+        $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters', $config['swiftmailer']['connection'])));
+        $container->setDefinition('snc_redis.swiftmailer_client', $clientDef);
+        $def->addMethodCall('setRedis', array(new Reference('snc_redis.swiftmailer_client')));
+        $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
+        $container->setDefinition('snc_redis.swiftmailer.spool', $def);
+        $container->setAlias('swiftmailer.spool', 'snc_redis.swiftmailer.spool');
     }
 }
