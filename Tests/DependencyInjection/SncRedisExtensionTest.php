@@ -31,6 +31,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
             array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
             array('snc_redis.doctrine_cache.class', 'Snc\RedisBundle\Doctrine\Cache\RedisCache'),
             array('snc_redis.monolog_handler.class', 'Snc\RedisBundle\Monolog\Handler\RedisHandler'),
+            array('snc_redis.swiftmailer_spool.class', 'Snc\RedisBundle\SwiftMailer\RedisSpool'),
         );
     }
 
@@ -114,6 +115,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.monolog_client'));
         $this->assertTrue($container->hasDefinition('monolog.handler.redis'));
+
+        $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
+        $this->assertTrue($container->hasAlias('swiftmailer.spool'));
     }
 
     public function testClientProfileOption()
@@ -259,6 +263,9 @@ doctrine:
 monolog:
     connection: monolog
     key: monolog
+swiftmailer:
+    connection: default
+    key: swiftmailer
 EOF;
     }
 }
