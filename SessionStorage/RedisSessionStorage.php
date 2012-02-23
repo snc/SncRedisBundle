@@ -12,7 +12,6 @@
 namespace Snc\RedisBundle\SessionStorage;
 
 use Symfony\Component\HttpFoundation\Session\Storage\AbstractSessionStorage;
-use Symfony\Component\HttpFoundation\Session\Storage\SessionHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Predis\Client;
 
@@ -23,7 +22,7 @@ use Predis\Client;
  * @author  Jordi Boggiano <j.boggiano@seld.be>
  * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
-class RedisSessionStorage extends AbstractSessionStorage implements SessionHandlerInterface
+class RedisSessionStorage extends AbstractSessionStorage implements \SessionHandlerInterface
 {
     /**
      * Instance of Client
