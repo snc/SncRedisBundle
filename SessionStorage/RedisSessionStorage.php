@@ -78,7 +78,7 @@ class RedisSessionStorage extends AbstractSessionStorage implements \SessionHand
     {
         $this->db->set($this->getRedisKey($sessionId), $data);
 
-        if (0 < ($expires = (int) $this->options['cookie_lifetime'])) {
+        if (isset($this->options['cookie_lifetime']) && 0 < ($expires = (int) $this->options['cookie_lifetime'])) {
             $this->db->expire($this->getRedisKey($sessionId), $expires);
         }
     }
