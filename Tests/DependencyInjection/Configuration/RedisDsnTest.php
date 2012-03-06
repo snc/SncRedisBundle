@@ -37,12 +37,12 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider hostValues
-     * @param $dns
+     * @param $dsn
      * @param $host
      */
-    public function testHost($dns, $host)
+    public function testHost($dsn, $host)
     {
-        $dsn = new RedisDsn($dns);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($host, $dsn->getHost());
     }
 
@@ -68,12 +68,12 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider socketValues
-     * @param $dns
+     * @param $dsn
      * @param $socket
      */
-    public function testSocket($dns, $socket)
+    public function testSocket($dsn, $socket)
     {
-        $dsn = new RedisDsn($dns);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($socket, $dsn->getSocket());
     }
 
@@ -104,12 +104,12 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider portValues
-     * @param $dns
+     * @param $dsn
      * @param $port
      */
-    public function testPort($dns, $port)
+    public function testPort($dsn, $port)
     {
-        $dsn = new RedisDsn($dns);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($port, $dsn->getPort());
     }
 
@@ -140,12 +140,12 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider databaseValues
-     * @param $dns
+     * @param $dsn
      * @param $database
      */
-    public function testDatabase($dns, $database)
+    public function testDatabase($dsn, $database)
     {
-        $dsn = new RedisDsn($dns);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($database, $dsn->getDatabase());
     }
 
@@ -176,12 +176,12 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider passwordValues
-     * @param $dns
+     * @param $dsn
      * @param $password
      */
-    public function testPassword($dns, $password)
+    public function testPassword($dsn, $password)
     {
-        $dsn = new RedisDsn($dns);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($password, $dsn->getPassword());
     }
 
@@ -210,12 +210,12 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider isValidValues
-     * @param $dns
+     * @param $dsn
      * @param $valid
      */
-    public function testIsValid($dns, $valid)
+    public function testIsValid($dsn, $valid)
     {
-        $dsn = new RedisDsn($dns);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($valid, $dsn->isValid());
     }
 }
