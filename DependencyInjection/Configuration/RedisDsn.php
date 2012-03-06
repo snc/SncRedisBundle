@@ -99,11 +99,31 @@ class RedisDsn
     }
 
     /**
-     * @param $dsn
+     * @return bool
+     */
+    public function isValid()
+    {
+        if (0 !== strpos($this->dsn, 'redis://')) {
+            return false;
+        }
+
+        if (null !== $this->getHost() && null !== $this->getPort()) {
+            return true;
+        }
+
+        if (null !== $this->getSocket()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $dsn
      */
     protected function parseDsn($dsn)
     {
-        $dsn = substr($dsn, 8); // remove "redis://"
+        $dsn = str_replace('redis://', '', $dsn); // remove "redis://"
         if (false !== $pos = strrpos($dsn, '@')) {
             // parse password
             $this->password = str_replace('\@', '@', substr($dsn, 0, $pos));

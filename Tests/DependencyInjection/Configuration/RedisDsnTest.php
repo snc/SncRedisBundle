@@ -184,4 +184,38 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
         $dsn = new RedisDsn($dns);
         $this->assertSame($password, $dsn->getPassword());
     }
+
+    /**
+     * @static
+     * @return array
+     */
+    public static function isValidValues()
+    {
+        return array(
+            array('redis://localhost', true),
+            array('redis://localhost/1', true),
+            array('redis://pw@localhost:63790/10', true),
+            array('redis://127.0.0.1', true),
+            array('redis://127.0.0.1/1', true),
+            array('redis://pw@127.0.0.1:63790/10', true),
+            array('redis:///redis.sock', true),
+            array('redis:///redis.sock/1', true),
+            array('redis://pw@/redis.sock/10', true),
+            array('redis://pw@/redis.sock/10', true),
+            array('localhost', false),
+            array('localhost/1', false),
+            array('pw@localhost:63790/10', false),
+        );
+    }
+
+    /**
+     * @dataProvider isValidValues
+     * @param $dns
+     * @param $valid
+     */
+    public function testIsValid($dns, $valid)
+    {
+        $dsn = new RedisDsn($dns);
+        $this->assertSame($valid, $dsn->isValid());
+    }
 }
