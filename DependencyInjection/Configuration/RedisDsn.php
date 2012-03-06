@@ -105,11 +105,16 @@ class RedisDsn
     {
         $dsn = substr($dsn, 8); // remove "redis://"
         if (false !== $pos = strrpos($dsn, '@')) {
-            // strip password
+            // parse password
             $this->password = str_replace('\@', '@', substr($dsn, 0, $pos));
             $dsn = substr($dsn, $pos + 1);
         }
-        if (preg_match('#^([^:]+)(:(\d+))?(/(\d+))?$#', $dsn, $matches)) {
+        if (preg_match('#^(.*)/(\d+)$#', $dsn, $matches)) {
+            // parse database
+            $this->database = (int) $matches[2];
+            $dsn = $matches[1];
+        }
+        if (preg_match('#^([^:]+)(:(\d+))?$#', $dsn, $matches)) {
             if (!empty($matches[1])) {
                 // parse host/ip or socket
                 if ('/' === $matches[1]{0}) {
@@ -121,10 +126,6 @@ class RedisDsn
             if (null === $this->socket && !empty($matches[3])) {
                 // parse port
                 $this->port = (int) $matches[3];
-            }
-            if (!empty($matches[5])) {
-                // parse database
-                $this->database = (int) $matches[5];
             }
         }
     }
