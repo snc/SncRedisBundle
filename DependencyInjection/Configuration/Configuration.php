@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\DependencyInjection;
+namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -51,7 +51,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
 
-        $this->addConnectionsSection($rootNode);
         $this->addClientsSection($rootNode);
         $this->addSessionSection($rootNode);
         $this->addDoctrineSection($rootNode);
@@ -59,43 +58,6 @@ class Configuration implements ConfigurationInterface
         $this->addSwiftMailerSection($rootNode);
 
         return $treeBuilder;
-    }
-
-    /**
-     * Adds the snc_redis.connections configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
-     */
-    private function addConnectionsSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode
-            ->fixXmlConfig('connection')
-            ->children()
-                ->arrayNode('connections')
-                    ->isRequired()
-                    ->requiresAtLeastOneElement()
-                    ->useAttributeAsKey('alias', false)
-                    ->prototype('array')
-                        ->children()
-                            ->scalarNode('scheme')->defaultValue('tcp')->end()
-                            ->scalarNode('host')->defaultValue('127.0.0.1')->end()
-                            ->scalarNode('port')->defaultValue(6379)->end()
-                            ->scalarNode('path')->defaultNull()->end()
-                            ->scalarNode('database')->defaultValue(0)->end()
-                            ->scalarNode('password')->defaultNull()->end()
-                            ->booleanNode('connection_async')->defaultFalse()->end()
-                            ->booleanNode('connection_persistent')->defaultFalse()->end()
-                            ->scalarNode('connection_timeout')->defaultValue(5)->end()
-                            ->scalarNode('read_write_timeout')->defaultNull()->end()
-                            ->scalarNode('alias')->isRequired()->end()
-                            ->scalarNode('weight')->defaultNull()->end()
-                            ->booleanNode('iterable_multibulk')->defaultFalse()->end()
-                            ->booleanNode('throw_errors')->defaultTrue()->end()
-                            ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end();
     }
 
     /**
@@ -113,17 +75,47 @@ class Configuration implements ConfigurationInterface
                     ->requiresAtLeastOneElement()
                     ->useAttributeAsKey('alias', false)
                     ->prototype('array')
-                        ->fixXmlConfig('connection')
+                        ->fixXmlConfig('dsn')
                         ->children()
-                            ->arrayNode('connections')
+                            ->scalarNode('type')->isRequired()
+                                ->validate()
+                                    ->ifTrue(function($v) { return !in_array($v, array('predis', 'phpredis')); })
+                                    ->thenInvalid('The redis client type %s is invalid.')
+                                ->end()
+                            ->end()
+                            ->scalarNode('alias')->isRequired()->end()
+                            ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
+                            ->arrayNode('dsns')
                                 ->isRequired()
-                                ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
-                                ->prototype('scalar')->end()
+                                ->beforeNormalization()
+                                    ->ifString()->then(function($v) { return (array) $v; })
+                                ->end()
+                                ->beforeNormalization()
+                                    ->always()->then(function($v) {
+                                        return array_map(function($dsn) {
+                                            $parsed = new RedisDsn($dsn);
+                                            return $parsed->isValid() ? $parsed : $dsn;
+                                        }, $v);
+                                    })
+                                ->end()
+                                ->prototype('variable')
+                                    ->validate()
+                                        ->ifTrue(function($v) { return is_string($v); })
+                                        ->thenInvalid('The redis DSN %s is invalid.')
+                                    ->end()
+                                ->end()
                             ->end()
                             ->scalarNode('alias')->isRequired()->end()
                             ->arrayNode('options')
                                 ->addDefaultsIfNotSet()
                                 ->children()
+                                    ->booleanNode('connection_async')->defaultFalse()->end()
+                                    ->booleanNode('connection_persistent')->defaultFalse()->end()
+                                    ->scalarNode('connection_timeout')->defaultValue(5)->end()
+                                    ->scalarNode('read_write_timeout')->defaultNull()->end()
+                                    ->scalarNode('weight')->defaultNull()->end()
+                                    ->booleanNode('iterable_multibulk')->defaultFalse()->end()
+                                    ->booleanNode('throw_errors')->defaultTrue()->end()
                                     ->scalarNode('profile')->defaultValue('2.0')
                                         ->beforeNormalization()
                                             ->ifTrue(function($v) { return false === is_string($v); })
@@ -209,7 +201,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('monolog')
                     ->canBeUnset()
                     ->children()
-                        ->scalarNode('connection')->isRequired()->end()
+                        ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('key')->isRequired()->end()
                     ->end()
                 ->end()
@@ -228,7 +220,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('swiftmailer')
                     ->canBeUnset()
                     ->children()
-                        ->scalarNode('connection')->isRequired()->end()
+                        ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('key')->isRequired()->end()
                     ->end()
                 ->end()
