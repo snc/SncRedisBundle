@@ -44,6 +44,11 @@ class RedisDsn
     protected $database;
 
     /**
+     * @var int
+     */
+    protected $weight;
+
+    /**
      * Constructor
      *
      * @param $dsn
@@ -60,6 +65,14 @@ class RedisDsn
     public function getDatabase()
     {
         return $this->database ?: 0;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWeight()
+    {
+        return $this->weight;
     }
 
     /**
@@ -129,6 +142,7 @@ class RedisDsn
             $this->password = str_replace('\@', '@', substr($dsn, 0, $pos));
             $dsn = substr($dsn, $pos + 1);
         }
+        $dsn = preg_replace_callback('/\?(weight)=[^&]+.*$/', array($this, 'parseParameters'), $dsn); // parse parameters
         if (preg_match('#^(.*)/(\d+)$#', $dsn, $matches)) {
             // parse database
             $this->database = (int) $matches[2];
@@ -148,5 +162,27 @@ class RedisDsn
                 $this->port = (int) $matches[3];
             }
         }
+    }
+
+    /**
+     * @param array $matches
+     * @return string
+     */
+    protected function parseParameters($matches)
+    {
+        $parameters = explode('&', substr($matches[0], 1));
+        foreach ($parameters as $parameter) {
+            $kv = explode('=', $parameter, 2);
+            if (2 === count($kv)) {
+                switch($kv[0]) {
+                    case 'weight':
+                        if ($kv[1]) {
+                            $this->weight = (int) $kv[1];
+                        }
+                        break;
+                }
+            }
+        }
+        return '';
     }
 }

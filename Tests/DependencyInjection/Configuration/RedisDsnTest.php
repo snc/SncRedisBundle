@@ -218,4 +218,35 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
         $dsn = new RedisDsn($dsn);
         $this->assertSame($valid, $dsn->isValid());
     }
+
+    /**
+     * @static
+     * @return array
+     */
+    public static function weightValues()
+    {
+        return array(
+            array('redis://localhost', null),
+            array('redis://localhost/1?weight=1', 1),
+            array('redis://pw@localhost:63790/10?weight=2', 2),
+            array('redis://127.0.0.1?weight=3', 3),
+            array('redis://127.0.0.1/1?weight=4', 4),
+            array('redis://pw@127.0.0.1:63790/10?weight=5', 5),
+            array('redis:///redis.sock?weight=6', 6),
+            array('redis:///redis.sock/1?weight=7', 7),
+            array('redis://pw@/redis.sock/10?weight=8', 8),
+            array('redis://pw@/redis.sock/10?weight=9', 9),
+        );
+    }
+
+    /**
+     * @dataProvider weightValues
+     * @param $dsn
+     * @param $weight
+     */
+    public function testParameterValues($dsn, $weight)
+    {
+        $dsn = new RedisDsn($dsn);
+        $this->assertSame($weight, $dsn->getWeight());
+    }
 }
