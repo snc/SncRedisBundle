@@ -53,7 +53,6 @@
         <xsd:attribute name="connection-persistent" type="xsd:boolean" />
         <xsd:attribute name="connection-timeout" type="xsd:int" />
         <xsd:attribute name="read-write-timeout" type="xsd:int" />
-        <xsd:attribute name="weight" type="xsd:int" />
         <xsd:attribute name="iterable-multibulk" type="xsd:boolean" />
         <xsd:attribute name="throw-errors" type="xsd:boolean" />
         <xsd:attribute name="profile" type="client-profile" />
