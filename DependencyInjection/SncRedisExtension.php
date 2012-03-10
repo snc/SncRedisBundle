@@ -191,7 +191,51 @@ class SncRedisExtension extends Extension
      */
     protected function loadPhpredisClient(array $client, ContainerBuilder $container)
     {
-        throw new \RuntimeException('Support for phpredis is not yet implemented.');
+        $connectionCount = count($client['dsns']);
+
+        if (1 !== $connectionCount) {
+            throw new \RuntimeException('Support for RedisArray is not yet implemented.');
+        }
+
+        $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
+
+        $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
+        $phpredisDef = new Definition('Redis'); // TODO $container->getParameter('snc_redis.*.class')
+        $phpredisDef->setPublic(true);
+        $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+        $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
+        $connectParameters = array();
+        if (null !== $dsn->getSocket()) {
+            $connectParameters[] = $dsn->getSocket();
+            $connectParameters[] = null;
+        } else {
+            $connectParameters[] = $dsn->getHost();
+            $connectParameters[] = $dsn->getPort();
+        }
+        if ($client['options']['connection_timeout']) {
+            $connectParameters[] = $client['options']['connection_timeout'];
+        }
+        $phpredisDef->addMethodCall($connectMethod, $connectParameters);
+        if (null !== $dsn->getPassword()) {
+            $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
+        }
+        $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
+        $container->setDefinition($phpredisId, $phpredisDef);
+
+        if ($client['logging']) {
+            $phpredisDef->setPublic(false);
+            $parameters = array('alias' => $client['alias']);
+            $clientDef = new Definition('Snc\RedisBundle\Client\Phpredis\Client'); // TODO $container->getParameter('snc_redis.*.class')
+            $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+            $clientDef->addArgument($parameters);
+            $clientDef->addArgument(new Reference('snc_redis.logger'));
+            $clientDef->addMethodCall('setRedis', array(new Reference($phpredisId)));
+            $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
+        } else {
+            $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
+        }
+
+        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
     }
 
     /**
@@ -204,6 +248,10 @@ class SncRedisExtension extends Extension
     protected function loadSession(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
         $loader->load('session.xml');
+
+        if (isset($config['clients'][$config['session']['client']]) && 'phpredis' === $config['clients'][$config['session']['client']]['type']) {
+            throw new \LogicException('Please use the native session support of phpredis.');
+        }
 
         $container->setParameter('snc_redis.session.client', $config['session']['client']);
         $container->setParameter('snc_redis.session.prefix', $config['session']['prefix']);

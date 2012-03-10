@@ -29,14 +29,14 @@ class RedisHandler extends AbstractProcessingHandler
     protected $key;
 
     /**
-     * @var \Predis\Client
+     * @var \Predis\Client|\Redis
      */
     protected $redis;
 
     /**
-     * @param \Predis\Client $redis
+     * @param \Predis\Client|\Redis $redis
      */
-    public function setRedis(\Predis\Client $redis)
+    public function setRedis($redis)
     {
         $this->redis = $redis;
     }
@@ -54,13 +54,21 @@ class RedisHandler extends AbstractProcessingHandler
      */
     public function close()
     {
-        $key =& $this->key;
-        $buffer =& $this->buffer;
-        $this->redis->multiExec(function($multi) use ($key, $buffer) {
-            foreach ($buffer as $record) {
-                $multi->rpush($key, $record);
+        if ($this->redis instanceof \Redis) {
+            $multi = $this->redis->multi();
+            foreach ($this->buffer as $record) {
+                $multi->rpush($this->key, $record);
             }
-        });
+            $multi->exec();
+        } else {
+            $key =& $this->key;
+            $buffer =& $this->buffer;
+            $this->redis->multiExec(function($multi) use ($key, $buffer) {
+                foreach ($buffer as $record) {
+                    $multi->rpush($key, $record);
+                }
+            });
+        }
     }
 
     /**
