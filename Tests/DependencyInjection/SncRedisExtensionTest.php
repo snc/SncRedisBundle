@@ -69,7 +69,8 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
-        $this->assertTrue($container->hasDefinition('snc_redis.default_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.default'));
+        $this->assertTrue($container->hasAlias('snc_redis.default_client'));
     }
 
     public function testFullConfigLoad()
@@ -84,21 +85,20 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
-        $this->assertTrue($container->hasDefinition('snc_redis.default_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.default'));
+        $this->assertTrue($container->hasAlias('snc_redis.default_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_options'));
-        $this->assertTrue($container->hasDefinition('snc_redis.cache_client'));
-
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.session_parameters'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.session_options'));
-        $this->assertTrue($container->hasDefinition('snc_redis.session_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.cache'));
+        $this->assertTrue($container->hasAlias('snc_redis.cache_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster1_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster2_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster3_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_options'));
-        $this->assertTrue($container->hasDefinition('snc_redis.cluster_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
+        $this->assertTrue($container->hasAlias('snc_redis.cluster_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.session.storage'));
 
@@ -113,11 +113,22 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave1_result_cache'));
         $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave2_result_cache'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.monolog_client'));
+        $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
+        $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
         $this->assertTrue($container->hasDefinition('monolog.handler.redis'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
         $this->assertTrue($container->hasAlias('swiftmailer.spool'));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     */
+    public function testInvalidMonologConfigLoad()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getInvalidMonologYamlConfig());
+        $extension->load(array($config), $container = new ContainerBuilder());
     }
 
     public function testClientProfileOption()
@@ -166,81 +177,46 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     private function getMinimalYamlConfig()
     {
         return <<<'EOF'
-connections:
-    default:
-        alias: default
 clients:
     default:
+        type: predis
         alias: default
-        connection: default
+        dsn: redis://localhost
 EOF;
     }
 
     private function getFullYamlConfig()
     {
         return <<<'EOF'
-connections:
-    default:
-        alias: default
-        host: localhost
-        port: 6379
-        database: 0
-        logging: true
-    cache:
-        alias: cache
-        host: localhost
-        port: 6379
-        database: 1
-        password: secret
-        connection_timeout: 10
-        read_write_timeout: 30
-        iterable_multibulk: false
-        throw_errors: true
-        logging: false
-    session:
-        alias: session
-        host: localhost
-        port: 6379
-        database: 2
-    cluster1:
-        alias: cluster1
-        host: localhost
-        port: 6379
-        database: 3
-        weight: 10
-    cluster2:
-        alias: cluster2
-        host: localhost
-        port: 6379
-        database: 4
-        weight: 5
-    cluster3:
-        alias: cluster3
-        host: localhost
-        port: 6379
-        database: 5
-        weight: 1
 clients:
     default:
+        type: predis
         alias: default
-        connection: default
+        dsn: redis://localhost
+        logging: true
         options:
             profile: 2.0
     cache:
+        type: predis
         alias: cache
-        connection: cache
-        options:
-            profile: 2.2
-    session:
-        alias: session
-        connection: session
-        options:
-            profile: 1.2
+        dsn: redis://localhost/1
+        logging: true
+    monolog:
+        type: predis
+        alias: monolog
+        dsn: redis://localhost/1
+        logging: false
     cluster:
+        type: predis
         alias: cluster
-        connection: [ cluster1, cluster2, cluster3 ]
+        dsn: [ redis://127.0.0.1/1, redis://127.0.0.2/2, redis://pw@/var/run/redis/redis-1.sock:63790/10, redis://pw@127.0.0.1:63790/10 ]
         options:
-            profile: DEV
+            profile: 2.4
+            connection_timeout: 10
+            connection_persistent: true
+            read_write_timeout: 30
+            iterable_multibulk: false
+            throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Network\PredisCluster
 session:
     client: session
@@ -261,11 +237,26 @@ doctrine:
         entity_manager: default
         document_manager: default
 monolog:
-    connection: monolog
+    client: monolog
     key: monolog
 swiftmailer:
-    connection: default
+    client: default
     key: swiftmailer
+EOF;
+    }
+
+    private function getInvalidMonologYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    monolog:
+        type: predis
+        alias: monolog
+        dsn: redis://localhost
+        logging: true
+monolog:
+    client: monolog
+    key: monolog
 EOF;
     }
 }

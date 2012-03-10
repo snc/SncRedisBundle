@@ -68,87 +68,51 @@ Configure the `redis` service in your config:
 
 ``` yaml
 snc_redis:
-    connections:
-        default:
-            alias: default
-            host: localhost
-            port: 6379
-            database: 0
     clients:
         default:
+            type: predis
             alias: default
-            connection: default
+            dsn: redis://localhost
 ```
 
-You have to configure at least one connection and one client. In the above
-example your service container will contain the service `snc_redis.default_client`.
+You have to configure at least one client. In the above example your service
+container will contain the service `snc_redis.default`.
 
 A more complex setup which contains a clustered client could look like this:
 
 ``` yaml
 snc_redis:
-    connections:
-        default:
-            alias: default
-            host: localhost
-            port: 6379
-            database: 0
-            logging: %kernel.debug%
-        cache:
-            alias: cache
-            host: localhost
-            port: 6379
-            database: 1
-            password: secret
-            connection_timeout: 10
-            read_write_timeout: 30
-        session:
-            alias: session
-            host: localhost
-            port: 6379
-            database: 2
-        cluster1:
-            alias: cluster1
-            host: localhost
-            port: 6379
-            database: 3
-            weight: 10
-        cluster2:
-            alias: cluster2
-            host: localhost
-            port: 6379
-            database: 4
-            weight: 5
-        cluster3:
-            alias: cluster3
-            host: localhost
-            port: 6379
-            database: 5
-            weight: 1
     clients:
         default:
+            type: predis
             alias: default
-            connection: default
+            dsn: redis://localhost
+            logging: %kernel.debug%
         cache:
+            type: predis
             alias: cache
-            connection: cache
+            dsn: redis://secret@localhost/1
             options:
                 profile: 2.2
+                connection_timeout: 10
+                read_write_timeout: 30
         session:
+            type: predis
             alias: session
-            connection: session
+            dsn: redis://localhost/2
         cluster:
+            type: predis
             alias: cluster
-            connection: [ cluster1, cluster2, cluster3 ]
+            dsn: [ redis://localhost/3?weight=10, redis://localhost/4?weight=5, redis://localhost/5?weight=1 ]
 ```
 
 In your controllers you can now access all your configured clients:
 
 ``` php
 <?php
-$redis = $this->container->get('snc_redis.default_client');
+$redis = $this->container->get('snc_redis.default');
 $val = $redis->incr('foo:bar');
-$redis_cluster = $this->container->get('snc_redis.cluster_client');
+$redis_cluster = $this->container->get('snc_redis.cluster');
 $val = $redis_cluster->get('ab:cd');
 $val = $redis_cluster->get('ef:gh');
 $val = $redis_cluster->get('ij:kl');
@@ -215,16 +179,16 @@ You can store your logs in a redis `LIST` by adding this to your config:
 
 ``` yaml
 snc_redis:
-    connections:
+    clients:
         monolog:
+            type: predis
             alias: monolog
-            scheme: unix
-            path: /tmp/socket.sock
-            database: 1
+            dsn: redis://localhost/1
             logging: false
-            connection_persistent: true
+            options:
+                connection_persistent: true
     monolog:
-        connection: monolog
+        client: monolog
         key: monolog
 
 monolog:
@@ -241,15 +205,14 @@ You can spool your mails in a redis `LIST` by adding this to your config:
 
 ``` yaml
 snc_redis:
-    connections:
+    clients:
         default:
+            type: predis
             alias: default
-            host: localhost
-            port: 6379
-            database: 0
+            dsn: redis://localhost
             logging: false
     swiftmailer:
-        connection: default
+        client: default
         key: swiftmailer
 ```
 
@@ -259,88 +222,33 @@ Please note that you don't have to configure the `swiftmailer.spool` property.
 
 ``` yaml
 snc_redis:
-    connections:
-        default:
-            alias: default
-            host: localhost
-            port: 6379
-            database: 0
-            logging: %kernel.debug%
-        cache:
-            alias: cache
-            host: localhost
-            port: 6379
-            database: 1
-            password: secret
-            connection_timeout: 10
-            read_write_timeout: 30
-            iterable_multibulk: false
-            throw_errors: true
-        session:
-            alias: session
-            host: localhost
-            port: 6379
-            database: 2
-        cluster1:
-            alias: cluster1
-            host: localhost
-            port: 6379
-            database: 3
-            weight: 10
-        cluster2:
-            alias: cluster2
-            host: localhost
-            port: 6379
-            database: 4
-            weight: 5
-        cluster3:
-            alias: cluster3
-            host: localhost
-            port: 6379
-            database: 5
-            weight: 1
-        socket:
-            alias: socket
-            scheme: unix
-            path: /tmp/socket.sock
-            database: 0
-            logging: true
-        monolog:
-            alias: monolog
-            scheme: unix
-            path: /tmp/socket.sock
-            database: 1
-            logging: false
-            connection_persistent: true
     clients:
         default:
+            type: predis
             alias: default
-            connection: default
-            options:
-                profile: 2.0
+            dsn: redis://localhost
+            logging: %kernel.debug%
         cache:
+            type: predis
             alias: cache
-            connection: cache
-            options:
-                profile: 2.2
-        session:
-            alias: session
-            connection: session
-            options:
-                profile: 1.2
+            dsn: redis://localhost/1
+            logging: true
         cluster:
+            type: predis
             alias: cluster
-            connection: [ cluster1, cluster2, cluster3 ]
+            dsn: [ redis://127.0.0.1/1, redis://127.0.0.2/2, redis://pw@/var/run/redis/redis-1.sock:63790/10, redis://pw@127.0.0.1:63790/10 ]
             options:
-                profile: DEV
+                profile: 2.4
+                connection_timeout: 10
+                connection_persistent: true
+                read_write_timeout: 30
+                iterable_multibulk: false
+                throw_errors: true
                 cluster: Snc\RedisBundle\Client\Predis\Network\PredisCluster
-        socket:
-            alias: socket
-            connection: socket
     session:
-        client: session
+        client: default
         prefix: foo
-        use_as_default: false
+        use_as_default: true
     doctrine:
         metadata_cache:
             client: cache
@@ -355,9 +263,9 @@ snc_redis:
             client: cache
             entity_manager: default
     monolog:
-        connection: monolog
+        client: cache
         key: monolog
     swiftmailer:
-        connection: default
+        client: default
         key: swiftmailer
 ```
