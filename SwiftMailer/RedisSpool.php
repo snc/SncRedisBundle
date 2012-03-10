@@ -19,14 +19,14 @@ class RedisSpool extends \Swift_ConfigurableSpool
     protected $key;
 
     /**
-     * @var \Predis\Client
+     * @var \Predis\Client|\Redis
      */
     protected $redis;
 
     /**
-     * @param \Predis\Client $redis
+     * @param \Predis\Client|\Redis $redis
      */
-    public function setRedis(\Predis\Client $redis)
+    public function setRedis($redis)
     {
         $this->redis = $redis;
     }
