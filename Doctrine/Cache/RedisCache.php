@@ -23,7 +23,7 @@ use Doctrine\Common\Cache\Cache;
 class RedisCache implements Cache
 {
     /**
-     * @var \Predis\Client
+     * @var \Predis\Client|\Redis
      */
     protected $_redis;
 
@@ -33,25 +33,19 @@ class RedisCache implements Cache
     protected $_namespace = null;
 
     /**
-     * @var boolean
-     */
-    protected $_supportsSetExpire = false;
-
-    /**
      * Sets the redis instance to use.
      *
-     * @param \Predis\Client $redis
+     * @param \Predis\Client|\Redis $redis
      */
-    public function setRedis(\Predis\Client $redis)
+    public function setRedis($redis)
     {
         $this->_redis = $redis;
-        $this->_supportsSetExpire = $redis->getProfile()->supportsCommand('setex');
     }
 
     /**
      * Returns the redis instance used by the cache.
      *
-     * @return \Predis\Client
+     * @return \Predis\Client|\Redis
      */
     public function getRedis()
     {
@@ -93,13 +87,10 @@ class RedisCache implements Cache
         $id = $this->_getNamespacedId($id);
         $data = serialize($data);
 
-        if ($this->_supportsSetExpire && 0 < $lifeTime) {
+        if (0 < $lifeTime) {
             $result = $this->_redis->setex($id, (int) $lifeTime, $data);
         } else {
             $result = $this->_redis->set($id, $data);
-            if ($result && 0 < $lifeTime) {
-                $result = $this->_redis->expire($id, (int) $lifeTime);
-            }
         }
 
         return (bool) $result;
@@ -125,7 +116,7 @@ class RedisCache implements Cache
     public function deleteAll()
     {
         $ids = $this->getIds();
-        
+
         if(count($ids) > 0) {
             $this->_doDelete($ids);
         }
