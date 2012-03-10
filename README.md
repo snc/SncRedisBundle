@@ -8,6 +8,18 @@ The RedisBundle adds `redis` services to your project's service container using 
 
 ## Installation ##
 
+### Using composer ###
+
+Add `"snc/redis-bundle": "dev-master"` to your `require` section in the `composer.json` file:
+
+``` json
+{
+    "require": {
+        "snc/redis-bundle": "dev-master"
+    }
+}
+```
+
 ### Using the symfony-standard vendor script ###
 
 Append the following lines to your `deps` file:
@@ -15,25 +27,13 @@ Append the following lines to your `deps` file:
     [SncRedisBundle]
         git=git://github.com/snc/SncRedisBundle.git
         target=/bundles/Snc/RedisBundle
+        version=origin/master
 
     [predis]
         git=git://github.com/nrk/predis.git
+        version=origin/v0.7
 
 then run the `./bin/vendors install` command.
-
-### Using git submodule ###
-
-Run the following commands:
-
-    $ git submodule add git://github.com/snc/SncRedisBundle.git vendor/bundles/Snc/RedisBundle
-    $ git submodule add git://github.com/nrk/predis.git vendor/predis
-
-### Using git clone ###
-
-Run the following commands:
-
-    $ git clone git://github.com/snc/SncRedisBundle.git vendor/bundles/Snc/RedisBundle
-    $ git clone git://github.com/nrk/predis.git vendor/predis
 
 Register the `Snc` and `Predis` namespace in your project's autoload script (app/autoload.php):
 
