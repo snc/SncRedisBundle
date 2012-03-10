@@ -2,26 +2,14 @@
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redis="http://symfony.com/schema/dic/redis" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/redis http://symfony.com/schema/dic/redis/redis-1.0.xsd">
     <redis:config>
         <redis:class doctrine-cache="Snc\RedisBundle\Doctrine\Cache\RedisSetCache" />
-        <redis:connection host="localhost" port="6379" database="0" alias="default" scheme="tcp" password="secret123" connection-async="true" connection-persistent="true" connection-timeout="66" read-write-timeout="123" weight="9" logging="true" />
-        <redis:connection host="localhost" port="6379" database="1" alias="cache" logging="true" />
-        <redis:connection host="localhost" port="6379" database="2" alias="session" />
-        <redis:connection host="localhost" port="6379" database="3" alias="cluster1" />
-        <redis:connection host="localhost" port="6379" database="4" alias="cluster2" />
-        <redis:connection host="localhost" port="6379" database="5" alias="cluster3" />
-        <redis:client alias="default">
-            <redis:connection>default</redis:connection>
-            <redis:options profile="2.0" />
+        <redis:client alias="default" logging="true" type="predis">
+            <redis:dsn>redis://localhost</redis:dsn>
+            <redis:options connection-async="true" connection-persistent="true" connection-timeout="66" read-write-timeout="123" cluster="Snc\RedisBundle\Client\Predis\Network\PredisCluster" iterable-multibulk="true" profile="2.6" throw-errors="true" />
         </redis:client>
-        <redis:client alias="cache">
-            <redis:connection>cache</redis:connection>
-        </redis:client>
-        <redis:client alias="session">
-            <redis:connection>session</redis:connection>
-        </redis:client>
-        <redis:client alias="cluster">
-            <redis:connection>cluster1</redis:connection>
-            <redis:connection>cluster2</redis:connection>
-            <redis:connection>cluster3</redis:connection>
+        <redis:client alias="cluster" type="phpredis">
+            <redis:dsn>redis://localhost</redis:dsn>
+            <redis:dsn>redis://pw@/var/run/redis/redis-1.sock:63790/10</redis:dsn>
+            <redis:dsn>redis://pw@127.0.0.1:63790/10</redis:dsn>
         </redis:client>
         <redis:session client="session" prefix="foo" use-as-default="false" />
         <redis:doctrine>
@@ -36,7 +24,7 @@
                 <redis:entity-manager>default</redis:entity-manager>
             </redis:query-cache>
         </redis:doctrine>
-        <redis:monolog connection="monolog" key="monolog" />
-        <redis:swiftmailer connection="swiftmailer" key="swiftmailer" />
+        <redis:monolog client="monolog" key="monolog" />
+        <redis:swiftmailer client="swiftmailer" key="swiftmailer" />
     </redis:config>
 </container>

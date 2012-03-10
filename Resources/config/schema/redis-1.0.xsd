@@ -10,7 +10,6 @@
     <xsd:complexType name="config">
         <xsd:sequence>
             <xsd:element name="class" type="class" minOccurs="0" maxOccurs="1" />
-            <xsd:element name="connection" type="connection" minOccurs="1" maxOccurs="unbounded" />
             <xsd:element name="client" type="client" minOccurs="1" maxOccurs="unbounded" />
             <xsd:element name="session" type="session" minOccurs="0" maxOccurs="1" />
             <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
@@ -22,47 +21,40 @@
     <xsd:complexType name="class">
         <xsd:attribute name="client" type="xsd:string" />
         <xsd:attribute name="client-options" type="xsd:string" />
-        <xsd:attribute name="connection" type="xsd:string" />
         <xsd:attribute name="connection-parameters" type="xsd:string" />
         <xsd:attribute name="connection-factory" type="xsd:string" />
+        <xsd:attribute name="connection-wrapper" type="xsd:string" />
         <xsd:attribute name="logger" type="xsd:string" />
         <xsd:attribute name="data-collector" type="xsd:string" />
         <xsd:attribute name="doctrine-cache" type="xsd:string" />
+        <xsd:attribute name="monolog-handler" type="xsd:string" />
+        <xsd:attribute name="swiftmailer-spool" type="xsd:string" />
     </xsd:complexType>
 
-    <xsd:complexType name="connection">
-        <xsd:attribute name="scheme" type="connection-scheme" />
-        <xsd:attribute name="host" type="xsd:string" />
-        <xsd:attribute name="port" type="xsd:int" />
-        <xsd:attribute name="path" type="xsd:string" />
-        <xsd:attribute name="database" type="xsd:int" />
-        <xsd:attribute name="password" type="xsd:string" />
+    <xsd:complexType name="client">
+        <xsd:sequence>
+            <xsd:element name="dsn" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="options" type="client-options" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="type" type="client-type" />
+        <xsd:attribute name="alias" type="xsd:string" use="required" />
+        <xsd:attribute name="logging" type="xsd:boolean" />
+    </xsd:complexType>
+
+    <xsd:simpleType name="client-type">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="predis" />
+            <xsd:enumeration value="phpredis" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="client-options">
         <xsd:attribute name="connection-async" type="xsd:boolean" />
         <xsd:attribute name="connection-persistent" type="xsd:boolean" />
         <xsd:attribute name="connection-timeout" type="xsd:int" />
         <xsd:attribute name="read-write-timeout" type="xsd:int" />
-        <xsd:attribute name="alias" type="xsd:string" use="required" />
-        <xsd:attribute name="weight" type="xsd:int" />
         <xsd:attribute name="iterable-multibulk" type="xsd:boolean" />
         <xsd:attribute name="throw-errors" type="xsd:boolean" />
-        <xsd:attribute name="logging" type="xsd:boolean" />
-    </xsd:complexType>
-
-    <xsd:simpleType name="connection-scheme">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="tcp" />
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:complexType name="client">
-        <xsd:sequence>
-            <xsd:element name="connection" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
-            <xsd:element name="options" type="client-options" minOccurs="0" maxOccurs="1" />
-        </xsd:sequence>
-        <xsd:attribute name="alias" type="xsd:string" use="required" />
-    </xsd:complexType>
-
-    <xsd:complexType name="client-options">
         <xsd:attribute name="profile" type="client-profile" />
         <xsd:attribute name="cluster" type="xsd:string" />
     </xsd:complexType>
@@ -72,7 +64,8 @@
             <xsd:enumeration value="1.2" />
             <xsd:enumeration value="2.0" />
             <xsd:enumeration value="2.2" />
-            <xsd:enumeration value="DEV" />
+            <xsd:enumeration value="2.4" />
+            <xsd:enumeration value="2.6" />
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -100,12 +93,12 @@
     </xsd:complexType>
 
     <xsd:complexType name="monolog">
-        <xsd:attribute name="connection" type="xsd:string" use="required" />
+        <xsd:attribute name="client" type="xsd:string" use="required" />
         <xsd:attribute name="key" type="xsd:string" use="required" />
     </xsd:complexType>
 
     <xsd:complexType name="swiftmailer">
-        <xsd:attribute name="connection" type="xsd:string" use="required" />
+        <xsd:attribute name="client" type="xsd:string" use="required" />
         <xsd:attribute name="key" type="xsd:string" use="required" />
     </xsd:complexType>
 </xsd:schema>
