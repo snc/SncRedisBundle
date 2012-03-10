@@ -135,6 +135,7 @@ class SncRedisExtension extends Extension
             }
             $connection['database'] = $dsn->getDatabase();
             $connection['password'] = $dsn->getPassword();
+            $connection['weight'] = $dsn->getWeight();
             $this->loadPredisConnectionParameters($connection, $container);
         }
 
