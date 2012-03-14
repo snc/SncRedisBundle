@@ -87,6 +87,7 @@ class Configuration implements ConfigurationInterface
                             ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
                             ->arrayNode('dsns')
                                 ->isRequired()
+                                ->performNoDeepMerging()
                                 ->beforeNormalization()
                                     ->ifString()->then(function($v) { return (array) $v; })
                                 ->end()

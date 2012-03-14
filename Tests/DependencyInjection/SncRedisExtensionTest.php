@@ -11,7 +11,10 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
+use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
+use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -167,6 +170,16 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testConfigurationMerging()
+    {
+        $configuration = new Configuration();
+        $configs = array($this->parseYaml($this->getMergeConfig1()), $this->parseYaml($this->getMergeConfig2()));
+        $processor = new Processor();
+        $config = $processor->processConfiguration($configuration, $configs);
+        $this->assertCount(1, $config['clients']['default']['dsns']);
+        $this->assertEquals(new RedisDsn('redis://test'), current($config['clients']['default']['dsns']));
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -257,6 +270,27 @@ clients:
 monolog:
     client: monolog
     key: monolog
+EOF;
+    }
+
+    private function getMergeConfig1()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: [ redis://default/1, redis://default/2 ]
+        logging: true
+EOF;
+    }
+
+    private function getMergeConfig2()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        dsn: redis://test
 EOF;
     }
 }
