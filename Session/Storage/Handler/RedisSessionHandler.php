@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\SessionStorage;
+namespace Snc\RedisBundle\Session\Storage\Handler;
 
 use Symfony\Component\HttpFoundation\Session\Storage\AbstractSessionStorage;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Predis\Client;
 
 /**
@@ -22,7 +21,7 @@ use Predis\Client;
  * @author  Jordi Boggiano <j.boggiano@seld.be>
  * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
-class RedisSessionStorage extends AbstractSessionStorage implements \SessionHandlerInterface
+class RedisSessionHandler implements \SessionHandlerInterface
 {
     /**
      * Instance of Client
@@ -30,6 +29,8 @@ class RedisSessionStorage extends AbstractSessionStorage implements \SessionHand
      * @var Client
      */
     protected $db;
+
+    protected $options;
 
     /**
      * Redis session storage constructor
@@ -44,7 +45,7 @@ class RedisSessionStorage extends AbstractSessionStorage implements \SessionHand
 
         $options['prefix'] = $prefix;
 
-        parent::__construct($options);
+        $this->options = $options;
     }
 
     /**
