@@ -103,7 +103,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
         $this->assertTrue($container->hasAlias('snc_redis.cluster_client'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.session.storage'));
+        $this->assertTrue($container->hasDefinition('snc_redis.session.handler'));
 
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_metadata_cache'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_result_cache'));

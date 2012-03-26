@@ -259,7 +259,7 @@ class SncRedisExtension extends Extension
         $container->setAlias('snc_redis.session.client', sprintf('snc_redis.%s_client', $container->getParameter('snc_redis.session.client')));
 
         if ($config['session']['use_as_default']) {
-            $container->setAlias('session.storage', 'snc_redis.session.storage');
+            $container->setAlias('session.handler', 'snc_redis.session.handler');
         }
     }
 
