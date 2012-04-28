@@ -15,7 +15,7 @@ Add the `snc/redis-bundle` package to your `require` section in the `composer.js
 ``` json
 {
     "require": {
-        "snc/redis-bundle": "2.0.x-dev"
+        "snc/redis-bundle": "2.1.x-dev"
     }
 }
 ```
@@ -27,7 +27,7 @@ Append the following lines to your `deps` file:
     [SncRedisBundle]
         git=git://github.com/snc/SncRedisBundle.git
         target=/bundles/Snc/RedisBundle
-        version=origin/2.0
+        version=origin/master
 
     [predis]
         git=git://github.com/nrk/predis.git
