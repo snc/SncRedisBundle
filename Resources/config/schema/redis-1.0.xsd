@@ -66,6 +66,7 @@
             <xsd:enumeration value="2.2" />
             <xsd:enumeration value="2.4" />
             <xsd:enumeration value="2.6" />
+            <xsd:enumeration value="dev" />
         </xsd:restriction>
     </xsd:simpleType>
 

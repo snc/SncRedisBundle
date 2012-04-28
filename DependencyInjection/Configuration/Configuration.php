@@ -116,7 +116,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
-                                    ->scalarNode('profile')->defaultValue('2.0')
+                                    ->scalarNode('profile')->defaultValue('2.4')
                                         ->beforeNormalization()
                                             ->ifTrue(function($v) { return false === is_string($v); })
                                             ->then(function($v) { return sprintf('%.1f', $v); })
