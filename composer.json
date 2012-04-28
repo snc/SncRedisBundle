@@ -20,9 +20,11 @@
         "symfony/yaml": "2.0.*",
         "predis/predis": "0.7.*"
     },
+    "require-dev": {
+        "doctrine/common": "2.1.*"
+    },
     "suggest": {
-        "doctrine/common": "2.1.*",
-        "monolog/monolog": "1.*"
+        "monolog/monolog": "If you want to use the monolog redis handler."
     },
     "autoload": {
         "psr-0": { "Snc\\RedisBundle": "" }
