@@ -8,7 +8,7 @@
         </redis:client>
         <redis:client alias="cluster" type="phpredis">
             <redis:dsn>redis://localhost</redis:dsn>
-            <redis:dsn>redis://pw@/var/run/redis/redis-1.sock:63790/10</redis:dsn>
+            <redis:dsn>redis://pw@/var/run/redis/redis-1.sock/10</redis:dsn>
             <redis:dsn>redis://pw@127.0.0.1:63790/10</redis:dsn>
         </redis:client>
         <redis:session client="session" prefix="foo" use-as-default="false" />
