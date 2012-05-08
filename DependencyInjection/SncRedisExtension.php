@@ -116,12 +116,15 @@ class SncRedisExtension extends Extension
      */
     protected function loadPredisClient(array $client, ContainerBuilder $container)
     {
-        $connections = array();
+        if (null === $client['options']['cluster']) {
+            unset($client['options']['cluster']);
+        }
+        $connectionAliases = array();
         $connectionCount = count($client['dsns']);
         foreach ($client['dsns'] as $i => $dsn) {
             /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
             $connectionAlias = 1 === $connectionCount ? $client['alias'] : $client['alias'] . ($i + 1);
-            $connections[] = $connectionAlias;
+            $connectionAliases[] = $connectionAlias;
             $connection = $client['options'];
             $connection['logging'] = $client['logging'];
             $connection['alias'] = $connectionAlias;
@@ -146,19 +149,16 @@ class SncRedisExtension extends Extension
         if ($client['logging']) {
             $client['options']['connections'] = new Reference('snc_redis.connectionfactory');
         }
-        if (null === $client['options']['cluster']) {
-            unset($client['options']['cluster']);
-        }
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
         $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         if (1 === $connectionCount) {
-            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters', $connections[0])));
+            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters', $connectionAliases[0])));
         } else {
             $connections = array();
-            foreach ($connections as $name) {
-                $connections[] = new Reference(sprintf('snc_redis.connection.%s_parameters', $name));
+            foreach ($connectionAliases as $alias) {
+                $connections[] = new Reference(sprintf('snc_redis.connection.%s_parameters', $alias));
             }
             $clientDef->addArgument($connections);
         }
