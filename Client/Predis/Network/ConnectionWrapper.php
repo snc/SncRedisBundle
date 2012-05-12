@@ -78,7 +78,7 @@ class ConnectionWrapper implements IConnectionSingle
      */
     public function disconnect()
     {
-        return $this->connection->connect();
+        return $this->connection->disconnect();
     }
 
     /**
