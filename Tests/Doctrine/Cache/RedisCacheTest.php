@@ -20,9 +20,18 @@ class RedisCacheTest extends CacheTest
 
     public function setUp()
     {
+        $config = 'tcp://127.0.0.1:6379';
+
         if (class_exists('\Predis\Client')) {
-            $config = 'tcp://127.0.0.1:6379';
             $this->_redis = new \Predis\Client($config);
+        } elseif (class_exists('\Redis')) {
+            $this->_redis = new \Redis();
+            $this->_redis->connect($config);
+        } else {
+            $this->markTestSkipped(sprintf('The %s requires the predis library or phpredis extension.', __CLASS__));
+        }
+
+        if (null !== $this->_redis) {
             try {
                 $ok = $this->_redis->ping();
             } catch (\Exception $e) {
@@ -31,8 +40,6 @@ class RedisCacheTest extends CacheTest
             if (!$ok) {
                 $this->markTestSkipped(sprintf('The %s requires a redis instance listening on %s.', __CLASS__, $config));
             }
-        } else {
-            $this->markTestSkipped(sprintf('The %s requires the predis library.', __CLASS__));
         }
     }
 
@@ -40,6 +47,7 @@ class RedisCacheTest extends CacheTest
     {
         $driver = new RedisCache();
         $driver->setRedis($this->_redis);
+
         return $driver;
     }
 }
