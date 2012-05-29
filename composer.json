@@ -15,14 +15,15 @@
     "require": {
         "php": ">=5.3.2",
         "symfony/framework-bundle": "2.1.*",
-        "symfony/yaml": "2.1.*",
-        "predis/predis": "0.7.*"
+        "symfony/yaml": "2.1.*"
     },
     "require-dev": {
-        "doctrine/common": "2.2.*"
+        "doctrine/common": "2.2.*",
+        "predis/predis": "0.7.*"
     },
     "suggest": {
-        "monolog/monolog": "If you want to use the monolog redis handler."
+        "monolog/monolog": "If you want to use the monolog redis handler.",
+        "predis/predis": "If you want to use predis"
     },
     "autoload": {
         "psr-0": { "Snc\\RedisBundle": "" }
