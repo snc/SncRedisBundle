@@ -11,41 +11,46 @@
 
 namespace Snc\RedisBundle\Session\Storage\Handler;
 
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeSessionHandler;
 use Predis\Client;
 
 /**
  * Redis based session storage
  *
- * @author  Justin Rainbow <justin.rainbow@gmail.com>
- * @author  Jordi Boggiano <j.boggiano@seld.be>
- * @author  Henrik Westphal <henrik.westphal@gmail.com>
+ * @author Justin Rainbow <justin.rainbow@gmail.com>
+ * @author Jordi Boggiano <j.boggiano@seld.be>
+ * @author Henrik Westphal <henrik.westphal@gmail.com>
  */
-class RedisSessionHandler extends NativeSessionHandler
+class RedisSessionHandler implements \SessionHandlerInterface
 {
     /**
      * Instance of Client
      *
      * @var Client
      */
-    protected $db;
+    protected $redis;
 
-    protected $options;
+    /**
+     * @var int
+     */
+    protected $ttl;
+
+    /**
+     * @var string
+     */
+    protected $prefix;
 
     /**
      * Redis session storage constructor
      *
-     * @param Client $db      Redis database connection
+     * @param Client $redis   Redis database connection
      * @param array  $options Session options
      * @param string $prefix  Prefix to use when writing session data
      */
-    public function __construct(Client $db, $options = array(), $prefix = 'session')
+    public function __construct(Client $redis, array $options = array(), $prefix = 'session')
     {
-        $this->db = $db;
-
-        $options['prefix'] = $prefix;
-
-        $this->options = $options;
+        $this->redis = $redis;
+        $this->ttl = isset($options['cookie_lifetime']) ? (int) $options['cookie_lifetime'] : 0;
+        $this->prefix = $prefix;
     }
 
     /**
@@ -69,7 +74,7 @@ class RedisSessionHandler extends NativeSessionHandler
      */
     public function read($sessionId)
     {
-        return $this->db->get($this->getRedisKey($sessionId)) ?: '';
+        return $this->redis->get($this->getRedisKey($sessionId)) ?: '';
     }
 
     /**
@@ -77,10 +82,10 @@ class RedisSessionHandler extends NativeSessionHandler
      */
     public function write($sessionId, $data)
     {
-        $this->db->set($this->getRedisKey($sessionId), $data);
-
-        if (isset($this->options['cookie_lifetime']) && 0 < ($expires = (int) $this->options['cookie_lifetime'])) {
-            $this->db->expire($this->getRedisKey($sessionId), $expires);
+        if (0 < $this->ttl) {
+            $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
+        } else {
+            $this->redis->set($this->getRedisKey($sessionId), $data);
         }
     }
 
@@ -89,7 +94,7 @@ class RedisSessionHandler extends NativeSessionHandler
      */
     public function destroy($sessionId)
     {
-        $this->db->del($this->getRedisKey($sessionId));
+        $this->redis->del($this->getRedisKey($sessionId));
 
         return true;
     }
@@ -104,16 +109,16 @@ class RedisSessionHandler extends NativeSessionHandler
 
     /**
      * Prepends the session ID with a user-defined prefix (if any).
+     * @param string $sessionId session ID
      *
-     * @param string $id session id
      * @return string prefixed session ID
      */
     protected function getRedisKey($sessionId)
     {
-        if (!isset($this->options['prefix'])) {
+        if (empty($this->prefix)) {
             return $sessionId;
         }
 
-        return $this->options['prefix'] . ':' . $sessionId;
+        return $this->prefix . ':' . $sessionId;
     }
 }
