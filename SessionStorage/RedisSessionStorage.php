@@ -13,7 +13,6 @@ namespace Snc\RedisBundle\SessionStorage;
 
 use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Predis\Client;
 
 /**
  * Redis based session storage
@@ -24,22 +23,20 @@ use Predis\Client;
 class RedisSessionStorage extends NativeSessionStorage
 {
     /**
-     * Instance of Client
-     *
-     * @var Client
+     * @var \Predis\Client|\Redis
      */
-    protected $db;
+    protected $redis;
 
     /**
      * Redis session storage constructor
      *
-     * @param Client $db      Redis database connection
-     * @param array  $options Session options
-     * @param string $prefix  Prefix to use when writing session data
+     * @param \Predis\Client|\Redis $redis   Redis database connection
+     * @param array                 $options Session options
+     * @param string                $prefix  Prefix to use when writing session data
      */
-    public function __construct(Client $db, $options = array(), $prefix = 'session')
+    public function __construct($redis, $options = array(), $prefix = 'session')
     {
-        $this->db = $db;
+        $this->redis = $redis;
 
         $options['prefix'] = $prefix;
 
@@ -73,7 +70,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function read($key, $default = null)
     {
-        if (null !== ($data = $this->db->hget($this->getHashKey(), $key))) {
+        if (null !== ($data = $this->redis->hget($this->getHashKey(), $key))) {
             return unserialize($data);
         }
 
@@ -85,9 +82,9 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function remove($key)
     {
-        $retval = $this->db->hget($this->getHashKey(), $key);
+        $retval = $this->redis->hget($this->getHashKey(), $key);
         if (null !== $retval) {
-            $this->db->hdel($this->getHashKey(), $key);
+            $this->redis->hdel($this->getHashKey(), $key);
         }
 
         return $retval;
@@ -98,11 +95,11 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function write($key, $data)
     {
-        $this->db->hset($this->getHashKey(), $key, serialize($data));
+        $this->redis->hset($this->getHashKey(), $key, serialize($data));
 
         $expires = (int) $this->options['lifetime'];
         if ($expires > 0) {
-            $this->db->expire($this->getHashKey(), $expires);
+            $this->redis->expire($this->getHashKey(), $expires);
         }
     }
 
@@ -123,7 +120,7 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     public function sessionDestroy($id)
     {
-        $this->db->del($this->getHashKeyForId($id));
+        $this->redis->del($this->getHashKeyForId($id));
 
         return true;
     }

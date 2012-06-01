@@ -249,10 +249,6 @@ class SncRedisExtension extends Extension
     {
         $loader->load('session.xml');
 
-        if (isset($config['clients'][$config['session']['client']]) && 'phpredis' === $config['clients'][$config['session']['client']]['type']) {
-            throw new \LogicException('Please use the native session support of phpredis.');
-        }
-
         $container->setParameter('snc_redis.session.client', $config['session']['client']);
         $container->setParameter('snc_redis.session.prefix', $config['session']['prefix']);
 
