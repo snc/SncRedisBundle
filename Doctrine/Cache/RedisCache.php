@@ -52,7 +52,9 @@ class RedisCache extends CacheProvider
      */
     protected function doFetch($id)
     {
-        return $this->_redis->get($id);
+        $result = $this->_redis->get($id);
+
+        return null === $result ? false : $result;
     }
 
     /**
