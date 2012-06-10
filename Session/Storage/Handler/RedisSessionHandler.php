@@ -11,8 +11,6 @@
 
 namespace Snc\RedisBundle\Session\Storage\Handler;
 
-use Predis\Client;
-
 /**
  * Redis based session storage
  *
@@ -23,9 +21,7 @@ use Predis\Client;
 class RedisSessionHandler implements \SessionHandlerInterface
 {
     /**
-     * Instance of Client
-     *
-     * @var Client
+     * @var \Predis\Client|\Redis
      */
     protected $redis;
 
@@ -42,11 +38,11 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * Redis session storage constructor
      *
-     * @param Client $redis   Redis database connection
-     * @param array  $options Session options
-     * @param string $prefix  Prefix to use when writing session data
+     * @param \Predis\Client|\Redis $redis   Redis database connection
+     * @param array                 $options Session options
+     * @param string                $prefix  Prefix to use when writing session data
      */
-    public function __construct(Client $redis, array $options = array(), $prefix = 'session')
+    public function __construct($redis, array $options = array(), $prefix = 'session')
     {
         $this->redis = $redis;
         $this->ttl = isset($options['cookie_lifetime']) ? (int) $options['cookie_lifetime'] : 0;
