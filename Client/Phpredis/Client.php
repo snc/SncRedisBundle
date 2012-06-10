@@ -98,6 +98,6 @@ class Client
      */
     private function getCommandString($command, array $arguments)
     {
-        return trim(strtoupper($command) . ' ' . implode(' ', $arguments));
+        return trim(strtoupper($command) . ' ' . implode(' ', (array) array_pop($arguments)));
     }
 }
