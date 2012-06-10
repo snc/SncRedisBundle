@@ -10,7 +10,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'expire', 'del'));
+        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del'));
     }
 
     protected function tearDown()
@@ -58,14 +58,8 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->redis
             ->expects($this->once())
-            ->method('set')
-            ->with($this->equalTo('session:_symfony'), $this->equalTo('some data'))
-        ;
-
-        $this->redis
-            ->expects($this->once())
-            ->method('expire')
-            ->with($this->equalTo('session:_symfony'), $this->equalTo(10))
+            ->method('setex')
+            ->with($this->equalTo('session:_symfony'), $this->equalTo(10), $this->equalTo('some data'))
         ;
 
         $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 10), 'session');
