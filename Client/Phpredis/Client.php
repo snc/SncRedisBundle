@@ -14,10 +14,13 @@ namespace Snc\RedisBundle\Client\Phpredis;
 use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
 
+/**
+ * phpredis client wrapper
+ */
 class Client
 {
     /**
-     * @var \Snc\RedisBundle\Logger\RedisLogger
+     * @var RedisLogger
      */
     protected $logger;
 
@@ -34,8 +37,8 @@ class Client
     /**
      * Constructor
      *
-     * @param array $parameters
-     * @param \Snc\RedisBundle\Logger\RedisLogger $logger
+     * @param array       $parameters An array of parameters
+     * @param RedisLogger $logger     A RedisLogger instance
      */
     public function __construct(array $parameters = array(), RedisLogger $logger = null)
     {
@@ -56,8 +59,9 @@ class Client
     /**
      * Proxy function to enable logging
      *
-     * @param string $name
-     * @param array $arguments
+     * @param string $name      A command name
+     * @param array  $arguments An array of command arguments
+     *
      * @return mixed
      */
     public function __call($name, array $arguments)
@@ -92,8 +96,9 @@ class Client
     /**
      * Returns a string representation of the given command including arguments
      *
-     * @param string $command
-     * @param array $arguments
+     * @param string $command   A command name
+     * @param array  $arguments An array of command arguments
+     *
      * @return string
      */
     private function getCommandString($command, array $arguments)

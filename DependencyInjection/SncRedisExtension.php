@@ -29,8 +29,10 @@ class SncRedisExtension extends Extension
     /**
      * Loads the configuration.
      *
-     * @param array $configs An array of configurations
+     * @param array            $configs   An array of configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
+     *
+     * @throws InvalidConfigurationException
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -93,7 +95,7 @@ class SncRedisExtension extends Extension
     /**
      * Loads a redis client.
      *
-     * @param array $client A client configuration
+     * @param array            $client    A client configuration
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
     protected function loadClient(array $client, ContainerBuilder $container)
@@ -111,8 +113,8 @@ class SncRedisExtension extends Extension
     /**
      * Loads a redis client using predis.
      *
-     * @param array $client A client configuration
-     * @param ContainerBuilder $container
+     * @param array            $client    A client configuration
+     * @param ContainerBuilder $container A ContainerBuilder instance
      */
     protected function loadPredisClient(array $client, ContainerBuilder $container)
     {
@@ -170,8 +172,8 @@ class SncRedisExtension extends Extension
     /**
      * Loads a connection.
      *
-     * @param array $connection A connection configuration
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array            $connection A connection configuration
+     * @param ContainerBuilder $container  A ContainerBuilder instance
      */
     protected function loadPredisConnectionParameters(array $connection, ContainerBuilder $container)
     {
@@ -186,8 +188,10 @@ class SncRedisExtension extends Extension
     /**
      * Loads a redis client using phpredis.
      *
-     * @param array $client A client configuration
-     * @param ContainerBuilder $container
+     * @param array            $client    A client configuration
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     *
+     * @throws \RuntimeException
      */
     protected function loadPhpredisClient(array $client, ContainerBuilder $container)
     {
@@ -241,9 +245,9 @@ class SncRedisExtension extends Extension
     /**
      * Loads the session configuration.
      *
-     * @param array $config A configuration array
+     * @param array            $config    A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
-     * @param XmlFileLoader $loader
+     * @param XmlFileLoader    $loader    A XmlFileLoader instance
      */
     protected function loadSession(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
@@ -262,7 +266,7 @@ class SncRedisExtension extends Extension
     /**
      * Loads the Doctrine configuration.
      *
-     * @param array $config A configuration array
+     * @param array            $config    A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
     protected function loadDoctrine(array $config, ContainerBuilder $container)
@@ -293,7 +297,7 @@ class SncRedisExtension extends Extension
     /**
      * Loads the Monolog configuration.
      *
-     * @param array $config A configuration array
+     * @param array            $config    A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
     protected function loadMonolog(array $config, ContainerBuilder $container)
@@ -308,7 +312,7 @@ class SncRedisExtension extends Extension
     /**
      * Loads the SwiftMailer configuration.
      *
-     * @param array $config A configuration array
+     * @param array            $config    A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
     protected function loadSwiftMailer(array $config, ContainerBuilder $container)

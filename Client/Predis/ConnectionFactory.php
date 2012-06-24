@@ -15,6 +15,9 @@ use Predis\Profiles\IServerProfile;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Client\Predis\Network\ConnectionWrapper;
 
+/**
+ * ConnectionFactory
+ */
 class ConnectionFactory extends \Predis\ConnectionFactory
 {
     /**
@@ -53,6 +56,7 @@ class ConnectionFactory extends \Predis\ConnectionFactory
      */
     public function create($parameters, IServerProfile $profile = null)
     {
+        /** @var ConnectionWrapper $connection */
         $connection = parent::create($parameters);
 
         if ($connection->getParameters()->logging) {

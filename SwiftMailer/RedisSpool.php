@@ -11,6 +11,9 @@
 
 namespace Snc\RedisBundle\SwiftMailer;
 
+/**
+ * RedisSpool
+ */
 class RedisSpool extends \Swift_ConfigurableSpool
 {
     /**
@@ -76,13 +79,11 @@ class RedisSpool extends \Swift_ConfigurableSpool
      */
     public function flushQueue(\Swift_Transport $transport, &$failedRecipients = null)
     {
-        if (!$this->redis->llen($this->key))
-        {
+        if (!$this->redis->llen($this->key)) {
             return 0;
         }
 
-        if (!$transport->isStarted())
-        {
+        if (!$transport->isStarted()) {
             $transport->start();
         }
 
@@ -93,13 +94,11 @@ class RedisSpool extends \Swift_ConfigurableSpool
         while (($message = unserialize($this->redis->lpop($this->key)))) {
             $count += $transport->send($message, $failedRecipients);
 
-            if ($this->getMessageLimit() && $count >= $this->getMessageLimit())
-            {
+            if ($this->getMessageLimit() && $count >= $this->getMessageLimit()) {
                 break;
             }
 
-            if ($this->getTimeLimit() && (time() - $time) >= $this->getTimeLimit())
-            {
+            if ($this->getTimeLimit() && (time() - $time) >= $this->getTimeLimit()) {
                 break;
             }
         }

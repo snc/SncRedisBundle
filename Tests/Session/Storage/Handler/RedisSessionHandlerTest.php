@@ -1,9 +1,21 @@
 <?php
 
+/*
+ * This file is part of the SncRedisBundle package.
+ *
+ * (c) Henrik Westphal <henrik.westphal@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Snc\RedisBundle\Tests\Session\Storage\Handler;
 
 use Snc\RedisBundle\Session\Storage\Handler\RedisSessionHandler;
 
+/**
+ * RedisSessionHandlerTest
+ */
 class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 {
     private $redis;

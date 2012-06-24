@@ -67,27 +67,26 @@ class RateLimit
     /**
      * Constructor
      *
-     * @param \Predis\Client $client
-     * @param string $key
-     * @param int $bucketSpan
-     * @param int $bucketInterval
-     * @param int $subjectExpiry
+     * @param \Predis\Client $client         A \Predis\Client instance
+     * @param string         $key            Key
+     * @param int            $bucketSpan     Bucket span
+     * @param int            $bucketInterval Bucket interval
+     * @param int            $subjectExpiry  Subject expiry
      */
     public function __construct(Client $client, $key, $bucketSpan = 600, $bucketInterval = 5, $subjectExpiry = 1200)
     {
         $this->client = $client;
-        $this->key = (string)$key;
-        $this->bucketSpan = (int)$bucketSpan;
-        $this->bucketInterval = (int)$bucketInterval;
-        $this->bucketCount = (int)round($this->bucketSpan / $this->bucketInterval);
-        $this->subjectExpiry = (int)$subjectExpiry;
+        $this->key = (string) $key;
+        $this->bucketSpan = (int) $bucketSpan;
+        $this->bucketInterval = (int) $bucketInterval;
+        $this->bucketCount = (int) round($this->bucketSpan / $this->bucketInterval);
+        $this->subjectExpiry = (int) $subjectExpiry;
     }
 
     /**
      * Increment the count for the specified subject.
      *
      * @param string $subject A unique identifier, for example a session id or an IP
-     * @return void
      */
     public function increment($subject)
     {
@@ -101,15 +100,16 @@ class RateLimit
     /**
      * Count the number of times the subject has performed an action in the last `$interval` seconds.
      *
-     * @param string $subject A unique identifier, for example a session id or an IP
-     * @param int $interval Interval in seconds
+     * @param string $subject  A unique identifier, for example a session id or an IP
+     * @param int    $interval Interval in seconds
+     *
      * @return int
      */
     public function count($subject, $interval)
     {
         $bucket = $this->getBucket();
         $subject = $this->key . ':' . $subject;
-        $count = (int)floor($interval / $this->bucketInterval);
+        $count = (int) floor($interval / $this->bucketInterval);
         $multi = $this->client->multiExec();
         $this->addMultiExecCount($multi, $subject, $bucket, $count);
 
@@ -119,15 +119,16 @@ class RateLimit
     /**
      * Calls the increment() and count() function using a single MULTI/EXEC block.
      *
-     * @param string $subject A unique identifier, for example a session id or an IP
-     * @param int $interval Interval in seconds
+     * @param string $subject  A unique identifier, for example a session id or an IP
+     * @param int    $interval Interval in seconds
+     *
      * @return int
      */
     public function incrementAndCount($subject, $interval)
     {
         $bucket = $this->getBucket();
         $subject = $this->key . ':' . $subject;
-        $count = (int)floor($interval / $this->bucketInterval);
+        $count = (int) floor($interval / $this->bucketInterval);
         $multi = $this->client->multiExec();
         $this->addMultiExecIncrement($multi, $subject, $bucket);
         $this->addMultiExecCount($multi, $subject, $bucket, $count);
@@ -139,34 +140,36 @@ class RateLimit
      * Resets the counter for the specified subject.
      *
      * @param string $subject A unique identifier, for example a session id or an IP
+     *
      * @return bool
      */
     public function reset($subject)
     {
         $subject = $this->key . ':' . $subject;
-        return (bool)$this->client->del($subject);
+
+        return (bool) $this->client->del($subject);
     }
 
     /**
      * Get the bucket associated with the current time.
      *
      * @param int $time (optional) - default is the current time (seconds since epoch)
+     *
      * @return int bucket
      */
     private function getBucket($time = null)
     {
         $time = $time ? : time();
 
-        return (int)floor(($time % $this->bucketSpan) / $this->bucketInterval);
+        return (int) floor(($time % $this->bucketSpan) / $this->bucketInterval);
     }
 
     /**
      * Adds the commands needed for the increment function
      *
-     * @param \Predis\Transaction\MultiExecContext $multi
-     * @param string $subject A unique identifier, for example a session id or an IP
-     * @param int $bucket
-     * @return void
+     * @param MultiExecContext $multi   A MultiExecContext instance
+     * @param string           $subject A unique identifier, for example a session id or an IP
+     * @param int              $bucket  Bucket
      */
     private function addMultiExecIncrement(MultiExecContext $multi, $subject, $bucket)
     {
@@ -181,11 +184,10 @@ class RateLimit
     /**
      * Adds the commands needed for the count function
      *
-     * @param \Predis\Transaction\MultiExecContext $multi
-     * @param string $subject A unique identifier, for example a session id or an IP
-     * @param int $bucket
-     * @param int $count
-     * @return void
+     * @param MultiExecContext $multi   A MultiExecContext instance
+     * @param string           $subject A unique identifier, for example a session id or an IP
+     * @param int              $bucket  Bucket
+     * @param int              $count   Count
      */
     private function addMultiExecCount(MultiExecContext $multi, $subject, $bucket, $count)
     {
