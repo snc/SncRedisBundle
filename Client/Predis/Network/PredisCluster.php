@@ -11,8 +11,6 @@
 
 namespace Snc\RedisBundle\Client\Predis\Network;
 
-use Predis\Commands\ICommand;
-use Predis\Network\IConnectionSingle;
 use Predis\Distribution\IDistributionStrategy;
 use Snc\RedisBundle\Client\Predis\Distribution\RandomDistributionStrategy;
 

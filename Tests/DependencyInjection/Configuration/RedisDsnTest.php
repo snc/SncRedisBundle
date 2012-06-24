@@ -13,10 +13,14 @@ namespace Snc\RedisBundle\Tests\DependencyInjection\Configuration;
 
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
+/**
+ * RedisDsnTest
+ */
 class RedisDsnTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @static
+     *
      * @return array
      */
     public static function hostValues()
@@ -36,9 +40,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn  DSN
+     * @param string $host Host
+     *
      * @dataProvider hostValues
-     * @param $dsn
-     * @param $host
      */
     public function testHost($dsn, $host)
     {
@@ -48,6 +53,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @static
+     *
      * @return array
      */
     public static function socketValues()
@@ -67,9 +73,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn    DSN
+     * @param string $socket Socket
+     *
      * @dataProvider socketValues
-     * @param $dsn
-     * @param $socket
      */
     public function testSocket($dsn, $socket)
     {
@@ -79,6 +86,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @static
+     *
      * @return array
      */
     public static function portValues()
@@ -103,9 +111,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn  DSN
+     * @param int    $port Port
+     *
      * @dataProvider portValues
-     * @param $dsn
-     * @param $port
      */
     public function testPort($dsn, $port)
     {
@@ -115,6 +124,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @static
+     *
      * @return array
      */
     public static function databaseValues()
@@ -139,9 +149,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn      DSN
+     * @param int    $database Database
+     *
      * @dataProvider databaseValues
-     * @param $dsn
-     * @param $database
      */
     public function testDatabase($dsn, $database)
     {
@@ -151,6 +162,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @static
+     *
      * @return array
      */
     public static function passwordValues()
@@ -175,9 +187,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn      DSN
+     * @param string $password Password
+     *
      * @dataProvider passwordValues
-     * @param $dsn
-     * @param $password
      */
     public function testPassword($dsn, $password)
     {
@@ -187,6 +200,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @static
+     *
      * @return array
      */
     public static function isValidValues()
@@ -209,9 +223,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn   DSN
+     * @param bool   $valid Valid
+     *
      * @dataProvider isValidValues
-     * @param $dsn
-     * @param $valid
      */
     public function testIsValid($dsn, $valid)
     {
@@ -221,6 +236,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @static
+     *
      * @return array
      */
     public static function weightValues()
@@ -240,9 +256,10 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $dsn    DSN
+     * @param int    $weight Weight
+     *
      * @dataProvider weightValues
-     * @param $dsn
-     * @param $weight
      */
     public function testParameterValues($dsn, $weight)
     {

@@ -36,11 +36,10 @@ class RedisLogger
     /**
      * Logs a command
      *
-     * @param string $command Redis command
-     * @param float $duration Duration in milliseconds
-     * @param string $connection Connection alias
-     * @param string $error Error message or false if command was successful
-     * @return void
+     * @param string      $command    Redis command
+     * @param float       $duration   Duration in milliseconds
+     * @param string      $connection Connection alias
+     * @param bool|string $error      Error message or false if command was successful
      */
     public function logCommand($command, $duration, $connection, $error = false)
     {

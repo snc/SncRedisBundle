@@ -11,6 +11,9 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+/**
+ * RedisDsn
+ */
 class RedisDsn
 {
     /**
@@ -51,7 +54,7 @@ class RedisDsn
     /**
      * Constructor
      *
-     * @param $dsn
+     * @param string $dsn
      */
     public function __construct($dsn)
     {
@@ -166,6 +169,7 @@ class RedisDsn
 
     /**
      * @param array $matches
+     *
      * @return string
      */
     protected function parseParameters($matches)
@@ -174,7 +178,7 @@ class RedisDsn
         foreach ($parameters as $parameter) {
             $kv = explode('=', $parameter, 2);
             if (2 === count($kv)) {
-                switch($kv[0]) {
+                switch ($kv[0]) {
                     case 'weight':
                         if ($kv[1]) {
                             $this->weight = (int) $kv[1];
@@ -183,6 +187,7 @@ class RedisDsn
                 }
             }
         }
+
         return '';
     }
 }

@@ -20,8 +20,16 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Yaml\Parser;
 
+/**
+ * SncRedisExtensionTest
+ */
 class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @static
+     *
+     * @return array
+     */
     public static function parameterValues()
     {
         return array(
@@ -49,6 +57,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $name     Name
+     * @param string $expected Expected value
+     *
      * @dataProvider parameterValues
      */
     public function testDefaultParameterConfigLoad($name, $expected)
@@ -60,6 +71,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $container->getParameter($name));
     }
 
+    /**
+     * Test loading of minimal config
+     */
     public function testMinimalConfigLoad()
     {
         $extension = new SncRedisExtension();
@@ -76,6 +90,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
     }
 
+    /**
+     * Test loading of full config
+     */
     public function testFullConfigLoad()
     {
         $extension = new SncRedisExtension();
@@ -134,6 +151,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $extension->load(array($config), $container = new ContainerBuilder());
     }
 
+    /**
+     * Test valid parsing of the client profile option
+     */
     public function testClientProfileOption()
     {
         $extension = new SncRedisExtension();
@@ -142,10 +162,13 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
 
-        $this->assertSame((float)2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
+        $this->assertSame((float) 2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
         $this->assertSame('2.0', $options['profile'], 'Profile option was converted to a string');
     }
 
+    /**
+     * Test valid XML config
+     */
     public function testValidXmlConfig()
     {
         $container = new ContainerBuilder();
@@ -170,6 +193,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Test config merging
+     */
     public function testConfigurationMerging()
     {
         $configuration = new Configuration();

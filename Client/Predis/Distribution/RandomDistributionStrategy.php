@@ -38,9 +38,7 @@ class RandomDistributionStrategy implements IDistributionStrategy
     }
 
     /**
-     * @param \Predis\Network\IConnectionSingle $node
-     * @param int $weight
-     * @return void
+     * {@inheritDoc}
      */
     public function add($node, $weight = null)
     {
@@ -49,32 +47,30 @@ class RandomDistributionStrategy implements IDistributionStrategy
     }
 
     /**
-     * @param \Predis\Network\IConnectionSingle $node
+     * {@inheritDoc}
      */
     public function remove($node)
     {
-        $this->_nodes = array_filter($this->_nodes, function($n) use($node)
-        {
+        $this->_nodes = array_filter($this->_nodes, function($n) use($node) {
             return $n !== $node;
         });
         $this->_nodesCount = count($this->_nodes);
     }
 
     /**
-     * @param string $key
-     * @return \Predis\Network\IConnectionSingle
+     * {@inheritDoc}
      */
     public function get($key)
     {
         if (0 === $this->_nodesCount) {
             throw new \OutOfBoundsException('No connections.');
         }
+
         return $this->_nodes[array_rand($this->_nodes)];
     }
 
     /**
-     * @param string $value
-     * @return bool
+     * {@inheritDoc}
      */
     public function generateKey($value)
     {

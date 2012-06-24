@@ -22,8 +22,8 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-class RedisFlushCommand extends ContainerAwareCommand {
-
+class RedisFlushCommand extends ContainerAwareCommand
+{
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
      */
@@ -38,7 +38,8 @@ class RedisFlushCommand extends ContainerAwareCommand {
     /**
      * {@inheritDoc}
      */
-    protected function configure() {
+    protected function configure()
+    {
         $this->setName('redis:flushdb')
             ->setDescription('Flushes the redis database using the redis flushdb command')
             ->addOption('client', null, InputOption::VALUE_REQUIRED, 'The name of the client as specified in the config', 'default')
@@ -48,7 +49,8 @@ class RedisFlushCommand extends ContainerAwareCommand {
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $this->input = $input;
         $this->output = $output;
 
@@ -64,7 +66,8 @@ class RedisFlushCommand extends ContainerAwareCommand {
      *
      * @return boolean true if either no-interaction was chosen or the user wants to proceed
      */
-    private function proceedingAllowed() {
+    private function proceedingAllowed()
+    {
         if ($this->input->getOption('no-interaction')) {
             return true;
         }
@@ -77,7 +80,8 @@ class RedisFlushCommand extends ContainerAwareCommand {
      *
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException when the client does not match any configured client
      */
-    private function flushDbForClient() {
+    private function flushDbForClient()
+    {
         $client = $this->input->getOption('client');
 
         try {
@@ -89,5 +93,4 @@ class RedisFlushCommand extends ContainerAwareCommand {
             $this->output->writeln('<error>The client ' . $client . ' is not defined</error>');
         }
     }
-
 }

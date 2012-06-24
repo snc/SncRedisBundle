@@ -12,13 +12,12 @@
 namespace Snc\RedisBundle\SessionStorage;
 
 use Symfony\Component\HttpFoundation\SessionStorage\NativeSessionStorage;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Redis based session storage
  *
- * @author  Justin Rainbow <justin.rainbow@gmail.com>
- * @author  Jordi Boggiano <j.boggiano@seld.be>
+ * @author Justin Rainbow <justin.rainbow@gmail.com>
+ * @author Jordi Boggiano <j.boggiano@seld.be>
  */
 class RedisSessionStorage extends NativeSessionStorage
 {
@@ -105,6 +104,8 @@ class RedisSessionStorage extends NativeSessionStorage
 
     /**
      * Dummy session handler for callbacks that don't need to do anything
+     *
+     * @return bool
      */
     public function sessionDummy()
     {
@@ -114,9 +115,9 @@ class RedisSessionStorage extends NativeSessionStorage
     /**
      * Destroys a session.
      *
-     * @param  string $id  A session ID
+     * @param string $id A session ID
      *
-     * @return Boolean  true
+     * @return bool true
      */
     public function sessionDestroy($id)
     {
@@ -128,7 +129,8 @@ class RedisSessionStorage extends NativeSessionStorage
     /**
      * Reads a session.
      *
-     * @param  string $id  A session ID
+     * @param string $id A session ID
+     *
      * @return string The session data if the session was read or created
      */
     public function sessionRead($id)
@@ -140,6 +142,7 @@ class RedisSessionStorage extends NativeSessionStorage
      * Prepends the Session ID with a user-defined prefix (if any).
      *
      * @param string $id session id
+     *
      * @return string prefixed session ID
      */
     protected function getHashKeyForId($id)

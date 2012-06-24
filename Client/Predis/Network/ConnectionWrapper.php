@@ -39,6 +39,7 @@ class ConnectionWrapper implements IConnectionSingle
     public function __construct(IConnectionSingle $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
+            /** @var ConnectionWrapper $connection */
             $connection = $connection->getConnection();
         }
 
@@ -148,7 +149,8 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * {@inheritdoc}
      */
-    public function executeCommand(ICommand $command) {
+    public function executeCommand(ICommand $command)
+    {
         if (null === $this->logger) {
             return $this->connection->executeCommand($command);
         }

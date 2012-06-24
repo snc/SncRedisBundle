@@ -16,9 +16,8 @@ use Doctrine\Common\Cache\Cache;
 /**
  * Redis cache class
  *
- * @link    http://github.com/justinrainbow/
- * @author  Justin Rainbow <justin.rainbow@gmail.com>
- * @author  Henrik Westphal <henrik.westphal@gmail.com>
+ * @author Justin Rainbow <justin.rainbow@gmail.com>
+ * @author Henrik Westphal <henrik.westphal@gmail.com>
  */
 class RedisCache implements Cache
 {
@@ -68,6 +67,7 @@ class RedisCache implements Cache
     public function fetch($id)
     {
         $result = $this->_redis->get($this->_getNamespacedId($id));
+
         return null === $result ? false : unserialize($result);
     }
 
@@ -117,7 +117,7 @@ class RedisCache implements Cache
     {
         $ids = $this->getIds();
 
-        if(count($ids) > 0) {
+        if (count($ids) > 0) {
             $this->_doDelete($ids);
         }
 
@@ -128,6 +128,7 @@ class RedisCache implements Cache
      * Deletes all cache entries matching the given regular expression.
      *
      * @param string $regex
+     *
      * @return array An array of deleted cache ids
      */
     public function deleteByRegex($regex)
@@ -151,6 +152,7 @@ class RedisCache implements Cache
      * Deletes all cache entries beginning with the given string.
      *
      * @param string $prefix
+     *
      * @return array An array of deleted cache ids
      */
     public function deleteByPrefix($prefix)
@@ -166,6 +168,7 @@ class RedisCache implements Cache
      * Deletes all cache entries ending with the given string.
      *
      * @param string $suffix
+     *
      * @return array An array of deleted cache ids
      */
     public function deleteBySuffix($suffix)
@@ -189,6 +192,7 @@ class RedisCache implements Cache
      * Returns an array of cache ids.
      *
      * @param string $prefix Optional id prefix
+     *
      * @return array An array of cache ids
      */
     public function getIds($prefix = null)
@@ -204,6 +208,7 @@ class RedisCache implements Cache
      * Deletes one or more cache entries.
      *
      * @param string|array $id Cache id(s)
+     *
      * @return boolean
      */
     protected function _doDelete($id)
@@ -215,11 +220,12 @@ class RedisCache implements Cache
      * Returns the given cache id prefixed with the namespace.
      *
      * @param string $id Cache id
+     *
      * @return string Prefixes cache id
      */
     protected function _getNamespacedId($id)
     {
-        if ( ! $this->_namespace || 0 === strpos($id, $this->_namespace)) {
+        if (!$this->_namespace || 0 === strpos($id, $this->_namespace)) {
             return $id;
         } else {
             return $this->_namespace . $id;

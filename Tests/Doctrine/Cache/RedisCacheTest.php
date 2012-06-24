@@ -14,10 +14,16 @@ namespace Doctrine\Tests\Common\Cache;
 use Doctrine\Tests\Common\Cache\CacheTest;
 use Snc\RedisBundle\Doctrine\Cache\RedisCache;
 
+/**
+ * RedisCacheTest
+ */
 class RedisCacheTest extends CacheTest
 {
     private $_redis;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $config = 'tcp://127.0.0.1:6379';

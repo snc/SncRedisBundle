@@ -77,6 +77,7 @@ class RedisDataCollector extends DataCollector
         foreach ($this->data['commands'] as $command) {
             $time += $command['executionMS'];
         }
+
         return $time;
     }
 
