@@ -22,8 +22,9 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-class RedisFlushCommand extends ContainerAwareCommand
+class RedisFlushdbCommand extends ContainerAwareCommand
 {
+
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
      */
@@ -42,8 +43,7 @@ class RedisFlushCommand extends ContainerAwareCommand
     {
         $this->setName('redis:flushdb')
             ->setDescription('Flushes the redis database using the redis flushdb command')
-            ->addOption('client', null, InputOption::VALUE_REQUIRED, 'The name of the client as specified in the config', 'default')
-            ->addOption('no-interaction', null, InputOption::VALUE_NONE, 'Proceeds without any user interaction');
+            ->addOption('client', null, InputOption::VALUE_REQUIRED, 'The name of the client as specified in the config', 'default');
     }
 
     /**
@@ -77,8 +77,6 @@ class RedisFlushCommand extends ContainerAwareCommand
 
     /**
      * Getting the client from cmd option and flush's the db
-     *
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException when the client does not match any configured client
      */
     private function flushDbForClient()
     {
@@ -93,4 +91,6 @@ class RedisFlushCommand extends ContainerAwareCommand
             $this->output->writeln('<error>The client ' . $client . ' is not defined</error>');
         }
     }
+
 }
+
