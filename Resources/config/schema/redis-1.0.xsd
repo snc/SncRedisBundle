@@ -57,6 +57,7 @@
         <xsd:attribute name="throw-errors" type="xsd:boolean" />
         <xsd:attribute name="profile" type="client-profile" />
         <xsd:attribute name="cluster" type="xsd:string" />
+        <xsd:attribute name="prefix" type="xsd:string" />
     </xsd:complexType>
 
     <xsd:simpleType name="client-profile">
