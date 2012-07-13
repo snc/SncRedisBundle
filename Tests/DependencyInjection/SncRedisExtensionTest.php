@@ -164,6 +164,8 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame((float) 2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
         $this->assertSame('2.0', $options['profile'], 'Profile option was converted to a string');
+
+        $this->assertSame('snc:', $options['prefix'], 'Prefix option was allowed');
     }
 
     /**
@@ -235,6 +237,7 @@ clients:
         logging: true
         options:
             profile: 2.0
+            prefix: snc:
     cache:
         type: predis
         alias: cache
