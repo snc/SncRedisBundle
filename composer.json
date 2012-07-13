@@ -30,5 +30,6 @@
     "autoload": {
         "psr-0": { "Snc\\RedisBundle": "" }
     },
-    "target-dir": "Snc/RedisBundle"
+    "target-dir": "Snc/RedisBundle",
+    "minimum-stability": "dev"
 }
