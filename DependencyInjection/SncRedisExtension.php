@@ -39,7 +39,8 @@ class SncRedisExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('redis.xml');
 
-        $config = $this->processConfiguration(new Configuration(), $configs);
+        $mainConfig = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($mainConfig, $configs);
 
         foreach ($config['class'] as $name => $class) {
             $container->setParameter(sprintf('snc_redis.%s.class', $name), $class);
@@ -323,5 +324,10 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool', 'snc_redis.swiftmailer.spool');
+    }
+
+    public function getConfiguration(array $config, ContainerBuilder $container)
+    {
+        return new Configuration();
     }
 }
