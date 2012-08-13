@@ -103,6 +103,30 @@ class Client
      */
     private function getCommandString($command, array $arguments)
     {
-        return trim(strtoupper($command) . ' ' . implode(' ', (array) array_pop($arguments)));
+        $list = array();
+        $this->flatten($arguments, $list);
+
+        return trim(strtoupper($command) . ' ' . implode(' ', $list));
+    }
+
+    /**
+     * Flatten arguments to single dimension array
+     *
+     * @param array $arguments An array of command arguments
+     * @param array $list Holder of results
+     */
+    private function flatten($arguments, array &$list)
+    {
+        foreach ($arguments as $key => $item) {
+            if (!is_numeric($key)) {
+                $list[] = $key;
+            }
+
+            if (is_scalar($item)) {
+                $list[] = strval($item);
+            } else {
+                $this->flatten($item, $list);
+            }
+        }
     }
 }
