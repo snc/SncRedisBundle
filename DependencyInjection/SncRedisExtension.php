@@ -204,10 +204,6 @@ class SncRedisExtension extends Extension
 
         $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
 
-        $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
-        $phpredisDef = new Definition('Redis'); // TODO $container->getParameter('snc_redis.*.class')
-        $phpredisDef->setPublic(true);
-        $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
         $connectParameters = array();
         if (null !== $dsn->getSocket()) {
@@ -220,24 +216,33 @@ class SncRedisExtension extends Extension
         if ($client['options']['connection_timeout']) {
             $connectParameters[] = $client['options']['connection_timeout'];
         }
-        $phpredisDef->addMethodCall($connectMethod, $connectParameters);
+        $factoryParams = array('connectParams' => $connectParameters);
+        $factoryParams['connectMethod'] = $connectMethod;
+
         if (null !== $dsn->getPassword()) {
-            $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
+            $factoryParams['auth'] = $dsn->getPassword();
         }
-        $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
-        $container->setDefinition($phpredisId, $phpredisDef);
+        $factoryParams['select'] = $dsn->getDatabase();
+
+        $redisConnection = sprintf('Redis_%s', $client['alias']);
+        $phpredisDef = new Definition('Redis');
+        $phpredisDef
+            ->setPublic(false)
+            ->setFactoryClass('Snc\RedisBundle\Client\Phpredis\ConnectionFactory')
+            ->setFactoryMethod('get')
+            ->setArguments(array($factoryParams));
+        $container->setDefinition($redisConnection, $phpredisDef);
 
         if ($client['logging']) {
-            $phpredisDef->setPublic(false);
             $parameters = array('alias' => $client['alias']);
             $clientDef = new Definition('Snc\RedisBundle\Client\Phpredis\Client'); // TODO $container->getParameter('snc_redis.*.class')
             $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
             $clientDef->addArgument($parameters);
             $clientDef->addArgument(new Reference('snc_redis.logger'));
-            $clientDef->addMethodCall('setRedis', array(new Reference($phpredisId)));
+            $clientDef->addMethodCall('setRedis', array(new Reference($redisConnection)));
             $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
         } else {
-            $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
+            $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $redisConnection);
         }
 
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
