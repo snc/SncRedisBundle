@@ -224,6 +224,11 @@ snc_redis:
 
 Please note that you don't have to configure the `swiftmailer.spool` property.
 
+### Backend health check for [LiipMonitorBundle](https://github.com/liip/LiipMonitorBundle) ###
+
+If you have the LiipMonitorBundle enabled, the SncRedisBundle will provide a health check for your 
+redis backend which is available under ´/monitor/check`.
+
 ### Complete configuration example ###
 
 ``` yaml

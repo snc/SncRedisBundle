@@ -75,6 +75,12 @@ class SncRedisExtension extends Extension
         if (isset($config['swiftmailer'])) {
             $this->loadSwiftMailer($config, $container);
         }
+
+        $bundles = $container->getParameter('kernel.bundles');
+
+        if (isset($bundles['LiipMonitorBundle'])) {
+            $loader->load('checkmonitor.xml');
+        }
     }
 
     /**
