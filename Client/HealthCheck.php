@@ -11,26 +11,37 @@
 
 namespace Snc\RedisBundle\Client;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 use Liip\Monitor\Result\CheckResult;
 use Liip\Monitor\Check\Check;
 
 /**
- * Health check for the liip monitor bundle
+ * Health check for the liip monitor bundle.
  *
- * Check is performed by pinging the redis backend.
+ * Check is performed by pinging the redis backend clients.
  *
  * @see https://github.com/liip/LiipMonitorBundle
  */
 class HealthCheck extends Check
 {
-    protected $client;
+    /**
+     * @var array
+     */
+    protected $clients;
+
+    public function __construct()
+    {
+        $this->clients = array();
+    }
 
     /**
-     * @param Snc\RedisBundle\Client\Phpredis\Client | Snc\RedisBundle\Client\Predis\Client $client
+     * @param string $id
+     * @param \Redis|\Predis\Client $client
      */
-    public function __construct($client)
+    public function addClient($id, $client)
     {
-        $this->client = $client;
+        $this->clients[$id] = $client;
     }
 
     /**
@@ -38,8 +49,11 @@ class HealthCheck extends Check
      */
     public function check()
     {
-        if ($this->client->ping() !== '+PONG') {
-            return $this->buildResult('Unable to ping redis backend.', CheckResult::CRITICAL);
+        foreach ($this->clients as $id => $client) {
+
+            if ($client->ping() !== '+PONG') {
+                return $this->buildResult('Unable to ping redis backend: ' . $id, CheckResult::CRITICAL);
+            }
         }
 
         return $this->buildResult('OK', CheckResult::OK);

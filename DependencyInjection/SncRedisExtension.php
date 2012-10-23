@@ -79,7 +79,7 @@ class SncRedisExtension extends Extension
         $bundles = $container->getParameter('kernel.bundles');
 
         if (isset($bundles['LiipMonitorBundle'])) {
-            $loader->load('checkmonitor.xml');
+            $this->loadHealthCheck($config['clients'], $container);
         }
     }
 
@@ -330,6 +330,19 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool', 'snc_redis.swiftmailer.spool');
+    }
+
+    protected function loadHealthCheck(array $clients, ContainerBuilder $container)
+    {
+        $def = new Definition($container->getParameter('snc_redis.health_check.class'));
+
+        foreach (array_keys($clients) as $client) {
+            $id = sprintf('snc_redis.%s', $client);
+            $def->addMethodCall('addClient', array($id, new Reference($id)));
+        }
+
+        $def->addTag('liip_monitor.check');
+        $container->setDefinition('snc_redis.health_check', $def);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)
