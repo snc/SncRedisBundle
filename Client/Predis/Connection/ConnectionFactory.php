@@ -9,16 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\Client\Predis;
+namespace Snc\RedisBundle\Client\Predis\Connection;
 
-use Predis\Profiles\IServerProfile;
+use Predis\Profile\ServerProfileInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Client\Predis\Network\ConnectionWrapper;
+
 
 /**
  * ConnectionFactory
  */
-class ConnectionFactory extends \Predis\ConnectionFactory
+class ConnectionFactory extends \Predis\Connection\ConnectionFactory
 {
     /**
      * @var ConnectionWrapper
@@ -54,7 +55,7 @@ class ConnectionFactory extends \Predis\ConnectionFactory
     /**
      * {@inheritdoc}
      */
-    public function create($parameters, IServerProfile $profile = null)
+    public function create($parameters, ServerProfileInterface $profile = null)
     {
         /** @var ConnectionWrapper $connection */
         $connection = parent::create($parameters);

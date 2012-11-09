@@ -9,20 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\Client\Predis\Network;
+namespace Snc\RedisBundle\Client\Predis\Connection;
 
-use Predis\Commands\ICommand;
+use Predis\Command\CommandInterface;
 use Predis\ResponseError;
-use Predis\Network\IConnectionSingle;
+use Predis\Connection\SingleConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * ConnectionWrapper
  */
-class ConnectionWrapper implements IConnectionSingle
+class ConnectionWrapper implements SingleConnectionInterface
 {
     /**
-     * @var IConnectionSingle
+     * @var SingleConnectionInterface
      */
     protected $connection;
 
@@ -34,9 +34,9 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * Constructor
      *
-     * @param IConnectionSingle $connection
+     * @param SingleConnectionInterface $connection
      */
-    public function __construct(IConnectionSingle $connection)
+    public function __construct(SingleConnectionInterface $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
             /** @var ConnectionWrapper $connection */
@@ -49,7 +49,7 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * Returns the underlying connection object
      *
-     * @return IConnectionSingle
+     * @return SingleConnectionInterface
      */
     public function getConnection()
     {
@@ -93,7 +93,7 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(ICommand $command)
+    public function writeCommand(CommandInterface $command)
     {
         return $this->connection->writeCommand($command);
     }
@@ -101,7 +101,7 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * {@inheritdoc}
      */
-    public function readResponse(ICommand $command)
+    public function readResponse(CommandInterface $command)
     {
         return $this->connection->readResponse($command);
     }
@@ -133,7 +133,7 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * {@inheritdoc}
      */
-    public function pushInitCommand(ICommand $command)
+    public function pushInitCommand(CommandInterface $command)
     {
         return $this->connection->pushInitCommand($command);
     }
@@ -149,7 +149,7 @@ class ConnectionWrapper implements IConnectionSingle
     /**
      * {@inheritdoc}
      */
-    public function executeCommand(ICommand $command)
+    public function executeCommand(CommandInterface $command)
     {
         if (null === $this->logger) {
             return $this->connection->executeCommand($command);
