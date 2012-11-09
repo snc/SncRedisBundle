@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "doctrine/common": ">=2.2",
-        "predis/predis": "0.7.*"
+        "predis/predis": "0.8.*"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
