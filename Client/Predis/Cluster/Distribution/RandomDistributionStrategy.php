@@ -9,14 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\Client\Predis\Distribution;
+namespace Snc\RedisBundle\Client\Predis\Cluster\Distribution;
 
-use Predis\Distribution\IDistributionStrategy;
+use Predis\Cluster\Distribution\DistributionStrategyInterface;
+use Predis\Cluster\Hash\HashGeneratorInterface;
 
 /**
  * This distribution strategy will simply return a random connection
  */
-class RandomDistributionStrategy implements IDistributionStrategy
+class RandomDistributionStrategy implements DistributionStrategyInterface, HashGeneratorInterface
 {
     /**
      * @var array
@@ -72,7 +73,15 @@ class RandomDistributionStrategy implements IDistributionStrategy
     /**
      * {@inheritDoc}
      */
-    public function generateKey($value)
+    public function getHashGenerator()
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hash($value)
     {
         return true; // the key is irrelevant for random distribution
     }
