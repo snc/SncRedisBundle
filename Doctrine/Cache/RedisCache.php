@@ -143,7 +143,9 @@ class RedisCache implements Cache
             }
         }
 
-        $this->_doDelete($deleted);
+        if (count($deleted) > 0) {
+            $this->_doDelete($deleted);
+        }
 
         return $deleted;
     }
@@ -159,7 +161,9 @@ class RedisCache implements Cache
     {
         $deleted = $this->getIds($prefix);
 
-        $this->_doDelete($deleted);
+        if (count($deleted) > 0) {
+            $this->_doDelete($deleted);
+        }
 
         return $deleted;
     }
@@ -183,7 +187,9 @@ class RedisCache implements Cache
             }
         }
 
-        $this->_doDelete($deleted);
+        if (count($deleted) > 0) {
+            $this->_doDelete($deleted);
+        }
 
         return $deleted;
     }
