@@ -74,6 +74,7 @@
     <xsd:complexType name="session">
         <xsd:attribute name="client" type="xsd:string" use="required" />
         <xsd:attribute name="prefix" type="xsd:string" />
+        <xsd:attribute name="ttl" type="xsd:int" />
         <xsd:attribute name="use-as-default" type="xsd:boolean" />
     </xsd:complexType>
 

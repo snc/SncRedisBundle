@@ -147,6 +147,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('prefix')->defaultValue('session')->end()
+                        ->scalarNode('ttl')->end()
                         ->scalarNode('use_as_default')->defaultValue('true')->end()
                     ->end()
                 ->end()

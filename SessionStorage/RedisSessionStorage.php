@@ -27,6 +27,16 @@ class RedisSessionStorage extends NativeSessionStorage
     protected $redis;
 
     /**
+     * @var int
+     */
+    protected $ttl;
+
+    /**
+     * @var string
+     */
+    protected $prefix;
+
+    /**
      * Redis session storage constructor
      *
      * @param \Predis\Client|\Redis $redis   Redis database connection
@@ -36,10 +46,20 @@ class RedisSessionStorage extends NativeSessionStorage
     public function __construct($redis, $options = array(), $prefix = 'session')
     {
         $this->redis = $redis;
-
-        $options['prefix'] = $prefix;
+        $this->ttl = isset($options['lifetime']) ? (int) $options['lifetime'] : 0;
+        $this->prefix = $prefix;
 
         parent::__construct($options);
+    }
+
+    /**
+     * Change the default TTL
+     *
+     * @param int $ttl
+     */
+    public function setTtl($ttl)
+    {
+        $this->ttl = $ttl;
     }
 
     /**
@@ -96,9 +116,8 @@ class RedisSessionStorage extends NativeSessionStorage
     {
         $this->redis->hset($this->getHashKey(), $key, serialize($data));
 
-        $expires = (int) $this->options['lifetime'];
-        if ($expires > 0) {
-            $this->redis->expire($this->getHashKey(), $expires);
+        if ($this->ttl > 0) {
+            $this->redis->expire($this->getHashKey(), $this->ttl);
         }
     }
 
@@ -147,11 +166,11 @@ class RedisSessionStorage extends NativeSessionStorage
      */
     protected function getHashKeyForId($id)
     {
-        if (!isset($this->options['prefix'])) {
-            return $id;
+        if (null !== $this->prefix) {
+            return $this->prefix . ':' . $id;
         }
 
-        return $this->options['prefix'] . ':' . $id;
+        return $id;
     }
 
     /**
