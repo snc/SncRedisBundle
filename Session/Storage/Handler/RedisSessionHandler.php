@@ -104,6 +104,16 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
+     * Change the default TTL
+     *
+     * @param int $ttl
+     */
+    public function setTtl($ttl)
+    {
+        $this->ttl = $ttl;
+    }
+
+    /**
      * Prepends the session ID with a user-defined prefix (if any).
      * @param string $sessionId session ID
      *
