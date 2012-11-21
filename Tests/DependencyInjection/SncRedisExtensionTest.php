@@ -276,6 +276,7 @@ clients:
 session:
     client: default
     prefix: foo
+    ttl: 1440
     use_as_default: false
 doctrine:
     metadata_cache:
