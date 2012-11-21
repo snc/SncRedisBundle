@@ -69,12 +69,23 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
     public function testWritingSessionDataWithExpiration()
     {
         $this->redis
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('setex')
             ->with($this->equalTo('session:_symfony'), $this->equalTo(10), $this->equalTo('some data'))
         ;
 
+        // Expiration is set by cookie_lifetime option
         $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 10), 'session');
+        $handler->write('_symfony', 'some data');
+
+        // Expiration is set with the TTL attribute
+        $handler = new RedisSessionHandler($this->redis, array(), 'session');
+        $handler->setTtl(10);
+        $handler->write('_symfony', 'some data');
+
+        // TTL attribute overrides cookie_lifetime option
+        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 20), 'session');
+        $handler->setTtl(10);
         $handler->write('_symfony', 'some data');
     }
 }
