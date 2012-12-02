@@ -263,7 +263,7 @@ clients:
             read_write_timeout: 30
             iterable_multibulk: false
             throw_errors: true
-            cluster: Snc\RedisBundle\Client\Predis\Network\PredisCluster
+            cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
 session:
     client: session
     prefix: foo

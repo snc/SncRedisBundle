@@ -11,10 +11,7 @@
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
-use Predis\Profile\ServerProfileInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
-use Snc\RedisBundle\Client\Predis\Network\ConnectionWrapper;
-
 
 /**
  * ConnectionFactory
@@ -55,7 +52,7 @@ class ConnectionFactory extends \Predis\Connection\ConnectionFactory
     /**
      * {@inheritdoc}
      */
-    public function create($parameters, ServerProfileInterface $profile = null)
+    public function create($parameters)
     {
         /** @var ConnectionWrapper $connection */
         $connection = parent::create($parameters);
