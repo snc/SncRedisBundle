@@ -46,13 +46,6 @@ class SncRedisExtension extends Extension
             $container->setParameter(sprintf('snc_redis.%s.class', $name), $class);
         }
 
-        $connectionFactoryDef = new Definition($container->getParameter('snc_redis.connection_factory.class'));
-        $connectionFactoryDef->setPublic(false);
-        $connectionFactoryDef->setScope(ContainerInterface::SCOPE_CONTAINER);
-        $connectionFactoryDef->addMethodCall('setConnectionWrapperClass', array($container->getParameter('snc_redis.connection_wrapper.class')));
-        $connectionFactoryDef->addMethodCall('setLogger', array(new Reference('snc_redis.logger')));
-        $container->setDefinition('snc_redis.connectionfactory', $connectionFactoryDef);
-
         foreach ($config['clients'] as $client) {
             $this->loadClient($client, $container);
         }
@@ -122,6 +115,17 @@ class SncRedisExtension extends Extension
         if (null === $client['options']['cluster']) {
             unset($client['options']['cluster']);
         }
+
+        // predis connection parameters have been renamed in v0.8
+        $client['options']['async_connect'] = $client['options']['connection_async'];
+        $client['options']['timeout'] = $client['options']['connection_timeout'];
+        $client['options']['persistent'] = $client['options']['connection_persistent'];
+        $client['options']['exceptions'] = $client['options']['throw_errors'];
+        unset($client['options']['connection_async']);
+        unset($client['options']['connection_timeout']);
+        unset($client['options']['connection_persistent']);
+        unset($client['options']['throw_errors']);
+
         $connectionAliases = array();
         $connectionCount = count($client['dsns']);
         foreach ($client['dsns'] as $i => $dsn) {
@@ -145,13 +149,18 @@ class SncRedisExtension extends Extension
             $this->loadPredisConnectionParameters($connection, $container);
         }
 
+        // TODO can be shared between clients?!
+        $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
+        $profileDef = new Definition(get_class(\Predis\Profile\ServerProfile::get($client['options']['profile']))); // TODO get_class alternative?
+        $profileDef->setPublic(false);
+        $profileDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+        $container->setDefinition($profileId, $profileDef);
+        $client['options']['profile'] = new Reference($profileId);
+
         $optionId = sprintf('snc_redis.client.%s_options', $client['alias']);
         $optionDef = new Definition($container->getParameter('snc_redis.client_options.class'));
         $optionDef->setPublic(false);
         $optionDef->setScope(ContainerInterface::SCOPE_CONTAINER);
-        if ($client['logging']) {
-            $client['options']['connections'] = new Reference('snc_redis.connectionfactory');
-        }
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
@@ -183,6 +192,7 @@ class SncRedisExtension extends Extension
         $parameterDef->setPublic(false);
         $parameterDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $parameterDef->addArgument($connection);
+        $parameterDef->addTag('snc_redis.connection_parameters');
         $container->setDefinition($parameterId, $parameterDef);
     }
 

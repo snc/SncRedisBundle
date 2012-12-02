@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\Client\Predis\Network;
+namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Predis\Cluster\Distribution\DistributionStrategyInterface;
 use Snc\RedisBundle\Client\Predis\Cluster\Distribution\RandomDistributionStrategy;

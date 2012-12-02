@@ -11,6 +11,8 @@
 
 namespace Snc\RedisBundle;
 
+use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -18,4 +20,12 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class SncRedisBundle extends Bundle
 {
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+        $container->addCompilerPass(new LoggingPass());
+    }
 }
