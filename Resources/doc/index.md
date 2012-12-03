@@ -159,6 +159,22 @@ snc_redis:
         use_as_default: false
 ```
 
+By default, a TTL is set using the `framework.cookie_lifetime` parameter. But
+you can override it using the `ttl` option:
+
+``` yaml
+snc_redis:
+    ...
+    session:
+        client: session
+        ttl: 1200
+```
+
+This will make session data expire after 20 minutes, on the **server side**.
+This is hightly recommended if you don't set an expiration date to the session
+cookie. Note that using Redis for storing sessions is a good solution to avoid
+garbage collection of sessions by PHP.
+
 ### Doctrine caching ###
 
 Use Redis caching for Doctrine by adding this to your config:
