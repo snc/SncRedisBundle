@@ -6,8 +6,8 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 ## Branches ##
 
-* Use the `2.0` branch if you are using Symfony2 v2.0.x.
-* Use the `master` branch if you are using Symfony2 v2.1.x.
+* Use the `2.0` branch if you are using Symfony2 `2.0.*`.
+* Use the `master` branch if you are using Symfony2 `>=2.1.0,<2.3-dev`.
 
 This bundle is also available via [composer](https://github.com/composer/composer), find it on [packagist](http://packagist.org/packages/snc/redis-bundle).
 
