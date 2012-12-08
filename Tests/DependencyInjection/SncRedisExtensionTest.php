@@ -82,9 +82,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
-        $this->assertTrue($container->hasDefinition('snc_redis.connectionfactory'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
@@ -101,21 +101,29 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
-        $this->assertTrue($container->hasDefinition('snc_redis.connectionfactory'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.cache_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cache'));
         $this->assertTrue($container->hasAlias('snc_redis.cache_client'));
 
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.monolog_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_profile'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_options'));
+        $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
+        $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
+
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster1_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster2_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster3_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
         $this->assertTrue($container->hasAlias('snc_redis.cluster_client'));
@@ -160,10 +168,11 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $config = $this->parseYaml($this->getFullYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
 
+        $profileDefinition = $container->getDefinition('snc_redis.client.default_profile');
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
 
         $this->assertSame((float) 2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
-        $this->assertSame('2.0', $options['profile'], 'Profile option was converted to a string');
+        $this->assertSame('Predis\\Profile\\ServerVersion20', $profileDefinition->getClass(), 'Profile definition is instance of Predis\\Profile\\ServerVersion20');
 
         $this->assertSame('snc:', $options['prefix'], 'Prefix option was allowed');
     }
@@ -265,7 +274,7 @@ clients:
             throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
 session:
-    client: session
+    client: default
     prefix: foo
     use_as_default: false
 doctrine:
