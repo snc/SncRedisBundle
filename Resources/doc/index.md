@@ -159,7 +159,7 @@ snc_redis:
         use_as_default: false
 ```
 
-By default, a TTL is set using the `framework.cookie_lifetime` parameter. But
+By default, a TTL is set using the `framework.session.cookie_lifetime` parameter. But
 you can override it using the `ttl` option:
 
 ``` yaml
