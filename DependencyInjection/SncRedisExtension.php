@@ -154,6 +154,13 @@ class SncRedisExtension extends Extension
         $profileDef = new Definition(get_class(\Predis\Profile\ServerProfile::get($client['options']['profile']))); // TODO get_class alternative?
         $profileDef->setPublic(false);
         $profileDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+        if (null !== $client['options']['prefix']) {
+            $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
+            $processorDef = new Definition('Predis\Command\Processor\KeyPrefixProcessor');
+            $processorDef->setArguments(array($client['options']['prefix']));
+            $container->setDefinition($processorId, $processorDef);
+            $profileDef->addMethodCall('setProcessor', array(new Reference($processorId)));
+        }
         $container->setDefinition($profileId, $profileDef);
         $client['options']['profile'] = new Reference($profileId);
 
