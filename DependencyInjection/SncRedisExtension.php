@@ -146,7 +146,7 @@ class SncRedisExtension extends Extension
             $connection['database'] = $dsn->getDatabase();
             $connection['password'] = $dsn->getPassword();
             $connection['weight'] = $dsn->getWeight();
-            $this->loadPredisConnectionParameters($connection, $container);
+            $this->loadPredisConnectionParameters($client['alias'], $connection, $container);
         }
 
         // TODO can be shared between clients?!
@@ -189,17 +189,18 @@ class SncRedisExtension extends Extension
     /**
      * Loads a connection.
      *
-     * @param array            $connection A connection configuration
-     * @param ContainerBuilder $container  A ContainerBuilder instance
+     * @param string           $clientAlias The client alias
+     * @param array            $connection  A connection configuration
+     * @param ContainerBuilder $container   A ContainerBuilder instance
      */
-    protected function loadPredisConnectionParameters(array $connection, ContainerBuilder $container)
+    protected function loadPredisConnectionParameters($clientAlias, array $connection, ContainerBuilder $container)
     {
         $parameterId = sprintf('snc_redis.connection.%s_parameters', $connection['alias']);
         $parameterDef = new Definition($container->getParameter('snc_redis.connection_parameters.class'));
         $parameterDef->setPublic(false);
         $parameterDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $parameterDef->addArgument($connection);
-        $parameterDef->addTag('snc_redis.connection_parameters');
+        $parameterDef->addTag('snc_redis.connection_parameters', array('clientAlias' => $clientAlias));
         $container->setDefinition($parameterId, $parameterDef);
     }
 
