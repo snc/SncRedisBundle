@@ -151,7 +151,7 @@ class SncRedisExtension extends Extension
 
         // TODO can be shared between clients?!
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(\Predis\Profile\ServerProfile::get($client['options']['profile']))); // TODO get_class alternative?
+        $profileDef = new Definition(get_class(\Predis\Profiles\ServerProfile::get($client['options']['profile']))); // TODO get_class alternative?
         $profileDef->setPublic(false);
         $profileDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         if (null !== $client['options']['prefix']) {
