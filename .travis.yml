@@ -4,4 +4,6 @@ php:
   - 5.3
   - 5.4
 
-before_script: sh Tests/bootstrap.sh
+before_script:
+  - composer install --dev
+  - mkdir Snc && ln -s ../ Snc/RedisBundle
