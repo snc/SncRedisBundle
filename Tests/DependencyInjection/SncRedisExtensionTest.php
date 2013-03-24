@@ -196,12 +196,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $container = new ContainerBuilder();
         $container->registerExtension(new SncRedisExtension());
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
-        try {
-            $loader->load('invalid.xml');
-        } catch (\Exception $e) {
-            $this->assertContains("The attribute 'alias' is required but missing.", $e->getMessage());
-            throw $e;
-        }
+        $loader->load('invalid.xml');
     }
 
     /**
