@@ -8,4 +8,5 @@ before_script:
   - pear channel-discover drewish.github.com/phpredis
   - pecl install drewishPhpRedis/PhpRedis
   - phpenv rehash
-  - sh Tests/bootstrap.sh
+  - composer install --dev
+  - mkdir Snc && ln -s ../ Snc/RedisBundle
