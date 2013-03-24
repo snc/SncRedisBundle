@@ -4,4 +4,8 @@ php:
   - 5.3
   - 5.4
 
-before_script: sh Tests/bootstrap.sh
+before_script:
+  - pear channel-discover drewish.github.com/phpredis
+  - pecl install drewishPhpRedis/PhpRedis
+  - phpenv rehash
+  - sh Tests/bootstrap.sh
