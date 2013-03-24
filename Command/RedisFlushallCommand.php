@@ -11,12 +11,13 @@
 
 namespace Snc\RedisBundle\Command;
 
+
 /**
- * Symfony command to execute redis flushdb
+ * Symfony command to execute redis flushall
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-class RedisFlushdbCommand extends RedisBaseCommand
+class RedisFlushallCommand extends RedisBaseCommand
 {
 
     /**
@@ -26,8 +27,8 @@ class RedisFlushdbCommand extends RedisBaseCommand
     {
         parent::configure();
 
-        $this->setName('redis:flushdb')
-            ->setDescription('Flushes the redis database using the redis flushdb command');
+        $this->setName('redis:flushall')
+            ->setDescription('Flushes the redis database using the redis flushall command');
     }
 
     /**
@@ -36,21 +37,20 @@ class RedisFlushdbCommand extends RedisBaseCommand
     protected function executeRedisCommand()
     {
         if ($this->proceedingAllowed()) {
-            $this->flushDbForClient();
+            $this->flushAll();
         } else {
             $this->output->writeln('<error>Flushing cancelled</error>');
         }
     }
 
     /**
-     * Getting the client from cmd option and flush's the db
+     * Flushing all redis databases
      */
-    private function flushDbForClient()
+    private function flushAll()
     {
-        $this->redisClient->flushdb();
+        $this->redisClient->flushall();
 
-        $this->output->writeln('<info>redis database flushed</info>');
+        $this->output->writeln('<info>All redis databases flushed</info>');
     }
 
 }
-
