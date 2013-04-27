@@ -238,7 +238,15 @@ snc_redis:
         key: swiftmailer
 ```
 
-Please note that you don't have to configure the `swiftmailer.spool` property.
+Please note you have to configure your Swiftmailer spool in order to Pickup the RedisSpool
+
+``` yaml
+swiftmailer:
+    # Rest of your swiftmailer configuration
+    spool:
+        type: Snc\RedisBundle\SwiftMailer\RedisSpool
+```
+
 
 ### Complete configuration example ###
 
