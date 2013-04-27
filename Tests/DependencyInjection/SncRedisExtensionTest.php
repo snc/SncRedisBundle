@@ -146,7 +146,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('monolog.handler.redis'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
-        $this->assertTrue($container->hasAlias('swiftmailer.spool'));
+        $this->assertTrue($container->hasAlias('swiftmailer.spool.redis'));
     }
 
     /**
