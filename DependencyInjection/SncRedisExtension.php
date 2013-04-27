@@ -349,7 +349,7 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setRedis', array(new Reference(sprintf('snc_redis.%s', $config['swiftmailer']['client']))));
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
-        $container->setAlias('swiftmailer.spool', 'snc_redis.swiftmailer.spool');
+        $container->setAlias('swiftmailer.spool.redis', 'snc_redis.swiftmailer.spool');
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)
