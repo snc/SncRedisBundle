@@ -14,8 +14,8 @@
     }],
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": ">=2.1.0,<2.3-dev",
-        "symfony/yaml": ">=2.1.0,<2.3-dev"
+        "symfony/framework-bundle": ">=2.1.0,<2.4-dev",
+        "symfony/yaml": ">=2.1.0,<2.4-dev"
     },
     "require-dev": {
         "doctrine/common": ">=2.2",
