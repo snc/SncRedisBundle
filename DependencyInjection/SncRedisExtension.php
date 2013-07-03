@@ -60,7 +60,13 @@ class SncRedisExtension extends Extension
 
         if (isset($config['monolog'])) {
             if (!empty($config['clients'][$config['monolog']['client']]['logging'])) {
-                throw new InvalidConfigurationException(sprintf('You have to disable logging for the client "%s" that you have configured under "snc_redis.monolog.client"', $config['monolog']['client']));
+                throw new InvalidConfigurationException(
+                    sprintf(
+                        'You have to disable logging for the client "%s" that you have configured under'.
+                        ' "snc_redis.monolog.client"',
+                        $config['monolog']['client']
+                    )
+                );
             }
             $this->loadMonolog($config, $container);
         }
@@ -143,7 +149,9 @@ class SncRedisExtension extends Extension
                 $connection['host'] = $dsn->getHost();
                 $connection['port'] = $dsn->getPort();
             }
-            $connection['database'] = $dsn->getDatabase();
+            if (!isset($client['options']['disableDB']) || $client['options']['disableDB'] == false) {
+                $connection['database'] = $dsn->getDatabase();
+            }
             $connection['password'] = $dsn->getPassword();
             $connection['weight'] = $dsn->getWeight();
             $this->loadPredisConnectionParameters($client['alias'], $connection, $container);
@@ -151,7 +159,8 @@ class SncRedisExtension extends Extension
 
         // TODO can be shared between clients?!
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(\Predis\Profile\ServerProfile::get($client['options']['profile']))); // TODO get_class alternative?
+        // TODO get_class alternative?
+        $profileDef = new Definition(get_class(\Predis\Profile\ServerProfile::get($client['options']['profile'])));
         $profileDef->setPublic(false);
         $profileDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         if (null !== $client['options']['prefix']) {
@@ -173,7 +182,14 @@ class SncRedisExtension extends Extension
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
         $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         if (1 === $connectionCount) {
-            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters', $connectionAliases[0])));
+            $clientDef->addArgument(
+                new Reference(
+                    sprintf(
+                        'snc_redis.connection.%s_parameters',
+                        $connectionAliases[0]
+                    )
+                )
+            );
         } else {
             $connections = array();
             foreach ($connectionAliases as $alias) {
@@ -183,7 +199,10 @@ class SncRedisExtension extends Extension
         }
         $clientDef->addArgument(new Reference($optionId));
         $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
+        $container->setAlias(
+            sprintf('snc_redis.%s_client', $client['alias']),
+            sprintf('snc_redis.%s', $client['alias'])
+        );
     }
 
     /**
@@ -251,7 +270,8 @@ class SncRedisExtension extends Extension
         if ($client['logging']) {
             $phpredisDef->setPublic(false);
             $parameters = array('alias' => $client['alias']);
-            $clientDef = new Definition('Snc\RedisBundle\Client\Phpredis\Client'); // TODO $container->getParameter('snc_redis.*.class')
+            // TODO $container->getParameter('snc_redis.*.class')
+            $clientDef = new Definition('Snc\RedisBundle\Client\Phpredis\Client');
             $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
             $clientDef->addArgument($parameters);
             $clientDef->addArgument(new Reference('snc_redis.logger'));
@@ -261,7 +281,10 @@ class SncRedisExtension extends Extension
             $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
         }
 
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
+        $container->setAlias(
+            sprintf('snc_redis.%s_client', $client['alias']),
+            sprintf('snc_redis.%s', $client['alias'])
+        );
     }
 
     /**
@@ -278,7 +301,10 @@ class SncRedisExtension extends Extension
         $container->setParameter('snc_redis.session.client', $config['session']['client']);
         $container->setParameter('snc_redis.session.prefix', $config['session']['prefix']);
 
-        $container->setAlias('snc_redis.session.client', sprintf('snc_redis.%s_client', $container->getParameter('snc_redis.session.client')));
+        $container->setAlias(
+            'snc_redis.session.client',
+            sprintf('snc_redis.%s_client', $container->getParameter('snc_redis.session.client'))
+        );
 
         if (isset($config['session']['ttl'])) {
             $definition = $container->getDefinition('snc_redis.session.handler');
@@ -346,7 +372,10 @@ class SncRedisExtension extends Extension
     {
         $def = new Definition($container->getParameter('snc_redis.swiftmailer_spool.class'));
         $def->setPublic(false);
-        $def->addMethodCall('setRedis', array(new Reference(sprintf('snc_redis.%s', $config['swiftmailer']['client']))));
+        $def->addMethodCall(
+            'setRedis',
+            array(new Reference(sprintf('snc_redis.%s', $config['swiftmailer']['client'])))
+        );
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool.redis', 'snc_redis.swiftmailer.spool');

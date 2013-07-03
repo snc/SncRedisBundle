@@ -248,6 +248,35 @@ swiftmailer:
 ```
 
 
+### Disable database selection ###
+
+Sometimes it is usefull to not identificate a database.
+An user case is documented in this issue of the twemproxy https://github.com/twitter/twemproxy/issues/34
+
+You can disable the database selection (Redis "SELECT" command) using the disableDB option.
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            logging: %kernel.debug%
+            dsn:
+                - redis://127.0.0.1
+                - redis://127.0.0.2
+                - redis://pw@/var/run/redis/redis-1.sock
+                - redis://pw@127.0.0.1:63790
+            options:
+                profile: 2.4
+                connection_timeout: 10
+                connection_persistent: true
+                read_write_timeout: 30
+                iterable_multibulk: false
+                throw_errors: true
+                disableDB: true
+```
+ 
 ### Complete configuration example ###
 
 ``` yaml
@@ -279,6 +308,7 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
+                disableDB: true
     session:
         client: default
         prefix: foo

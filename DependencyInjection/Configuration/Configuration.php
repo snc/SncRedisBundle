@@ -11,6 +11,8 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Boolean;
+
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -107,7 +109,6 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('alias')->isRequired()->end()
                             ->arrayNode('options')
                                 ->addDefaultsIfNotSet()
                                 ->children()
@@ -125,6 +126,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
+                                    ->booleanNode('disableDB')->defaultFalse()->end()
                                 ->end()
                             ->end()
                         ->end()
