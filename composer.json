@@ -31,5 +31,9 @@
         "psr-0": { "Snc\\RedisBundle": "" }
     },
     "target-dir": "Snc/RedisBundle",
-    "minimum-stability": "dev"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
 }
