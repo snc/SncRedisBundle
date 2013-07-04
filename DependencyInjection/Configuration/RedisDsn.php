@@ -63,11 +63,11 @@ class RedisDsn
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getDatabase()
     {
-        return $this->database ?: 0;
+        return $this->database;
     }
 
     /**
