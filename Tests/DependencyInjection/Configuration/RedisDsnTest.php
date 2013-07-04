@@ -130,17 +130,20 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
     public static function databaseValues()
     {
         return array(
-            array('redis://localhost', 0),
+            array('redis://localhost', null),
+            array('redis://localhost/0', 0),
             array('redis://localhost/1', 1),
             array('redis://localhost:63790', 0),
             array('redis://localhost:63790/10', 10),
             array('redis://pw@localhost:63790/10', 10),
-            array('redis://127.0.0.1', 0),
+            array('redis://127.0.0.1', null),
+            array('redis://127.0.0.1/0', 0),
             array('redis://127.0.0.1/1', 1),
             array('redis://127.0.0.1:63790', 0),
             array('redis://127.0.0.1:63790/10', 10),
             array('redis://pw@127.0.0.1:63790/10', 10),
-            array('redis:///redis.sock', 0),
+            array('redis:///redis.sock', null),
+            array('redis:///redis.sock/0', 0),
             array('redis:///redis.sock/1', 1),
             array('redis:///redis.sock:63790', 0),
             array('redis:///redis.sock:63790/10', 10),

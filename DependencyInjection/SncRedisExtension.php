@@ -143,7 +143,9 @@ class SncRedisExtension extends Extension
                 $connection['host'] = $dsn->getHost();
                 $connection['port'] = $dsn->getPort();
             }
-            $connection['database'] = $dsn->getDatabase();
+            if (null !== $dsn->getDatabase()) {
+                $connection['database'] = $dsn->getDatabase();
+            }
             $connection['password'] = $dsn->getPassword();
             $connection['weight'] = $dsn->getWeight();
             $this->loadPredisConnectionParameters($client['alias'], $connection, $container);
@@ -245,7 +247,9 @@ class SncRedisExtension extends Extension
         if (null !== $dsn->getPassword()) {
             $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
         }
-        $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
+        if (null !== $dsn->getDatabase()) {
+            $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
+        }
         $container->setDefinition($phpredisId, $phpredisDef);
 
         if ($client['logging']) {
