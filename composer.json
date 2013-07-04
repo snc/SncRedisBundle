@@ -14,13 +14,13 @@
     }],
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": ">=2.1.0,<2.4-dev",
-        "symfony/yaml": ">=2.1.0,<2.4-dev"
+        "symfony/framework-bundle": ">=2.1,<3.0",
+        "symfony/yaml": ">=2.1,<3.0"
     },
     "require-dev": {
-        "doctrine/common": ">=2.2",
+        "doctrine/common": ">=2.2,<3.0",
         "predis/predis": "0.8.*",
-        "symfony/console": ">=2.1.0,<2.4-dev"
+        "symfony/console": ">=2.1,<3.0"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
@@ -33,8 +33,7 @@
     "target-dir": "Snc/RedisBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.1-dev"
+            "dev-master": "1.1-dev"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
