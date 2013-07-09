@@ -30,10 +30,5 @@
     "autoload": {
         "psr-0": { "Snc\\RedisBundle": "" }
     },
-    "target-dir": "Snc/RedisBundle",
-    "extra": {
-        "branch-alias": {
-            "dev-2.0": "1.0.x-dev"
-        }
-    }
+    "target-dir": "Snc/RedisBundle"
 }
