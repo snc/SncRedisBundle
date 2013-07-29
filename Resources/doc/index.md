@@ -6,45 +6,14 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 ## Installation ##
 
-### Using composer ###
-
-**Note:** Check out this [gist](https://gist.github.com/2488761) if you want to use `composer` with Symfony2 v2.0.x!
-
 Add the `snc/redis-bundle` package to your `require` section in the `composer.json` file.
 
 ``` json
 {
     "require": {
-        "snc/redis-bundle": "2.1.x-dev"
+        "snc/redis-bundle": "1.1.x-dev"
     }
 }
-```
-
-### Using the symfony-standard vendor script ###
-
-Append the following lines to your `deps` file:
-
-    [SncRedisBundle]
-        git=git://github.com/snc/SncRedisBundle.git
-        target=/bundles/Snc/RedisBundle
-        version=origin/master
-
-    [predis]
-        git=git://github.com/nrk/predis.git
-        version=origin/v0.7
-
-then run the `php bin/vendors install` command.
-
-Register the `Snc` and `Predis` namespaces in the autoloader (`app/autoload.php`):
-
-``` php
-<?php
-$loader->registerNamespaces(array(
-    // ...
-    'Snc'                            => __DIR__.'/../vendor/bundles',
-    'Predis'                         => __DIR__.'/../vendor/predis/lib',
-    // ...
-));
 ```
 
 Add the RedisBundle to your application's kernel:
