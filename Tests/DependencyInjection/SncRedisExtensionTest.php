@@ -212,6 +212,23 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new RedisDsn('redis://test'), current($config['clients']['default']['dsns']));
     }
 
+    /**
+     * Test valid config of the replication option
+     */
+    public function testClientReplicationOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getReplicationYamlConfig());
+        $extension->load(array($config), $container = new ContainerBuilder());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertTrue($options['replication']);
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.master_parameters', (string) $parameters[0]);
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertTrue($masterParameters['replication']);
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -268,6 +285,7 @@ clients:
             iterable_multibulk: false
             throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
+            replication: false
 session:
     client: default
     prefix: foo
@@ -329,6 +347,21 @@ EOF;
 clients:
     default:
         dsn: redis://test
+EOF;
+    }
+
+    private function getReplicationYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default 
+        dsn:
+            - redis://localhost?alias=master
+            - redis://otherhost
+        options:
+            replication: true
 EOF;
     }
 }
