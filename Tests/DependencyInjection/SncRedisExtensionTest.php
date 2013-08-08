@@ -17,6 +17,7 @@ use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Yaml\Parser;
 
@@ -157,6 +158,30 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getInvalidMonologYamlConfig());
         $extension->load(array($config), $container = new ContainerBuilder());
+    }
+
+    /**
+     * Test the monolog formatter option
+     */
+    public function testMonologFormatterOption()
+    {
+        $container = new ContainerBuilder();
+        //Create a fake formatter definition
+        $container->setDefinition('my_monolog_formatter', new Definition('Monolog\\Formatter\\LogstashFormatter', array('symfony')));
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getMonologFormatterOptionYamlConfig());
+        $extension->load(array($config), $container);
+
+        $loggerDefinition = $container->getDefinition('monolog.handler.redis');
+        $calls = $loggerDefinition->getMethodCalls();
+        $this->assertTrue($loggerDefinition->hasMethodCall('setFormatter'));
+        $calls = $loggerDefinition->getMethodCalls();
+        foreach ($calls as $call) {
+            if ($call[0] === 'setFormatter') {
+                $this->assertEquals('my_monolog_formatter', (string) $call[1][0]);
+                break;
+            }
+        }
     }
 
     /**
@@ -326,6 +351,22 @@ clients:
 monolog:
     client: monolog
     key: monolog
+EOF;
+    }
+
+    private function getMonologFormatterOptionYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    monolog:
+        type: predis
+        alias: monolog
+        dsn: redis://localhost
+        logging: false
+monolog:
+    client: monolog
+    key: monolog
+    formatter: my_monolog_formatter
 EOF;
     }
 

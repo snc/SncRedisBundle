@@ -210,6 +210,24 @@ monolog:
             level: debug
 ```
 
+You can also add a custom formatter to the monolog handler
+
+``` yaml
+snc_redis:
+    clients:
+        monolog:
+            type: predis
+            alias: monolog
+            dsn: redis://localhost/1
+            logging: false
+            options:
+                connection_persistent: true
+    monolog:
+        client: monolog
+        key: monolog
+        formatter: my_custom_formatter
+```
+
 ### SwiftMailer spooling ###
 
 You can spool your mails in a redis `LIST` by adding this to your config:
