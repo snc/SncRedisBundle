@@ -93,6 +93,26 @@ $val = $redis_cluster->get('ef:gh');
 $val = $redis_cluster->get('ij:kl');
 ```
 
+A setup using `predis` master-slave replication could look like this:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn:
+                - redis://master-host?alias=master
+                - redis://slave-host1
+                - redis://slave-host2
+            options:
+                replication: true
+```
+
+Please note that the master dsn connection needs to be tagged with the ```master``` alias.
+If not, `predis` will complain.
+
+
 ### Sessions ###
 
 Use Redis sessions by adding the following to your config:
@@ -248,6 +268,7 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
+                replication: false
     session:
         client: default
         prefix: foo

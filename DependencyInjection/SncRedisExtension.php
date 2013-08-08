@@ -130,7 +130,9 @@ class SncRedisExtension extends Extension
         $connectionCount = count($client['dsns']);
         foreach ($client['dsns'] as $i => $dsn) {
             /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
-            $connectionAlias = 1 === $connectionCount ? $client['alias'] : $client['alias'] . ($i + 1);
+            if (!$connectionAlias = $dsn->getAlias()) {
+                $connectionAlias = 1 === $connectionCount ? $client['alias'] : $client['alias'] . ($i + 1);
+            }
             $connectionAliases[] = $connectionAlias;
             $connection = $client['options'];
             $connection['logging'] = $client['logging'];

@@ -242,31 +242,34 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public static function weightValues()
+    public static function parameterValues()
     {
         return array(
-            array('redis://localhost', null),
-            array('redis://localhost/1?weight=1', 1),
-            array('redis://pw@localhost:63790/10?weight=2', 2),
-            array('redis://127.0.0.1?weight=3', 3),
-            array('redis://127.0.0.1/1?weight=4', 4),
-            array('redis://pw@127.0.0.1:63790/10?weight=5', 5),
-            array('redis:///redis.sock?weight=6', 6),
-            array('redis:///redis.sock/1?weight=7', 7),
-            array('redis://pw@/redis.sock/10?weight=8', 8),
-            array('redis://pw@/redis.sock/10?weight=9', 9),
+            array('redis://localhost', null, null),
+            array('redis://localhost/1?weight=1&alias=master', 1, 'master'),
+            array('redis://pw@localhost:63790/10?alias=master&weight=2', 2, 'master'),
+            array('redis://127.0.0.1?weight=3', 3, null),
+            array('redis://127.0.0.1/1?alias=master&weight=4', 4, 'master'),
+            array('redis://pw@127.0.0.1:63790/10?weight=5&alias=master', 5, 'master'),
+            array('redis:///redis.sock?weight=6&alias=master', 6, 'master'),
+            array('redis:///redis.sock/1?weight=7', 7, null),
+            array('redis://pw@/redis.sock/10?weight=8&alias=master', 8, 'master'),
+            array('redis://pw@/redis.sock/10?alias=master&weight=9', 9, 'master'),
+            array('redis://localhost?alias=master', null, 'master'),
         );
     }
 
     /**
      * @param string $dsn    DSN
      * @param int    $weight Weight
+     * @param string $alias  Alias
      *
-     * @dataProvider weightValues
+     * @dataProvider parameterValues
      */
-    public function testParameterValues($dsn, $weight)
+    public function testParameterValues($dsn, $weight, $alias)
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($weight, $dsn->getWeight());
+        $this->assertSame($alias, $dsn->getAlias());
     }
 }

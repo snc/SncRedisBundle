@@ -52,6 +52,11 @@ class RedisDsn
     protected $weight;
 
     /**
+     * @var string
+     */
+    protected $alias;
+
+    /**
      * Constructor
      *
      * @param string $dsn
@@ -115,6 +120,14 @@ class RedisDsn
     }
 
     /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
      * @return bool
      */
     public function isValid()
@@ -145,7 +158,7 @@ class RedisDsn
             $this->password = str_replace('\@', '@', substr($dsn, 0, $pos));
             $dsn = substr($dsn, $pos + 1);
         }
-        $dsn = preg_replace_callback('/\?(weight)=[^&]+.*$/', array($this, 'parseParameters'), $dsn); // parse parameters
+        $dsn = preg_replace_callback('/\?(weight|alias)=[^&]+.*$/', array($this, 'parseParameters'), $dsn); // parse parameters
         if (preg_match('#^(.*)/(\d+)$#', $dsn, $matches)) {
             // parse database
             $this->database = (int) $matches[2];
@@ -182,6 +195,11 @@ class RedisDsn
                     case 'weight':
                         if ($kv[1]) {
                             $this->weight = (int) $kv[1];
+                        }
+                        break;
+                    case 'alias':
+                        if ($kv[1]) {
+                            $this->alias = $kv[1];
                         }
                         break;
                 }
