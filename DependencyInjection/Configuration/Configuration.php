@@ -206,6 +206,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('key')->isRequired()->end()
+                        ->scalarNode('formatter')->end()
                     ->end()
                 ->end()
             ->end();

@@ -98,6 +98,7 @@
     <xsd:complexType name="monolog">
         <xsd:attribute name="client" type="xsd:string" use="required" />
         <xsd:attribute name="key" type="xsd:string" use="required" />
+        <xsd:attribute name="formatter" type="xsd:string" />
     </xsd:complexType>
 
     <xsd:complexType name="swiftmailer">
