@@ -245,7 +245,21 @@ snc_redis:
         key: swiftmailer
 ```
 
-Additionally you have to set the swiftmailer spool type to `redis`:
+Additionally you have to configure the swiftmailer spool:
+
+Since version 2.2.6 of the SwiftmailerBundle (currently not yet released)
+you can configure custom spool implementations using the `service` type:
+
+``` yaml
+swiftmailer:
+    ...
+    spool:
+        type: service
+        id: snc_redis.swiftmailer.spool
+```
+
+If you are using an older version of the SwiftmailerBundle the following configuration
+should work, but this was kind of a hack:
 
 ``` yaml
 swiftmailer:
