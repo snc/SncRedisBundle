@@ -208,7 +208,7 @@ monolog:
     handlers:
         main:
             type: service
-            id: monolog.handler.redis
+            id: snc_redis.logger
             level: debug
 ```
 
