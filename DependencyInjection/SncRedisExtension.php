@@ -342,7 +342,7 @@ class SncRedisExtension extends Extension
         if (!empty($config['monolog']['formatter'])) {
             $def->addMethodCall('setFormatter', array(new Reference($config['monolog']['formatter'])));
         }
-        $container->setDefinition('monolog.handler.redis', $def);
+        $container->setDefinition('snc_redis.monolog.handler', $def);
     }
 
     /**
