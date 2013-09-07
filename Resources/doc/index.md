@@ -8,12 +8,14 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 Add the `snc/redis-bundle` package to your `require` section in the `composer.json` file.
 
-``` json
-{
-    "require": {
-        "snc/redis-bundle": "1.1.x-dev"
-    }
-}
+``` bash
+$ composer require snc/redis-bundle 1.1.x-dev
+```
+
+If you want to use the `predis` client library, you have to add the `predis/predis` package, too.
+
+``` bash
+$ composer require predis/predis 0.8.x-dev
 ```
 
 Add the RedisBundle to your application's kernel:
@@ -247,8 +249,8 @@ snc_redis:
 
 Additionally you have to configure the swiftmailer spool:
 
-Since version 2.2.6 of the SwiftmailerBundle (currently not yet released)
-you can configure custom spool implementations using the `service` type:
+Since version 2.2.6 and 2.3.4 of the SwiftmailerBundle you can configure
+custom spool implementations using the `service` type:
 
 ``` yaml
 swiftmailer:
