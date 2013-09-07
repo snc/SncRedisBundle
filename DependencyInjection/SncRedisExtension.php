@@ -337,7 +337,7 @@ class SncRedisExtension extends Extension
         $def->setPublic(false);
         $def->addMethodCall('setRedis', array(new Reference(sprintf('snc_redis.%s', $config['monolog']['client']))));
         $def->addMethodCall('setKey', array($config['monolog']['key']));
-        $container->setDefinition('monolog.handler.redis', $def);
+        $container->setDefinition('snc_redis.monolog.handler', $def);
     }
 
     /**
