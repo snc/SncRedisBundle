@@ -1,6 +1,33 @@
 # Update notes #
 
-## 1.1.0 (2012-xx-xx) ##
+## 1.0.11 and 1.1.6 ##
+
+The monolog handler was renamed from `monolog.handler.redis` to
+`snc_redis.monolog.handler`, you have to update your configuration.
+
+Before:
+
+``` yaml
+monolog:
+    handlers:
+        main:
+            type: service
+            id: monolog.handler.redis
+            level: debug
+```
+
+After:
+
+``` yaml
+monolog:
+    handlers:
+        main:
+            type: service
+            id: snc_redis.monolog.handler
+            level: debug
+```
+
+## 1.1.0 ##
 
 The configuration syntax has been simplified. The `connections` setting was
 merged into the `clients` setting.
