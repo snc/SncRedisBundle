@@ -47,6 +47,16 @@ class Client
     }
 
     /**
+     * Destructor
+     */
+    public function __destruct()
+    {
+        if (null !== $this->redis) {
+            $this->redis->close();
+        }
+    }
+
+    /**
      * Sets the redis instance
      *
      * @param \Redis $redis
