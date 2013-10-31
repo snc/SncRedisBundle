@@ -271,6 +271,11 @@ swiftmailer:
 ```
 
 
+### Backend health check for [LiipMonitorBundle](https://github.com/liip/LiipMonitorBundle) ###
+
+If you have the LiipMonitorBundle enabled, the SncRedisBundle will provide a health check for your 
+redis backend which is available under ´/monitor/check`.
+
 ### Complete configuration example ###
 
 ``` yaml
