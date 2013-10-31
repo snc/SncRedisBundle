@@ -51,7 +51,9 @@ class Client
      */
     public function __destruct()
     {
-        $this->redis->close();
+        if (null !== $this->redis) {
+            $this->redis->close();
+        }
     }
 
     /**
