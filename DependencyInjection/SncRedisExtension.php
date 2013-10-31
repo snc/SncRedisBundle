@@ -227,7 +227,7 @@ class SncRedisExtension extends Extension
         $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
 
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
-        $phpredisDef = new Definition('Redis'); // TODO $container->getParameter('snc_redis.*.class')
+        $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
         $phpredisDef->setPublic(true);
         $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
@@ -257,7 +257,7 @@ class SncRedisExtension extends Extension
         if ($client['logging']) {
             $phpredisDef->setPublic(false);
             $parameters = array('alias' => $client['alias']);
-            $clientDef = new Definition('Snc\RedisBundle\Client\Phpredis\Client'); // TODO $container->getParameter('snc_redis.*.class')
+            $clientDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
             $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
             $clientDef->addArgument($parameters);
             $clientDef->addArgument(new Reference('snc_redis.logger'));

@@ -42,6 +42,8 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('connection_parameters')->defaultValue('Predis\Connection\ConnectionParameters')->end()
                         ->scalarNode('connection_factory')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory')->end()
                         ->scalarNode('connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper')->end()
+                        ->scalarNode('phpredis_client')->defaultValue('Redis')->end()
+                        ->scalarNode('phpredis_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\Client')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
                         ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
