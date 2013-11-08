@@ -283,8 +283,17 @@ class SncRedisExtension extends Extension
 
         $container->setParameter('snc_redis.session.client', $config['session']['client']);
         $container->setParameter('snc_redis.session.prefix', $config['session']['prefix']);
+        $container->setParameter('snc_redis.session.locking', $config['session']['locking']);
+        $container->setParameter('snc_redis.session.spin_lock_wait', $config['session']['spin_lock_wait']);
 
-        $container->setAlias('snc_redis.session.client', sprintf('snc_redis.%s_client', $container->getParameter('snc_redis.session.client')));
+        $client = $container->getParameter('snc_redis.session.client');
+        $prefix = $container->getParameter('snc_redis.session.prefix');
+        $locking = $container->getParameter('snc_redis.session.locking');
+        $spinLockWait = $container->getParameter('snc_redis.session.spin_lock_wait');
+
+        $client = sprintf('snc_redis.%s_client', $client);
+
+        $container->setAlias('snc_redis.session.client', $client, $prefix, $locking, $spinLockWait);
 
         if (isset($config['session']['ttl'])) {
             $definition = $container->getDefinition('snc_redis.session.handler');
