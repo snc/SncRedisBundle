@@ -152,6 +152,8 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('prefix')->defaultValue('session')->end()
                         ->scalarNode('ttl')->end()
                         ->scalarNode('use_as_default')->defaultValue('true')->end()
+                        ->booleanNode('locking')->defaultTrue()->end()
+                        ->scalarNode('spin_lock_wait')->defaultValue(150000)->end()
                     ->end()
                 ->end()
             ->end();
