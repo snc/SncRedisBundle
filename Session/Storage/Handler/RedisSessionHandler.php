@@ -12,11 +12,12 @@
 namespace Snc\RedisBundle\Session\Storage\Handler;
 
 /**
- * Redis based session storage
+ * Redis based session storage with session locking support
  *
  * @author Justin Rainbow <justin.rainbow@gmail.com>
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Henrik Westphal <henrik.westphal@gmail.com>
+ * @author Maurits van der Schee <maurits@vdschee.nl>
  */
 class RedisSessionHandler implements \SessionHandlerInterface
 {
