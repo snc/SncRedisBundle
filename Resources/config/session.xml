@@ -15,6 +15,8 @@
             <argument type="service" id="snc_redis.session.client" />
             <argument>%session.storage.options%</argument>
             <argument>%snc_redis.session.prefix%</argument>
+            <argument>%snc_redis.session.locking%</argument>
+            <argument>%snc_redis.session.spin_lock_wait%</argument>
         </service>
     </services>
 

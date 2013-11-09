@@ -77,6 +77,8 @@
         <xsd:attribute name="prefix" type="xsd:string" />
         <xsd:attribute name="ttl" type="xsd:int" />
         <xsd:attribute name="use-as-default" type="xsd:boolean" />
+        <xsd:attribute name="locking" type="xsd:boolean" />
+        <xsd:attribute name="spin_lock_wait" type="xsd:int" />
     </xsd:complexType>
 
     <xsd:complexType name="doctrine">
