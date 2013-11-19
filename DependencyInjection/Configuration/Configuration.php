@@ -118,6 +118,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('connection_timeout')->defaultValue(5)->end()
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
+                                    ->booleanNode('disable_logger')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
                                     ->scalarNode('profile')->defaultValue('2.4')
                                         ->beforeNormalization()
