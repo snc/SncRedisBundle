@@ -93,17 +93,11 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritDoc}
      */
-    public function open($savePath, $sessionId)
+    public function open($savePath, $sessionName)
     {
-        if ($this->locking) {
-            if (!$this->locked) {
-                if (!$this->lockSession($sessionId)) {
-                    return false;
-                }
-            }
-        }
         return true;
     }
+
 
     private function lockSession($sessionId)
     {
@@ -147,6 +141,14 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function read($sessionId)
     {
+        if ($this->locking) {
+            if (!$this->locked) {
+                if (!$this->lockSession($sessionId)) {
+                    return false;
+                }
+            }
+        }
+
         return $this->redis->get($this->getRedisKey($sessionId)) ?: '';
     }
 
@@ -155,6 +157,14 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
+        if ($this->locking) {
+            if (!$this->locked) {
+                if (!$this->lockSession($sessionId)) {
+                    return false;
+                }
+            }
+        }
+
         if (0 < $this->ttl) {
             $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
         } else {
