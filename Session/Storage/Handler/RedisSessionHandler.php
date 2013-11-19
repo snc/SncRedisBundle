@@ -204,4 +204,13 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
         return $this->prefix . ':' . $sessionId;
     }
+
+    /**
+     * Destructor
+     */
+    public function __destruct()
+    {
+        $this->close();
+    }
+
 }
