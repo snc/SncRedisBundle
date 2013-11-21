@@ -22,6 +22,13 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    private $debug;
+
+    public function __construct($debug)
+    {
+        $this->debug = (Boolean) $debug;
+    }
+
     /**
      * Generates the configuration tree builder.
      *
@@ -86,7 +93,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('alias')->isRequired()->end()
-                            ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
+                            ->booleanNode('logging')->defaultValue($this->debug)->end()
                             ->arrayNode('dsns')
                                 ->isRequired()
                                 ->performNoDeepMerging()
