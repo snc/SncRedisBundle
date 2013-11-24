@@ -19,6 +19,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Yaml\Parser;
 
 /**
@@ -54,7 +55,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = array();
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $this->getContainer());
     }
 
     /**
@@ -67,7 +68,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getMinimalYamlConfig());
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $container = $this->getContainer());
 
         $this->assertEquals($expected, $container->getParameter($name));
     }
@@ -79,7 +80,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getMinimalYamlConfig());
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $container = $this->getContainer());
 
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
@@ -98,7 +99,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getFullYamlConfig());
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $container = $this->getContainer());
 
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
@@ -157,7 +158,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getInvalidMonologYamlConfig());
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $this->getContainer());
     }
 
     /**
@@ -165,7 +166,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testMonologFormatterOption()
     {
-        $container = new ContainerBuilder();
+        $container = $this->getContainer();
         //Create a fake formatter definition
         $container->setDefinition('my_monolog_formatter', new Definition('Monolog\\Formatter\\LogstashFormatter', array('symfony')));
         $extension = new SncRedisExtension();
@@ -191,7 +192,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getFullYamlConfig());
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $container = $this->getContainer());
 
         $profileDefinition = $container->getDefinition('snc_redis.client.default_profile');
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
@@ -207,7 +208,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidXmlConfig()
     {
-        $container = new ContainerBuilder();
+        $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
         $loader->load('valid.xml');
@@ -218,7 +219,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidXmlConfig()
     {
-        $container = new ContainerBuilder();
+        $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
         $loader->load('invalid.xml');
@@ -229,7 +230,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigurationMerging()
     {
-        $configuration = new Configuration();
+        $configuration = new Configuration(true);
         $configs = array($this->parseYaml($this->getMergeConfig1()), $this->parseYaml($this->getMergeConfig2()));
         $processor = new Processor();
         $config = $processor->processConfiguration($configuration, $configs);
@@ -244,7 +245,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getReplicationYamlConfig());
-        $extension->load(array($config), $container = new ContainerBuilder());
+        $extension->load(array($config), $container = $this->getContainer());
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertTrue($options['replication']);
@@ -397,12 +398,23 @@ EOF;
 clients:
     default:
         type: predis
-        alias: default 
+        alias: default
         dsn:
             - redis://localhost?alias=master
             - redis://otherhost
         options:
             replication: true
 EOF;
+    }
+
+    private function getContainer()
+    {
+        return new ContainerBuilder(new ParameterBag(array(
+            'kernel.debug'       => false,
+            'kernel.bundles'     => array(),
+            'kernel.cache_dir'   => sys_get_temp_dir(),
+            'kernel.environment' => 'test',
+            'kernel.root_dir'    => __DIR__.'/../../' // src dir
+        )));
     }
 }

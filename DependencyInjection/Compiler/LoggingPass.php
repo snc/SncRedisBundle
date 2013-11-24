@@ -29,9 +29,6 @@ class LoggingPass implements CompilerPassInterface
             $parameterDefinition = $container->getDefinition($id);
             $parameters = $parameterDefinition->getArgument(0);
             if ($parameters['logging']) {
-                if ('%kernel.debug%' === $parameters['logging'] && false === $container->getParameter('kernel.debug')) {
-                    continue;
-                }
                 $optionId = sprintf('snc_redis.client.%s_options', $clientAlias);
                 $option = $container->getDefinition($optionId);
                 if (1 < count($option->getArguments())) {

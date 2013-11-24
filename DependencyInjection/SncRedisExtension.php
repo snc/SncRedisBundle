@@ -363,6 +363,6 @@ class SncRedisExtension extends Extension
 
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
-        return new Configuration();
+        return new Configuration($container->getParameter('kernel.debug'));
     }
 }
