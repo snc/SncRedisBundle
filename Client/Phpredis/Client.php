@@ -14,11 +14,9 @@ namespace Snc\RedisBundle\Client\Phpredis;
 use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
 
-/**
- * phpredis client wrapper
- */
 class Client
 {
+
     /**
      * @var RedisLogger
      */
@@ -93,6 +91,24 @@ class Client
         }
 
         $startTime = microtime(true);
+        if (in_array(strtolower($name), ['del', 'delete', 'sinter', 'sdiff'])) {
+            $arguments = [
+                0 => array_pop($arguments),
+                1 => array_pop($arguments),
+                2 => $arguments
+            ];
+        }
+        if (in_array(strtolower($name),
+            ['lpush','rpush', 'sadd', 'srem', 'sremove', 'sinterstore', 'sunionstore',
+             'sdiffstore', 'zrem','zdelete', 'hdel'])) {
+            $arguments = [
+                0 => array_pop($arguments),
+                1 => array_pop($arguments),
+                2 => array_pop($arguments),
+                3 => $arguments
+            ];
+        }
+
         $result = call_user_func_array(array($this->redis, $name), $arguments);
         $duration = (microtime(true) - $startTime) * 1000;
 
@@ -101,6 +117,14 @@ class Client
         }
 
         return $result;
+    }
+
+    public function bitOp( $operation, $retKey, $key1, $key2, $key3 = null ) {
+        $this->redis->bitOp($operation, $retKey, $key1, $key2, $key3);
+    }
+
+    public function zAdd($key, $score1, $value1, $score2, $value2, $scoreN, $valueN) {
+        $this->redis->zAdd($key, $score1, $value1, $score2, $value2, $scoreN, $valueN);
     }
 
     /**
