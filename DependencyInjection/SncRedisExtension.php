@@ -220,41 +220,53 @@ class SncRedisExtension extends Extension
     {
         $connectionCount = count($client['dsns']);
 
+        $hostList = array();
         if (1 !== $connectionCount) {
-            throw new \RuntimeException('Support for RedisArray is not yet implemented.');
+            foreach ($client['dsns'] as $dsns) {
+                $hostList[] = sprintf('%s:%s', $dsns->getHost(), $dsns->getPort());
+            }
+            //throw new \RuntimeException('Support for RedisArray is not yet implemented.');
         }
 
         $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
 
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
-        $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
-        $phpredisDef->setPublic(true);
-        $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
-        $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
-        $connectParameters = array();
-        if (null !== $dsn->getSocket()) {
-            $connectParameters[] = $dsn->getSocket();
-            $connectParameters[] = null;
+        if ($hostListCount = count($hostList)>0) {
+            $phpredisDef = new Definition('RedisArray');
+            $phpredisDef->setPublic(true);
+            $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+            $phpredisDef->addArgument($hostList);            
         } else {
-            $connectParameters[] = $dsn->getHost();
-            $connectParameters[] = $dsn->getPort();
+            $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
+            $phpredisDef->setPublic(true);
+            $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+            $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
+            $connectParameters = array();
+            if (null !== $dsn->getSocket()) {
+                $connectParameters[] = $dsn->getSocket();
+                $connectParameters[] = null;
+            } else {
+                $connectParameters[] = $dsn->getHost();
+                $connectParameters[] = $dsn->getPort();
+            }
+            if ($client['options']['connection_timeout']) {
+                $connectParameters[] = $client['options']['connection_timeout'];
+            }
+            $phpredisDef->addMethodCall($connectMethod, $connectParameters);
+            if ($client['options']['prefix']) {
+                $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_PREFIX, $client['options']['prefix']));
+            }
+            if (null !== $dsn->getPassword()) {
+                $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
+            }
+            if (null !== $dsn->getDatabase()) {
+                $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
+            }
         }
-        if ($client['options']['connection_timeout']) {
-            $connectParameters[] = $client['options']['connection_timeout'];
-        }
-        $phpredisDef->addMethodCall($connectMethod, $connectParameters);
-        if ($client['options']['prefix']) {
-            $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_PREFIX, $client['options']['prefix']));
-        }
-        if (null !== $dsn->getPassword()) {
-            $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
-        }
-        if (null !== $dsn->getDatabase()) {
-            $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
-        }
+        
         $container->setDefinition($phpredisId, $phpredisDef);
 
-        if ($client['logging']) {
+        if ($hostListCount !== 1 && $client['logging']) {
             $phpredisDef->setPublic(false);
             $parameters = array('alias' => $client['alias']);
             $clientDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
