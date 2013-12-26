@@ -22,7 +22,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del'));
+        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del', 'setnx'));
     }
 
     protected function tearDown()
@@ -86,6 +86,21 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         // TTL attribute overrides cookie_lifetime option
         $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 20), 'session', false);
         $handler->setTtl(10);
+        $handler->write('_symfony', 'some data');
+    }
+
+    public function testSessionLocking()
+    {
+	$lockMaxWait = 2;
+	ini_set('max_execution_time', $lockMaxWait);
+
+        $this->redis
+            ->expects($this->exactly($lockMaxWait))
+            ->method('setnx')
+            ->with($this->equalTo('session_symfony.lock'), $this->equalTo('1'))
+        ;
+
+        $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);
         $handler->write('_symfony', 'some data');
     }
 }
