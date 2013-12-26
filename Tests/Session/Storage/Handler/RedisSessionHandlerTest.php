@@ -91,8 +91,8 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testSessionLocking()
     {
-	$lockMaxWait = 2;
-	ini_set('max_execution_time', $lockMaxWait);
+        $lockMaxWait = 2;
+        ini_set('max_execution_time', $lockMaxWait);
 
         $this->redis
             ->expects($this->exactly($lockMaxWait))
