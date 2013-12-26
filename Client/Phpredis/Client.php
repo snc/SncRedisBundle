@@ -61,7 +61,7 @@ class Client
      *
      * @param \Redis $redis
      */
-    public function setRedis(Redis $redis)
+    public function setRedis($redis)
     {
         $this->redis = $redis;
     }
