@@ -38,7 +38,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('session:_symfony'))
         ;
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session');
+        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
         $handler->read('_symfony');
     }
 
@@ -50,7 +50,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('session:_symfony'))
         ;
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session');
+        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
         $handler->destroy('_symfony');
     }
 
@@ -62,7 +62,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('session:_symfony'), $this->equalTo('some data'))
         ;
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session');
+        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
         $handler->write('_symfony', 'some data');
     }
 
@@ -75,16 +75,16 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         ;
 
         // Expiration is set by cookie_lifetime option
-        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 10), 'session');
+        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 10), 'session', false);
         $handler->write('_symfony', 'some data');
 
         // Expiration is set with the TTL attribute
-        $handler = new RedisSessionHandler($this->redis, array(), 'session');
+        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
         $handler->setTtl(10);
         $handler->write('_symfony', 'some data');
 
         // TTL attribute overrides cookie_lifetime option
-        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 20), 'session');
+        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 20), 'session', false);
         $handler->setTtl(10);
         $handler->write('_symfony', 'some data');
     }
