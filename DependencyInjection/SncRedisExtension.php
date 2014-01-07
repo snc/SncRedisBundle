@@ -235,7 +235,8 @@ class SncRedisExtension extends Extension
             $phpredisDef = new Definition('RedisArray');
             $phpredisDef->setPublic(true);
             $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
-            $phpredisDef->addArgument($hostList);            
+            $phpredisDef->addArgument($hostList);
+            $phpredisDef->addArgument(array('pconnect'=>true));          
         } else {
             $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
             $phpredisDef->setPublic(true);
