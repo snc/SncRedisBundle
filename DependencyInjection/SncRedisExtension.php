@@ -260,7 +260,10 @@ class SncRedisExtension extends Extension
             $clientDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
             $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
             $clientDef->addArgument($parameters);
-            $clientDef->addArgument(new Reference('snc_redis.logger'));
+
+            if (false === $client['options']['disable_logger']) {
+                $clientDef->addArgument(new Reference('snc_redis.logger'));
+            }
             $clientDef->addMethodCall('setRedis', array(new Reference($phpredisId)));
             $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
         } else {
