@@ -219,6 +219,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('key')->isRequired()->end()
                         ->scalarNode('formatter')->end()
+                        ->scalarNode('max_list_length')->end()
                     ->end()
                 ->end()
             ->end();
