@@ -55,6 +55,14 @@ class RedisHandler extends AbstractProcessingHandler
     }
 
     /**
+     * @param integer $maxListLength
+     */
+    public function setMaxListLength($maxListLength)
+    {
+        $this->maxListLength = $maxListLength;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function close()
