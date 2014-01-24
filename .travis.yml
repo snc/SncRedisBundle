@@ -3,9 +3,8 @@ language: php
 php:
   - 5.3
   - 5.4
+  - 5.5
 
 before_script:
-  - pecl install redis
-  - phpenv rehash
   - composer install --dev
   - mkdir Snc && ln -s ../ Snc/RedisBundle
