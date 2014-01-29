@@ -134,6 +134,8 @@ class Client
 
             if (is_scalar($item)) {
                 $list[] = strval($item);
+            } elseif (null === $item) {
+                $list[] = '<null>';
             } else {
                 $this->flatten($item, $list);
             }
