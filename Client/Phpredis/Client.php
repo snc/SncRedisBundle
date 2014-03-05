@@ -4,6 +4,7 @@
  * This file is part of the SncRedisBundle package.
  *
  * (c) Henrik Westphal <henrik.westphal@gmail.com>
+ * (c) Yassine Khial <yassine.khial@blablacar.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,23 +12,18 @@
 
 namespace Snc\RedisBundle\Client\Phpredis;
 
-use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
- * phpredis client wrapper
+ * Simple \Redis Proxy with logger:
+ * Add log to the RedisLogger object when calling specific command
  */
-class Client
+class Client extends BaseClient
 {
     /**
      * @var RedisLogger
      */
     protected $logger;
-
-    /**
-     * @var \Redis
-     */
-    protected $redis;
 
     /**
      * @var string
@@ -37,42 +33,18 @@ class Client
     /**
      * Constructor
      *
-     * @param array       $parameters An array of parameters
+     * @param array       $parameters List of parameters (only `alias` key is handled)
      * @param RedisLogger $logger     A RedisLogger instance
      */
     public function __construct(array $parameters = array(), RedisLogger $logger = null)
     {
         $this->logger = $logger;
-        $this->alias = $parameters['alias'];
+        $this->alias  = isset($parameters['alias']) ? $parameters['alias'] : '';
     }
 
     /**
-     * Destructor
-     */
-    public function __destruct()
-    {
-        if (null !== $this->redis) {
-            $this->redis->close();
-        }
-    }
-
-    /**
-     * Sets the redis instance
-     *
-     * @param \Redis $redis
-     */
-    public function setRedis(Redis $redis)
-    {
-        $this->redis = $redis;
-    }
-
-    /**
-     * Proxy function to enable logging
-     *
-     * @param string $name      A command name
-     * @param array  $arguments An array of command arguments
-     *
-     * @return mixed
+     * {@inheritDoc}
+     * Overload somes commands (get, set...) in order to log the result
      */
     public function __call($name, array $arguments)
     {
@@ -93,8 +65,8 @@ class Client
         }
 
         $startTime = microtime(true);
-        $result = call_user_func_array(array($this->redis, $name), $arguments);
-        $duration = (microtime(true) - $startTime) * 1000;
+        $result    = parent::__call($name, $arguments);
+        $duration  = (microtime(true) - $startTime) * 1000;
 
         if ($log && null !== $this->logger) {
             $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
@@ -107,7 +79,7 @@ class Client
      * Returns a string representation of the given command including arguments
      *
      * @param string $command   A command name
-     * @param array  $arguments An array of command arguments
+     * @param array  $arguments List of command arguments
      *
      * @return string
      */
