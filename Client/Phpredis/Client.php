@@ -31,7 +31,7 @@ class Client extends BaseClient
     protected $alias;
 
     /**
-     * __constructor__
+     * Constructor
      *
      * @param array       $parameters List of parameters (only `alias` key is handled)
      * @param RedisLogger $logger     A RedisLogger instance
@@ -44,7 +44,7 @@ class Client extends BaseClient
 
     /**
      * {@inheritDoc}
-     * Overload somes commands (get, set...) in order to logged the result
+     * Overload somes commands (get, set...) in order to log the result
      */
     public function __call($name, array $arguments)
     {

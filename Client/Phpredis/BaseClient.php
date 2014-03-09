@@ -53,7 +53,7 @@ class BaseClient implements ClientInterface
     }
 
     /**
-     * __destructor__
+     * Destructor
      */
     public function __destruct()
     {
