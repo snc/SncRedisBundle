@@ -252,6 +252,11 @@ class SncRedisExtension extends Extension
         if (null !== $dsn->getDatabase()) {
             $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
         }
+
+        if ($client['options']['serialization']) {
+            $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_SERIALIZER, $client['options']['serialization']));
+        }
+
         $container->setDefinition($phpredisId, $phpredisDef);
 
         if ($client['logging']) {

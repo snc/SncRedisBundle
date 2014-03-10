@@ -255,6 +255,22 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($masterParameters['replication']);
     }
 
+    /**
+     * Test valid config of the serialization option
+     */    
+    public function testClientSerializationOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSerializationYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertSame($options['serialization'], $masterParameters['serialization']);
+
+
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -312,6 +328,7 @@ clients:
             throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
             replication: false
+            serialization: 2
 session:
     client: default
     prefix: foo
@@ -404,6 +421,21 @@ clients:
             - redis://otherhost
         options:
             replication: true
+EOF;
+    }
+
+    private function getSerializationYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://localhost?alias=master
+            - redis://otherhost
+        options:
+            serialization: 2
 EOF;
     }
 
