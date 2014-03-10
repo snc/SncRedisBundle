@@ -267,8 +267,6 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertSame($options['serialization'], $masterParameters['serialization']);
-
-
     }
 
     private function parseYaml($yaml)
