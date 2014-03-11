@@ -68,6 +68,7 @@ class SncRedisExtension extends Extension
         if (isset($config['swiftmailer'])) {
             $this->loadSwiftMailer($config, $container);
         }
+
     }
 
     /**
@@ -215,6 +216,7 @@ class SncRedisExtension extends Extension
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws \RuntimeException
+     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     protected function loadPhpredisClient(array $client, ContainerBuilder $container)
     {
@@ -224,7 +226,8 @@ class SncRedisExtension extends Extension
             throw new \RuntimeException('Support for RedisArray is not yet implemented.');
         }
 
-        $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
+        $dsn = $client['dsns'][0];
+        /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
 
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
@@ -254,7 +257,12 @@ class SncRedisExtension extends Extension
         }
 
         if ($client['options']['serialization']) {
-            $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_SERIALIZER, $client['options']['serialization']));
+            $serializationTypes = $this->loadSerializationTypes();
+            if (isset($serializationTypes[$client['options']['serialization']])) {
+                $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_SERIALIZER, $serializationTypes[$client['options']['serialization']]));
+            } else {
+                throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $client['options']['serialization'], implode(", ", array_keys($serializationTypes))));
+            }
         }
 
         $container->setDefinition($phpredisId, $phpredisDef);
@@ -378,5 +386,19 @@ class SncRedisExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($container->getParameter('kernel.debug'));
+    }
+
+    /**
+     * Load  default serializer for Redis as a map.
+     *
+     * @return array
+     */
+    public function loadSerializationTypes()
+    {
+        return array(
+            "none" => \Redis::SERIALIZER_NONE,
+            "php" => \Redis::SERIALIZER_PHP,
+            "igbinary" => \Redis::SERIALIZER_IGBINARY
+        );
     }
 }
