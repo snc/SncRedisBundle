@@ -396,9 +396,9 @@ class SncRedisExtension extends Extension
     public function loadSerializationTypes()
     {
         return array(
-            "none" => \Redis::SERIALIZER_NONE,
-            "php" => \Redis::SERIALIZER_PHP,
-            "igbinary" => \Redis::SERIALIZER_IGBINARY
+            "none" => 0, //\Redis::SERIALIZER_NONE
+            "php" => 1, //\Redis::SERIALIZER_PHP
+            "igbinary" => 2 //\Redis::SERIALIZER_IGBINARY
         );
     }
 }
