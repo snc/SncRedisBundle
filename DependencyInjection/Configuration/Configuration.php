@@ -88,7 +88,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('type')->isRequired()
                                 ->validate()
-                                    ->ifTrue(function($v) { return !in_array($v, array('predis', 'phpredis')); })
+                                    ->ifTrue(function ($v) { return !in_array($v, array('predis', 'phpredis')); })
                                     ->thenInvalid('The redis client type %s is invalid.')
                                 ->end()
                             ->end()
@@ -98,11 +98,11 @@ class Configuration implements ConfigurationInterface
                                 ->isRequired()
                                 ->performNoDeepMerging()
                                 ->beforeNormalization()
-                                    ->ifString()->then(function($v) { return (array) $v; })
+                                    ->ifString()->then(function ($v) { return (array) $v; })
                                 ->end()
                                 ->beforeNormalization()
-                                    ->always()->then(function($v) {
-                                        return array_map(function($dsn) {
+                                    ->always()->then(function ($v) {
+                                        return array_map(function ($dsn) {
                                             $parsed = new RedisDsn($dsn);
 
                                             return $parsed->isValid() ? $parsed : $dsn;
@@ -111,7 +111,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->prototype('variable')
                                     ->validate()
-                                        ->ifTrue(function($v) { return is_string($v); })
+                                        ->ifTrue(function ($v) { return is_string($v); })
                                         ->thenInvalid('The redis DSN %s is invalid.')
                                     ->end()
                                 ->end()
@@ -126,10 +126,11 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
+                                    ->scalarNode('serialization')->defaultValue("none")->end()
                                     ->scalarNode('profile')->defaultValue('2.4')
                                         ->beforeNormalization()
-                                            ->ifTrue(function($v) { return false === is_string($v); })
-                                            ->then(function($v) { return sprintf('%.1f', $v); })
+                                            ->ifTrue(function ($v) { return false === is_string($v); })
+                                            ->then(function ($v) { return sprintf('%.1f', $v); })
                                         ->end()
                                     ->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
@@ -187,7 +188,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->arrayNode('entity_managers')
                                 ->defaultValue(array())
-                                ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
+                                ->beforeNormalization()->ifString()->then(function ($v) { return (array) $v; })->end()
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()
@@ -195,7 +196,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->arrayNode('document_managers')
                                 ->defaultValue(array())
-                                ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
+                                ->beforeNormalization()->ifString()->then(function ($v) { return (array) $v; })->end()
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()
