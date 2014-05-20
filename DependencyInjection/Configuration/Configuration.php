@@ -129,7 +129,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('profile')->defaultValue('2.4')
                                         ->beforeNormalization()
                                             ->ifTrue(function($v) { return false === is_string($v); })
-                                            ->then(function($v) { return sprintf('%.1f', $v); })
+                                            ->then(function($v) { return sprintf('%.1F', $v); })
                                         ->end()
                                     ->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
