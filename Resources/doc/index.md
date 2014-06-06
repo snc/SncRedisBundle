@@ -18,7 +18,7 @@ If you want to use the `predis` client library, you have to add the `predis/pred
 $ composer require predis/predis 0.8.x-dev
 ```
 
-Add the RedisBundle to your application's kernel:
+Add the RedisBundle to your application's kernel before DoctrineBundle:
 
 ``` php
 <?php
