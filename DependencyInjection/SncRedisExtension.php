@@ -337,7 +337,7 @@ class SncRedisExtension extends Extension
                 if ($cache['namespace']) {
                     $def->addMethodCall('setNamespace', array($cache['namespace']));
                 }
-                $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_%s', $dm, $name), $def);
+                $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $def);
             }
         }
     }
