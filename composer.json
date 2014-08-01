@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "A Redis bundle for Symfony2",
     "keywords": ["redis", "nosql", "symfony"],
-    "homepage": "https://github.com/mattmontgomery/SncRedisBundle",
+    "homepage": "https://github.com/snc/SncRedisBundle",
     "license": "MIT",
     "authors": [{
         "name": "Henrik Westphal",
