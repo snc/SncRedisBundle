@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "doctrine/cache": "1.*",
-        "predis/predis": "0.8.*",
+        "predis/predis": "dev-master",
         "symfony/console": ">=2.1,<3.0"
     },
     "suggest": {

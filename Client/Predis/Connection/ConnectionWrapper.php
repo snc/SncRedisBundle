@@ -13,16 +13,16 @@ namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Predis\Command\CommandInterface;
 use Predis\ResponseError;
-use Predis\Connection\SingleConnectionInterface;
+use Predis\Connection\ConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * ConnectionWrapper
  */
-class ConnectionWrapper implements SingleConnectionInterface
+class ConnectionWrapper implements ConnectionInterface
 {
     /**
-     * @var SingleConnectionInterface
+     * @var ConnectionInterface
      */
     protected $connection;
 
@@ -34,9 +34,9 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * Constructor
      *
-     * @param SingleConnectionInterface $connection
+     * @param ConnectionInterface $connection
      */
-    public function __construct(SingleConnectionInterface $connection)
+    public function __construct(ConnectionInterface $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
             /** @var ConnectionWrapper $connection */
@@ -49,7 +49,7 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * Returns the underlying connection object
      *
-     * @return SingleConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
@@ -93,9 +93,9 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function writeRequest(CommandInterface $command)
     {
-        return $this->connection->writeCommand($command);
+        return $this->connection->writeRequest($command);
     }
 
     /**
@@ -160,7 +160,7 @@ class ConnectionWrapper implements SingleConnectionInterface
         $duration = (microtime(true) - $startTime) * 1000;
 
         $error = $result instanceof ResponseError ? (string) $result : false;
-        $this->logger->logCommand((string) $command, $duration, $this->getParameters()->alias, $error);
+        $this->logger->logCommand($command->getId(), $duration, $this->getParameters()->alias, $error);
 
         return $result;
     }

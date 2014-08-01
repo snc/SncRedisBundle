@@ -101,6 +101,6 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         ;
 
         $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);
-        $handler->read('_symfony');
+        $handler->write('_symfony', 'some data');
     }
 }
