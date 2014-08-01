@@ -13,13 +13,13 @@ namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Predis\Command\CommandInterface;
 use Predis\ResponseError;
-use Predis\Connection\ConnectionInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * ConnectionWrapper
  */
-class ConnectionWrapper implements ConnectionInterface
+class ConnectionWrapper implements NodeConnectionInterface
 {
     /**
      * @var ConnectionInterface
@@ -36,7 +36,7 @@ class ConnectionWrapper implements ConnectionInterface
      *
      * @param ConnectionInterface $connection
      */
-    public function __construct(ConnectionInterface $connection)
+    public function __construct(NodeConnectionInterface $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
             /** @var ConnectionWrapper $connection */
@@ -160,8 +160,36 @@ class ConnectionWrapper implements ConnectionInterface
         $duration = (microtime(true) - $startTime) * 1000;
 
         $error = $result instanceof ResponseError ? (string) $result : false;
-        $this->logger->logCommand($command->getId(), $duration, $this->getParameters()->alias, $error);
+        $this->logger->logCommand($this->commandToString($command), $duration, $this->getParameters()->alias, $error);
 
         return $result;
+    }
+    /**
+     *
+     */
+    protected function commandToString(CommandInterface $command)
+    {
+        return array_reduce(
+            $command->getArguments(),
+            array($this, 'toStringArgumentReducer'),
+            $command->getId()
+        );
+    }
+    /**
+     * Helper function used to reduce a list of arguments to a string.
+     *
+     * @param  string $accumulator Temporary string.
+     * @param  string $argument    Current argument.
+     * @return string
+     */
+    protected function toStringArgumentReducer($accumulator, $argument)
+    {
+        if (strlen($argument) > 32) {
+            $argument = substr($argument, 0, 32) . '[...]';
+        }
+
+        $accumulator .= " $argument";
+
+        return $accumulator;
     }
 }
