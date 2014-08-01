@@ -141,6 +141,14 @@ class ConnectionWrapper implements NodeConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function addConnectCommand(CommandInterface $command)
+    {
+        return $this->connection->pushInitCommand($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function read()
     {
         return $this->connection->read();
