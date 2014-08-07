@@ -47,7 +47,7 @@ class RedisLogger
         ++$this->nbCommands;
 
         if (null !== $this->logger) {
-            $this->commands[] = array('cmd' => $command, 'result'=>$result, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
+            $this->commands[] = array('cmd' => $command, 'result' => $result, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
             if ($error) {
                 $this->logger->err('Command "' . $command . '" failed (' . $error . ')');
             } else {
