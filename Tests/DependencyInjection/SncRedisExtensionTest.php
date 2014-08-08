@@ -137,11 +137,11 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_query_cache'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.read_result_cache'));
 
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave1_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave2_result_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_metadata_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_result_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_query_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave1_result_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave2_result_cache'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
