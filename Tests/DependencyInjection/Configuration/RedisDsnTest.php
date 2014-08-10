@@ -25,18 +25,28 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
      */
     public static function hostValues()
     {
-        return array(
-            array('redis://localhost', 'localhost'),
-            array('redis://localhost/1', 'localhost'),
-            array('redis://localhost:63790', 'localhost'),
-            array('redis://localhost:63790/10', 'localhost'),
-            array('redis://pw@localhost:63790/10', 'localhost'),
-            array('redis://127.0.0.1', '127.0.0.1'),
-            array('redis://127.0.0.1/1', '127.0.0.1'),
-            array('redis://127.0.0.1:63790', '127.0.0.1'),
-            array('redis://127.0.0.1:63790/10', '127.0.0.1'),
-            array('redis://pw@127.0.0.1:63790/10', '127.0.0.1'),
+        $result = array();
+
+        $hosts = array(
+            'localhost',
+            '127.0.0.1',
+            '::1',
+            '1050:0000:0000:0000:0005:0600:300c:326b',
+            '1050:0:0:0:5:600:300c:326b',
+            'ff06:0:0:0:0:0:0:c3',
+            'ff06::c3'
         );
+
+        foreach ($hosts as $host) {
+            $h = false !== strpos($host, ':') ? '['.$host.']' : $host;
+            $result[] = array(sprintf('redis://%s', $h), $host);
+            $result[] = array(sprintf('redis://%s/1', $h), $host);
+            $result[] = array(sprintf('redis://%s:6379', $h), $host);
+            $result[] = array(sprintf('redis://%s:6379/10', $h), $host);
+            $result[] = array(sprintf('redis://pw@%s:6379/10', $h), $host);
+        }
+
+        return $result;
     }
 
     /**
