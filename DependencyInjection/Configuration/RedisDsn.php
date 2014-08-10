@@ -192,6 +192,13 @@ class RedisDsn
                 // parse port
                 $this->port = is_numeric($matches[3]) ? (int) $matches[3] : $matches[3];
             }
+        } elseif (preg_match('#^\[([^\]]+)](:(\d+))?$#', $dsn, $matches)) { // parse enclosed IPv6 address and optional port
+            if (!empty($matches[1])) {
+                $this->host = $matches[1];
+            }
+            if (!empty($matches[3])) {
+                $this->port = (int) $matches[3];
+            }
         }
     }
 
