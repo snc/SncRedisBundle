@@ -22,6 +22,11 @@ class RedisHandler extends AbstractProcessingHandler
      * @var array
      */
     protected $buffer = array();
+    
+    /**
+     * @var integer
+     */
+    protected $maxListLength;
 
     /**
      * @var string
@@ -50,6 +55,14 @@ class RedisHandler extends AbstractProcessingHandler
     }
 
     /**
+     * @param integer $maxListLength
+     */
+    public function setMaxListLength($maxListLength)
+    {
+        $this->maxListLength = $maxListLength;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function close()
@@ -69,6 +82,9 @@ class RedisHandler extends AbstractProcessingHandler
                 }
             });
         }
+        
+        if ($this->maxListLength > 0)
+            $this->redis->ltrim($this->key, -$this->maxListLength, -1);
     }
 
     /**
