@@ -350,10 +350,11 @@ class SncRedisExtension extends Extension
      */
     protected function loadMonolog(array $config, ContainerBuilder $container)
     {
-        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'));
+        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), array(
+            new Reference(sprintf('snc_redis.%s', $config['monolog']['client'])),
+            $config['monolog']['key']
+        ));
         $def->setPublic(false);
-        $def->addMethodCall('setRedis', array(new Reference(sprintf('snc_redis.%s', $config['monolog']['client']))));
-        $def->addMethodCall('setKey', array($config['monolog']['key']));
         if (!empty($config['monolog']['formatter'])) {
             $def->addMethodCall('setFormatter', array(new Reference($config['monolog']['formatter'])));
         }

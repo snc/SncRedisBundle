@@ -43,7 +43,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
             array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
             array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
             array('snc_redis.doctrine_cache.class', 'Snc\RedisBundle\Doctrine\Cache\RedisCache'),
-            array('snc_redis.monolog_handler.class', 'Snc\RedisBundle\Monolog\Handler\RedisHandler'),
+            array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
             array('snc_redis.swiftmailer_spool.class', 'Snc\RedisBundle\SwiftMailer\RedisSpool'),
         );
     }
