@@ -128,14 +128,6 @@ class RedisDsn
     }
 
     /**
-     * @return string
-     */
-    public function getPersistentId()
-    {
-        return sha1($this->dsn);
-    }
-
-    /**
      * @return bool
      */
     public function isValid()

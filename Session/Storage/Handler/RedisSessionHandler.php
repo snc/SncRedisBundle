@@ -160,6 +160,14 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
+        if ($this->locking) {
+            if (!$this->locked) {
+                if (!$this->lockSession($sessionId)) {
+                    return false;
+                }
+            }
+        }
+
         if (0 < $this->ttl) {
             $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
         } else {
@@ -173,7 +181,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
     public function destroy($sessionId)
     {
         $this->redis->del($this->getRedisKey($sessionId));
-        $this->close();
 
         return true;
     }
