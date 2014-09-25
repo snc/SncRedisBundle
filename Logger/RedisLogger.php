@@ -37,16 +37,17 @@ class RedisLogger
      * Logs a command
      *
      * @param string      $command    Redis command
+     * @param mixed       $result     Value retrived
      * @param float       $duration   Duration in milliseconds
      * @param string      $connection Connection alias
      * @param bool|string $error      Error message or false if command was successful
      */
-    public function logCommand($command, $duration, $connection, $error = false)
+    public function logCommand($command, $result, $duration, $connection, $error = false)
     {
         ++$this->nbCommands;
 
         if (null !== $this->logger) {
-            $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
+            $this->commands[] = array('cmd' => $command, 'result' => $result, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
             if ($error) {
                 $this->logger->err('Command "' . $command . '" failed (' . $error . ')');
             } else {
@@ -75,3 +76,4 @@ class RedisLogger
         return $this->commands;
     }
 }
+

@@ -69,7 +69,7 @@ class Client extends BaseClient
         $duration  = (microtime(true) - $startTime) * 1000;
 
         if ($log && null !== $this->logger) {
-            $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
+            $this->logger->logCommand($this->getCommandString($name, $arguments), $result, $duration, $this->alias, false);
         }
 
         return $result;
@@ -114,3 +114,4 @@ class Client extends BaseClient
         }
     }
 }
+

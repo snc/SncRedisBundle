@@ -43,6 +43,11 @@
                     <div>
                         <code>{{ command.cmd }}</code>
                     </div>
+                    {% if command.result %}
+                    <div style="margin: 5px 10px;">
+                        <code>{{ command.result }}</code>
+                    </div>
+                    {% endif %}
                     <small>
                         <strong>Time</strong>: {{ '%0.2f'|format(command.executionMS) }} ms
                         <strong>Connection</strong>: {{ command.conn }}
@@ -53,3 +58,4 @@
         </ul>
     {% endif %}
 {% endblock %}
+

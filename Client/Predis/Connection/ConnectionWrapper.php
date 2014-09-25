@@ -160,8 +160,9 @@ class ConnectionWrapper implements SingleConnectionInterface
         $duration = (microtime(true) - $startTime) * 1000;
 
         $error = $result instanceof ResponseError ? (string) $result : false;
-        $this->logger->logCommand((string) $command, $duration, $this->getParameters()->alias, $error);
+        $this->logger->logCommand((string) $command, $result, $duration, $this->getParameters()->alias, $error);
 
         return $result;
     }
 }
+
