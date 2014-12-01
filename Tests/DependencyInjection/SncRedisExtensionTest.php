@@ -204,6 +204,26 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test multiple clients both containing "master" dsn aliases
+     */
+    public function testMultipleClientMaster()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getMultipleReplicationYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.default_master_parameters', (string) $defaultParameters[0]);
+        $defaultMasterParameters = $container->getDefinition((string) $defaultParameters[0])->getArgument(0);
+        $this->assertEquals('defaultprefix', $defaultMasterParameters['prefix']);
+
+        $secondParameters = $container->getDefinition('snc_redis.second')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.second_master_parameters', (string) $secondParameters[0]);
+        $secondMasterParameters = $container->getDefinition((string) $secondParameters[0])->getArgument(0);
+        $this->assertEquals('secondprefix', $secondMasterParameters['prefix']);
+    }
+
+    /**
      * Test valid XML config
      */
     public function testValidXmlConfig()
@@ -250,7 +270,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertTrue($options['replication']);
         $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
-        $this->assertEquals('snc_redis.connection.master_parameters', (string) $parameters[0]);
+        $this->assertEquals('snc_redis.connection.default_master_parameters', (string) $parameters[0]);
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertTrue($masterParameters['replication']);
     }
@@ -404,6 +424,31 @@ clients:
             - redis://otherhost
         options:
             replication: true
+EOF;
+    }
+
+    private function getMultipleReplicationYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://defaulthost?alias=master
+            - redis://defaultslave
+        options:
+            replication: true
+            prefix: defaultprefix
+    second:
+        type: predis
+        alias: second
+        dsn:
+            - redis://secondmaster?alias=master
+            - redis://secondslave
+        options:
+            replication: true
+            prefix: secondprefix
 EOF;
     }
 
