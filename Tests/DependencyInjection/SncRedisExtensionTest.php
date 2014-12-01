@@ -85,7 +85,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_default_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
@@ -104,27 +104,27 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_default_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_cache_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cache'));
         $this->assertTrue($container->hasAlias('snc_redis.cache_client'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.monolog_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.monolog_monolog_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster1_parameters'));
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster2_parameters'));
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster3_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster_cluster1_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster_cluster2_parameters'));
+        $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster_cluster3_parameters'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
