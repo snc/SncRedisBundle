@@ -13,16 +13,16 @@ namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Predis\Command\CommandInterface;
 use Predis\ResponseError;
-use Predis\Connection\SingleConnectionInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * ConnectionWrapper
  */
-class ConnectionWrapper implements SingleConnectionInterface
+class ConnectionWrapper implements NodeConnectionInterface
 {
     /**
-     * @var SingleConnectionInterface
+     * @var ConnectionInterface
      */
     protected $connection;
 
@@ -34,9 +34,9 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * Constructor
      *
-     * @param SingleConnectionInterface $connection
+     * @param ConnectionInterface $connection
      */
-    public function __construct(SingleConnectionInterface $connection)
+    public function __construct(NodeConnectionInterface $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
             /** @var ConnectionWrapper $connection */
@@ -49,7 +49,7 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * Returns the underlying connection object
      *
-     * @return SingleConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
@@ -93,9 +93,9 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function writeRequest(CommandInterface $command)
     {
-        return $this->connection->writeCommand($command);
+        return $this->connection->writeRequest($command);
     }
 
     /**
@@ -141,6 +141,14 @@ class ConnectionWrapper implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function addConnectCommand(CommandInterface $command)
+    {
+        return $this->connection->pushInitCommand($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function read()
     {
         return $this->connection->read();
@@ -160,8 +168,36 @@ class ConnectionWrapper implements SingleConnectionInterface
         $duration = (microtime(true) - $startTime) * 1000;
 
         $error = $result instanceof ResponseError ? (string) $result : false;
-        $this->logger->logCommand((string) $command, $duration, $this->getParameters()->alias, $error);
+        $this->logger->logCommand($this->commandToString($command), $duration, $this->getParameters()->alias, $error);
 
         return $result;
+    }
+    /**
+     *
+     */
+    protected function commandToString(CommandInterface $command)
+    {
+        return array_reduce(
+            $command->getArguments(),
+            array($this, 'toStringArgumentReducer'),
+            $command->getId()
+        );
+    }
+    /**
+     * Helper function used to reduce a list of arguments to a string.
+     *
+     * @param  string $accumulator Temporary string.
+     * @param  string $argument    Current argument.
+     * @return string
+     */
+    protected function toStringArgumentReducer($accumulator, $argument)
+    {
+        if (strlen($argument) > 32) {
+            $argument = substr($argument, 0, 32) . '[...]';
+        }
+
+        $accumulator .= " $argument";
+
+        return $accumulator;
     }
 }
