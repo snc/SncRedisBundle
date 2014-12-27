@@ -293,7 +293,7 @@ snc_redis:
                 - redis://127.0.0.1/1
                 - redis://127.0.0.2/2
                 - redis://pw@/var/run/redis/redis-1.sock/10
-                - redis://pw@127.0.0.1:63790/10 ]
+                - redis://pw@127.0.0.1:63790/10
             options:
                 profile: 2.4
                 connection_timeout: 10
