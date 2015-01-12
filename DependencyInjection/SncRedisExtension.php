@@ -228,7 +228,7 @@ class SncRedisExtension extends Extension
 
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
-        $phpredisDef->setPublic(true);
+        $phpredisDef->setPublic(false);
         $phpredisDef->setScope(ContainerInterface::SCOPE_CONTAINER);
         $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
         $connectParameters = array();
@@ -241,7 +241,13 @@ class SncRedisExtension extends Extension
         }
         if ($client['options']['connection_timeout']) {
             $connectParameters[] = $client['options']['connection_timeout'];
+        } else {
+            $connectParameters[] = 0;
         }
+        if ($client['options']['connection_persistent']) {
+            $connectParameters[] = $dsn->getPersistentId();
+        }
+
         $phpredisDef->addMethodCall($connectMethod, $connectParameters);
         if ($client['options']['prefix']) {
             $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_PREFIX, $client['options']['prefix']));
@@ -254,19 +260,19 @@ class SncRedisExtension extends Extension
         }
         $container->setDefinition($phpredisId, $phpredisDef);
 
+        $clientDef = new Definition($container->getParameter('snc_redis.phpredis_base_connection_wrapper.class'));
+
+        // override the client definition by a wrapper containing logger
         if ($client['logging']) {
-            $phpredisDef->setPublic(false);
-            $parameters = array('alias' => $client['alias']);
             $clientDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
-            $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
-            $clientDef->addArgument($parameters);
+            $clientDef->addArgument(array('alias' => $client['alias']));
             $clientDef->addArgument(new Reference('snc_redis.logger'));
-            $clientDef->addMethodCall('setRedis', array(new Reference($phpredisId)));
-            $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
-        } else {
-            $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
         }
 
+        $clientDef->setScope(ContainerInterface::SCOPE_CONTAINER);
+        $clientDef->addMethodCall('setRedis', array(new Reference($phpredisId)));
+
+        $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
     }
 
@@ -331,7 +337,7 @@ class SncRedisExtension extends Extension
                 if ($cache['namespace']) {
                     $def->addMethodCall('setNamespace', array($cache['namespace']));
                 }
-                $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_%s', $dm, $name), $def);
+                $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $def);
             }
         }
     }
@@ -344,10 +350,18 @@ class SncRedisExtension extends Extension
      */
     protected function loadMonolog(array $config, ContainerBuilder $container)
     {
-        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'));
+        if ('phpredis' === $config['clients'][$config['monolog']['client']]['type']) {
+            $ref = new Reference(sprintf('snc_redis.phpredis.%s', $config['monolog']['client']));
+        } else {
+            $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
+        }
+
+        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), array(
+            $ref,
+            $config['monolog']['key']
+        ));
+
         $def->setPublic(false);
-        $def->addMethodCall('setRedis', array(new Reference(sprintf('snc_redis.%s', $config['monolog']['client']))));
-        $def->addMethodCall('setKey', array($config['monolog']['key']));
         if (!empty($config['monolog']['formatter'])) {
             $def->addMethodCall('setFormatter', array(new Reference($config['monolog']['formatter'])));
         }

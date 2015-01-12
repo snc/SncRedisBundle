@@ -77,7 +77,10 @@ class RedisSessionHandler implements \SessionHandlerInterface
     public function __construct($redis, array $options = array(), $prefix = 'session', $locking = true, $spinLockWait = 150000)
     {
         $this->redis = $redis;
-        $this->ttl = isset($options['cookie_lifetime']) ? (int) $options['cookie_lifetime'] : 0;
+        $this->ttl = isset($options['gc_maxlifetime']) ? (int) $options['gc_maxlifetime'] : 0; 
+        if (isset($options['cookie_lifetime']) && $options['cookie_lifetime'] > $this->ttl) {
+            $this->ttl = (int) $options['cookie_lifetime'];
+        }
         $this->prefix = $prefix;
 
         $this->locking = $locking;
@@ -157,14 +160,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
-        if ($this->locking) {
-            if (!$this->locked) {
-                if (!$this->lockSession($sessionId)) {
-                    return false;
-                }
-            }
-        }
-
         if (0 < $this->ttl) {
             $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
         } else {
@@ -178,6 +173,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     public function destroy($sessionId)
     {
         $this->redis->del($this->getRedisKey($sessionId));
+        $this->close();
 
         return true;
     }
