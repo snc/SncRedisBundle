@@ -35,7 +35,7 @@ class RedisFlushdbCommand extends RedisBaseCommand
      */
     protected function executeRedisCommand()
     {
-        if ($this->proceedingAllowed()) {
+        if ($this->proceedingAllowed('Are you sure you wish to flush the whole database? (y/n)')) {
             $this->flushDbForClient();
         } else {
             $this->output->writeln('<error>Flushing cancelled</error>');

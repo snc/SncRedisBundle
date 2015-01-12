@@ -12,8 +12,8 @@
 namespace Snc\RedisBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
@@ -82,12 +82,11 @@ abstract class RedisBaseCommand extends ContainerAwareCommand
      *
      * @return boolean true if either no-interaction was chosen or the user wants to proceed
      */
-    protected function proceedingAllowed()
-    {
+    protected function proceedingAllowed($questionMessage = 'Are you sure? (y/n)') {
         if ($this->input->getOption('no-interaction')) {
             return true;
         }
 
-        return $this->getHelper('dialog')->askConfirmation($this->output, '<question>Are you sure you wish to flush the whole database? (y/n)</question>', false);
+        return $this->getHelper('dialog')->askConfirmation($this->output, '<question>' . $questionMessage . '</question>', false);
     }
 }
