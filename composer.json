@@ -25,7 +25,7 @@
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
-        "predis/predis": "If you want to use predis (currently only v0.8.x is supported).",
+        "predis/predis": "If you want to use predis.",
         "symfony/console": "If you want to use commands to interact with the redis database"
     },
     "autoload": {
