@@ -198,7 +198,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
 
         $this->assertSame((float) 2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
-        $this->assertSame('Predis\\Profile\\RedisVersion200', $profileDefinition->getClass(), 'Profile definition is instance of Predis\\Profile\\ServerVersion20');
+        $this->assertSame('Predis\\Profile\\RedisVersion200', $profileDefinition->getClass(), 'Profile definition is instance of Predis\\Profile\\RedisVersion200');
 
         $this->assertSame('snc:', $options['prefix'], 'Prefix option was allowed');
     }
