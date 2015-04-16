@@ -11,7 +11,7 @@
 
 namespace Snc\RedisBundle\Logger;
 
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * RedisLogger
@@ -48,9 +48,9 @@ class RedisLogger
         if (null !== $this->logger) {
             $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
             if ($error) {
-                $this->logger->err('Command "' . $command . '" failed (' . $error . ')');
+                $this->logger->error('Command "' . $command . '" failed (' . $error . ')');
             } else {
-                $this->logger->info('Executing command "' . $command . '"');
+                $this->logger->debug('Executing command "' . $command . '"');
             }
         }
     }
