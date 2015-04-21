@@ -58,7 +58,11 @@ class BaseClient implements ClientInterface
     public function __destruct()
     {
         if (null !== $this->redis) {
-            $this->redis->close();
+            try {
+                $this->redis->close();
+            } catch (\RedisException $ex) {
+                // if connection was not initialized it will throw exception when trying to close it
+            }
         }
     }
 }
