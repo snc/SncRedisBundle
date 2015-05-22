@@ -54,7 +54,7 @@ class RedisCache extends CacheProvider
     {
         $result = $this->_redis->get($id);
 
-        return null === $result ? false : unserialize($result);
+        return false === $result ? false : unserialize($result);
     }
 
     /**
