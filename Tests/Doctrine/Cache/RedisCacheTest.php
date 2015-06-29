@@ -20,6 +20,7 @@ use Snc\RedisBundle\Doctrine\Cache\RedisCache;
 class RedisCacheTest extends CacheTest
 {
     protected $_redis;
+    protected $_namespace;
 
     /**
      * {@inheritdoc}
@@ -47,12 +48,16 @@ class RedisCacheTest extends CacheTest
                 $this->markTestSkipped(sprintf('The %s requires a redis instance listening on %s.', __CLASS__, $config));
             }
         }
+
+        // Use a unique namespace
+        $this->_namespace = uniqid(__METHOD__, true);
     }
 
     protected function _getCacheDriver()
     {
         $driver = new RedisCache();
         $driver->setRedis($this->_redis);
+        $driver->setNamespace($this->_namespace);
 
         return $driver;
     }
