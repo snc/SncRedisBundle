@@ -11,12 +11,13 @@
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
+use Predis\Connection\Factory;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
  * ConnectionFactory
  */
-class ConnectionFactory extends \Predis\Connection\ConnectionFactory
+class ConnectionFactory extends Factory
 {
     /**
      * @var ConnectionWrapper
