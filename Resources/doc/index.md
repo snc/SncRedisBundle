@@ -15,7 +15,7 @@ $ composer require snc/redis-bundle 1.1.x-dev
 If you want to use the `predis` client library, you have to add the `predis/predis` package, too.
 
 ``` bash
-$ composer require predis/predis 0.8.x-dev
+$ composer require predis/predis 1.0.x  
 ```
 
 Add the RedisBundle to your application's kernel:
