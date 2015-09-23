@@ -258,6 +258,16 @@ class SncRedisExtension extends Extension
         if (null !== $dsn->getDatabase()) {
             $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
         }
+
+        if ($client['options']['serialization']) {
+            $serializationTypes = $this->loadSerializationTypes();
+            if (isset($serializationTypes[$client['options']['serialization']])) {
+                $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_SERIALIZER, $serializationTypes[$client['options']['serialization']]));
+            } else {
+                throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $client['options']['serialization'], implode(", ", array_keys($serializationTypes))));
+            }
+        }
+
         $container->setDefinition($phpredisId, $phpredisDef);
 
         $clientDef = new Definition($container->getParameter('snc_redis.phpredis_base_connection_wrapper.class'));
@@ -387,5 +397,20 @@ class SncRedisExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($container->getParameter('kernel.debug'));
+    }
+
+    /**
+     * Load  default serializer for Redis as a map.
+     *
+     * @return array
+     */
+    public function loadSerializationTypes()
+    {
+        // not using constants, because it would fail if phpredis extension is not enabled
+        return array(
+            "none" => 0, // \Redis::SERIALIZER_NONE,
+            "php" => 1,  // \Redis::SERIALIZER_PHP,
+            "igbinary" => 2 // \Redis::SERIALIZER_IGBINARY
+        );
     }
 }

@@ -255,6 +255,31 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($masterParameters['replication']);
     }
 
+    /**
+     * Test valid config of the serialization option
+     */
+    public function testClientSerializationOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSerializationYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertSame($options['serialization'], $masterParameters['serialization']);
+    }
+
+    public function testLoadSerializationTypes()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSerializationYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+        $serializationTypes = $extension->loadSerializationTypes();
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertTrue(is_array($serializationTypes));
+        $this->assertArrayHasKey($options['serialization'], $serializationTypes);
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -404,6 +429,21 @@ clients:
             - redis://otherhost
         options:
             replication: true
+EOF;
+    }
+
+    private function getSerializationYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://localhost?alias=master
+            - redis://otherhost
+        options:
+            serialization: "none"
 EOF;
     }
 
