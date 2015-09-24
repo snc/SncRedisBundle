@@ -44,17 +44,17 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * @var boolean Indicates an sessions should be locked
      */
-    private $locking;
+    protected $locking;
 
     /**
      * @var boolean Indicates an active session lock
      */
-    private $locked;
+    protected $locked;
 
     /**
      * @var string Session lock key
      */
-    private $lockKey;
+    protected $lockKey;
 
     /**
      * @var integer Microseconds to wait between acquire lock tries
