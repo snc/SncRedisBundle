@@ -28,9 +28,8 @@
         "symfony/console": "If you want to use commands to interact with the redis database"
     },
     "autoload": {
-        "psr-0": { "Snc\\RedisBundle": "" }
+        "psr-4": { "Snc\\RedisBundle\\": "" }
     },
-    "target-dir": "Snc/RedisBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "2.0.x-dev"
