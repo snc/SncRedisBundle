@@ -84,7 +84,7 @@ class RedisCache extends CacheProvider
      */
     protected function doDelete($id)
     {
-        return (bool) $this->_redis->del($id);
+        return $this->_redis->del($id) >= 0;
     }
 
     /**

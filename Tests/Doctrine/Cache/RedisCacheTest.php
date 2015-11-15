@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Tests\Common\Cache;
+namespace Snc\RedisBundle\Tests\Doctrine\Cache;
 
 use Doctrine\Tests\Common\Cache\CacheTest;
 use Snc\RedisBundle\Doctrine\Cache\RedisCache;
