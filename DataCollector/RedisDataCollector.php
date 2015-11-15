@@ -67,6 +67,18 @@ class RedisDataCollector extends DataCollector
     }
 
     /**
+     * Returns the number of failed commands.
+     *
+     * @return integer
+     */
+    public function getErroredCommandsCount()
+    {
+        return count(array_filter($this->data['commands'], function ($command) {
+            return $command['error'] !== false;
+        }));
+    }
+
+    /**
      * Returns the execution time of all collected commands in seconds.
      *
      * @return float
