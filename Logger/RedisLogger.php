@@ -31,7 +31,7 @@ class RedisLogger
      */
     public function __construct($logger = null)
     {
-        if (!$logger instanceof LoggerInterface && !$logger instanceof PsrLoggerInterface) {
+        if (!$logger instanceof LoggerInterface && !$logger instanceof PsrLoggerInterface && null !== $logger) {
             throw new \InvalidArgumentException(sprintf('RedisLogger needs either the HttpKernel LoggerInterface or PSR-3 LoggerInterface, "%s" was injected instead.', is_object($logger) ? get_class($logger) : gettype($logger)));
         }
 
