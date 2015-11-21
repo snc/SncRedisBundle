@@ -11,20 +11,20 @@
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
-use Predis\Cluster\Distribution\DistributionStrategyInterface;
+use Predis\Cluster\Distributor\DistributorInterface;
 use Snc\RedisBundle\Client\Predis\Cluster\Distribution\RandomDistributionStrategy;
 
 /**
  * Sample cluster class which uses a custom distribution strategy
  */
-class PredisCluster extends \Predis\Connection\PredisCluster
+class PredisCluster extends \Predis\Connection\Aggregate\PredisCluster
 {
     /**
      * Constructor
      *
-     * @param null|\Predis\Cluster\Distribution\DistributionStrategyInterface $distributor
+     * @param null|\Predis\Cluster\Distributor\DistributorInterface $distributor
      */
-    public function __construct(DistributionStrategyInterface $distributor = null)
+    public function __construct(DistributorInterface $distributor = null)
     {
         parent::__construct(new RandomDistributionStrategy());
     }

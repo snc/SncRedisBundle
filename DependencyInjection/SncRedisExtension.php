@@ -155,7 +155,7 @@ class SncRedisExtension extends Extension
 
         // TODO can be shared between clients?!
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(\Predis\Profile\ServerProfile::get($client['options']['profile']))); // TODO get_class alternative?
+        $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($client['options']['profile']))); // TODO get_class alternative?
         $profileDef->setPublic(false);
         if (null !== $client['options']['prefix']) {
             $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
@@ -236,11 +236,6 @@ class SncRedisExtension extends Extension
         }
         if ($client['options']['connection_timeout']) {
             $connectParameters[] = $client['options']['connection_timeout'];
-        } else {
-            $connectParameters[] = 0;
-        }
-        if ($client['options']['connection_persistent']) {
-            $connectParameters[] = $dsn->getPersistentId();
         }
 
         $phpredisDef->addMethodCall($connectMethod, $connectParameters);
@@ -329,7 +324,7 @@ class SncRedisExtension extends Extension
                 if ($cache['namespace']) {
                     $def->addMethodCall('setNamespace', array($cache['namespace']));
                 }
-                $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $def);
+                $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_%s', $dm, $name), $def);
             }
         }
     }
