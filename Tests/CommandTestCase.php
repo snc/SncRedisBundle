@@ -51,11 +51,6 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->application = new Application($kernel);
 
-        $this->predisClient = $this->getMock('\\Predis\\Client');
-        $this->phpredisClient = $this->getMockBuilder('\\Snc\\RedisBundle\\Client\\Phpredis\\Client')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->container = $this->getMock('\\Symfony\\Component\\DependencyInjection\\ContainerInterface');
 
         $command = $this->getCommand();
@@ -65,6 +60,8 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 
     protected function registerPredisClient()
     {
+        $this->predisClient = $this->getMock('\\Predis\\Client');
+
         $this->container->expects($this->once())
             ->method('get')
             ->will($this->returnValue($this->predisClient));
@@ -72,6 +69,10 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 
     protected function registerPhpredisClient()
     {
+        $this->phpredisClient = $this->getMockBuilder('\\Snc\\RedisBundle\\Client\\Phpredis\\Client')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->container->expects($this->once())
             ->method('get')
             ->will($this->returnValue($this->phpredisClient));

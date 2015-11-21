@@ -39,7 +39,6 @@ class LoggingPass implements CompilerPassInterface
                 $connectionFactoryId = sprintf('snc_redis.%s_connectionfactory', $clientAlias);
                 $connectionFactoryDef = new Definition($container->getParameter('snc_redis.connection_factory.class'));
                 $connectionFactoryDef->setPublic(false);
-                $connectionFactoryDef->setScope(ContainerInterface::SCOPE_CONTAINER);
                 $connectionFactoryDef->addArgument(new Reference(sprintf('snc_redis.client.%s_profile', $clientAlias)));
                 $connectionFactoryDef->addMethodCall('setConnectionWrapperClass', array($container->getParameter('snc_redis.connection_wrapper.class')));
                 $connectionFactoryDef->addMethodCall('setLogger', array(new Reference('snc_redis.logger')));

@@ -12,6 +12,7 @@
 namespace Snc\RedisBundle\Logger;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Psr\Log\LoggerInterface as PsrLoggerInterface;
 
 /**
  * RedisLogger
@@ -26,10 +27,14 @@ class RedisLogger
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger A LoggerInterface instance
+     * @param LoggerInterface|PsrLoggerInterface $logger A LoggerInterface instance
      */
-    public function __construct(LoggerInterface $logger = null)
+    public function __construct($logger = null)
     {
+        if (!$logger instanceof LoggerInterface && !$logger instanceof PsrLoggerInterface && null !== $logger) {
+            throw new \InvalidArgumentException(sprintf('RedisLogger needs either the HttpKernel LoggerInterface or PSR-3 LoggerInterface, "%s" was injected instead.', is_object($logger) ? get_class($logger) : gettype($logger)));
+        }
+
         $this->logger = $logger;
     }
 
@@ -48,7 +53,15 @@ class RedisLogger
         if (null !== $this->logger) {
             $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
             if ($error) {
-                $this->logger->err('Command "' . $command . '" failed (' . $error . ')');
+                $message = 'Command "' . $command . '" failed (' . $error . ')';
+
+                if ($this->logger instanceof PsrLoggerInterface) {
+                    // Symfony 2.2+
+                    $this->logger->error($message);
+                } else {
+                    // Symfony 2.1
+                    $this->logger->err($message);
+                }
             } else {
                 $this->logger->info('Executing command "' . $command . '"');
             }

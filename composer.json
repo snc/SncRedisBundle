@@ -14,13 +14,14 @@
     }],
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": ">=2.1,<3.0",
-        "symfony/yaml": ">=2.1,<3.0"
+        "symfony/framework-bundle": "~2.1|~3.0",
+        "symfony/yaml": "~2.1|~3.0"
     },
     "require-dev": {
         "doctrine/cache": "1.*",
         "predis/predis": "0.8.*",
-        "symfony/console": ">=2.1,<3.0"
+        "symfony/console": "~2.1|~3.0",
+        "symfony/phpunit-bridge": "~2.7|~3.0"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
@@ -28,9 +29,8 @@
         "symfony/console": "If you want to use commands to interact with the redis database"
     },
     "autoload": {
-        "psr-0": { "Snc\\RedisBundle": "" }
+        "psr-4": { "Snc\\RedisBundle\\": "" }
     },
-    "target-dir": "Snc/RedisBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "2.0.x-dev"

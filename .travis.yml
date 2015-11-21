@@ -1,17 +1,48 @@
 language: php
 
+services:
+  - redis-server
+
 php:
   - 5.3
   - 5.4
   - 5.5
+  - 5.6
+  - 7.0
   - hhvm
 
 matrix:
+  include:
+    - php: 5.6
+      env: SYMFONY_VERSION="2.1.*"
+    - php: 5.6
+      env: SYMFONY_VERSION="2.2.*"
+    - php: 5.6
+      env: SYMFONY_VERSION="2.3.*"
+    - php: 5.6
+      env: SYMFONY_VERSION="2.7.*"
+    - php: 5.6
+      env: SYMFONY_VERSION="2.8.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
+    - php: 5.6
+      env: SYMFONY_VERSION="3.0.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
   allow_failures:
     - php: hhvm
 
-before_script:
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+env:
+  global:
+    - SYMFONY_DEPRECATIONS_HELPER="weak"
+
+before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - phpenv rehash
-  - composer install --dev
-  - mkdir Snc && ln -s ../ Snc/RedisBundle
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/symfony:${SYMFONY_VERSION}; fi
+
+install: composer update
+
+before_script: mkdir Snc && ln -s ../ Snc/RedisBundle
