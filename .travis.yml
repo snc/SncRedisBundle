@@ -25,6 +25,10 @@ matrix:
       env: SYMFONY_VERSION="2.8.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
     - php: 5.6
       env: SYMFONY_VERSION="3.0.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
+    - php: 7.0
+      env: SYMFONY_VERSION="2.8.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
+    - php: 7.0
+      env: SYMFONY_VERSION="3.0.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
   allow_failures:
     - php: hhvm
 
@@ -39,7 +43,29 @@ env:
     - SYMFONY_DEPRECATIONS_HELPER="weak"
 
 before_install:
-  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - |
+      if [ $(phpenv version-name) = "7.0" ]; then
+        test_pickle=$(which pickle) \
+        && if [ $? -ne 0 ] ; then
+            pushd . \
+              && cd ~/ \
+              && git clone https://github.com/FriendsOfPHP/pickle.git \
+              && cd pickle \
+              && git reset --hard 5ad1daf0396174d96d616b8b0b05c0979b85fd7d \
+              && composer install --no-dev --optimize-autoloader --prefer-dist \
+              && curl -LSs http://box-project.github.io/box2/installer.php | php \
+              && php -d phar.readonly=0 box.phar build \
+              && sudo ln -s $(pwd)/bin/pickle /usr/bin/pickle \
+              && popd \
+              && pushd . \
+              && mkdir -p ~/.extensions \
+              && cd ~/.extensions \
+              && git clone --branch php7 --depth=10 https://github.com/shouze/phpredis \
+              && cd phpredis \
+              && popd \
+              && pickle install --defaults ~/.extensions/phpredis
+        fi
+  - printf "extension=redis.so\n" > ~/tmp/redis.ini && phpenv config-add /tmp/redis.ini
   - phpenv rehash
   - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/symfony:${SYMFONY_VERSION}; fi
 
