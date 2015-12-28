@@ -1,7 +1,7 @@
 {
     "name": "snc/redis-bundle",
     "type": "symfony-bundle",
-    "description": "A Redis bundle for Symfony2",
+    "description": "A Redis bundle for Symfony",
     "keywords": ["redis", "nosql", "symfony"],
     "homepage": "https://github.com/snc/SncRedisBundle",
     "license": "MIT",
