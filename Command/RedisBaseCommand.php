@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
@@ -88,6 +89,11 @@ abstract class RedisBaseCommand extends ContainerAwareCommand
             return true;
         }
 
-        return $this->getHelper('dialog')->askConfirmation($this->output, '<question>Are you sure you wish to flush the whole database? (y/n)</question>', false);
+        //BC for SF < 2.5
+        if (class_exists('Symfony\Component\Console\Helper\DialogHelper')) {
+            return $this->getHelper('dialog')->askConfirmation($this->output, '<question>Are you sure you wish to flush the whole database? (y/n)</question>', false);
+        }
+
+        return $this->getHelper('question')->ask($this->input, $this->output, new ConfirmationQuestion('<question>Are you sure you wish to flush the whole database? (y/n)</question>', false));
     }
 }
