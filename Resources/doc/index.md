@@ -2,7 +2,7 @@
 
 ## About ##
 
-This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](https://github.com/nicolasff/phpredis) into your Symfony2 application.
+This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](https://github.com/nicolasff/phpredis) into your Symfony application.
 
 ## Installation ##
 

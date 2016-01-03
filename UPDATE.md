@@ -88,7 +88,7 @@ Previously the bundle registered the caches for the `default` managers.
 ### 2011-07-01 ###
 
 The `RedisBundle` is now vendor prefixed.
-Please follow the following steps to update your Symfony2 project.
+Please follow the following steps to update your Symfony project.
 
 #### Update your kernel class ####
 
