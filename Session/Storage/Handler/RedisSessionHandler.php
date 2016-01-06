@@ -55,6 +55,11 @@ class RedisSessionHandler implements \SessionHandlerInterface
      * @var string Session lock key
      */
     private $lockKey;
+    
+    /**
+     * @var string Session lock token
+     */
+    private $token;
 
     /**
      * @var integer Microseconds to wait between acquire lock tries
@@ -105,15 +110,32 @@ class RedisSessionHandler implements \SessionHandlerInterface
     private function lockSession($sessionId)
     {
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
+        
+        $this->token = uniqid();
 
         $this->lockKey = $sessionId.'.lock';
         for ($i=0;$i<$attempts;$i++) {
-            $success = $this->redis->setnx($this->prefix.$this->lockKey, '1');
+            // We try to aquire the lock
+            $success = $this->redis->set(
+                $this->prefix.$this->lockKey,
+                // array('token' => $this->token, 'validity' => floor(microtime(true) * 1000) + $this->lockMaxWait * 1000 + 1),
+                $this->token,
+                array('NX', 'PX' => $this->lockMaxWait * 1000 + 1)
+            );
             if ($success) {
                 $this->locked = true;
-                $this->redis->expire($this->prefix.$this->lockKey, $this->lockMaxWait + 1);
                 return true;
             }
+            
+            // Handling deadlocks
+            // $current = $this->redis->get($this->prefix.$this->lockKey);
+            // if (floor(microtime(true) * 1000) > $current) {
+                // $current = $this->redis->getset($this->prefix.$this->lockKey, floor(microtime(true) * 1000) + $this->lockMaxWait * 1000 + 1);
+                // if (floor(microtime(true) * 1000) > $current) {
+                    // $this->locked = true;
+                    // return true;
+                // }
+            // }
             usleep($this->spinLockWait);
         }
 
@@ -122,8 +144,22 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
     private function unlockSession()
     {
-        $this->redis->del($this->prefix.$this->lockKey);
+        $script = '
+            if redis.call("GET", KEYS[1]) == ARGV[1] then
+                return redis.call("DEL", KEYS[1])
+            else
+                return 0
+            end
+        ';
+        
+        if ($this->redis instanceof \Redis) {
+            $this->redis->eval($script, array($this->prefix.$this->lockKey, $this->token), 1);
+        } else {
+            $this->redis->eval($script, 1, $this->prefix.$this->lockKey, $this->token);
+        }
+        // $this->redis->del($this->prefix.$this->lockKey);
         $this->locked = false;
+        $this->token = null;
     }
 
     /**

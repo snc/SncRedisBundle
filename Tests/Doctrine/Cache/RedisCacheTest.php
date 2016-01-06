@@ -11,8 +11,9 @@
 
 namespace Snc\RedisBundle\Tests\Doctrine\Cache;
 
+use Doctrine\Common\Cache\PredisCache;
+use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Tests\Common\Cache\CacheTest;
-use Snc\RedisBundle\Doctrine\Cache\RedisCache;
 
 /**
  * RedisCacheTest
@@ -55,8 +56,15 @@ class RedisCacheTest extends CacheTest
 
     protected function _getCacheDriver()
     {
-        $driver = new RedisCache();
-        $driver->setRedis($this->_redis);
+        // $driver = new RedisCache();
+        if (class_exists('\Predis\Client')) {
+            $driver = new PredisCache($this->_redis);
+        } elseif (class_exists('\Redis')) {
+            $driver = new RedisCache();
+            $driver->setRedis($this->_redis);
+        } else {
+            $this->markTestSkipped(sprintf('The %s requires the predis library or phpredis extension.', __CLASS__));
+        }
         $driver->setNamespace($this->_namespace);
 
         return $driver;
