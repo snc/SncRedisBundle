@@ -91,22 +91,19 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testSessionLocking()
     {
-        // $this->redis->flushDb();
         $lockMaxWait = 2;
         ini_set('max_execution_time', $lockMaxWait);
 
+        // The first time it will say it's locked, the second time
         $this->redis
             ->expects($this->exactly(2))
             ->method('set')
-            // ->with($this->equalTo('session_symfony_locktest.lock'), $this->isType('array'), $this->equalTo(array('NX', 'PX' => $lockMaxWait * 1000 + 1)))
             ->with($this->equalTo('session_symfony_locktest.lock'), $this->isType('string'), $this->equalTo(array('NX', 'PX' => $lockMaxWait * 1000 + 1)))
             ->will($this->onConsecutiveCalls(0,1))
         ;
         
         // We prepare our handlers
         $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);
-        
-        // ini_set('max_execution_time', 10);
         
         // The first will set the lock and the second will loop until it's free
         $handler->read('_symfony_locktest');

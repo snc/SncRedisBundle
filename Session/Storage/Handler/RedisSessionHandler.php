@@ -12,12 +12,13 @@
 namespace Snc\RedisBundle\Session\Storage\Handler;
 
 /**
- * Redis based session storage with session locking support
+ * Redis based session storage with session locking support.
  *
  * @author Justin Rainbow <justin.rainbow@gmail.com>
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Henrik Westphal <henrik.westphal@gmail.com>
  * @author Maurits van der Schee <maurits@vdschee.nl>
+ * @author Pierre Boudelle <pierre.boudelle@gmail.com>
  */
 class RedisSessionHandler implements \SessionHandlerInterface
 {
@@ -37,17 +38,17 @@ class RedisSessionHandler implements \SessionHandlerInterface
     protected $prefix;
 
     /**
-     * @var integer Default PHP max execution time in seconds
+     * @var int Default PHP max execution time in seconds
      */
     const DEFAULT_MAX_EXECUTION_TIME = 30;
 
     /**
-     * @var boolean Indicates an sessions should be locked
+     * @var bool Indicates an sessions should be locked
      */
     private $locking;
 
     /**
-     * @var boolean Indicates an active session lock
+     * @var bool Indicates an active session lock
      */
     private $locked;
 
@@ -55,25 +56,24 @@ class RedisSessionHandler implements \SessionHandlerInterface
      * @var string Session lock key
      */
     private $lockKey;
-    
+
     /**
      * @var string Session lock token
      */
     private $token;
 
     /**
-     * @var integer Microseconds to wait between acquire lock tries
+     * @var int Microseconds to wait between acquire lock tries
      */
     private $spinLockWait;
 
     /**
-     * @var integer Maximum amount of seconds to wait for the lock
+     * @var int Maximum amount of seconds to wait for the lock
      */
     private $lockMaxWait;
 
-
     /**
-     * Redis session storage constructor
+     * Redis session storage constructor.
      *
      * @param \Predis\Client|\Redis $redis   Redis database connection
      * @param array                 $options Session options
@@ -99,43 +99,34 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function open($savePath, $sessionName)
     {
         return true;
     }
 
-
     private function lockSession($sessionId)
     {
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
-        
+
         $this->token = uniqid();
 
         $this->lockKey = $sessionId.'.lock';
-        for ($i=0;$i<$attempts;$i++) {
+        for ($i = 0;$i < $attempts;++$i) {
+
             // We try to aquire the lock
             $success = $this->redis->set(
                 $this->prefix.$this->lockKey,
-                // array('token' => $this->token, 'validity' => floor(microtime(true) * 1000) + $this->lockMaxWait * 1000 + 1),
                 $this->token,
                 array('NX', 'PX' => $this->lockMaxWait * 1000 + 1)
             );
             if ($success) {
                 $this->locked = true;
+
                 return true;
             }
-            
-            // Handling deadlocks
-            // $current = $this->redis->get($this->prefix.$this->lockKey);
-            // if (floor(microtime(true) * 1000) > $current) {
-                // $current = $this->redis->getset($this->prefix.$this->lockKey, floor(microtime(true) * 1000) + $this->lockMaxWait * 1000 + 1);
-                // if (floor(microtime(true) * 1000) > $current) {
-                    // $this->locked = true;
-                    // return true;
-                // }
-            // }
+
             usleep($this->spinLockWait);
         }
 
@@ -144,14 +135,14 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
     private function unlockSession()
     {
-        $script = '
-            if redis.call("GET", KEYS[1]) == ARGV[1] then
-                return redis.call("DEL", KEYS[1])
-            else
-                return 0
-            end
-        ';
-        
+        $script = <<<LUA
+if redis.call("GET", KEYS[1]) == ARGV[1] then
+    return redis.call("DEL", KEYS[1])
+else
+    return 0
+end
+LUA;
+
         if ($this->redis instanceof \Redis) {
             $this->redis->eval($script, array($this->prefix.$this->lockKey, $this->token), 1);
         } else {
@@ -162,7 +153,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function close()
     {
@@ -171,11 +162,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
                 $this->unlockSession();
             }
         }
+
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($sessionId)
     {
@@ -191,7 +183,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($sessionId, $data)
     {
@@ -205,7 +197,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function destroy($sessionId)
     {
@@ -216,7 +208,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function gc($lifetime)
     {
@@ -224,7 +216,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * Change the default TTL
+     * Change the default TTL.
      *
      * @param int $ttl
      */
@@ -235,6 +227,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
     /**
      * Prepends the session ID with a user-defined prefix (if any).
+     *
      * @param string $sessionId session ID
      *
      * @return string prefixed session ID
@@ -245,15 +238,14 @@ class RedisSessionHandler implements \SessionHandlerInterface
             return $sessionId;
         }
 
-        return $this->prefix . ':' . $sessionId;
+        return $this->prefix.':'.$sessionId;
     }
 
     /**
-     * Destructor
+     * Destructor.
      */
     public function __destruct()
     {
         $this->close();
     }
-
 }

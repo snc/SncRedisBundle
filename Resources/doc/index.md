@@ -184,6 +184,9 @@ snc_redis:
         query_cache:
             client: cache
             entity_manager: default
+        second_level_cache:
+            client: cache
+            entity_manager: default
 ```
 
 ### Monolog logging ###
@@ -318,6 +321,9 @@ snc_redis:
             document_manager: [default, slave1, slave2]
             namespace: "dcrc:"
         query_cache:
+            client: cache
+            entity_manager: default
+        second_level_cache:
             client: cache
             entity_manager: default
     monolog:
