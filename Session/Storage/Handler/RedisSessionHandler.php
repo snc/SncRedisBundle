@@ -106,6 +106,9 @@ class RedisSessionHandler implements \SessionHandlerInterface
         return true;
     }
 
+    /**
+     * Lock the session data.
+     */
     private function lockSession($sessionId)
     {
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
@@ -133,8 +136,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
         return false;
     }
 
+    /**
+     * Unlock the session data.
+     */
     private function unlockSession()
     {
+        // If we have the right token, then delete the lock
         $script = <<<LUA
 if redis.call("GET", KEYS[1]) == ARGV[1] then
     return redis.call("DEL", KEYS[1])
