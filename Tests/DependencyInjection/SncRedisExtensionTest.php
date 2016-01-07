@@ -136,6 +136,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_metadata_cache'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_result_cache'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_query_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine.orm.default_second_level_cache.region_cache_driver'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.read_result_cache'));
 
         $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_metadata_cache'));
@@ -329,6 +330,10 @@ doctrine:
         document_manager: [default, slave1, slave2]
         namespace: "dcrc:"
     query_cache:
+        client: cache
+        entity_manager: default
+        document_manager: default
+    second_level_cache:
         client: cache
         entity_manager: default
         document_manager: default

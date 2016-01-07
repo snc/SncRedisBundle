@@ -157,7 +157,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
         } else {
             $this->redis->eval($script, 1, $this->prefix.$this->lockKey, $this->token);
         }
-        // $this->redis->del($this->prefix.$this->lockKey);
         $this->locked = false;
         $this->token = null;
     }

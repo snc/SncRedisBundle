@@ -258,58 +258,6 @@ class SncRedisExtension extends Extension
         
         $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), $phpredisId);
-        
-        
-        
-        // $connectionCount = count($client['dsns']);
-
-        // if (1 !== $connectionCount) {
-            // throw new \RuntimeException('Support for RedisArray is not yet implemented.');
-        // }
-
-        // $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
-
-        // $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
-        // $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
-        // $phpredisDef->setPublic(false);
-        // $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
-        // $connectParameters = array();
-        // if (null !== $dsn->getSocket()) {
-            // $connectParameters[] = $dsn->getSocket();
-            // $connectParameters[] = null;
-        // } else {
-            // $connectParameters[] = $dsn->getHost();
-            // $connectParameters[] = $dsn->getPort();
-        // }
-        // if ($client['options']['connection_timeout']) {
-            // $connectParameters[] = $client['options']['connection_timeout'];
-        // }
-
-        // $phpredisDef->addMethodCall($connectMethod, $connectParameters);
-        // if ($client['options']['prefix']) {
-            // $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_PREFIX, $client['options']['prefix']));
-        // }
-        // if (null !== $dsn->getPassword()) {
-            // $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
-        // }
-        // if (null !== $dsn->getDatabase()) {
-            // $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
-        // }
-        // $container->setDefinition($phpredisId, $phpredisDef);
-
-        // $clientDef = new Definition($container->getParameter('snc_redis.phpredis_base_connection_wrapper.class'));
-
-        // // override the client definition by a wrapper containing logger
-        // if ($client['logging']) {
-            // $clientDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
-            // $clientDef->addArgument(array('alias' => $client['alias']));
-            // $clientDef->addArgument(new Reference('snc_redis.logger'));
-        // }
-
-        // $clientDef->addMethodCall('setRedis', array(new Reference($phpredisId)));
-
-        // $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
-        // $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
     }
 
     /**
@@ -356,6 +304,9 @@ class SncRedisExtension extends Extension
     protected function loadDoctrine(array $config, ContainerBuilder $container)
     {
         foreach ($config['doctrine'] as $name => $cache) {
+            if ('second_level_cache' === $name) {
+                $name = 'second_level_cache.region_cache_driver';
+            }
             $clientClass;
             foreach ($config['clients'] as $clientConf) {
                 if ($clientConf['alias'] === $cache['client']) {
