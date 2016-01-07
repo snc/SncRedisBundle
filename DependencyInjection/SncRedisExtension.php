@@ -307,7 +307,7 @@ class SncRedisExtension extends Extension
             if ('second_level_cache' === $name) {
                 $name = 'second_level_cache.region_cache_driver';
             }
-            $clientClass;
+            $clientClass = $container->getParameter('snc_redis.doctrine_cache_predis.class');
             foreach ($config['clients'] as $clientConf) {
                 if ($clientConf['alias'] === $cache['client']) {
                     switch ($clientConf['type']) {
