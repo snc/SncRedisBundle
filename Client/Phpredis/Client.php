@@ -1307,18 +1307,6 @@ class Client extends Redis
         return $this->call('clearLastError', func_get_args());
     }
 
-    public function _prefix($value)
-    {
-    }
-
-    public function _unserialize($value)
-    {
-    }
-
-    public function _serialize($value)
-    {
-    }
-
     /**
      * {@inheritdoc}
      */

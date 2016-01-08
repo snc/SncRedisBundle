@@ -14,12 +14,11 @@
     }],
     "require": {
         "php": ">=5.3.3",
-<<<<<<< cd4d74d834c23d01cd22704f82e8d62218c25e73
         "symfony/framework-bundle": "^2.7 || ^3.0",
-        "symfony/yaml": "^2.7 || ^3.0",
-        "doctrine/cache": "1.*"
+        "symfony/yaml": "^2.7 || ^3.0"
     },
     "require-dev": {
+        "doctrine/cache": "1.*",
         "predis/predis": "^1.0",
         "symfony/console": "^2.7 || ^3.0",
         "symfony/phpunit-bridge": "^2.7 || ^3.0",
