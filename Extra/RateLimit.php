@@ -16,7 +16,7 @@ use Predis\Transaction\MultiExec;
 
 /**
  * This class is a PHP port of the RateLimit structure from the high-level
- * Redis library `Redback` for Node.JS
+ * Redis library `Redback` for Node.JS.
  *
  * @see https://github.com/chriso/redback/blob/master/lib/advanced_structures/RateLimit.js
  * @see http://chris6f.com/rate-limiting-with-redis
@@ -65,7 +65,7 @@ class RateLimit
     protected $subjectExpiry;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Predis\Client $client         A \Predis\Client instance
      * @param string         $key            Key
@@ -91,8 +91,8 @@ class RateLimit
     public function increment($subject)
     {
         $bucket = $this->getBucket();
-        $subject = $this->key . ':' . $subject;
-        
+        $subject = $this->key.':'.$subject;
+
         $multi = $this->client->transaction();
         $this->addMultiExecIncrement($multi, $subject, $bucket);
         $multi->exec();
@@ -109,7 +109,7 @@ class RateLimit
     public function count($subject, $interval)
     {
         $bucket = $this->getBucket();
-        $subject = $this->key . ':' . $subject;
+        $subject = $this->key.':'.$subject;
         $count = (int) floor($interval / $this->bucketInterval);
         $multi = $this->client->transaction();
         $this->addMultiExecCount($multi, $subject, $bucket, $count);
@@ -128,7 +128,7 @@ class RateLimit
     public function incrementAndCount($subject, $interval)
     {
         $bucket = $this->getBucket();
-        $subject = $this->key . ':' . $subject;
+        $subject = $this->key.':'.$subject;
         $count = (int) floor($interval / $this->bucketInterval);
         $multi = $this->client->transaction();
         $this->addMultiExecIncrement($multi, $subject, $bucket);
@@ -146,7 +146,7 @@ class RateLimit
      */
     public function reset($subject)
     {
-        $subject = $this->key . ':' . $subject;
+        $subject = $this->key.':'.$subject;
 
         return (bool) $this->client->del($subject);
     }
@@ -160,17 +160,17 @@ class RateLimit
      */
     private function getBucket($time = null)
     {
-        $time = $time ? : time();
+        $time = $time ?: time();
 
         return (int) floor(($time % $this->bucketSpan) / $this->bucketInterval);
     }
 
     /**
-     * Adds the commands needed for the increment function
+     * Adds the commands needed for the increment function.
      *
      * @param MultiExec $multi   A MultiExec instance
-     * @param string           $subject A unique identifier, for example a session id or an IP
-     * @param int              $bucket  Bucket
+     * @param string    $subject A unique identifier, for example a session id or an IP
+     * @param int       $bucket  Bucket
      */
     private function addMultiExecIncrement(MultiExec $multi, $subject, $bucket)
     {
@@ -183,12 +183,12 @@ class RateLimit
     }
 
     /**
-     * Adds the commands needed for the count function
+     * Adds the commands needed for the count function.
      *
      * @param MultiExec $multi   A MultiExec instance
-     * @param string           $subject A unique identifier, for example a session id or an IP
-     * @param int              $bucket  Bucket
-     * @param int              $count   Count
+     * @param string    $subject A unique identifier, for example a session id or an IP
+     * @param int       $bucket  Bucket
+     * @param int       $count   Count
      */
     private function addMultiExecCount(MultiExec $multi, $subject, $bucket, $count)
     {
