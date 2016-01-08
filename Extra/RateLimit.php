@@ -12,7 +12,7 @@
 namespace Snc\RedisBundle\Extra;
 
 use Predis\Client;
-use Predis\Transaction\MultiExecContext;
+use Predis\Transaction\MultiExec;
 
 /**
  * This class is a PHP port of the RateLimit structure from the high-level
@@ -92,7 +92,8 @@ class RateLimit
     {
         $bucket = $this->getBucket();
         $subject = $this->key . ':' . $subject;
-        $multi = $this->client->multiExec();
+        
+        $multi = $this->client->transaction();
         $this->addMultiExecIncrement($multi, $subject, $bucket);
         $multi->exec();
     }
@@ -110,7 +111,7 @@ class RateLimit
         $bucket = $this->getBucket();
         $subject = $this->key . ':' . $subject;
         $count = (int) floor($interval / $this->bucketInterval);
-        $multi = $this->client->multiExec();
+        $multi = $this->client->transaction();
         $this->addMultiExecCount($multi, $subject, $bucket, $count);
 
         return array_sum($multi->exec());
@@ -129,7 +130,7 @@ class RateLimit
         $bucket = $this->getBucket();
         $subject = $this->key . ':' . $subject;
         $count = (int) floor($interval / $this->bucketInterval);
-        $multi = $this->client->multiExec();
+        $multi = $this->client->transaction();
         $this->addMultiExecIncrement($multi, $subject, $bucket);
         $this->addMultiExecCount($multi, $subject, $bucket, $count);
 
@@ -167,11 +168,11 @@ class RateLimit
     /**
      * Adds the commands needed for the increment function
      *
-     * @param MultiExecContext $multi   A MultiExecContext instance
+     * @param MultiExec $multi   A MultiExec instance
      * @param string           $subject A unique identifier, for example a session id or an IP
      * @param int              $bucket  Bucket
      */
-    private function addMultiExecIncrement(MultiExecContext $multi, $subject, $bucket)
+    private function addMultiExecIncrement(MultiExec $multi, $subject, $bucket)
     {
         // Increment the current bucket
         $multi->hincrby($subject, $bucket, 1);
@@ -184,12 +185,12 @@ class RateLimit
     /**
      * Adds the commands needed for the count function
      *
-     * @param MultiExecContext $multi   A MultiExecContext instance
+     * @param MultiExec $multi   A MultiExec instance
      * @param string           $subject A unique identifier, for example a session id or an IP
      * @param int              $bucket  Bucket
      * @param int              $count   Count
      */
-    private function addMultiExecCount(MultiExecContext $multi, $subject, $bucket, $count)
+    private function addMultiExecCount(MultiExec $multi, $subject, $bucket, $count)
     {
         // Get the counts from the previous `$count` buckets
         $multi->hget($subject, $bucket);
