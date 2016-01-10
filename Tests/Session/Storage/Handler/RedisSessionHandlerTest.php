@@ -97,7 +97,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->exactly($lockMaxWait))
             ->method('setnx')
-            ->with($this->equalTo('session_symfony.lock'), $this->equalTo('1'))
+            ->with($this->equalTo('session:_symfony.lock'), $this->equalTo('1'))
         ;
 
         $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);

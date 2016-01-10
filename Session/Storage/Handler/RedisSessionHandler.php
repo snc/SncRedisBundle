@@ -108,10 +108,10 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
         $this->lockKey = $sessionId.'.lock';
         for ($i=0;$i<$attempts;$i++) {
-            $success = $this->redis->setnx($this->prefix.$this->lockKey, '1');
+            $success = $this->redis->setnx($this->getRedisKey($this->lockKey), '1');
             if ($success) {
                 $this->locked = true;
-                $this->redis->expire($this->prefix.$this->lockKey, $this->lockMaxWait + 1);
+                $this->redis->expire($this->getRedisKey($this->lockKey), $this->lockMaxWait + 1);
                 return true;
             }
             usleep($this->spinLockWait);
@@ -122,7 +122,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
     private function unlockSession()
     {
-        $this->redis->del($this->prefix.$this->lockKey);
+        $this->redis->del($this->getRedisKey($this->lockKey));
         $this->locked = false;
     }
 
