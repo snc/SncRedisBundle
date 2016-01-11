@@ -14,17 +14,13 @@ php:
 matrix:
   include:
     - php: 5.6
-      env: SYMFONY_VERSION="2.1.*"
-    - php: 5.6
-      env: SYMFONY_VERSION="2.2.*"
-    - php: 5.6
       env: SYMFONY_VERSION="2.3.*"
     - php: 5.6
       env: SYMFONY_VERSION="2.7.*"
     - php: 5.6
-      env: SYMFONY_VERSION="2.8.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
+      env: SYMFONY_VERSION="2.8.*" SYMFONY_DEPRECATIONS_HELPER="strict"
     - php: 5.6
-      env: SYMFONY_VERSION="3.0.*@dev" SYMFONY_DEPRECATIONS_HELPER="strict"
+      env: SYMFONY_VERSION="3.0.*" SYMFONY_DEPRECATIONS_HELPER="strict"
   allow_failures:
     - php: hhvm
 
@@ -39,8 +35,10 @@ env:
     - SYMFONY_DEPRECATIONS_HELPER="weak"
 
 before_install:
+  - phpenv config-rm xdebug.ini || true
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - phpenv rehash
+  - composer self-update
   - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/symfony:${SYMFONY_VERSION}; fi
 
 install: composer update
