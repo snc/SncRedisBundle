@@ -288,7 +288,7 @@ class SncRedisExtension extends Extension
 
         $client = sprintf('snc_redis.%s_client', $client);
 
-        $container->setAlias('snc_redis.session.client', $client, $prefix, $locking, $spinLockWait);
+        $container->setAlias('snc_redis.session.client', $client);
 
         if (isset($config['session']['ttl'])) {
             $definition = $container->getDefinition('snc_redis.session.handler');
