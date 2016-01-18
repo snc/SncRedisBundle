@@ -31,6 +31,8 @@ class BaseClient implements ClientInterface
     public function setRedis(Redis $redis)
     {
         $this->redis = $redis;
+
+        return $this;
     }
 
     /**
@@ -51,14 +53,27 @@ class BaseClient implements ClientInterface
 
         return call_user_func_array(array($this->redis, $name), $arguments);
     }
+    
+    /**
+     * Close connection to the redis server
+     */
+    public function close()
+    {
+        if (null !== $this->redis) {
+            $this->redis->close();
+            $this->redis = null;
+        }
+        
+        return $this;
+    }
 
     /**
      * Destructor
      */
     public function __destruct()
     {
-        if (null !== $this->redis) {
-            $this->redis->close();
-        }
+        try {
+            $this->close();
+        } catch (\RedisException $ex) {}
     }
 }
