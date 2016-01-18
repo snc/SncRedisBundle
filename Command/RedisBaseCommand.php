@@ -89,11 +89,6 @@ abstract class RedisBaseCommand extends ContainerAwareCommand
             return true;
         }
 
-        //BC for SF < 2.5
-        if (class_exists('Symfony\Component\Console\Helper\DialogHelper')) {
-            return $this->getHelper('dialog')->askConfirmation($this->output, '<question>Are you sure you wish to flush the whole database? (y/n)</question>', false);
-        }
-
         return $this->getHelper('question')->ask($this->input, $this->output, new ConfirmationQuestion('<question>Are you sure you wish to flush the whole database? (y/n)</question>', false));
     }
 }
