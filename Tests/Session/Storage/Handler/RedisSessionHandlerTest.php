@@ -98,7 +98,13 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->exactly(2))
             ->method('set')
-            ->with($this->equalTo('session_symfony_locktest.lock'), $this->isType('string'), $this->equalTo(array('NX', 'PX' => $lockMaxWait * 1000 + 1)))
+            ->with(
+                $this->equalTo('session_symfony_locktest.lock'),
+                $this->isType('string'),
+                $this->equalTo('PX'),
+                $this->equalTo($lockMaxWait * 1000 + 1),
+                $this->equalTo('NX')
+            )
             ->will($this->onConsecutiveCalls(0,1))
         ;
         
