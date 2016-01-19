@@ -219,17 +219,17 @@ class SncRedisExtension extends Extension
         if (1 !== $connectionCount) {
             throw new \RuntimeException('Support for RedisArray is not yet implemented.');
         }
-        
+
         $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
-        
+
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
         if ($client['logging']) {
             $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
             $phpredisDef->addArgument(array('alias' => $client['alias']));
             $phpredisDef->addArgument(new Reference('snc_redis.logger'));
         }
-        
+
         $phpredisDef->setPublic(false);
         $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
         $connectParameters = array();
@@ -243,7 +243,7 @@ class SncRedisExtension extends Extension
         if ($client['options']['connection_timeout']) {
             $connectParameters[] = $client['options']['connection_timeout'];
         }
-        
+
         $phpredisDef->addMethodCall($connectMethod, $connectParameters);
         if ($client['options']['prefix']) {
             $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_PREFIX, $client['options']['prefix']));
@@ -255,7 +255,7 @@ class SncRedisExtension extends Extension
             $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
         }
         $container->setDefinition($phpredisId, $phpredisDef);
-        
+
         $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), $phpredisId);
     }
@@ -307,35 +307,39 @@ class SncRedisExtension extends Extension
             if ('second_level_cache' === $name) {
                 $name = 'second_level_cache.region_cache_driver';
             }
-            $clientClass = $container->getParameter('snc_redis.doctrine_cache_predis.class');
-            foreach ($config['clients'] as $clientConf) {
-                if ($clientConf['alias'] === $cache['client']) {
-                    switch ($clientConf['type']) {
-                        case 'predis':
-                            $clientClass = $container->getParameter('snc_redis.doctrine_cache_predis.class');
-                            break;
-                        case 'phpredis':
-                            $clientClass = $container->getParameter('snc_redis.doctrine_cache_phpredis.class');
-                            break;
-                    }
+            $definitionFunction = null;
+            switch ($config['clients'][$cache['client']]['type']) {
+                case 'predis':
+                    $definitionFunction = function ($client, $cache) use ($container) {
+                        $def = new Definition($container->getParameter('snc_redis.doctrine_cache_predis.class'));
+                        $def->addArgument($client);
+                        if ($cache['namespace']) {
+                            $def->addMethodCall('setNamespace', array($cache['namespace']));
+                        }
+
+                        return $def;
+                    };
                     break;
-                }
+                case 'phpredis':
+                    $definitionFunction = function ($client, $cache) use ($container) {
+                        $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
+                        $def->addMethodCall('setRedis', array($client));
+                        if ($cache['namespace']) {
+                            $def->addMethodCall('setNamespace', array($cache['namespace']));
+                        }
+
+                        return $def;
+                    };
+                    break;
             }
+
             $client = new Reference(sprintf('snc_redis.%s_client', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
-                $def = new Definition($clientClass);
-                $def->addMethodCall('setRedis', array($client));
-                if ($cache['namespace']) {
-                    $def->addMethodCall('setNamespace', array($cache['namespace']));
-                }
+                $def = call_user_func_array($definitionFunction, array($client, $cache));
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);
             }
             foreach ($cache['document_managers'] as $dm) {
-                $def = new Definition($clientClass);
-                $def->addMethodCall('setRedis', array($client));
-                if ($cache['namespace']) {
-                    $def->addMethodCall('setNamespace', array($cache['namespace']));
-                }
+                $def = call_user_func_array($definitionFunction, array($client, $cache));
                 $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_%s', $dm, $name), $def);
             }
         }
