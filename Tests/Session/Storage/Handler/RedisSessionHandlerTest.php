@@ -22,7 +22,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del', 'setnx'));
+        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del'));
     }
 
     protected function tearDown()
@@ -94,13 +94,18 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $lockMaxWait = 2;
         ini_set('max_execution_time', $lockMaxWait);
 
+        // The first time it will say it's locked, the second time
         $this->redis
-            ->expects($this->exactly($lockMaxWait))
-            ->method('setnx')
-            ->with($this->equalTo('session_symfony.lock'), $this->equalTo('1'))
+            ->expects($this->exactly(2))
+            ->method('set')
+            ->with($this->equalTo('session_symfony_locktest.lock'), $this->isType('string'), $this->equalTo(array('NX', 'PX' => $lockMaxWait * 1000 + 1)))
+            ->will($this->onConsecutiveCalls(0,1))
         ;
-
+        
+        // We prepare our handlers
         $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);
-        $handler->read('_symfony');
+        
+        // The first will set the lock and the second will loop until it's free
+        $handler->read('_symfony_locktest');
     }
 }

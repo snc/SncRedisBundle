@@ -12,12 +12,13 @@
 namespace Snc\RedisBundle\Session\Storage\Handler;
 
 /**
- * Redis based session storage with session locking support
+ * Redis based session storage with session locking support.
  *
  * @author Justin Rainbow <justin.rainbow@gmail.com>
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Henrik Westphal <henrik.westphal@gmail.com>
  * @author Maurits van der Schee <maurits@vdschee.nl>
+ * @author Pierre Boudelle <pierre.boudelle@gmail.com>
  */
 class RedisSessionHandler implements \SessionHandlerInterface
 {
@@ -37,17 +38,17 @@ class RedisSessionHandler implements \SessionHandlerInterface
     protected $prefix;
 
     /**
-     * @var integer Default PHP max execution time in seconds
+     * @var int Default PHP max execution time in seconds
      */
     const DEFAULT_MAX_EXECUTION_TIME = 30;
 
     /**
-     * @var boolean Indicates an sessions should be locked
+     * @var bool Indicates an sessions should be locked
      */
     private $locking;
 
     /**
-     * @var boolean Indicates an active session lock
+     * @var bool Indicates an active session lock
      */
     private $locked;
 
@@ -57,18 +58,22 @@ class RedisSessionHandler implements \SessionHandlerInterface
     private $lockKey;
 
     /**
-     * @var integer Microseconds to wait between acquire lock tries
+     * @var string Session lock token
+     */
+    private $token;
+
+    /**
+     * @var int Microseconds to wait between acquire lock tries
      */
     private $spinLockWait;
 
     /**
-     * @var integer Maximum amount of seconds to wait for the lock
+     * @var int Maximum amount of seconds to wait for the lock
      */
     private $lockMaxWait;
 
-
     /**
-     * Redis session storage constructor
+     * Redis session storage constructor.
      *
      * @param \Predis\Client|\Redis $redis   Redis database connection
      * @param array                 $options Session options
@@ -94,40 +99,68 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function open($savePath, $sessionName)
     {
         return true;
     }
 
-
+    /**
+     * Lock the session data.
+     */
     private function lockSession($sessionId)
     {
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
 
+        $this->token = uniqid();
+
         $this->lockKey = $sessionId.'.lock';
-        for ($i=0;$i<$attempts;$i++) {
-            $success = $this->redis->setnx($this->prefix.$this->lockKey, '1');
+        for ($i = 0;$i < $attempts;++$i) {
+
+            // We try to aquire the lock
+            $success = $this->redis->set(
+                $this->prefix.$this->lockKey,
+                $this->token,
+                array('NX', 'PX' => $this->lockMaxWait * 1000 + 1)
+            );
             if ($success) {
                 $this->locked = true;
-                $this->redis->expire($this->prefix.$this->lockKey, $this->lockMaxWait + 1);
+
                 return true;
             }
+
             usleep($this->spinLockWait);
         }
 
         return false;
     }
 
+    /**
+     * Unlock the session data.
+     */
     private function unlockSession()
     {
-        $this->redis->del($this->prefix.$this->lockKey);
+        // If we have the right token, then delete the lock
+        $script = <<<LUA
+if redis.call("GET", KEYS[1]) == ARGV[1] then
+    return redis.call("DEL", KEYS[1])
+else
+    return 0
+end
+LUA;
+
+        if ($this->redis instanceof \Redis) {
+            $this->redis->eval($script, array($this->prefix.$this->lockKey, $this->token), 1);
+        } else {
+            $this->redis->eval($script, 1, $this->prefix.$this->lockKey, $this->token);
+        }
         $this->locked = false;
+        $this->token = null;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function close()
     {
@@ -136,11 +169,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
                 $this->unlockSession();
             }
         }
+
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($sessionId)
     {
@@ -156,7 +190,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($sessionId, $data)
     {
@@ -170,7 +204,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function destroy($sessionId)
     {
@@ -181,7 +215,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function gc($lifetime)
     {
@@ -189,7 +223,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * Change the default TTL
+     * Change the default TTL.
      *
      * @param int $ttl
      */
@@ -200,6 +234,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
     /**
      * Prepends the session ID with a user-defined prefix (if any).
+     *
      * @param string $sessionId session ID
      *
      * @return string prefixed session ID
@@ -210,15 +245,14 @@ class RedisSessionHandler implements \SessionHandlerInterface
             return $sessionId;
         }
 
-        return $this->prefix . ':' . $sessionId;
+        return $this->prefix.':'.$sessionId;
     }
 
     /**
-     * Destructor
+     * Destructor.
      */
     public function __destruct()
     {
         $this->close();
     }
-
 }

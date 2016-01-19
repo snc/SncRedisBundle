@@ -50,13 +50,11 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('connection_factory')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory')->end()
                         ->scalarNode('connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper')->end()
                         ->scalarNode('phpredis_client')->defaultValue('Redis')->end()
-                        ->scalarNode('phpredis_base_connection_wrapper')
-                            ->defaultValue('Snc\RedisBundle\Client\Phpredis\BaseClient')
-                        ->end()
                         ->scalarNode('phpredis_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\Client')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                        ->scalarNode('doctrine_cache')->defaultValue('Snc\RedisBundle\Doctrine\Cache\RedisCache')->end()
+                        ->scalarNode('doctrine_cache_phpredis')->defaultValue('Doctrine\Common\Cache\RedisCache')->end()
+                        ->scalarNode('doctrine_cache_predis')->defaultValue('Doctrine\Common\Cache\PredisCache')->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
                         ->scalarNode('swiftmailer_spool')->defaultValue('Snc\RedisBundle\SwiftMailer\RedisSpool')->end()
                     ->end()
@@ -177,7 +175,7 @@ class Configuration implements ConfigurationInterface
     private function addDoctrineSection(ArrayNodeDefinition $rootNode)
     {
         $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset();
-        foreach (array('metadata_cache', 'result_cache', 'query_cache') as $type) {
+        foreach (array('metadata_cache', 'result_cache', 'query_cache', 'second_level_cache') as $type) {
             $doctrineNode
                 ->children()
                     ->arrayNode($type)

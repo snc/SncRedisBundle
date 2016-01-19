@@ -4,6 +4,10 @@
 
 This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](https://github.com/nicolasff/phpredis) into your Symfony application.
 
+## Prerequisite ##
+
+Session handler requires `Redis >= 2.6` for LUA scripts.
+
 ## Installation ##
 
 Add the `snc/redis-bundle` package to your `require` section in the `composer.json` file.
@@ -184,6 +188,9 @@ snc_redis:
         query_cache:
             client: cache
             entity_manager: default
+        second_level_cache:
+            client: cache
+            entity_manager: default
 ```
 
 ### Monolog logging ###
@@ -318,6 +325,9 @@ snc_redis:
             document_manager: [default, slave1, slave2]
             namespace: "dcrc:"
         query_cache:
+            client: cache
+            entity_manager: default
+        second_level_cache:
             client: cache
             entity_manager: default
     monolog:
