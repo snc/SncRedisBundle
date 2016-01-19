@@ -6,7 +6,7 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 ## Prerequisite ##
 
-Session handler requires `Redis >= 2.6`.
+Session handler requires `Redis >= 2.6` for LUA scripts.
 
 ## Installation ##
 
