@@ -119,11 +119,24 @@ class RedisSessionHandler implements \SessionHandlerInterface
         for ($i = 0;$i < $attempts;++$i) {
 
             // We try to aquire the lock
-            $success = $this->redis->set(
-                $this->prefix.$this->lockKey,
-                $this->token,
-                array('NX', 'PX' => $this->lockMaxWait * 1000 + 1)
-            );
+            $setFunction = function ($redis, $key, $token, $ttl) {
+                if ($redis instanceof \Redis) {
+                    return $redis->set(
+                        $key,
+                        $token,
+                        array('NX', 'PX' => $ttl)
+                    );
+                } else {
+                    return $redis->set(
+                        $key,
+                        $token,
+                        'PX',
+                        $ttl,
+                        'NX'
+                    );
+                }
+            };
+            $success = $setFunction($this->redis, $this->prefix.$this->lockKey, $this->token, $this->lockMaxWait * 1000 + 1);
             if ($success) {
                 $this->locked = true;
 
