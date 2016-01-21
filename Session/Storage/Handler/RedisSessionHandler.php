@@ -44,12 +44,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * @var boolean Indicates an sessions should be locked
      */
-    private $locking;
+    protected $locking;
 
     /**
      * @var boolean Indicates an active session lock
      */
-    private $locked;
+    protected $locked;
 
     /**
      * @var string Session lock key
@@ -102,7 +102,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
 
-    private function lockSession($sessionId)
+    protected function lockSession($sessionId)
     {
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
 
