@@ -13,7 +13,7 @@ Session handler requires `Redis >= 2.6.12` for LUA scripts and SET with options.
 Add the `snc/redis-bundle` package to your `require` section in the `composer.json` file.
 
 ``` bash
-$ composer require snc/redis-bundle 1.1.x-dev
+$ composer require snc/redis-bundle 2.x-dev
 ```
 
 If you want to use the `predis` client library, you have to add the `predis/predis` package, too.
@@ -130,6 +130,16 @@ snc_redis:
         client: session
 ```
 
+This bundle then provides the `snc_redis.session.handler` service which
+you have to activate at `framework.session.handler_id`:
+
+``` yaml
+framework:
+    ...
+    session:
+        handler_id: snc_redis.session.handler
+```
+
 This will use the default prefix `session`.
 
 You may specify another `prefix`:
@@ -140,18 +150,6 @@ snc_redis:
     session:
         client: session
         prefix: foo
-```
-
-You can disable the automatic registration of the `session.storage` alias
-by setting `use_as_default` to `false`:
-
-``` yaml
-snc_redis:
-    ...
-    session:
-        client: session
-        prefix: foo
-        use_as_default: false
 ```
 
 By default, a TTL is set using the `framework.session.cookie_lifetime` parameter. But
@@ -313,7 +311,6 @@ snc_redis:
     session:
         client: default
         prefix: foo
-        use_as_default: true
     doctrine:
         metadata_cache:
             client: cache

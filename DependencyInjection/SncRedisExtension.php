@@ -289,10 +289,6 @@ class SncRedisExtension extends Extension
             $definition = $container->getDefinition('snc_redis.session.handler');
             $definition->addMethodCall('setTtl', array($config['session']['ttl']));
         }
-
-        if ($config['session']['use_as_default']) {
-            $container->setAlias('session.handler', 'snc_redis.session.handler');
-        }
     }
 
     /**
