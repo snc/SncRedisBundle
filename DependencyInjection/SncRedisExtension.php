@@ -173,6 +173,7 @@ class SncRedisExtension extends Extension
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
+        $clientDef->addTag('snc_redis.client');
         if (1 === $connectionCount) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters', $connectionAliases[0])));
         } else {
@@ -230,6 +231,7 @@ class SncRedisExtension extends Extension
             $phpredisDef->addArgument(new Reference('snc_redis.logger'));
         }
 
+        $phpredisDef->addTag('snc_redis.client');
         $phpredisDef->setPublic(false);
         $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
         $connectParameters = array();
