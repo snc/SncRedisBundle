@@ -108,7 +108,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(0=>array())), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
@@ -178,6 +178,8 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('snc_redis.cache', $tags);
         $this->assertArrayHasKey('snc_redis.monolog', $tags);
         $this->assertArrayHasKey('snc_redis.cluster', $tags);
+        $this->assertArraySubset(array('snc_redis.cache' => array(array('alias' => 'cache'))), $tags);
+        $this->assertArraySubset(array('snc_redis.cluster' => array(array('alias' => 'cluster'))), $tags);
     }
 
     /**
@@ -284,7 +286,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($masterParameters['replication']);
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(0=>array())), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     private function parseYaml($yaml)
