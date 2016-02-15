@@ -75,6 +75,22 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $name     Name
+     * @param string $expected Expected value
+     *
+     * @dataProvider parameterValues
+     */
+    public function testDefaultClientTaggedServicesConfigLoad($name, $expected)
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getMinimalYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertCount(1, $container->findTaggedServiceIds('snc_redis.client'), 'Minimal Yaml should have tagged 1 client');
+    }
+
+    /**
      * Test loading of minimal config
      */
     public function testMinimalConfigLoad()
@@ -91,6 +107,8 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
@@ -151,6 +169,17 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
         $this->assertTrue($container->hasAlias('swiftmailer.spool.redis'));
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertGreaterThanOrEqual(4, $container->findTaggedServiceIds('snc_redis.client'), 'expected at least 4 tagged clients');
+
+        $tags = $container->findTaggedServiceIds('snc_redis.client');
+        $this->assertArrayHasKey('snc_redis.default', $tags);
+        $this->assertArrayHasKey('snc_redis.cache', $tags);
+        $this->assertArrayHasKey('snc_redis.monolog', $tags);
+        $this->assertArrayHasKey('snc_redis.cluster', $tags);
+        $this->assertArraySubset(array('snc_redis.cache' => array(array('alias' => 'cache'))), $tags);
+        $this->assertArraySubset(array('snc_redis.cluster' => array(array('alias' => 'cluster'))), $tags);
     }
 
     /**
@@ -255,6 +284,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('snc_redis.connection.master_parameters', (string) $parameters[0]);
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertTrue($masterParameters['replication']);
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     private function parseYaml($yaml)
