@@ -156,6 +156,11 @@ class RedisDsn
         if (false !== $pos = strrpos($dsn, '@')) {
             // parse password
             $this->password = str_replace('\@', '@', substr($dsn, 0, $pos));
+
+            if (strstr($this->password, ':')) {
+                list(, $this->password) = explode(':', $this->password);
+            }
+
             $dsn = substr($dsn, $pos + 1);
         }
         $dsn = preg_replace_callback('/\?(weight|alias)=[^&]+.*$/', array($this, 'parseParameters'), $dsn); // parse parameters
