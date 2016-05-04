@@ -1,4 +1,4 @@
-# RedisBundle ![project status](http://stillmaintained.com/snc/SncRedisBundle.png) #
+# RedisBundle #
 
 ## About ##
 
