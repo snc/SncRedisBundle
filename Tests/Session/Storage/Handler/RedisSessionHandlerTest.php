@@ -35,10 +35,10 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('session:_symfony'))
+            ->with($this->equalTo('_symfony'))
         ;
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
+        $handler = new RedisSessionHandler($this->redis, array(), null, false);
         $handler->read('_symfony');
     }
 
@@ -50,7 +50,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('session:_symfony'))
         ;
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
+        $handler = new RedisSessionHandler($this->redis, array(), 'session:', false);
         $handler->destroy('_symfony');
     }
 
@@ -62,7 +62,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('session:_symfony'), $this->equalTo('some data'))
         ;
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
+        $handler = new RedisSessionHandler($this->redis, array(), 'session:', false);
         $handler->write('_symfony', 'some data');
     }
 
@@ -75,16 +75,16 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         ;
 
         // Expiration is set by cookie_lifetime option
-        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 10), 'session', false);
+        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 10), 'session:', false);
         $handler->write('_symfony', 'some data');
 
         // Expiration is set with the TTL attribute
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
+        $handler = new RedisSessionHandler($this->redis, array(), 'session:', false);
         $handler->setTtl(10);
         $handler->write('_symfony', 'some data');
 
         // TTL attribute overrides cookie_lifetime option
-        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 20), 'session', false);
+        $handler = new RedisSessionHandler($this->redis, array('cookie_lifetime' => 20), 'session:', false);
         $handler->setTtl(10);
         $handler->write('_symfony', 'some data');
     }
@@ -107,10 +107,10 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->onConsecutiveCalls(0,1))
         ;
-        
+
         // We prepare our handlers
         $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);
-        
+
         // The first will set the lock and the second will loop until it's free
         $handler->read('_symfony_locktest');
     }

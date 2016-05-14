@@ -136,7 +136,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
                     );
                 }
             };
-            $success = $setFunction($this->redis, $this->prefix.$this->lockKey, $this->token, $this->lockMaxWait * 1000 + 1);
+            $success = $setFunction($this->redis, $this->getRedisKey($this->lockKey), $this->token, $this->lockMaxWait * 1000 + 1);
             if ($success) {
                 $this->locked = true;
 
@@ -164,9 +164,9 @@ end
 LUA;
 
         if ($this->redis instanceof \Redis) {
-            $this->redis->eval($script, array($this->prefix.$this->lockKey, $this->token), 1);
+            $this->redis->eval($script, array($this->getRedisKey($this->lockKey), $this->token), 1);
         } else {
-            $this->redis->eval($script, 1, $this->prefix.$this->lockKey, $this->token);
+            $this->redis->eval($script, 1, $this->getRedisKey($this->lockKey), $this->token);
         }
         $this->locked = false;
         $this->token = null;
@@ -246,19 +246,19 @@ LUA;
     }
 
     /**
-     * Prepends the session ID with a user-defined prefix (if any).
+     * Prepends the given key with a user-defined prefix (if any).
      *
-     * @param string $sessionId session ID
+     * @param string $key key
      *
-     * @return string prefixed session ID
+     * @return string prefixed key
      */
-    protected function getRedisKey($sessionId)
+    protected function getRedisKey($key)
     {
         if (empty($this->prefix)) {
-            return $sessionId;
+            return $key;
         }
 
-        return $this->prefix.':'.$sessionId;
+        return $this->prefix.$key;
     }
 
     /**
