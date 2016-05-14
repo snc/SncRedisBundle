@@ -175,11 +175,11 @@ class SncRedisExtension extends Extension
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         if (1 === $connectionCount) {
-            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_%s_parameters', $client['alias'], $connectionAliases[0])));
+            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = array();
             foreach ($connectionAliases as $alias) {
-                $connections[] = new Reference(sprintf('snc_redis.connection.%s_%s_parameters', $client['alias'], $alias));
+                $connections[] = new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $alias, $client['alias']));
             }
             $clientDef->addArgument($connections);
         }
@@ -197,7 +197,7 @@ class SncRedisExtension extends Extension
      */
     protected function loadPredisConnectionParameters($clientAlias, array $connection, ContainerBuilder $container)
     {
-        $parameterId = sprintf('snc_redis.connection.%s_%s_parameters', $clientAlias, $connection['alias']);
+        $parameterId = sprintf('snc_redis.connection.%s_parameters.%s', $connection['alias'], $clientAlias);
         $parameterDef = new Definition($container->getParameter('snc_redis.connection_parameters.class'));
         $parameterDef->setPublic(false);
         $parameterDef->addArgument($connection);
