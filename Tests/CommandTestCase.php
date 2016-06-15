@@ -47,13 +47,17 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        if (!extension_loaded('redis')) {
-            $this->markTestSkipped('This test needs the PHP Redis extension to work');
-        }
+        $this->container = $this->getMock('\\Symfony\\Component\\DependencyInjection\\ContainerInterface');
 
         $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
             ->disableOriginalConstructor()
             ->getMock();
+        $kernel->expects($this->once())
+            ->method('getBundles')
+            ->will($this->returnValue(array()));
+        $kernel->expects($this->once())
+            ->method('getContainer')
+            ->will($this->returnValue($this->container));
         $this->application = new Application($kernel);
 
         $this->predisClient = $this->getMock('\\Predis\\Client');
@@ -61,8 +65,6 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->phpredisClient = $this->getMockBuilder('PhpredisClient')
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->container = $this->getMock('\\Symfony\\Component\\DependencyInjection\\ContainerInterface');
 
         $command = $this->getCommand();
         $this->application->add($command);

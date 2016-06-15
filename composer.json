@@ -22,7 +22,7 @@
         "predis/predis": "^1.0",
         "symfony/console": "^2.7 || ^3.0",
         "symfony/phpunit-bridge": "^2.7 || ^3.0",
-        "phpunit/phpunit": "4.7.*"
+        "phpunit/phpunit": "4.8.*"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
