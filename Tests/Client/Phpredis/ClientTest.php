@@ -14,6 +14,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCommandString()
     {
+        if (!extension_loaded('redis')) {
+            $this->markTestSkipped('This test needs the PHP Redis extension to work');
+        }
+
         $method = new \ReflectionMethod(
             '\Snc\RedisBundle\Client\Phpredis\Client', 'getCommandString'
         );

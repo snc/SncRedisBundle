@@ -47,6 +47,10 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        if (!extension_loaded('redis')) {
+            $this->markTestSkipped('This test needs the PHP Redis extension to work');
+        }
+
         $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
             ->disableOriginalConstructor()
             ->getMock();
