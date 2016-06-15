@@ -1,5 +1,12 @@
 # Update notes #
 
+## 2.0.0 ##
+
+Passwords in DSNs must now be properly urlencoded if they contain any of
+the following special characters: `@`, `%` or `:`. Encode them as `%40`,
+`%25` and `%3A` respectively. The `\@` notation for escaping `@` has been
+removed.
+
 ## 1.0.11 and 1.1.6 ##
 
 The monolog handler was renamed from `monolog.handler.redis` to
