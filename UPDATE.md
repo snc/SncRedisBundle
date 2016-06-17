@@ -2,10 +2,19 @@
 
 ## 2.0.0 ##
 
-Passwords in DSNs must now be properly urlencoded if they contain any of
-the following special characters: `@`, `%` or `:`. Encode them as `%40`,
-`%25` and `%3A` respectively. The `\@` notation for escaping `@` has been
-removed.
+- Passwords in DSNs must now be properly urlencoded if they contain any of
+  the following special characters: `@`, `%` or `:`. Encode them as `%40`,
+  `%25` and `%3A` respectively. The `\@` notation for escaping `@` has been
+  removed.
+
+- The `Snc\RedisBundle\Monolog\Handler\RedisHandler` class has been removed
+  in favor of using the native Monolog RedisHandler.
+
+- The session keys changed from `$prefix:$key` to simply `$prefix$key`, no more
+  `:` added in the middle, so add it to your prefix if you want one.
+
+- The argument truncation limit in the logs was increased from 32 bytes to
+  10KB.
 
 ## 1.0.11 and 1.1.6 ##
 
