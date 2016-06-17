@@ -191,8 +191,8 @@ class ConnectionWrapper implements NodeConnectionInterface
      */
     private function toStringArgumentReducer($accumulator, $argument)
     {
-        if (strlen($argument) > 256) {
-            $argument = substr($argument, 0, 256) . '[...]';
+        if (strlen($argument) > 10240) {
+            $argument = substr($argument, 0, 10240) . ' (truncated, complete string is '.strlen($argument).' bytes)';
         }
 
         $accumulator .= " $argument";
