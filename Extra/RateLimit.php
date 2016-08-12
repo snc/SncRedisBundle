@@ -19,7 +19,7 @@ use Predis\Transaction\MultiExec;
  * Redis library `Redback` for Node.JS.
  *
  * @see https://github.com/chriso/redback/blob/master/lib/advanced_structures/RateLimit.js
- * @see http://chris6f.com/rate-limiting-with-redis
+ * @see https://gist.github.com/chriso/54dd46b03155fcf555adccea822193da
  *
  * Usage:
  *
