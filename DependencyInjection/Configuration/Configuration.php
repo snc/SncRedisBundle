@@ -81,7 +81,6 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('client')
             ->children()
                 ->arrayNode('clients')
-                    ->isRequired()
                     ->requiresAtLeastOneElement()
                     ->useAttributeAsKey('alias', false)
                     ->prototype('array')
