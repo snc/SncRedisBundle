@@ -41,6 +41,8 @@ public function registerBundles()
 
 Configure the `redis` client(s) in your `config.yml`:
 
+_Please note that passwords with special characters in the DSN string such as `@ % : +` must be urlencoded._
+
 ``` yaml
 snc_redis:
     clients:
