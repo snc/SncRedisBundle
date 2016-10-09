@@ -40,18 +40,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testGetCommandString()
     {
         $this->client->setUnavailable();
-        $this->assertTrue(null === $this->client->get('foo:bar'));
-        $this->assertTrue(null === $this->client->hget('foo:bar', 'foo'));
-        $this->assertTrue(null === $this->client->hgetall('foo:bar'));
-        $this->assertTrue(null === $this->client->hmget('foo:bar', array()));
+        $this->assertNull($this->client->get('foo:bar'));
+        $this->assertNull($this->client->hget('foo:bar', 'foo'));
+        $this->assertNull($this->client->hgetall('foo:bar'));
+        $this->assertNull($this->client->hmget('foo:bar', []));
     }
 
     public function testSetCommandString()
     {
-        $this->assertTrue('OK'=== $this->client->set('foo', 'bar'));
-        $this->assertTrue('OK'=== $this->client->setex('foo', 10,'bar'));
-        $this->assertTrue('OK'=== $this->client->psetex('foo', 10,'bar'));
-        $this->assertTrue('OK'=== $this->client->hmset('foo', array('a' => 5)));
-        $this->assertTrue('OK'=== $this->client->mset(array('foo', 'bar')));
+        $this->assertEquals('OK', $this->client->set('foo', 'bar'));
+        $this->assertEquals('OK', $this->client->setex('foo', 10,'bar'));
+        $this->assertEquals('OK', $this->client->psetex('foo', 10,'bar'));
+        $this->assertEquals('OK', $this->client->hmset('foo', ['a' => 5]));
+        $this->assertEquals('OK', $this->client->mset(['foo', 'bar']));
     }
 }
