@@ -43,7 +43,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->client->get('foo:bar'));
         $this->assertNull($this->client->hget('foo:bar', 'foo'));
         $this->assertNull($this->client->hgetall('foo:bar'));
-        $this->assertNull($this->client->hmget('foo:bar', []));
+        $this->assertNull($this->client->hmget('foo:bar', array()));
     }
 
     public function testSetCommandString()
@@ -51,7 +51,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('OK', $this->client->set('foo', 'bar'));
         $this->assertEquals('OK', $this->client->setex('foo', 10,'bar'));
         $this->assertEquals('OK', $this->client->psetex('foo', 10,'bar'));
-        $this->assertEquals('OK', $this->client->hmset('foo', ['a' => 5]));
-        $this->assertEquals('OK', $this->client->mset(['foo', 'bar']));
+        $this->assertEquals('OK', $this->client->hmset('foo', array('a' => 5)));
+        $this->assertEquals('OK', $this->client->mset(array('foo', 'bar')));
     }
 }
