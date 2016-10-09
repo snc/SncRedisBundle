@@ -44,7 +44,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('class')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('client')->defaultValue('Predis\Client')->end()
+                        ->scalarNode('client')->defaultValue('Snc\RedisBundle\Client\Predis\Client')->end()
                         ->scalarNode('client_options')->defaultValue('Predis\Configuration\Options')->end()
                         ->scalarNode('connection_parameters')->defaultValue('Predis\Connection\Parameters')->end()
                         ->scalarNode('connection_factory')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory')->end()

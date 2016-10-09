@@ -11,10 +11,11 @@
 
 namespace Snc\RedisBundle;
 
-use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
-use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
+use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
+use Predis\PredisException;
 
 /**
  * SncRedisBundle
@@ -29,5 +30,25 @@ class SncRedisBundle extends Bundle
         parent::build($container);
         $container->addCompilerPass(new LoggingPass());
         $container->addCompilerPass(new MonologPass());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function boot()
+    {
+        $redis = $this->container->get('snc_redis.default');
+
+        try {
+            $redis->ping();
+        } catch (PredisException $e) {
+            $this->container->get('logger')->error(
+                sprintf(
+                    "Unable to ping Redis Server: %s",
+                    $e->getMessage()
+                )
+            );
+            $redis->setUnavailable();
+        }
     }
 }
