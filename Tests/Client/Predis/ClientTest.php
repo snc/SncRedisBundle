@@ -33,7 +33,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (!method_exists($this, 'expectException'))
             $this->markTestSkipped('This test needs PHPUnit >= 5.2.0');
 
-        $this->expectException(PredisException::class);
+        $this->expectException('Predis\PredisException');
         $this->client->ping();
     }
 
