@@ -68,6 +68,10 @@ class SncRedisExtension extends Extension
         if (isset($config['swiftmailer'])) {
             $this->loadSwiftMailer($config, $container);
         }
+
+        if (isset($config['profiler_storage'])) {
+            $this->loadProfilerStorage($config, $container, $loader);
+        }
     }
 
     /**
@@ -383,6 +387,25 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool.redis', 'snc_redis.swiftmailer.spool');
+    }
+
+    /**
+     * Loads the profiler storage configuration.
+     *
+     * @param array            $config    A configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param XmlFileLoader    $loader    A XmlFileLoader instance
+     */
+    protected function loadProfilerStorage(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        $loader->load('profiler_storage.xml');
+
+        $container->setParameter('snc_redis.profiler_storage.client', $config['profiler_storage']['client']);
+        $container->setParameter('snc_redis.profiler_storage.ttl', $config['profiler_storage']['ttl']);
+
+        $client = $container->getParameter('snc_redis.profiler_storage.client');
+        $client = sprintf('snc_redis.%s_client', $client);
+        $container->setAlias('snc_redis.profiler_storage.client', $client);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)

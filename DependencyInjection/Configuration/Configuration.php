@@ -66,6 +66,7 @@ class Configuration implements ConfigurationInterface
         $this->addDoctrineSection($rootNode);
         $this->addMonologSection($rootNode);
         $this->addSwiftMailerSection($rootNode);
+        $this->addProfilerStorageSection($rootNode);
 
         return $treeBuilder;
     }
@@ -238,6 +239,25 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('key')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    /**
+     * Adds the snc_redis.profiler_storage configuration
+     *
+     * @param ArrayNodeDefinition $rootNode
+     */
+    private function addProfilerStorageSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('profiler_storage')
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('client')->isRequired()->end()
+                        ->scalarNode('ttl')->isRequired()->end()
                     ->end()
                 ->end()
             ->end();
