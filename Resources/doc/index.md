@@ -166,7 +166,7 @@ snc_redis:
 ```
 
 This will make session data expire after 20 minutes, on the **server side**.
-This is hightly recommended if you don't set an expiration date to the session
+This is highly recommended if you don't set an expiration date to the session
 cookie. Note that using Redis for storing sessions is a good solution to avoid
 garbage collection of sessions by PHP.
 
