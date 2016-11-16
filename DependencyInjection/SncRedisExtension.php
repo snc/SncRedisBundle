@@ -12,14 +12,13 @@
 namespace Snc\RedisBundle\DependencyInjection;
 
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * SncRedisExtension
@@ -60,7 +59,12 @@ class SncRedisExtension extends Extension
 
         if (isset($config['monolog'])) {
             if (!empty($config['clients'][$config['monolog']['client']]['logging'])) {
-                throw new InvalidConfigurationException(sprintf('You have to disable logging for the client "%s" that you have configured under "snc_redis.monolog.client"', $config['monolog']['client']));
+                throw new InvalidConfigurationException(
+                    sprintf(
+                        'You have to disable logging for the client "%s" that you have configured under "snc_redis.monolog.client"',
+                        $config['monolog']['client']
+                    )
+                );
             }
             $this->loadMonolog($config, $container);
         }
@@ -155,7 +159,9 @@ class SncRedisExtension extends Extension
 
         // TODO can be shared between clients?!
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($client['options']['profile']))); // TODO get_class alternative?
+        $profileDef = new Definition(
+            get_class(\Predis\Profile\Factory::get($client['options']['profile']))
+        ); // TODO get_class alternative?
         $profileDef->setPublic(false);
         if (null !== $client['options']['prefix']) {
             $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
@@ -175,17 +181,24 @@ class SncRedisExtension extends Extension
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         if (1 === $connectionCount) {
-            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
+            $clientDef->addArgument(
+                new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias']))
+            );
         } else {
             $connections = array();
             foreach ($connectionAliases as $alias) {
-                $connections[] = new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $alias, $client['alias']));
+                $connections[] = new Reference(
+                    sprintf('snc_redis.connection.%s_parameters.%s', $alias, $client['alias'])
+                );
             }
             $clientDef->addArgument($connections);
         }
         $clientDef->addArgument(new Reference($optionId));
         $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
+        $container->setAlias(
+            sprintf('snc_redis.%s_client', $client['alias']),
+            sprintf('snc_redis.%s', $client['alias'])
+        );
     }
 
     /**
@@ -221,7 +234,8 @@ class SncRedisExtension extends Extension
             throw new \RuntimeException('Support for RedisArray is not yet implemented.');
         }
 
-        $dsn = $client['dsns'][0]; /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
+        $dsn = $client['dsns'][0];
+        /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
 
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
@@ -255,6 +269,12 @@ class SncRedisExtension extends Extension
         }
         if (null !== $dsn->getDatabase()) {
             $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
+        }
+        if ($client['options']['serialization']) {
+            $phpredisDef->addMethodCall(
+                'setOption',
+                array(\Redis::OPT_SERIALIZER, $this->loadSerializationType($client['options']['serialization']))
+            );
         }
         $container->setDefinition($phpredisId, $phpredisDef);
 
@@ -357,10 +377,12 @@ class SncRedisExtension extends Extension
             $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
         }
 
-        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), array(
-            $ref,
-            $config['monolog']['key']
-        ));
+        $def = new Definition(
+            $container->getParameter('snc_redis.monolog_handler.class'), array(
+                $ref,
+                $config['monolog']['key']
+            )
+        );
 
         $def->setPublic(false);
         if (!empty($config['monolog']['formatter'])) {
@@ -379,10 +401,50 @@ class SncRedisExtension extends Extension
     {
         $def = new Definition($container->getParameter('snc_redis.swiftmailer_spool.class'));
         $def->setPublic(false);
-        $def->addMethodCall('setRedis', array(new Reference(sprintf('snc_redis.%s', $config['swiftmailer']['client']))));
+        $def->addMethodCall(
+            'setRedis',
+            array(new Reference(sprintf('snc_redis.%s', $config['swiftmailer']['client'])))
+        );
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool.redis', 'snc_redis.swiftmailer.spool');
+    }
+
+    /**
+     * Load the correct serializer for Redis
+     *
+     * @param string $type
+     *
+     * @return string
+     * @throws InvalidConfigurationException
+     */
+    public function loadSerializationType($type)
+    {
+        // not using constants, because it would fail if phpredis extension is not enabled
+        $types = array(
+            "none" => 0, // \Redis::SERIALIZER_NONE,
+            "php" => 1,  // \Redis::SERIALIZER_PHP,
+            "igbinary" => 2 // \Redis::SERIALIZER_IGBINARY
+        );
+
+        // allow user to pass in default serialization in which case we should automatically decide for them
+        if ('default' == $type) {
+            if (defined('HHVM_VERSION')) {
+                return $types['php'];
+            }
+
+            return defined('Redis::SERIALIZER_IGBINARY') ? $types['igbinary'] : $types['php'];
+        } elseif (array_key_exists($type, $types)) {
+            return $types[$type];
+        }
+
+        throw new InvalidConfigurationException(
+            sprintf(
+                '%s in not a valid serializer. Valid serializers: %s',
+                $type,
+                implode(", ", array_keys($types))
+            )
+        );
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)
