@@ -135,7 +135,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
-                                    ->booleanNode('replication')->defaultFalse()->end()
+                                    ->booleanNode('replication')->end()
                                 ->end()
                             ->end()
                         ->end()
