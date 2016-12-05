@@ -170,7 +170,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasAlias('swiftmailer.spool.redis'));
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertGreaterThanOrEqual(4, $container->findTaggedServiceIds('snc_redis.client'), 'expected at least 4 tagged clients');
+        $this->assertGreaterThanOrEqual(4, count($container->findTaggedServiceIds('snc_redis.client')), 'expected at least 4 tagged clients');
 
         $tags = $container->findTaggedServiceIds('snc_redis.client');
         $this->assertArrayHasKey('snc_redis.default', $tags);
@@ -303,6 +303,28 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $parameters[0]);
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertTrue($masterParameters['replication']);
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
+    /**
+     * Test valid config of the sentinel replication option
+     */
+    public function testSentinelOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSentinelYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertEquals('sentinel', $options['replication']);
+        $this->assertEquals('mymaster', $options['service']);
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $parameters[0]);
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertEquals('sentinel', $masterParameters['replication']);
+        $this->assertEquals('mymaster', $masterParameters['service']);
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
@@ -463,6 +485,22 @@ clients:
             - redis://otherhost
         options:
             replication: true
+EOF;
+    }
+
+    private function getSentinelYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://localhost?alias=master
+            - redis://otherhost
+        options:
+            replication: sentinel
+            service: mymaster
 EOF;
     }
 
