@@ -245,6 +245,12 @@ class SncRedisExtension extends Extension
         if ($client['options']['connection_timeout']) {
             $connectParameters[] = $client['options']['connection_timeout'];
         }
+		else {
+			$connectParameters[] = null;
+		}
+		if($client['options']['connection_persistent']) {
+			$connectParameters[] = $dsn->getPersistentId();
+		}
 
         $phpredisDef->addMethodCall($connectMethod, $connectParameters);
         if ($client['options']['prefix']) {
