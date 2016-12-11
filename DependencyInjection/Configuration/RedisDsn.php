@@ -126,6 +126,14 @@ class RedisDsn
     {
         return $this->alias;
     }
+	
+    /**
+     * @return string
+     */
+    public function getPersistentId() 
+    {
+        return md5($this->dsn);
+    }
 
     /**
      * @return bool
