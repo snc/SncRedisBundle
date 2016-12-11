@@ -277,6 +277,20 @@ swiftmailer:
         type: redis
 ```
 
+### Profiler storage ###
+
+To store your profiler data in Redis for Symfony 3 add following to your config:
+
+``` yaml
+snc_redis:
+    ...
+    profiler_storage:
+        client: profiler_storage
+        ttl: 3600
+```
+
+This will overwrite the `profiler.storage` service.
+Prior to [Symfony 3.0 support for Redis was built-in](http://symfony.com/doc/current/profiler/storage.html).
 
 ### Complete configuration example ###
 
@@ -293,6 +307,11 @@ snc_redis:
             alias: cache
             dsn: redis://localhost/1
             logging: true
+        profiler_storage:
+            type: predis
+            alias: profiler_storage
+            dsn: redis://localhost/2
+            logging: false
         cluster:
             type: predis
             alias: cluster
@@ -335,4 +354,7 @@ snc_redis:
     swiftmailer:
         client: default
         key: swiftmailer
+    profiler_storage:
+        client: profiler_storage
+        ttl: 3600
 ```
