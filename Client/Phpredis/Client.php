@@ -592,7 +592,7 @@ class Client extends Redis
      */
     public function sScan($key, &$iterator, $pattern = null, $count = null)
     {
-        return $this->call('sScan', array($key, $iterator, $pattern, $count));
+        return $this->call('sScan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -1136,7 +1136,7 @@ class Client extends Redis
      */
     public function zScan($key, &$iterator, $pattern = null, $count = null)
     {
-        return $this->call('zScan', array($key, $iterator, $pattern, $count));
+        return $this->call('zScan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -1248,7 +1248,7 @@ class Client extends Redis
      */
     public function hScan($key, &$iterator, $pattern = null, $count = null)
     {
-        return $this->call('hScan', array($key, $iterator, $pattern, $count));
+        return $this->call('hScan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -1344,7 +1344,7 @@ class Client extends Redis
      */
     public function scan(&$iterator, $pattern = null, $count = null)
     {
-        return $this->call('scan', array($iterator, $pattern, $count));
+        return $this->call('scan', array(&$iterator, $pattern, $count));
     }
 
     /**
