@@ -330,6 +330,27 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
+    /**
+     * Test valid config of the cluster option
+     */
+    public function testClusterOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getClusterYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertEquals('redis', $options['cluster']);
+        $this->assertFalse(array_key_exists('replication', $options));
+
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.default1_parameters.default', (string) $parameters[0]);
+        $this->assertEquals('snc_redis.connection.default2_parameters.default', (string) $parameters[1]);
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -501,6 +522,21 @@ clients:
         options:
             replication: sentinel
             service: mymaster
+EOF;
+    }
+
+    private function getClusterYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://127.0.0.1/1
+            - redis://127.0.0.2/2
+        options:
+            cluster: "redis"
 EOF;
     }
 

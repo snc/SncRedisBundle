@@ -136,7 +136,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
-                                    ->enumNode('replication')->values(array(true, false, 'sentinel'))->defaultNull()->end()
+                                    ->enumNode('replication')->values(array(true, false, 'sentinel'))->end()
                                     ->scalarNode('service')->defaultNull()->end()
                                 ->end()
                             ->end()
