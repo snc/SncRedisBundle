@@ -348,7 +348,7 @@ class SncRedisExtension extends Extension
             }
             foreach ($cache['document_managers'] as $dm) {
                 $def = call_user_func_array($definitionFunction, array($client, $cache));
-                $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_%s', $dm, $name), $def);
+                $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $def);
             }
         }
     }
