@@ -98,7 +98,6 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getMinimalYamlConfig());
         $extension->load(array($config), $container = $this->getContainer());
-
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
 
@@ -157,11 +156,11 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasDefinition('doctrine.orm.default_second_level_cache.region_cache_driver'));
         $this->assertTrue($container->hasDefinition('doctrine.orm.read_result_cache'));
 
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave1_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.odm.mongodb.slave2_result_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_metadata_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_result_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_query_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave1_result_cache'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave2_result_cache'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
