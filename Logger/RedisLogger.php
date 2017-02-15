@@ -22,7 +22,6 @@ class RedisLogger
     protected $logger;
     protected $nbCommands = 0;
     protected $commands = array();
-    protected $start;
 
     /**
      * Constructor.
