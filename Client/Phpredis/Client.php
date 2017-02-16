@@ -65,7 +65,7 @@ class Client extends Redis
         
         $error = false;
         if (false === $result) {
-            $error = call_user_func('parent::getLastError');
+            $error = parent::getLastError();
         }
 
         $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, $error);
