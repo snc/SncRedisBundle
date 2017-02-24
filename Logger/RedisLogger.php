@@ -62,7 +62,7 @@ class RedisLogger
                     $this->logger->err($message);
                 }
             } else {
-                $this->logger->info('Executing command "' . $command . '"');
+                $this->logger->debug('Executing command "' . $command . '"');
             }
         }
     }
