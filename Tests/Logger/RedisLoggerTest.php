@@ -44,7 +44,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
 
         $this->logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with($this->equalTo('Executing command "foo"'));
 
         $this->redisLogger->logCommand('foo', 10, 'connection');
@@ -66,7 +66,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setUpWithPsrLogger();
 
-        $this->logger->expects($this->any())->method('info');
+        $this->logger->expects($this->any())->method('debug');
 
         for ($i = 0; $i < 3; $i++) {
             $this->redisLogger->logCommand('foo'.$i, 10, 'connection');
@@ -79,7 +79,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setUpWithPsrLogger();
 
-        $this->logger->expects($this->any())->method('info');
+        $this->logger->expects($this->any())->method('debug');
         $this->logger->expects($this->any())->method('error');
 
         for ($i = 0; $i < 3; $i++) {
@@ -138,7 +138,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
 
         $this->logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with($this->equalTo('Executing command "foo"'));
 
         $this->redisLogger->logCommand('foo', 10, 'connection');
@@ -173,7 +173,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setUpWithHttpKernelLogger();
 
-        $this->logger->expects($this->any())->method('info');
+        $this->logger->expects($this->any())->method('debug');
         $this->logger->expects($this->any())->method('err');
         $this->logger->expects($this->any())->method('error');
 
