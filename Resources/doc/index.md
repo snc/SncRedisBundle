@@ -120,6 +120,24 @@ snc_redis:
 Please note that the master dsn connection needs to be tagged with the ```master``` alias.
 If not, `predis` will complain.
 
+A setup using `predis` sentinel replication could look like this:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn:
+                - redis://localhost
+                - redis://otherhost
+            options:
+                replication: sentinel
+                service: mymaster
+```
+
+The `service` is the name of the set of Redis instances.
+You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
 ### Sessions ###
 
