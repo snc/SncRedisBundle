@@ -339,6 +339,7 @@ snc_redis:
                 - redis://pw@/var/run/redis/redis-1.sock/10
                 - redis://pw@127.0.0.1:63790/10
             options:
+                prefix: foo
                 profile: 2.4
                 connection_timeout: 10
                 connection_persistent: true
