@@ -126,11 +126,11 @@ class RedisDsn
     {
         return $this->alias;
     }
-	
+
     /**
      * @return string
      */
-    public function getPersistentId() 
+    public function getPersistentId()
     {
         return md5($this->dsn);
     }
@@ -174,9 +174,12 @@ class RedisDsn
             $dsn = substr($dsn, $pos + 1);
         }
         $dsn = preg_replace_callback('/\?(.*)$/', array($this, 'parseParameters'), $dsn); // parse parameters
-        if (preg_match('#^(.*)/(\d+)$#', $dsn, $matches)) {
+        if (preg_match('#^(.*)/([0-9a-z_]+)$#', $dsn, $matches)) {
             // parse database
-            $this->database = (int) $matches[2];
+            $this->database = $matches[2];
+            if (false !== filter_var($matches[2], FILTER_VALIDATE_INT)) {
+                $this->database = (int) $matches[2];
+            }
             $dsn = $matches[1];
         }
         if (preg_match('#^([^:]+)(:(\d+))?$#', $dsn, $matches)) {

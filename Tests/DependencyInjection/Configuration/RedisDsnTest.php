@@ -148,6 +148,34 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
             array('redis:///redis.sock:63790', null),
             array('redis:///redis.sock:63790/10', 10),
             array('redis://pw@/redis.sock:63790/10', 10),
+            array(
+                'redis://localhost/_f8e13c0dd01c2d40bb147771c5d38582',
+                '_f8e13c0dd01c2d40bb147771c5d38582'
+            ),
+            array(
+                'redis://127.0.0.1/env_f7a25e8044d411d3517810b0afd69327',
+                'env_f7a25e8044d411d3517810b0afd69327'
+            ),
+            array(
+                'redis://pw@127.0.0.1:63790/env_redis_db',
+                'env_redis_db'
+            ),
+            array(
+                'redis:///redis.sock/env',
+                'env'
+            ),
+            array(
+                'redis:///redis.sock/env_redis_db_2ef83c26da59817a13c2e267b8772e93',
+                'env_redis_db_2ef83c26da59817a13c2e267b8772e93'
+            ),
+            array(
+                'redis:///redis.sock:63790/env_redis_db_784765a7e1f47f159583e249cd9ffd92',
+                'env_redis_db_784765a7e1f47f159583e249cd9ffd92'
+            ),
+            array(
+                'redis://pw@/redis.sock:63790/env_redis_db_2dcc3738cf08e34826e35c9044025477',
+                'env_redis_db_2dcc3738cf08e34826e35c9044025477'
+            ),
         );
     }
 
