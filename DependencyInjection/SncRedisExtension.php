@@ -148,6 +148,9 @@ class SncRedisExtension extends Extension
                 $connection['scheme'] = 'tcp';
                 $connection['host'] = $dsn->getHost();
                 $connection['port'] = $dsn->getPort();
+                if (null !== $dsn->getDatabase()) {
+                    $connection['path'] = $dsn->getDatabase();
+                }
             }
             if (null !== $dsn->getDatabase()) {
                 $connection['database'] = $dsn->getDatabase();
