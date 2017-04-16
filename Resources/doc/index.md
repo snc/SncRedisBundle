@@ -22,7 +22,7 @@ If you want to use the `predis` client library, you have to add the `predis/pred
 $ composer require predis/predis ^1.0
 ```
 
-Add the RedisBundle to your application's kernel:
+Add the RedisBundle at the end of your application's kernel:
 
 ``` php
 <?php
@@ -31,11 +31,11 @@ public function registerBundles()
     $bundles = array(
         // ...
         new Snc\RedisBundle\SncRedisBundle(),
-        // ...
     );
     ...
 }
 ```
+Notice : since SncRedisBundle override some service aliases in the container, make sure that you register your bundle at the end in your application's kernel file.
 
 ## Usage ##
 
