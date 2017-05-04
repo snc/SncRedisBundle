@@ -325,6 +325,9 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertEquals('sentinel', $masterParameters['replication']);
         $this->assertEquals('mymaster', $masterParameters['service']);
+        $this->assertInternalType('array', $masterParameters['parameters']);
+        $this->assertEquals('1', $masterParameters['parameters']['database']);
+        $this->assertEquals('pass', $masterParameters['parameters']['password']);
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
@@ -408,6 +411,9 @@ clients:
             throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
             replication: false
+            parameters:
+                database: 1
+                password: pass
 session:
     client: default
     prefix: foo
@@ -522,6 +528,9 @@ clients:
         options:
             replication: sentinel
             service: mymaster
+            parameters:
+                database: 1
+                password: pass
 EOF;
     }
 

@@ -134,9 +134,13 @@ snc_redis:
             options:
                 replication: sentinel
                 service: mymaster
+                parameters:
+                    database: 1
+                    password: pass
 ```
 
 The `service` is the name of the set of Redis instances.
+The `parameters` is optional parameters that added to master/slave connections and ignores by sentinel connections.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
 ### Sessions ###
