@@ -143,6 +143,7 @@ class Configuration implements ConfigurationInterface
                                         ->children()
                                             ->scalarNode('database')->defaultNull()->end()
                                             ->scalarNode('password')->defaultNull()->end()
+                                            ->booleanNode('logging')->defaultValue($this->debug)->end()
                                         ->end()
                                     ->end()
                                 ->end()
