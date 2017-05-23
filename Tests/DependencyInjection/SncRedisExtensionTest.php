@@ -330,6 +330,24 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
+    public function testAutodiscoveryOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getAutodiscoveryYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertEquals(true, $options['replication']);
+        $this->assertEquals(true, $options['autodiscovery']);
+
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $parameters[0]);
+
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertEquals(true, $masterParameters['replication']);
+        $this->assertEquals(true, $masterParameters['autodiscovery']);
+    }
+
     /**
      * Test valid config of the cluster option
      */
@@ -522,6 +540,22 @@ clients:
         options:
             replication: sentinel
             service: mymaster
+EOF;
+    }
+
+    private function getAutodiscoveryYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://localhost?alias=master
+            - redis://otherhost
+        options:
+            replication: true
+            autodiscovery: true
 EOF;
     }
 
