@@ -140,7 +140,9 @@ snc_redis:
 ```
 
 The `service` is the name of the set of Redis instances.
-The `parameters` is optional parameters that added to master/slave connections and ignores by sentinel connections.
+The optional parameters option can be used to set parameters like the 
+database number and password for the master/slave connections, 
+they don't apply for the connection to sentinal.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
 ### Sessions ###
