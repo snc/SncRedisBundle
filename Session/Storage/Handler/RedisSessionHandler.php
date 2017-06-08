@@ -55,7 +55,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * @var string Session lock key
      */
-    private $lockKey;
+    protected $lockKey;
 
     /**
      * @var string Session lock token
