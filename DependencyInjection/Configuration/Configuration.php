@@ -107,7 +107,13 @@ class Configuration implements ConfigurationInterface
                                         return array_map(function($dsn) {
                                             $parsed = new RedisDsn($dsn);
 
-                                            return $parsed->isValid() ? $parsed : $dsn;
+                                            if ($parsed->isValid()) {
+                                                return $parsed;
+                                            }
+
+                                            $parsedEnv = new RedisEnvDsn($dsn);
+
+                                            return $parsedEnv->isValid() ? $parsedEnv : $dsn;
                                         }, $v);
                                     })
                                 ->end()
