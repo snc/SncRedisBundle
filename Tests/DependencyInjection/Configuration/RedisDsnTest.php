@@ -267,6 +267,7 @@ class RedisDsnTest extends \PHPUnit_Framework_TestCase
             array('localhost', false),
             array('localhost/1', false),
             array('pw@localhost:63790/10', false),
+            array('env_REDIS_URL_e07910a06a086c83ba41827aa00b26ed', false),
         );
     }
 
