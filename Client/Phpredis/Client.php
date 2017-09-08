@@ -464,6 +464,9 @@ class Client extends Redis
         return $this->call('sAdd', func_get_args());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function sAddArray($key, array $values)
     {
         return $this->call('sAddArray', func_get_args());
@@ -621,6 +624,9 @@ class Client extends Redis
         return $this->call('randomKey', func_get_args());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function select($dbindex)
     {
         return $this->call('select', func_get_args());
