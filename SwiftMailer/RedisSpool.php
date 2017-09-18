@@ -67,7 +67,7 @@ class RedisSpool extends \Swift_ConfigurableSpool
     /**
      * {@inheritdoc}
      */
-    public function queueMessage(\Swift_Mime_Message $message)
+    public function queueMessage(\Swift_Mime_SimpleMessage $message)
     {
         $this->redis->rpush($this->key, serialize($message));
 
