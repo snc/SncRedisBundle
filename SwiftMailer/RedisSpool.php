@@ -14,7 +14,7 @@ namespace Snc\RedisBundle\SwiftMailer;
 /**
  * RedisSpool
  */
-class RedisSpool extends \Swift_ConfigurableSpool
+abstract class RedisSpool extends \Swift_ConfigurableSpool
 {
     /**
      * @var string
@@ -61,16 +61,6 @@ class RedisSpool extends \Swift_ConfigurableSpool
      */
     public function isStarted()
     {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function queueMessage(\Swift_Mime_SimpleMessage $message)
-    {
-        $this->redis->rpush($this->key, serialize($message));
-
         return true;
     }
 
