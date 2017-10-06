@@ -200,6 +200,7 @@ class SncRedisExtension extends Extension
             }
             $clientDef->addArgument($connections);
         }
+        $clientDef->setLazy(true);
         $clientDef->addArgument(new Reference($optionId));
         $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
@@ -300,6 +301,7 @@ class SncRedisExtension extends Extension
         if (null !== $dsn->getDatabase()) {
             $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
         }
+        $phpredisDef->setLazy(true);
         $container->setDefinition($phpredisId, $phpredisDef);
 
         $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
