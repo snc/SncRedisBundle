@@ -110,481 +110,481 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function ping()
+    public function ping(...$args)
     {
-        return $this->call('ping', func_get_args());
+        return $this->call('ping', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function get()
+    public function get(...$args)
     {
-        return $this->call('get', func_get_args());
+        return $this->call('get', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set()
+    public function set(...$args)
     {
-        return $this->call('set', func_get_args());
+        return $this->call('set', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setEx()
+    public function setEx(...$args)
     {
-        return $this->call('setEx', func_get_args());
+        return $this->call('setEx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setNx()
+    public function setNx(...$args)
     {
-        return $this->call('setNx', func_get_args());
+        return $this->call('setNx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function del()
+    public function del(...$args)
     {
-        return $this->call('del', func_get_args());
+        return $this->call('del', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete()
+    public function delete(...$args)
     {
-        return $this->call('delete', func_get_args());
+        return $this->call('delete', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function multi()
+    public function multi(...$args)
     {
-        return $this->call('multi', func_get_args());
+        return $this->call('multi', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function exec()
+    public function exec(...$args)
     {
-        return $this->call('exec', func_get_args());
+        return $this->call('exec', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function discard()
+    public function discard(...$args)
     {
-        return $this->call('discard', func_get_args());
+        return $this->call('discard', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function watch()
+    public function watch(...$args)
     {
-        return $this->call('watch', func_get_args());
+        return $this->call('watch', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unwatch()
+    public function unwatch(...$args)
     {
-        return $this->call('unwatch', func_get_args());
+        return $this->call('unwatch', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function subscribe()
+    public function subscribe(...$args)
     {
-        return $this->call('subscribe', func_get_args());
+        return $this->call('subscribe', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pSubscribe()
+    public function pSubscribe(...$args)
     {
-        return $this->call('psubscribe', func_get_args());
+        return $this->call('psubscribe', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function publish()
+    public function publish(...$args)
     {
-        return $this->call('publish', func_get_args());
+        return $this->call('publish', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pubsub()
+    public function pubsub(...$args)
     {
-        return $this->call('pubsub', func_get_args());
+        return $this->call('pubsub', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function exists()
+    public function exists(...$args)
     {
-        return $this->call('exists', func_get_args());
+        return $this->call('exists', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function incr()
+    public function incr(...$args)
     {
-        return $this->call('incr', func_get_args());
+        return $this->call('incr', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function incrByFloat()
+    public function incrByFloat(...$args)
     {
-        return $this->call('incrByFloat', func_get_args());
+        return $this->call('incrByFloat', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function incrBy()
+    public function incrBy(...$args)
     {
-        return $this->call('incrBy', func_get_args());
+        return $this->call('incrBy', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decr()
+    public function decr(...$args)
     {
-        return $this->call('decr', func_get_args());
+        return $this->call('decr', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrBy()
+    public function decrBy(...$args)
     {
-        return $this->call('decrBy', func_get_args());
+        return $this->call('decrBy', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMultiple()
+    public function getMultiple(...$args)
     {
-        return $this->call('getMultiple', func_get_args());
+        return $this->call('getMultiple', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lPush()
+    public function lPush(...$args)
     {
-        return $this->call('lPush', func_get_args());
+        return $this->call('lPush', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rPush()
+    public function rPush(...$args)
     {
-        return $this->call('rPush', func_get_args());
+        return $this->call('rPush', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lPushx()
+    public function lPushx(...$args)
     {
-        return $this->call('lPushx', func_get_args());
+        return $this->call('lPushx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rPushx()
+    public function rPushx(...$args)
     {
-        return $this->call('rPushx', func_get_args());
+        return $this->call('rPushx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lPop()
+    public function lPop(...$args)
     {
-        return $this->call('lPop', func_get_args());
+        return $this->call('lPop', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rPop()
+    public function rPop(...$args)
     {
-        return $this->call('rPop', func_get_args());
+        return $this->call('rPop', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function blPop()
+    public function blPop(...$args)
     {
-        return $this->call('blPop', func_get_args());
+        return $this->call('blPop', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function brPop()
+    public function brPop(...$args)
     {
-        return $this->call('brPop', func_get_args());
+        return $this->call('brPop', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lLen()
+    public function lLen(...$args)
     {
-        return $this->call('lLen', func_get_args());
+        return $this->call('lLen', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lSize()
+    public function lSize(...$args)
     {
-        return $this->call('lSize', func_get_args());
+        return $this->call('lSize', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lIndex()
+    public function lIndex(...$args)
     {
-        return $this->call('lIndex', func_get_args());
+        return $this->call('lIndex', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lGet()
+    public function lGet(...$args)
     {
-        return $this->call('lGet', func_get_args());
+        return $this->call('lGet', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lSet()
+    public function lSet(...$args)
     {
-        return $this->call('lSet', func_get_args());
+        return $this->call('lSet', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lRange()
+    public function lRange(...$args)
     {
-        return $this->call('lRange', func_get_args());
+        return $this->call('lRange', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lGetRange()
+    public function lGetRange(...$args)
     {
-        return $this->call('lGetRange', func_get_args());
+        return $this->call('lGetRange', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lTrim()
+    public function lTrim(...$args)
     {
-        return $this->call('lTrim', func_get_args());
+        return $this->call('lTrim', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function listTrim()
+    public function listTrim(...$args)
     {
-        return $this->call('listTrim', func_get_args());
+        return $this->call('listTrim', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lRem()
+    public function lRem(...$args)
     {
-        return $this->call('lRem', func_get_args());
+        return $this->call('lRem', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lRemove()
+    public function lRemove(...$args)
     {
-        return $this->call('lRemove', func_get_args());
+        return $this->call('lRemove', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lInsert()
+    public function lInsert(...$args)
     {
-        return $this->call('lInsert', func_get_args());
+        return $this->call('lInsert', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sAdd()
+    public function sAdd(...$args)
     {
-        return $this->call('sAdd', func_get_args());
+        return $this->call('sAdd', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sRem()
+    public function sRem(...$args)
     {
-        return $this->call('sRem', func_get_args());
+        return $this->call('sRem', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sRemove()
+    public function sRemove(...$args)
     {
-        return $this->call('sRemove', func_get_args());
+        return $this->call('sRemove', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sMove()
+    public function sMove(...$args)
     {
-        return $this->call('sMove', func_get_args());
+        return $this->call('sMove', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sIsMember()
+    public function sIsMember(...$args)
     {
-        return $this->call('sIsMember', func_get_args());
+        return $this->call('sIsMember', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sContains()
+    public function sContains(...$args)
     {
-        return $this->call('sContains', func_get_args());
+        return $this->call('sContains', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sCard()
+    public function sCard(...$args)
     {
-        return $this->call('sCard', func_get_args());
+        return $this->call('sCard', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sPop()
+    public function sPop(...$args)
     {
-        return $this->call('sPop', func_get_args());
+        return $this->call('sPop', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sRandMember()
+    public function sRandMember(...$args)
     {
-        return $this->call('sRandMember', func_get_args());
+        return $this->call('sRandMember', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sInter()
+    public function sInter(...$args)
     {
-        return $this->call('sInter', func_get_args());
+        return $this->call('sInter', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sInterStore()
+    public function sInterStore(...$args)
     {
-        return $this->call('sInterStore', func_get_args());
+        return $this->call('sInterStore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sUnion()
+    public function sUnion(...$args)
     {
-        return $this->call('sUnion', func_get_args());
+        return $this->call('sUnion', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sUnionStore()
+    public function sUnionStore(...$args)
     {
-        return $this->call('sUnionStore', func_get_args());
+        return $this->call('sUnionStore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sDiff()
+    public function sDiff(...$args)
     {
-        return $this->call('sDiff', func_get_args());
+        return $this->call('sDiff', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sDiffStore()
+    public function sDiffStore(...$args)
     {
-        return $this->call('sDiffStore', func_get_args());
+        return $this->call('sDiffStore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sMembers()
+    public function sMembers(...$args)
     {
-        return $this->call('sMembers', func_get_args());
+        return $this->call('sMembers', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sGetMembers()
+    public function sGetMembers(...$args)
     {
-        return $this->call('sGetMembers', func_get_args());
+        return $this->call('sGetMembers', ...$args);
     }
 
     /**
@@ -598,537 +598,537 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function getSet()
+    public function getSet(...$args)
     {
-        return $this->call('getSet', func_get_args());
+        return $this->call('getSet', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function randomKey()
+    public function randomKey(...$args)
     {
-        return $this->call('randomKey', func_get_args());
+        return $this->call('randomKey', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function move()
+    public function move(...$args)
     {
-        return $this->call('move', func_get_args());
+        return $this->call('move', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rename()
+    public function rename(...$args)
     {
-        return $this->call('rename', func_get_args());
+        return $this->call('rename', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function renameKey()
+    public function renameKey(...$args)
     {
-        return $this->call('renameKey', func_get_args());
+        return $this->call('renameKey', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function renameNx()
+    public function renameNx(...$args)
     {
-        return $this->call('renameNx', func_get_args());
+        return $this->call('renameNx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function expire()
+    public function expire(...$args)
     {
-        return $this->call('expire', func_get_args());
+        return $this->call('expire', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pExpire()
+    public function pExpire(...$args)
     {
-        return $this->call('pExpire', func_get_args());
+        return $this->call('pExpire', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setTimeout()
+    public function setTimeout(...$args)
     {
-        return $this->call('setTimeout', func_get_args());
+        return $this->call('setTimeout', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function expireAt()
+    public function expireAt(...$args)
     {
-        return $this->call('expireAt', func_get_args());
+        return $this->call('expireAt', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pExpireAt()
+    public function pExpireAt(...$args)
     {
-        return $this->call('pExpireAt', func_get_args());
+        return $this->call('pExpireAt', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(...$args)
     {
-        return $this->call('keys', func_get_args());
+        return $this->call('keys', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getKeys()
+    public function getKeys(...$args)
     {
-        return $this->call('getKeys', func_get_args());
+        return $this->call('getKeys', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dbSize()
+    public function dbSize(...$args)
     {
-        return $this->call('dbSize', func_get_args());
+        return $this->call('dbSize', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bgrewriteaof()
+    public function bgrewriteaof(...$args)
     {
-        return $this->call('bgrewriteaof', func_get_args());
+        return $this->call('bgrewriteaof', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function slaveof()
+    public function slaveof(...$args)
     {
-        return $this->call('slaveof', func_get_args());
+        return $this->call('slaveof', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function object()
+    public function object(...$args)
     {
-        return $this->call('object', func_get_args());
+        return $this->call('object', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save()
+    public function save(...$args)
     {
-        return $this->call('save', func_get_args());
+        return $this->call('save', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bgsave()
+    public function bgsave(...$args)
     {
-        return $this->call('bgsave', func_get_args());
+        return $this->call('bgsave', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lastSave()
+    public function lastSave(...$args)
     {
-        return $this->call('lastSave', func_get_args());
+        return $this->call('lastSave', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function wait()
+    public function wait(...$args)
     {
-        return $this->call('wait', func_get_args());
+        return $this->call('wait', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function type()
+    public function type(...$args)
     {
-        return $this->call('type', func_get_args());
+        return $this->call('type', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function append()
+    public function append(...$args)
     {
-        return $this->call('append', func_get_args());
+        return $this->call('append', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getRange()
+    public function getRange(...$args)
     {
-        return $this->call('getRange', func_get_args());
+        return $this->call('getRange', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function substr()
+    public function substr(...$args)
     {
-        return $this->call('substr', func_get_args());
+        return $this->call('substr', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setRange()
+    public function setRange(...$args)
     {
-        return $this->call('setRange', func_get_args());
+        return $this->call('setRange', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function strlen()
+    public function strlen(...$args)
     {
-        return $this->call('strlen', func_get_args());
+        return $this->call('strlen', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bitpos()
+    public function bitpos(...$args)
     {
-        return $this->call('bitpos', func_get_args());
+        return $this->call('bitpos', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBit()
+    public function getBit(...$args)
     {
-        return $this->call('getBit', func_get_args());
+        return $this->call('getBit', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setBit()
+    public function setBit(...$args)
     {
-        return $this->call('setBit', func_get_args());
+        return $this->call('setBit', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bitCount()
+    public function bitCount(...$args)
     {
-        return $this->call('bitCount', func_get_args());
+        return $this->call('bitCount', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bitOp()
+    public function bitOp(...$args)
     {
-        return $this->call('bitOp', func_get_args());
+        return $this->call('bitOp', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function flushDB()
+    public function flushDB(...$args)
     {
-        return $this->call('flushDB', func_get_args());
+        return $this->call('flushDB', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function flushAll()
+    public function flushAll(...$args)
     {
-        return $this->call('flushAll', func_get_args());
+        return $this->call('flushAll', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sort()
+    public function sort(...$args)
     {
-        return $this->call('sort', func_get_args());
+        return $this->call('sort', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function info()
+    public function info(...$args)
     {
-        return $this->call('info', func_get_args());
+        return $this->call('info', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function resetStat()
+    public function resetStat(...$args)
     {
-        return $this->call('resetStat', func_get_args());
+        return $this->call('resetStat', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function ttl()
+    public function ttl(...$args)
     {
-        return $this->call('ttl', func_get_args());
+        return $this->call('ttl', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pttl()
+    public function pttl(...$args)
     {
-        return $this->call('pttl', func_get_args());
+        return $this->call('pttl', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function persist()
+    public function persist(...$args)
     {
-        return $this->call('persist', func_get_args());
+        return $this->call('persist', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function mset()
+    public function mset(...$args)
     {
-        return $this->call('mset', func_get_args());
+        return $this->call('mset', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function mget()
+    public function mget(...$args)
     {
-        return $this->call('mget', func_get_args());
+        return $this->call('mget', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function msetnx()
+    public function msetnx(...$args)
     {
-        return $this->call('msetnx', func_get_args());
+        return $this->call('msetnx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rpoplpush()
+    public function rpoplpush(...$args)
     {
-        return $this->call('rpoplpush', func_get_args());
+        return $this->call('rpoplpush', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function brpoplpush()
+    public function brpoplpush(...$args)
     {
-        return $this->call('brpoplpush', func_get_args());
+        return $this->call('brpoplpush', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zAdd()
+    public function zAdd(...$args)
     {
-        return $this->call('zAdd', func_get_args());
+        return $this->call('zAdd', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRange()
+    public function zRange(...$args)
     {
-        return $this->call('zRange', func_get_args());
+        return $this->call('zRange', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRem()
+    public function zRem(...$args)
     {
-        return $this->call('zRem', func_get_args());
+        return $this->call('zRem', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zDelete()
+    public function zDelete(...$args)
     {
-        return $this->call('zDelete', func_get_args());
+        return $this->call('zDelete', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRevRange()
+    public function zRevRange(...$args)
     {
-        return $this->call('zRevRange', func_get_args());
+        return $this->call('zRevRange', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRangeByScore()
+    public function zRangeByScore(...$args)
     {
-        return $this->call('zRangeByScore', func_get_args());
+        return $this->call('zRangeByScore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRevRangeByScore()
+    public function zRevRangeByScore(...$args)
     {
-        return $this->call('zRevRangeByScore', func_get_args());
+        return $this->call('zRevRangeByScore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRangeByLex()
+    public function zRangeByLex(...$args)
     {
-        return $this->call('zRangeByLex', func_get_args());
+        return $this->call('zRangeByLex', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRevRangeByLex()
+    public function zRevRangeByLex(...$args)
     {
-        return $this->call('zRevRangeByLex', func_get_args());
+        return $this->call('zRevRangeByLex', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zCount()
+    public function zCount(...$args)
     {
-        return $this->call('zCount', func_get_args());
+        return $this->call('zCount', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRemRangeByScore()
+    public function zRemRangeByScore(...$args)
     {
-        return $this->call('zRemRangeByScore', func_get_args());
+        return $this->call('zRemRangeByScore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zDeleteRangeByScore()
+    public function zDeleteRangeByScore(...$args)
     {
-        return $this->call('zDeleteRangeByScore', func_get_args());
+        return $this->call('zDeleteRangeByScore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRemRangeByRank()
+    public function zRemRangeByRank(...$args)
     {
-        return $this->call('zRemRangeByRank', func_get_args());
+        return $this->call('zRemRangeByRank', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zDeleteRangeByRank()
+    public function zDeleteRangeByRank(...$args)
     {
-        return $this->call('zDeleteRangeByRank', func_get_args());
+        return $this->call('zDeleteRangeByRank', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zCard()
+    public function zCard(...$args)
     {
-        return $this->call('zCard', func_get_args());
+        return $this->call('zCard', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zSize()
+    public function zSize(...$args)
     {
-        return $this->call('zSize', func_get_args());
+        return $this->call('zSize', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zScore()
+    public function zScore(...$args)
     {
-        return $this->call('zScore', func_get_args());
+        return $this->call('zScore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRank()
+    public function zRank(...$args)
     {
-        return $this->call('zRank', func_get_args());
+        return $this->call('zRank', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zRevRank()
+    public function zRevRank(...$args)
     {
-        return $this->call('zRevRank', func_get_args());
+        return $this->call('zRevRank', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zIncrBy()
+    public function zIncrBy(...$args)
     {
-        return $this->call('zIncrBy', func_get_args());
+        return $this->call('zIncrBy', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zUnion()
+    public function zUnion(...$args)
     {
-        return $this->call('zUnion', func_get_args());
+        return $this->call('zUnion', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function zInter()
+    public function zInter(...$args)
     {
-        return $this->call('zInter', func_get_args());
+        return $this->call('zInter', ...$args);
     }
 
     /**
@@ -1142,105 +1142,105 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function hSet()
+    public function hSet(...$args)
     {
-        return $this->call('hSet', func_get_args());
+        return $this->call('hSet', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hSetNx()
+    public function hSetNx(...$args)
     {
-        return $this->call('hSetNx', func_get_args());
+        return $this->call('hSetNx', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hGet()
+    public function hGet(...$args)
     {
-        return $this->call('hGet', func_get_args());
+        return $this->call('hGet', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hLen()
+    public function hLen(...$args)
     {
-        return $this->call('hLen', func_get_args());
+        return $this->call('hLen', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hDel()
+    public function hDel(...$args)
     {
-        return $this->call('hDel', func_get_args());
+        return $this->call('hDel', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hKeys()
+    public function hKeys(...$args)
     {
-        return $this->call('hKeys', func_get_args());
+        return $this->call('hKeys', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hVals()
+    public function hVals(...$args)
     {
-        return $this->call('hVals', func_get_args());
+        return $this->call('hVals', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hGetAll()
+    public function hGetAll(...$args)
     {
-        return $this->call('hGetAll', func_get_args());
+        return $this->call('hGetAll', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hExists()
+    public function hExists(...$args)
     {
-        return $this->call('hExists', func_get_args());
+        return $this->call('hExists', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hIncrBy()
+    public function hIncrBy(...$args)
     {
-        return $this->call('hIncrBy', func_get_args());
+        return $this->call('hIncrBy', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hIncrByFloat()
+    public function hIncrByFloat(...$args)
     {
-        return $this->call('hIncrByFloat', func_get_args());
+        return $this->call('hIncrByFloat', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hMset()
+    public function hMset(...$args)
     {
-        return $this->call('hMset', func_get_args());
+        return $this->call('hMset', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hMGet()
+    public function hMGet(...$args)
     {
-        return $this->call('hMGet', func_get_args());
+        return $this->call('hMGet', ...$args);
     }
 
     /**
@@ -1254,89 +1254,89 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function config()
+    public function config(...$args)
     {
-        return $this->call('config', func_get_args());
+        return $this->call('config', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function evaluate()
+    public function evaluate(...$args)
     {
-        return $this->call('evaluate', func_get_args());
+        return $this->call('evaluate', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function evalSha()
+    public function evalSha(...$args)
     {
-        return $this->call('evalSha', func_get_args());
+        return $this->call('evalSha', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function evaluateSha()
+    public function evaluateSha(...$args)
     {
-        return $this->call('evaluateSha', func_get_args());
+        return $this->call('evaluateSha', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function script()
+    public function script(...$args)
     {
-        return $this->call('script', func_get_args());
+        return $this->call('script', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getLastError()
+    public function getLastError(...$args)
     {
-        return $this->call('getLastError', func_get_args());
+        return $this->call('getLastError', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function clearLastError()
+    public function clearLastError(...$args)
     {
-        return $this->call('clearLastError', func_get_args());
+        return $this->call('clearLastError', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dump()
+    public function dump(...$args)
     {
-        return $this->call('dump', func_get_args());
+        return $this->call('dump', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function restore()
+    public function restore(...$args)
     {
-        return $this->call('restore', func_get_args());
+        return $this->call('restore', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function migrate()
+    public function migrate(...$args)
     {
-        return $this->call('migrate', func_get_args());
+        return $this->call('migrate', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function time()
+    public function time(...$args)
     {
-        return $this->call('time', func_get_args());
+        return $this->call('time', ...$args);
     }
 
     /**
@@ -1350,40 +1350,40 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function pfAdd()
+    public function pfAdd(...$args)
     {
-        return $this->call('pfAdd', func_get_args());
+        return $this->call('pfAdd', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pfCount()
+    public function pfCount(...$args)
     {
-        return $this->call('pfCount', func_get_args());
+        return $this->call('pfCount', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pfMerge()
+    public function pfMerge(...$args)
     {
-        return $this->call('pfMerge', func_get_args());
+        return $this->call('pfMerge', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rawCommand()
+    public function rawCommand(...$args)
     {
-        return $this->call('rawCommand', func_get_args());
+        return $this->call('rawCommand', ...$args);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMode()
+    public function getMode(...$args)
     {
-        return $this->call('getMode', func_get_args());
+        return $this->call('getMode', ...$args);
     }
 }
