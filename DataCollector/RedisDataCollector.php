@@ -47,6 +47,14 @@ class RedisDataCollector extends DataCollector
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function reset()
+    {
+        $this->data = array();
+    }
+
+    /**
      * Returns an array of collected commands.
      *
      * @return array
