@@ -20,7 +20,7 @@ matrix:
     - php: 5.6
       env: SYMFONY_VERSION="3.0.*" SYMFONY_DEPRECATIONS_HELPER="strict"
     - php: 7.1
-      env: SYMFONY_VERSION="4.0.*" SYMFONY_DEPRECATIONS_HELPER="strict"
+      env: SYMFONY_VERSION="4.0.0-BETA3" SYMFONY_DEPRECATIONS_HELPER="strict"
   allow_failures:
     - php: hhvm
 
