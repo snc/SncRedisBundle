@@ -22,7 +22,10 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del'));
+        $this->redis = $this
+            ->getMockBuilder('Predis\Client')
+            ->setMethods(array('get', 'set', 'setex', 'del'))
+            ->getMock();
     }
 
     protected function tearDown()
