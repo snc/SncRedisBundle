@@ -190,6 +190,7 @@ class SncRedisExtension extends Extension
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
+        $clientDef->setPublic(true);
         $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         if (1 === $connectionCount) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));

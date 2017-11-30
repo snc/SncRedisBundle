@@ -55,7 +55,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $kernel->expects($this->once())
             ->method('getBundles')
             ->will($this->returnValue(array()));
-        $kernel->expects($this->once())
+        $kernel->expects($this->any())
             ->method('getContainer')
             ->will($this->returnValue($this->container));
         $this->application = new Application($kernel);

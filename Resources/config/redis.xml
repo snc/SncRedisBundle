@@ -16,6 +16,12 @@
             <tag name="data_collector" template="@SncRedis/Collector/redis.html.twig" id="redis" />
             <argument type="service" id="snc_redis.logger" />
         </service>
+        <service id="snc_redis.command.flush_all" class="Snc\RedisBundle\Command\RedisFlushallCommand" public="false">
+            <tag name="console.command" command="redis:flushall" />
+        </service>
+        <service id="snc_redis.command.flush_db" class="Snc\RedisBundle\Command\RedisFlushdbCommand" public="false">
+            <tag name="console.command" command="redis:flushdb" />
+        </service>
     </services>
 
 </container>
