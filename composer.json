@@ -14,15 +14,15 @@
     }],
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": "^2.7 || ^3.0",
-        "symfony/yaml": "^2.7 || ^3.0"
+        "symfony/framework-bundle": "^2.7 || ^3.0 || ^4.0",
+        "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
     },
     "require-dev": {
         "doctrine/cache": "1.*",
         "predis/predis": "^1.0",
-        "symfony/console": "^2.7 || ^3.0",
-        "symfony/phpunit-bridge": "^2.7 || ^3.0",
-        "phpunit/phpunit": "4.8.*"
+        "symfony/console": "^2.7 || ^3.0 || ^4.0",
+        "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0",
+        "phpunit/phpunit": "^4.8 || ^5.4"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
