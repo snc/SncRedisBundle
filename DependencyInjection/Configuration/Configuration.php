@@ -104,6 +104,10 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->beforeNormalization()
                                     ->always()->then(function($v) {
+                                        if (!is_array($v)) {
+                                            return $v;
+                                        }
+                                        
                                         return array_map(function($dsn) {
                                             $parsed = new RedisDsn($dsn);
 
