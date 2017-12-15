@@ -285,7 +285,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor();
         $config = $processor->processConfiguration($configuration, $configs);
         $this->assertCount(1, $config['clients']['default']['dsns']);
-        $this->assertEquals(new RedisDsn('redis://test'), current($config['clients']['default']['dsns']));
+        $this->assertEquals('redis://test', current($config['clients']['default']['dsns']));
     }
 
     /**

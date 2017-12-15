@@ -13,8 +13,7 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
-use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsnInterface;
-use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
+use Symfony\Component\DependencyInjection\ParameterBag\EnvPlaceholderParameterBag;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -100,6 +99,25 @@ class SncRedisExtension extends Extension
      */
     protected function loadClient(array $client, ContainerBuilder $container)
     {
+        $parameterBag = $container->getParameterBag();
+        $supportsEnv = class_exists('\\Symfony\\Component\\DependencyInjection\\ParameterBag\\EnvPlaceholderParameterBag');
+
+        $dsnResolver = function ($dsn) use ($container, $parameterBag, $supportsEnv) {
+            $dsn = $container->getParameterBag()->resolveValue($dsn);
+            if ($supportsEnv) {
+                $dsn = $container->resolveEnvPlaceholders($dsn, true);
+            }
+            $parsedDsn = new RedisDsn($dsn);
+
+            if (!$parsedDsn->isValid()) {
+                throw new \InvalidArgumentException(sprintf('Given Redis DSN "%s" is invalid.', $dsn));
+            }
+
+            return $parsedDsn;
+        };
+
+        $client['dsns'] = array_map($dsnResolver, $client['dsns']);
+
         switch ($client['type']) {
             case 'predis':
                 $this->loadPredisClient($client, $container);
@@ -134,7 +152,7 @@ class SncRedisExtension extends Extension
 
         $connectionAliases = array();
         $connectionCount = count($client['dsns']);
-        /** @var RedisDsnInterface $dsn */
+        /** @var RedisDsn $dsn */
         foreach ($client['dsns'] as $i => $dsn) {
             if (!$connectionAlias = $dsn->getAlias()) {
                 $connectionAlias = 1 === $connectionCount ? $client['alias'] : $client['alias'] . ($i + 1);
@@ -145,29 +163,23 @@ class SncRedisExtension extends Extension
             $connection['logging'] = $client['logging'];
             $connection['alias'] = $connectionAlias;
 
-            if ($dsn instanceof RedisDsn) {
-                if (null !== $dsn->getSocket()) {
-                    $connection['scheme'] = 'unix';
-                    $connection['path'] = $dsn->getSocket();
-                } else {
-                    $connection['scheme'] = 'tcp';
-                    $connection['host'] = $dsn->getHost();
-                    $connection['port'] = $dsn->getPort();
-                    if (null !== $dsn->getDatabase()) {
-                        $connection['path'] = $dsn->getDatabase();
-                    }
-                }
+            if (null !== $dsn->getSocket()) {
+                $connection['scheme'] = 'unix';
+                $connection['path'] = $dsn->getSocket();
+            } else {
+                $connection['scheme'] = 'tcp';
+                $connection['host'] = $dsn->getHost();
+                $connection['port'] = $dsn->getPort();
                 if (null !== $dsn->getDatabase()) {
-                    $connection['database'] = $dsn->getDatabase();
+                    $connection['path'] = $dsn->getDatabase();
                 }
-                $connection['password'] = $dsn->getPassword();
-                $connection['weight'] = $dsn->getWeight();
-
-                $this->loadPredisConnectionParameters($client['alias'], $connection, $container);
             }
-            if ($dsn instanceof RedisEnvDsn) {
-                $this->loadEnvPredisConnectionParameters($client['alias'], $connection, $dsn->getDsn(), $container);
+            if (null !== $dsn->getDatabase()) {
+                $connection['database'] = $dsn->getDatabase();
             }
+            $connection['password'] = $dsn->getPassword();
+            $connection['weight'] = $dsn->getWeight();
+            $this->loadPredisConnectionParameters($client['alias'], $connection, $container);
         }
 
         // TODO can be shared between clients?!
@@ -224,27 +236,6 @@ class SncRedisExtension extends Extension
     }
 
     /**
-     * @param string           $clientAlias The client alias
-     * @param array            $connection  A connection configuration
-     * @param string           $dsn         The DSN placeholder
-     * @param ContainerBuilder $container   A ContainerBuilder instance
-     */
-    protected function loadEnvPredisConnectionParameters($clientAlias, array $connection, $dsn, ContainerBuilder $container)
-    {
-        $parametersClass = $container->getParameter('snc_redis.connection_parameters.class');
-
-        $parameterId = sprintf('snc_redis.connection.%s_parameters.%s', $connection['alias'], $clientAlias);
-        $parameterDef = new Definition($parametersClass);
-        $parameterDef->setPublic(false);
-        $parameterDef->setFactory(array('Snc\RedisBundle\Factory\EnvParametersFactory', 'create'));
-        $parameterDef->addArgument($connection);
-        $parameterDef->addArgument($parametersClass);
-        $parameterDef->addArgument($dsn);
-        $parameterDef->addTag('snc_redis.connection_parameters', array('clientAlias' => $clientAlias));
-        $container->setDefinition($parameterId, $parameterDef);
-    }
-
-    /**
      * Loads a redis client using phpredis.
      *
      * @param array            $client    A client configuration
@@ -260,8 +251,8 @@ class SncRedisExtension extends Extension
             throw new \RuntimeException('Support for RedisArray is not yet implemented.');
         }
 
-        $dsn = $client['dsns'][0];
         /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
+        $dsn = $client['dsns'][0];
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
 
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
