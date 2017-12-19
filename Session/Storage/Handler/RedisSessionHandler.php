@@ -70,7 +70,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * @var int Maximum amount of seconds to wait for the lock
      */
-    private $lockMaxWait;
+    protected $lockMaxWait;
 
     /**
      * Redis session storage constructor.
