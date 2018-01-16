@@ -73,6 +73,11 @@ class RedisSessionHandler implements \SessionHandlerInterface
     private $lockMaxWait;
 
     /**
+     * @var bool Indicates if the strict mode is enabled
+     */
+    private $useStrictMode;
+
+    /**
      * Redis session storage constructor.
      *
      * @param \Predis\Client|\Redis $redis   Redis database connection
@@ -96,6 +101,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
         if (!$this->lockMaxWait) {
             $this->lockMaxWait = self::DEFAULT_MAX_EXECUTION_TIME;
         }
+        $this->useStrictMode = isset($options['use_strict_mode']) ? (bool) $options['use_strict_mode'] : true;
     }
 
     /**
@@ -197,6 +203,11 @@ LUA;
                     return false;
                 }
             }
+        }
+
+        if ($this->useStrictMode && !$this->redis->exists($this->getRedisKey($sessionId))) {
+            $sessionId = session_create_id();
+            session_id($sessionId);
         }
 
         return $this->redis->get($this->getRedisKey($sessionId)) ?: '';
