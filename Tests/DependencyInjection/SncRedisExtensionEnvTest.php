@@ -163,7 +163,10 @@ EOF;
             'kernel.bundles' => array(),
             'kernel.cache_dir' => sys_get_temp_dir(),
             'kernel.environment' => 'test',
-            'kernel.root_dir' => __DIR__ . '/../../'
+            'kernel.root_dir' => __DIR__ . '/../../',
+            'env(REDIS_URL)' => 'redis://localhost',
+            'env(REDIS_URL_1)' => 'redis://localhost',
+            'env(REDIS_URL_2)' => 'redis://localhost',
         )));
     }
 
