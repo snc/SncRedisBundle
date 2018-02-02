@@ -12,8 +12,9 @@
 namespace Snc\RedisBundle\Tests\Logger;
 
 use Snc\RedisBundle\Logger\RedisLogger;
+use PHPUnit\Framework\TestCase;
 
-class RedisLoggerTest extends \PHPUnit_Framework_TestCase
+class RedisLoggerTest extends TestCase
 {
     private $logger;
     private $redisLogger;
@@ -93,6 +94,9 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
         ), $this->redisLogger->getCommands());
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLogSuccessfulCommandWithoutLogger()
     {
         $redisLogger = new RedisLogger();
@@ -100,6 +104,9 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
         $redisLogger->logCommand('foo', 10, 'connection');
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLogFailedCommandWithoutLogger()
     {
         $redisLogger = new RedisLogger();
