@@ -100,13 +100,10 @@ class SncRedisExtension extends Extension
     protected function loadClient(array $client, ContainerBuilder $container)
     {
         $parameterBag = $container->getParameterBag();
-        $supportsEnv = class_exists('\\Symfony\\Component\\DependencyInjection\\ParameterBag\\EnvPlaceholderParameterBag');
 
-        $dsnResolver = function ($dsn) use ($container, $parameterBag, $supportsEnv) {
+        $dsnResolver = function ($dsn) use ($container, $parameterBag) {
             $dsn = $container->getParameterBag()->resolveValue($dsn);
-            if ($supportsEnv) {
-                $dsn = $container->resolveEnvPlaceholders($dsn, true);
-            }
+            $dsn = SncRedisExtension::tryResolveEnvPlaceholders($dsn, $container);
             $parsedDsn = new RedisDsn($dsn);
 
             if (!$parsedDsn->isValid()) {
@@ -183,8 +180,10 @@ class SncRedisExtension extends Extension
         }
 
         // TODO can be shared between clients?!
+        $profile = self::tryResolveEnvPlaceholders($client['options']['profile'], $container);
+        $profile = !is_string($profile) ? sprintf('%.1F', $profile) : $profile;
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($client['options']['profile']))); // TODO get_class alternative?
+        $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($profile))); // TODO get_class alternative?
         $profileDef->setPublic(false);
         if (null !== $client['options']['prefix']) {
             $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
@@ -443,5 +442,17 @@ class SncRedisExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($container->getParameter('kernel.debug'));
+    }
+
+    /**
+     * @internal
+     */
+    public static function tryResolveEnvPlaceholders($value, ContainerBuilder $container)
+    {
+        if (!class_exists('Symfony\Component\DependencyInjection\ParameterBag\EnvPlaceholderParameterBag')) {
+            return $value;
+        }
+
+        return $container->resolveEnvPlaceholders($value, true);
     }
 }

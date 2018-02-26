@@ -105,6 +105,17 @@ class SncRedisExtensionEnvTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test profile option
+     */
+    public function testProfileOption()
+    {
+        $container = $this->getConfiguredContainer($this->getProfileYamlConfig());
+
+        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
+        $this->assertSame('Predis\Profile\RedisVersion260', $container->getDefinition('snc_redis.client.default_profile')->getClass());
+    }
+
+    /**
      * Test valid config of the cluster option
      */
     public function testClusterOption()
@@ -156,6 +167,19 @@ clients:
 EOF;
     }
 
+    private function getProfileYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: "%env(REDIS_URL)%"
+        options:
+            profile: "%env(REDIS_PROFILE)%"
+EOF;
+    }
+
     private function getContainer()
     {
         return new ContainerBuilder(new EnvPlaceholderParameterBag(array(
@@ -167,6 +191,7 @@ EOF;
             'env(REDIS_URL)' => 'redis://localhost',
             'env(REDIS_URL_1)' => 'redis://localhost',
             'env(REDIS_URL_2)' => 'redis://localhost',
+            'env(REDIS_PROFILE)' => '2.6',
         )));
     }
 
