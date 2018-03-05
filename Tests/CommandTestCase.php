@@ -13,13 +13,14 @@ namespace Snc\RedisBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base Class for command tests
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends TestCase
 {
 
     /**

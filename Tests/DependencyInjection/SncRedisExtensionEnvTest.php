@@ -8,11 +8,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\EnvPlaceholderParameterBag;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Parser;
+use PHPUnit\Framework\TestCase;
 
 /**
  * SncRedisExtensionTest
  */
-class SncRedisExtensionEnvTest extends \PHPUnit_Framework_TestCase
+class SncRedisExtensionEnvTest extends TestCase
 {
     /**
      * @see http://symfony.com/blog/new-in-symfony-3-2-runtime-environment-variables

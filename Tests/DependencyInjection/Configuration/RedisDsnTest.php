@@ -12,11 +12,12 @@
 namespace Snc\RedisBundle\Tests\DependencyInjection\Configuration;
 
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
+use PHPUnit\Framework\TestCase;
 
 /**
  * RedisDsnTest
  */
-class RedisDsnTest extends \PHPUnit_Framework_TestCase
+class RedisDsnTest extends TestCase
 {
     /**
      * @static

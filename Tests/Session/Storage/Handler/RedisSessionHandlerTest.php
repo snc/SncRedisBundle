@@ -12,11 +12,12 @@
 namespace Snc\RedisBundle\Tests\Session\Storage\Handler;
 
 use Snc\RedisBundle\Session\Storage\Handler\RedisSessionHandler;
+use PHPUnit\Framework\TestCase;
 
 /**
  * RedisSessionHandlerTest
  */
-class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
+class RedisSessionHandlerTest extends TestCase
 {
     private $redis;
 
