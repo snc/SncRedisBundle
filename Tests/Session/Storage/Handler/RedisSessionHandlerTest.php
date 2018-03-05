@@ -25,7 +25,7 @@ class RedisSessionHandlerTest extends TestCase
     {
         $this->redis = $this
             ->getMockBuilder('Predis\Client')
-            ->setMethods(array('get', 'set', 'setex', 'del'))
+            ->setMethods(array('get', 'set', 'setex', 'del', 'exists'))
             ->getMock();
     }
 
@@ -34,12 +34,24 @@ class RedisSessionHandlerTest extends TestCase
         unset($this->redis);
     }
 
-    public function testSessionReading()
+    public function testSessionReadingWithStrictModeDisabled()
     {
         $this->redis
             ->expects($this->once())
             ->method('get')
             ->with($this->equalTo('_symfony'))
+        ;
+
+        $handler = new RedisSessionHandler($this->redis, array('use_strict_mode' => false), null, false);
+        $handler->read('_symfony');
+    }
+
+    public function testSessionReadingWithStrictModeEnabled()
+    {
+        $this->redis
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->logicalNot($this->equalTo('_symfony')));
         ;
 
         $handler = new RedisSessionHandler($this->redis, array(), null, false);
@@ -113,7 +125,7 @@ class RedisSessionHandlerTest extends TestCase
         ;
 
         // We prepare our handlers
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', true, 1000000);
+        $handler = new RedisSessionHandler($this->redis, array('use_strict_mode' => false), 'session', true, 1000000);
 
         // The first will set the lock and the second will loop until it's free
         $handler->read('_symfony_locktest');
