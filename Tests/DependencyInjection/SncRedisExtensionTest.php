@@ -51,7 +51,7 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * 
      */
     public function testEmptyConfigLoad()
     {
