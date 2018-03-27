@@ -115,7 +115,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
         $this->token = uniqid();
         $this->lockKey = $sessionId.'.lock';
-        
+
         $setFunction = function ($redis, $key, $token, $ttl) {
             if ($redis instanceof \Redis) {
                 return $redis->set(
@@ -133,7 +133,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
                 );
             }
         };
-        
+
         for ($i = 0;$i < $attempts;++$i) {
 
             // We try to aquire the lock
@@ -155,19 +155,20 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     private function unlockSession()
     {
-        // If we have the right token, then delete the lock
-        $script = <<<LUA
-if redis.call("GET", KEYS[1]) == ARGV[1] then
-    return redis.call("DEL", KEYS[1])
-else
-    return 0
-end
+        if ($this->redis instanceof \Redis) {
+            // If we have the right token, then delete the lock
+            $script = <<<LUA
+            if redis.call("GET", KEYS[1]) == ARGV[1] then
+                return redis.call("DEL", KEYS[1])
+            else
+                return 0
+            end
 LUA;
 
-        if ($this->redis instanceof \Redis) {
             $this->redis->eval($script, array($this->getRedisKey($this->lockKey), $this->token), 1);
         } else {
-            $this->redis->eval($script, 1, $this->getRedisKey($this->lockKey), $this->token);
+            $this->redis->getProfile()->defineCommand('sncFreeSessionLock', 'Snc\RedisBundle\Session\Storage\Handler\FreeLockCommand');
+            $this->redis->sncFreeSessionLock($this->getRedisKey($this->lockKey), $this->token);
         }
         $this->locked = false;
         $this->token = null;
