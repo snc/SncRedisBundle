@@ -11,6 +11,8 @@
 
 namespace Snc\RedisBundle\Session\Storage\Handler;
 
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler;
+
 /**
  * Redis based session storage with session locking support.
  *
@@ -20,7 +22,7 @@ namespace Snc\RedisBundle\Session\Storage\Handler;
  * @author Maurits van der Schee <maurits@vdschee.nl>
  * @author Pierre Boudelle <pierre.boudelle@gmail.com>
  */
-class RedisSessionHandler implements \SessionHandlerInterface
+class RedisSessionHandler extends AbstractSessionHandler
 {
     /**
      * @var \Predis\Client|\Redis
@@ -28,12 +30,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
     protected $redis;
 
     /**
-     * @var int
+     * @var int Time to live in seconds
      */
     protected $ttl;
 
     /**
-     * @var string
+     * @var string Key prefix for shared environments
      */
     protected $prefix;
 
@@ -103,10 +105,88 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
+     * Change the default TTL.
+     *
+     * @param int $ttl
+     */
+    public function setTtl($ttl)
+    {
+        $this->ttl = $ttl;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
+    public function close()
     {
+        if ($this->locking) {
+            if ($this->locked) {
+                $this->unlockSession();
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateTimestamp($sessionId, $data)
+    {
+        if (0 < $this->ttl) {
+            $this->redis->expire($this->getRedisKey($sessionId), $this->ttl);
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function gc($maxlifetime)
+    {
+        // not required here because redis will auto expire the keys as long as ttl is set
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doRead($sessionId)
+    {
+        if ($this->locking) {
+            if (!$this->locked) {
+                if (!$this->lockSession($sessionId)) {
+                    return false;
+                }
+            }
+        }
+
+        return $this->redis->get($this->getRedisKey($sessionId)) ?: '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doWrite($sessionId, $data)
+    {
+        if (0 < $this->ttl) {
+            $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
+        } else {
+            $this->redis->set($this->getRedisKey($sessionId), $data);
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doDestroy($sessionId)
+    {
+        $this->redis->del($this->getRedisKey($sessionId));
+        $this->close();
+
         return true;
     }
 
@@ -176,79 +256,6 @@ LUA;
         }
         $this->locked = false;
         $this->token = null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        if ($this->locking) {
-            if ($this->locked) {
-                $this->unlockSession();
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function read($sessionId)
-    {
-        if ($this->locking) {
-            if (!$this->locked) {
-                if (!$this->lockSession($sessionId)) {
-                    return false;
-                }
-            }
-        }
-
-        return $this->redis->get($this->getRedisKey($sessionId)) ?: '';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function write($sessionId, $data)
-    {
-        if (0 < $this->ttl) {
-            $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
-        } else {
-            $this->redis->set($this->getRedisKey($sessionId), $data);
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function destroy($sessionId)
-    {
-        $this->redis->del($this->getRedisKey($sessionId));
-        $this->close();
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gc($lifetime)
-    {
-        return true;
-    }
-
-    /**
-     * Change the default TTL.
-     *
-     * @param int $ttl
-     */
-    public function setTtl($ttl)
-    {
-        $this->ttl = $ttl;
     }
 
     /**
