@@ -82,7 +82,6 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('client')
             ->children()
                 ->arrayNode('clients')
-                    ->requiresAtLeastOneElement()
                     ->useAttributeAsKey('alias', false)
                     ->prototype('array')
                         ->fixXmlConfig('dsn')
