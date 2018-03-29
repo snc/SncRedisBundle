@@ -129,8 +129,8 @@ snc_redis:
             type: predis
             alias: default
             dsn:
-                - redis://localhost
-                - redis://otherhost
+                - redis://localhost:26379
+                - redis://otherhost:26379
             options:
                 replication: sentinel
                 service: mymaster
@@ -142,7 +142,10 @@ snc_redis:
 The `service` is the name of the set of Redis instances.
 The optional parameters option can be used to set parameters like the 
 database number and password for the master/slave connections, 
-they don't apply for the connection to sentinal.
+they don't apply for the connection to sentinel.
+If you use a password, it must be in the password parameter and must
+be omitted from the DSNs. Also make sure to use the sentinel port number
+(26379 by default) in the DSNs, and not the default Redis port.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
 ### Sessions ###
