@@ -144,7 +144,7 @@ The optional parameters option can be used to set parameters like the
 database number and password for the master/slave connections, 
 they don't apply for the connection to sentinel.
 If you use a password, it must be in the password parameter and must
-be omitted from the DNSs. Also make sure to use the sentinel port number
+be omitted from the DSNs. Also make sure to use the sentinel port number
 (26379 by default) in the DSNs, and not the default Redis port.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
