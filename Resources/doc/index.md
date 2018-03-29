@@ -1,4 +1,4 @@
-# RedisBundle ![project status](https://img.shields.io/maintenance/yes/2016.svg?maxAge=2592000) [![build status](https://secure.travis-ci.org/snc/SncRedisBundle.png?branch=master)](https://secure.travis-ci.org/snc/SncRedisBundle) #
+# RedisBundle ![project status](https://img.shields.io/maintenance/yes/2018.svg) [![build status](https://secure.travis-ci.org/snc/SncRedisBundle.png?branch=master)](https://secure.travis-ci.org/snc/SncRedisBundle) #
 
 ## About ##
 
@@ -120,6 +120,33 @@ snc_redis:
 Please note that the master dsn connection needs to be tagged with the ```master``` alias.
 If not, `predis` will complain.
 
+A setup using `predis` sentinel replication could look like this:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn:
+                - redis://localhost:26379
+                - redis://otherhost:26379
+            options:
+                replication: sentinel
+                service: mymaster
+                parameters:
+                    database: 1
+                    password: pass
+```
+
+The `service` is the name of the set of Redis instances.
+The optional parameters option can be used to set parameters like the 
+database number and password for the master/slave connections, 
+they don't apply for the connection to sentinel.
+If you use a password, it must be in the password parameter and must
+be omitted from the DSNs. Also make sure to use the sentinel port number
+(26379 by default) in the DSNs, and not the default Redis port.
+You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
 ### Sessions ###
 
@@ -321,6 +348,7 @@ snc_redis:
                 - redis://pw@/var/run/redis/redis-1.sock/10
                 - redis://pw@127.0.0.1:63790/10
             options:
+                prefix: foo
                 profile: 2.4
                 connection_timeout: 10
                 connection_persistent: true

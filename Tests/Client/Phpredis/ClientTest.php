@@ -3,11 +3,12 @@
 namespace Snc\RedisBundle\Tests\Client\Phpredis;
 
 use Snc\RedisBundle\Client\Phpredis\Client;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ClientTest
  */
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * @covers \Snc\RedisBundle\Client\Phpredis\Client::getCommandString

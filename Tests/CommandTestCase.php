@@ -13,13 +13,14 @@ namespace Snc\RedisBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base Class for command tests
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends TestCase
 {
 
     /**
@@ -47,7 +48,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->container = $this->getMock('\\Symfony\\Component\\DependencyInjection\\ContainerInterface');
+        $this->container = $this->getMockBuilder('\\Symfony\\Component\\DependencyInjection\\ContainerInterface')->getMock();
 
         $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
             ->disableOriginalConstructor()
@@ -55,12 +56,12 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $kernel->expects($this->once())
             ->method('getBundles')
             ->will($this->returnValue(array()));
-        $kernel->expects($this->once())
+        $kernel->expects($this->any())
             ->method('getContainer')
             ->will($this->returnValue($this->container));
         $this->application = new Application($kernel);
 
-        $this->predisClient = $this->getMock('\\Predis\\Client');
+        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
 
         $this->phpredisClient = $this->getMockBuilder('PhpredisClient')
             ->disableOriginalConstructor()
@@ -73,7 +74,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 
     protected function registerPredisClient()
     {
-        $this->predisClient = $this->getMock('\\Predis\\Client');
+        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
 
         $this->container->expects($this->once())
             ->method('get')

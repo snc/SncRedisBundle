@@ -70,7 +70,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * @var int Maximum amount of seconds to wait for the lock
      */
-    private $lockMaxWait;
+    protected $lockMaxWait;
 
     /**
      * Redis session storage constructor.
@@ -114,28 +114,29 @@ class RedisSessionHandler implements \SessionHandlerInterface
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
 
         $this->token = uniqid();
-
         $this->lockKey = $sessionId.'.lock';
+        
+        $setFunction = function ($redis, $key, $token, $ttl) {
+            if ($redis instanceof \Redis) {
+                return $redis->set(
+                    $key,
+                    $token,
+                    array('NX', 'PX' => $ttl)
+                );
+            } else {
+                return $redis->set(
+                    $key,
+                    $token,
+                    'PX',
+                    $ttl,
+                    'NX'
+                );
+            }
+        };
+        
         for ($i = 0;$i < $attempts;++$i) {
 
             // We try to aquire the lock
-            $setFunction = function ($redis, $key, $token, $ttl) {
-                if ($redis instanceof \Redis) {
-                    return $redis->set(
-                        $key,
-                        $token,
-                        array('NX', 'PX' => $ttl)
-                    );
-                } else {
-                    return $redis->set(
-                        $key,
-                        $token,
-                        'PX',
-                        $ttl,
-                        'NX'
-                    );
-                }
-            };
             $success = $setFunction($this->redis, $this->getRedisKey($this->lockKey), $this->token, $this->lockMaxWait * 1000 + 1);
             if ($success) {
                 $this->locked = true;

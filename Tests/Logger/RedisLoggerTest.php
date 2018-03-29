@@ -12,8 +12,9 @@
 namespace Snc\RedisBundle\Tests\Logger;
 
 use Snc\RedisBundle\Logger\RedisLogger;
+use PHPUnit\Framework\TestCase;
 
-class RedisLoggerTest extends \PHPUnit_Framework_TestCase
+class RedisLoggerTest extends TestCase
 {
     private $logger;
     private $redisLogger;
@@ -24,7 +25,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('PSR-3 logger package is not installed.');
         }
 
-        $this->logger = $this->getMock('Psr\Log\LoggerInterface');
+        $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $this->redisLogger = new RedisLogger($this->logger);
     }
 
@@ -34,7 +35,7 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('The Symfony LoggerInterface is not available as Symfony 3+ is installed.');
         }
 
-        $this->logger = $this->getMock('Symfony\Component\HttpKernel\Log\LoggerInterface');
+        $this->logger = $this->getMockBuilder('Symfony\Component\HttpKernel\Log\LoggerInterface')->getMock();
         $this->redisLogger = new RedisLogger($this->logger);
     }
 
@@ -93,6 +94,9 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
         ), $this->redisLogger->getCommands());
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLogSuccessfulCommandWithoutLogger()
     {
         $redisLogger = new RedisLogger();
@@ -100,6 +104,9 @@ class RedisLoggerTest extends \PHPUnit_Framework_TestCase
         $redisLogger->logCommand('foo', 10, 'connection');
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLogFailedCommandWithoutLogger()
     {
         $redisLogger = new RedisLogger();

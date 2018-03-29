@@ -21,11 +21,12 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Yaml\Parser;
+use PHPUnit\Framework\TestCase;
 
 /**
  * SncRedisExtensionTest
  */
-class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
+class SncRedisExtensionTest extends TestCase
 {
     /**
      * @static
@@ -49,9 +50,6 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     */
     public function testEmptyConfigLoad()
     {
         $extension = new SncRedisExtension();
@@ -170,7 +168,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasAlias('swiftmailer.spool.redis'));
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertGreaterThanOrEqual(4, $container->findTaggedServiceIds('snc_redis.client'), 'expected at least 4 tagged clients');
+        $this->assertGreaterThanOrEqual(4, count($container->findTaggedServiceIds('snc_redis.client')), 'expected at least 4 tagged clients');
 
         $tags = $container->findTaggedServiceIds('snc_redis.client');
         $this->assertArrayHasKey('snc_redis.default', $tags);
@@ -255,6 +253,8 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test valid XML config
+     *
+     * @doesNotPerformAssertions
      */
     public function testValidXmlConfig()
     {
@@ -285,7 +285,7 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor();
         $config = $processor->processConfiguration($configuration, $configs);
         $this->assertCount(1, $config['clients']['default']['dsns']);
-        $this->assertEquals(new RedisDsn('redis://test'), current($config['clients']['default']['dsns']));
+        $this->assertEquals('redis://test', current($config['clients']['default']['dsns']));
     }
 
     /**
@@ -303,6 +303,52 @@ class SncRedisExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $parameters[0]);
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertTrue($masterParameters['replication']);
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
+    /**
+     * Test valid config of the sentinel replication option
+     */
+    public function testSentinelOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSentinelYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertEquals('sentinel', $options['replication']);
+        $this->assertEquals('mymaster', $options['service']);
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $parameters[0]);
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertEquals('sentinel', $masterParameters['replication']);
+        $this->assertEquals('mymaster', $masterParameters['service']);
+        $this->assertInternalType('array', $masterParameters['parameters']);
+        $this->assertEquals('1', $masterParameters['parameters']['database']);
+        $this->assertEquals('pass', $masterParameters['parameters']['password']);
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
+    /**
+     * Test valid config of the cluster option
+     */
+    public function testClusterOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getClusterYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertEquals('redis', $options['cluster']);
+        $this->assertFalse(array_key_exists('replication', $options));
+
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.default1_parameters.default', (string) $parameters[0]);
+        $this->assertEquals('snc_redis.connection.default2_parameters.default', (string) $parameters[1]);
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
@@ -365,6 +411,9 @@ clients:
             throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
             replication: false
+            parameters:
+                database: 1
+                password: pass
 session:
     client: default
     prefix: foo
@@ -463,6 +512,40 @@ clients:
             - redis://otherhost
         options:
             replication: true
+EOF;
+    }
+
+    private function getSentinelYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://localhost?alias=master
+            - redis://otherhost
+        options:
+            replication: sentinel
+            service: mymaster
+            parameters:
+                database: 1
+                password: pass
+EOF;
+    }
+
+    private function getClusterYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn:
+            - redis://127.0.0.1/1
+            - redis://127.0.0.2/2
+        options:
+            cluster: "redis"
 EOF;
     }
 

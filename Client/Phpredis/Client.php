@@ -62,14 +62,9 @@ class Client extends Redis
         $startTime = microtime(true);
         $result = call_user_func_array("parent::$name", $arguments);
         $duration = (microtime(true) - $startTime) * 1000;
-        
-        $error = false;
-        if (false === $result) {
-            $error = parent::getLastError();
-        }
 
         if (null !== $this->logger) {
-            $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, $error);
+            $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
         }
 
         return $result;

@@ -55,6 +55,9 @@ class ConnectionFactory extends Factory
      */
     public function create($parameters)
     {
+        if (isset($parameters->parameters)) {
+            $this->setDefaultParameters($parameters->parameters);
+        }
         /** @var ConnectionWrapper $connection */
         $connection = parent::create($parameters);
 
