@@ -254,6 +254,12 @@ class SncRedisExtension extends Extension
         $dsn = $client['dsns'][0];
         $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
 
+        $phpRedisVersion = phpversion('redis');
+        if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
+            $client['logging'] = false;
+            @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
+        }
+
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
         if ($client['logging']) {
             $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
