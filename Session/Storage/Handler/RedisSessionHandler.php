@@ -75,9 +75,11 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * Redis session storage constructor.
      *
-     * @param \Predis\Client|\Redis $redis   Redis database connection
-     * @param array                 $options Session options
-     * @param string                $prefix  Prefix to use when writing session data
+     * @param \Predis\Client|\Redis $redis          Redis database connection
+     * @param array                 $options        Session options
+     * @param string                $prefix         Prefix to use when writing session data
+     * @param bool                  $locking        Indicates an sessions should be locked
+     * @param int                   $spinLockWait   Microseconds to wait between acquire lock tries
      */
     public function __construct($redis, array $options = array(), $prefix = 'session', $locking = true, $spinLockWait = 150000)
     {
@@ -96,6 +98,8 @@ class RedisSessionHandler implements \SessionHandlerInterface
         if (!$this->lockMaxWait) {
             $this->lockMaxWait = self::DEFAULT_MAX_EXECUTION_TIME;
         }
+
+        register_shutdown_function(array($this, 'shutdown'));
     }
 
     /**
@@ -264,10 +268,9 @@ LUA;
     }
 
     /**
-     * Destructor.
+     * Shutdown handler, replacement for class destructor as it might not be called.
      */
-    public function __destruct()
-    {
+    public function shutdown() {
         $this->close();
     }
 }
