@@ -8,8 +8,9 @@
 
 - RedisSessionHandler is now implementing \SessionUpdateTimestampHandlerInterface
   by extending Symfony's AbstractSessionHandler. This requires Symfony 3.4 or above
-  but brings better performance as it avoids writing back the session data on every
-  request. Session data is only written if it changed.
+  but brings session fixation protection as well as better performance as it avoids
+  writing back the session data on every request. Session data is only written if 
+  it changed.
 
 
 ## 2.0.0 ##
