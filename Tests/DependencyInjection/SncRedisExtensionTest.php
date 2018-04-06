@@ -55,6 +55,8 @@ class SncRedisExtensionTest extends TestCase
         $extension = new SncRedisExtension();
         $config = array();
         $extension->load(array($config), $this->getContainer());
+
+        $this->markTestIncomplete('No assertions written for this test');
     }
 
     /**
