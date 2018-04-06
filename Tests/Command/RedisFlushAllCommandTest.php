@@ -13,7 +13,6 @@ namespace Snc\RedisBundle\Tests\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use Snc\RedisBundle\Command\RedisFlushallCommand;
-use Snc\RedisBundle\Tests\CommandTestCase;
 
 /**
  * RedisFlushallCommandTest
