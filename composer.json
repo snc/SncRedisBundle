@@ -13,16 +13,16 @@
         "homepage": "https://github.com/snc/SncRedisBundle/contributors"
     }],
     "require": {
-        "php": ">=5.3.3",
-        "symfony/framework-bundle": "^2.7 || ^3.0 || ^4.0",
-        "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
+        "php": "^7.0",
+        "symfony/framework-bundle": "^3.4 || ^4.0",
+        "symfony/yaml": "^3.4 || ^4.0"
     },
     "require-dev": {
-        "doctrine/cache": "1.*",
+        "doctrine/cache": "^1.0",
         "predis/predis": "^1.0",
-        "symfony/console": "^2.7 || ^3.0 || ^4.0",
-        "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0",
-        "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5"
+        "symfony/console": "^3.4 || ^4.0",
+        "symfony/phpunit-bridge": "^3.4 || ^4.0",
+        "phpunit/phpunit": "^6.5"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
@@ -37,7 +37,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.x-dev"
+            "dev-master": "3.x-dev"
         }
     }
 }
