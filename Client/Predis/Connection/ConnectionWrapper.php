@@ -95,7 +95,16 @@ class ConnectionWrapper implements NodeConnectionInterface
      */
     public function writeRequest(CommandInterface $command)
     {
-        return $this->connection->writeRequest($command);
+        if (null === $this->logger) {
+            $this->connection->writeRequest($command);
+            return;
+        }
+
+        $startTime = microtime(true);
+        $this->connection->writeRequest($command);
+        $duration = (microtime(true) - $startTime) * 1000;
+
+        $this->logger->logCommand($this->commandToString($command), $duration, $this->getParameters()->alias);
     }
 
     /**
