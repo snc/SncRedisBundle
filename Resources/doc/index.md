@@ -328,17 +328,17 @@ snc_redis:
             type: predis
             alias: default
             dsn: redis://localhost
-            logging: %kernel.debug%
+            logging: '%kernel.debug%'
         cache:
             type: predis
             alias: cache
             dsn: redis://localhost/1
-            logging: true
+            logging: false
         profiler_storage:
             type: predis
             alias: profiler_storage
             dsn: redis://localhost/2
-            logging: false
+            logging: true
         cluster:
             type: predis
             alias: cluster
