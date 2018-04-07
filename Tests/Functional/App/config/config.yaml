@@ -1,0 +1,29 @@
+framework:
+    secret:        test
+    test: ~
+    default_locale: en
+    session:
+        storage_id:     session.storage.mock_file
+
+snc_redis:
+    clients:
+        test:
+            type: phpredis
+            alias: foo
+            dsn: redis://localhost/3
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Redis: "@snc_redis.foo"
+
+    logger: { class: Psr\Log\NullLogger }
+
+    Snc\RedisBundle\Tests\Functional\App\:
+        resource: '../*'
+
+    Snc\RedisBundle\Tests\Functional\App\Controller:
+        tags: ['controller.service_arguments']

@@ -10,6 +10,8 @@ php:
 
 matrix:
   include:
+    - php: 7.0
+      env: COMPOSER_FLAGS="--prefer-lowest"
     - php: 7.1
       env: SYMFONY_VERSION="3.4.*"
     - php: 7.2
@@ -35,7 +37,7 @@ before_install:
   - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/symfony:${SYMFONY_VERSION}; fi;
 
 install:
-  - composer update
+  - composer update --no-interaction --no-progress $COMPOSER_FLAGS
 
 before_script:
   - mkdir Snc && ln -s ../ Snc/RedisBundle
