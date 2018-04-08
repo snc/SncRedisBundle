@@ -13,8 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App;
 
-use Snc\RedisBundle\SncRedisBundle;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Snc\RedisBundle\Tests\Functional\App\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -35,19 +34,26 @@ class Kernel extends BaseKernel
     public function registerBundles()
     {
         return [
-            new FrameworkBundle(),
-            new SncRedisBundle(),
+            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle(),
+            new \Symfony\Bundle\TwigBundle\TwigBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Snc\RedisBundle\SncRedisBundle(),
         ];
     }
 
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
     {
-        $loader->load(__DIR__ . '/config/config.yaml');
+        $loader->load(__DIR__ . '/config.yaml');
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)
     {
-        $routes->add('/', Controller::class . ':home', 'home');
+        $controller = Controller::class;
+
+        $routes->add('/', "{$controller}:home");
+        $routes->add('/user/create', "{$controller}:createUser");
+        $routes->add('/user/view', "{$controller}:viewUser");
     }
 
     public function getProjectDir()
@@ -59,4 +65,5 @@ class Kernel extends BaseKernel
     {
         return __DIR__ . '/var';
     }
+
 }

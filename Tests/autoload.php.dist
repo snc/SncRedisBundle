@@ -1,5 +1,0 @@
-<?php
-
-$vendorDir = __DIR__ . '/../vendor';
-$loader = require $vendorDir . '/autoload.php';
-$loader->add('Doctrine\\Tests', $vendorDir . '/doctrine/cache/tests');
