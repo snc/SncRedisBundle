@@ -14,22 +14,28 @@ namespace Snc\RedisBundle\DependencyInjection\Compiler;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 
 class MonologPass implements CompilerPassInterface
 {
+    const SERVICE_ID = 'snc_redis.monolog.handler';
+
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        $serviceId = 'snc_redis.monolog.handler';
-        if ($container->hasDefinition($serviceId)) {
-            $handlerDefinition = $container->getDefinition($serviceId);
+        if ($container->hasDefinition(self::SERVICE_ID)) {
+            if (!$container->hasExtension('monolog')) {
+                throw new LogicException('SncRedisBundle Monolog integration needs the MonologBundle to be installed');
+            }
+
+            $handlerDefinition = $container->getDefinition(self::SERVICE_ID);
             $configuration = $container->getExtension('monolog')->getConfiguration(array(), $container);
             $processor = new Processor();
             $config = $processor->processConfiguration($configuration, $container->getExtensionConfig('monolog'));
             foreach ($config['handlers'] as $handler) {
-                if (isset($handler['id']) && $serviceId === $handler['id']) {
+                if (isset($handler['id']) && self::SERVICE_ID === $handler['id']) {
                     if (isset($handler['level'])) {
                         $level = $handler['level'] = is_int($handler['level']) ? $handler['level'] : constant('Monolog\Logger::'.strtoupper($handler['level']));
                         $handlerDefinition->addArgument($level);

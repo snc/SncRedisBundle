@@ -11,20 +11,28 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Compiler;
 
+use Snc\RedisBundle\SwiftMailer\RedisSpool;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 
 class SwiftMailerPass implements CompilerPassInterface
 {
+    const SERVICE_ID = 'snc_redis.swiftmailer.spool';
+
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        $serviceId = 'snc_redis.swiftmailer.spool';
+        $serviceId = self::SERVICE_ID;
         if ($container->hasDefinition($serviceId)) {
             $handlerDefinition = $container->getDefinition($serviceId);
-            if ('Snc\\RedisBundle\\SwiftMailer\\RedisSpool' === $handlerDefinition->getClass()) {
+            if (RedisSpool::class === $handlerDefinition->getClass()) {
+                if (!class_exists('\\Swift_Spool')) {
+                    throw new LogicException('SncRedisBundle SwiftMailer integration needs SwiftMailer to be installed');
+                }
+
                 // default class, lets check for Swift Mailer version and set correct class
                 $class = new \ReflectionClass('\\Swift_Spool');
                 $parameters = $class->getMethod('queueMessage')->getParameters();
