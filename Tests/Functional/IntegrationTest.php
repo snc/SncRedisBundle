@@ -15,10 +15,13 @@ namespace Snc\RedisBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Snc\RedisBundle\Command\RedisFlushallCommand;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Profiler\Profile;
@@ -59,6 +62,15 @@ class IntegrationTest extends WebTestCase
         $response = $this->profileRequest('GET', '/user/create');
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        $redis = new \Redis();
+        $redis->connect('localhost');
+        $redis->select(1);
+
+        $keys = $redis->keys('*');
+        $this->assertCount(2, $keys);
+        $this->assertContains('[Snc\RedisBundle\Tests\Functional\App\Entity\User$CLASSMETADATA][1]', $keys);
+        $this->assertContains('DoctrineNamespaceCacheKey[]', $keys);
     }
 
     public function testViewUser()
@@ -84,11 +96,19 @@ class IntegrationTest extends WebTestCase
     {
         static::deleteTmpDir();
 
+        $kernel = static::createClient()->getKernel();
+
         /** @var EntityManagerInterface $em */
-        $em = static::createClient()->getKernel()->getContainer()->get('doctrine')->getManager();
+        $em = $kernel->getContainer()->get('doctrine')->getManager();
         $schemaTool = new SchemaTool($em);
         $metadata = $em->getMetadataFactory()->getAllMetadata();
         $schemaTool->createSchema($metadata);
+
+        // Clear Redis databases
+        $application = new Application($kernel);
+        $command = $application->find('redis:flushall');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
     }
 
     public static function tearDownAfterClass()
