@@ -190,9 +190,7 @@ class RedisProfilerStorageTest extends TestCase
 
     public function testStoreTime()
     {
-        if (version_compare(phpversion('redis'), '4.0.0') >= 0) {
-            $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
-        }
+        $this->markTestSkipped('This test is inherently unreliable as it depends on the execution and order of other tests');
 
         $dt = new \DateTime('now');
         $start = $dt->getTimestamp();

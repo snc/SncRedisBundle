@@ -17,7 +17,6 @@ matrix:
     - php: 7.0
       env: COMPOSER_FLAGS="--prefer-lowest"
   allow_failures:
-    - php: hhvm
     - env: COMPOSER_FLAGS="--prefer-lowest"
 
 sudo: false
