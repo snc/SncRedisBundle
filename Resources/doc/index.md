@@ -89,17 +89,10 @@ snc_redis:
                 - redis://localhost/5?weight=1
 ```
 
-In your controllers you can now access all your configured clients:
-
-``` php
-<?php
-$redis = $this->container->get('snc_redis.default');
-$val = $redis->incr('foo:bar');
-$redis_cluster = $this->container->get('snc_redis.cluster');
-$val = $redis_cluster->get('ab:cd');
-$val = $redis_cluster->get('ef:gh');
-$val = $redis_cluster->get('ij:kl');
-```
+In your code you can now access all your configured clients using dependency
+injection or service locators. The services are named `snc_redis.` followed by
+the alias name, ie. `snc_redis.default` or `snc_redis.cluster` in the example
+above.
 
 A setup using `predis` master-slave replication could look like this:
 

@@ -12,6 +12,8 @@
   writing back the session data on every request. Session data is only written if 
   it changed.
 
+- All services created by the bundle are now private as per Symfony recommended
+  practices. Use Dependency Injection or Service Locators to access services.
 
 ## 2.0.0 ##
 

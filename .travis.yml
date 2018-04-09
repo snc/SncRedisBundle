@@ -14,10 +14,11 @@ matrix:
       env: SYMFONY_VERSION="3.4.*"
     - php: 7.2
       env: SYMFONY_VERSION="3.4.*"
-  allow_failures:
     - php: 7.0
       env: COMPOSER_FLAGS="--prefer-lowest"
+  allow_failures:
     - php: hhvm
+    - env: COMPOSER_FLAGS="--prefer-lowest"
 
 sudo: false
 
