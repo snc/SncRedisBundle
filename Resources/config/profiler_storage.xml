@@ -11,7 +11,7 @@
     </parameters>
 
     <services>
-        <service id="profiler.storage" class="%snc_redis.profiler_storage.class%">
+        <service id="profiler.storage" class="%snc_redis.profiler_storage.class%" public="false">
             <argument type="service" id="snc_redis.profiler_storage.client" />
             <argument>%snc_redis.profiler_storage.ttl%</argument>
         </service>
