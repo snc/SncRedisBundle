@@ -12,13 +12,14 @@
 namespace Snc\RedisBundle\Tests\Extra;
 
 use Snc\RedisBundle\Extra\RateLimit;
+use PHPUnit\Framework\TestCase;
 
 /**
  * RateLimitTest.
  *
  * @author Pierre Boudelle <pierre.boudelle@gmail.com>
  */
-class RateLimitTest extends \PHPUnit_Framework_TestCase
+class RateLimitTest extends TestCase
 {
     protected $_redis;
 

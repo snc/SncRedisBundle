@@ -1,3 +1,5 @@
-composer.lock
-composer.phar
-vendor
+/bin/
+/build/
+/composer.lock
+/composer.phar
+/vendor/

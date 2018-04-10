@@ -9,17 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Snc\RedisBundle\Tests;
+namespace Snc\RedisBundle\Tests\Command;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Base Class for command tests
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends TestCase
 {
 
     /**
@@ -28,17 +31,17 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     protected $application;
 
     /**
-     * @var \Predis\Client
+     * @var \Predis\Client|MockObject
      */
     protected $predisClient;
 
     /**
-     * @var PhpredisClient
+     * @var PhpredisClient|MockObject
      */
     protected $phpredisClient;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface|MockObject
      */
     protected $container;
 
@@ -47,20 +50,21 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->container = $this->getMock('\\Symfony\\Component\\DependencyInjection\\ContainerInterface');
+        $this->container = $this->getMockBuilder('\\Symfony\\Component\\DependencyInjection\\ContainerInterface')->getMock();
 
+        /** @var Kernel|MockObject $kernel */
         $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
             ->disableOriginalConstructor()
             ->getMock();
         $kernel->expects($this->once())
             ->method('getBundles')
             ->will($this->returnValue(array()));
-        $kernel->expects($this->once())
+        $kernel->expects($this->any())
             ->method('getContainer')
             ->will($this->returnValue($this->container));
         $this->application = new Application($kernel);
 
-        $this->predisClient = $this->getMock('\\Predis\\Client');
+        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
 
         $this->phpredisClient = $this->getMockBuilder('PhpredisClient')
             ->disableOriginalConstructor()
@@ -73,7 +77,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 
     protected function registerPredisClient()
     {
-        $this->predisClient = $this->getMock('\\Predis\\Client');
+        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
 
         $this->container->expects($this->once())
             ->method('get')

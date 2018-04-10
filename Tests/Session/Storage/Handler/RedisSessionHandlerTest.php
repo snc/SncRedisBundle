@@ -12,17 +12,21 @@
 namespace Snc\RedisBundle\Tests\Session\Storage\Handler;
 
 use Snc\RedisBundle\Session\Storage\Handler\RedisSessionHandler;
+use PHPUnit\Framework\TestCase;
 
 /**
  * RedisSessionHandlerTest
  */
-class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
+class RedisSessionHandlerTest extends TestCase
 {
     private $redis;
 
     protected function setUp()
     {
-        $this->redis = $this->getMock('Predis\Client', array('get', 'set', 'setex', 'del'));
+        $this->redis = $this
+            ->getMockBuilder('Predis\Client')
+            ->setMethods(array('get', 'set', 'setex', 'del'))
+            ->getMock();
     }
 
     protected function tearDown()

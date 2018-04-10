@@ -13,6 +13,7 @@ namespace Snc\RedisBundle;
 
 use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
+use Snc\RedisBundle\DependencyInjection\Compiler\SwiftMailerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -29,5 +30,6 @@ class SncRedisBundle extends Bundle
         parent::build($container);
         $container->addCompilerPass(new LoggingPass());
         $container->addCompilerPass(new MonologPass());
+        $container->addCompilerPass(new SwiftMailerPass());
     }
 }

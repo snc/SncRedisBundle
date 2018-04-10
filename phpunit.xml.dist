@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit colors="true" processIsolation="false" stopOnFailure="false" bootstrap="./Tests/autoload.php.dist">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+>
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <env name="SHELL_VERBOSITY" value="-1" />
+    </php>
+
     <testsuites>
         <testsuite name="RedisBundle Test Suite">
             <directory>./Tests</directory>
         </testsuite>
     </testsuites>
+
+    <logging>
+        <log type="coverage-text"/>
+        <log type="coverage-clover" target="./build/coverage/log/coverage.xml"/>
+    </logging>
 
     <filter>
         <whitelist>

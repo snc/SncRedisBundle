@@ -126,11 +126,11 @@ class RedisDsn
     {
         return $this->alias;
     }
-	
+
     /**
      * @return string
      */
-    public function getPersistentId() 
+    public function getPersistentId()
     {
         return md5($this->dsn);
     }
@@ -174,12 +174,12 @@ class RedisDsn
             $dsn = substr($dsn, $pos + 1);
         }
         $dsn = preg_replace_callback('/\?(.*)$/', array($this, 'parseParameters'), $dsn); // parse parameters
-        if (preg_match('#^(.*)/(\d+)$#', $dsn, $matches)) {
+        if (preg_match('#^(.*)/(\d+|%[^%]+%|env_\w+_[[:xdigit:]]{32,})$#', $dsn, $matches)) {
             // parse database
-            $this->database = (int) $matches[2];
+            $this->database = is_numeric($matches[2]) ? (int) $matches[2] : $matches[2];
             $dsn = $matches[1];
         }
-        if (preg_match('#^([^:]+)(:(\d+))?$#', $dsn, $matches)) {
+        if (preg_match('#^([^:]+)(:(\d+|%[^%]+%|env_\w+_[[:xdigit:]]{32,}))?$#', $dsn, $matches)) {
             if (!empty($matches[1])) {
                 // parse host/ip or socket
                 if ('/' === $matches[1]{0}) {
@@ -190,6 +190,13 @@ class RedisDsn
             }
             if (null === $this->socket && !empty($matches[3])) {
                 // parse port
+                $this->port = is_numeric($matches[3]) ? (int) $matches[3] : $matches[3];
+            }
+        } elseif (preg_match('#^\[([^\]]+)](:(\d+))?$#', $dsn, $matches)) { // parse enclosed IPv6 address and optional port
+            if (!empty($matches[1])) {
+                $this->host = $matches[1];
+            }
+            if (!empty($matches[3])) {
                 $this->port = (int) $matches[3];
             }
         }

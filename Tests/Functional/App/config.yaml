@@ -1,0 +1,104 @@
+framework:
+    secret: test
+    test: ~
+    default_locale: en
+    profiler: { collect: true }
+    session:
+        storage_id:     session.storage.mock_file
+
+web_profiler:
+    toolbar: false
+    intercept_redirects: false
+
+doctrine:
+    dbal:
+        driver: 'pdo_sqlite'
+        path: '%kernel.project_dir%/var/test.db'
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/Entity'
+                prefix: 'Snc\RedisBundle\Tests\Functional\App\Entity'
+
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsn: redis://localhost
+            logging: '%kernel.debug%'
+        cache:
+            type: predis
+            alias: cache
+            dsn: redis://localhost/1
+            logging: false
+        profiler_storage:
+            type: predis
+            alias: profiler_storage
+            dsn: redis://localhost/2
+            logging: true
+        cluster:
+            type: predis
+            alias: cluster
+            dsn:
+              - redis://127.0.0.1/3
+              - redis://127.0.0.1/4
+              - redis://127.0.0.1/5
+            options:
+                prefix: foo
+                profile: 2.4
+                connection_timeout: 10
+                connection_persistent: true
+                read_write_timeout: 30
+                iterable_multibulk: false
+                throw_errors: true
+                cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
+                replication: false
+    session:
+        client: default
+        prefix: foo
+    doctrine:
+        metadata_cache:
+            client: cache
+            entity_manager: default
+            document_manager: default
+        result_cache:
+            client: cache
+            entity_manager: [default, read]
+            document_manager: [default, slave1, slave2]
+            namespace: "dcrc:"
+        query_cache:
+            client: cache
+            entity_manager: default
+        second_level_cache:
+            client: cache
+            entity_manager: default
+#    monolog:
+#        client: cache
+#        key: monolog
+#    swiftmailer:
+#        client: default
+#        key: swiftmailer
+    profiler_storage:
+        client: profiler_storage
+        ttl: 3600
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Redis: "@snc_redis.default"
+
+    logger: { class: Psr\Log\NullLogger }
+
+    Snc\RedisBundle\Tests\Functional\App\Controller\:
+        resource: './Controller'
+        public: true
+        tags: ['controller.service_arguments']

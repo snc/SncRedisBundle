@@ -1,5 +1,20 @@
 # Update notes #
 
+## 3.0.0 ##
+
+- Dropped support for Symfony 3.3 and below, as well as PHP 5.x
+
+- Dropped official support for HHVM
+
+- RedisSessionHandler is now implementing \SessionUpdateTimestampHandlerInterface
+  by extending Symfony's AbstractSessionHandler. This requires Symfony 3.4 or above
+  but brings session fixation protection as well as better performance as it avoids
+  writing back the session data on every request. Session data is only written if 
+  it changed.
+
+- All services created by the bundle are now private as per Symfony recommended
+  practices. Use Dependency Injection or Service Locators to access services.
+
 ## 2.0.0 ##
 
 - Passwords in DSNs must now be properly urlencoded if they contain any of

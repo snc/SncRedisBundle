@@ -3,11 +3,12 @@
 namespace Snc\RedisBundle\Tests\Client\Phpredis;
 
 use Snc\RedisBundle\Client\Phpredis\Client;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ClientTest
  */
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * @covers \Snc\RedisBundle\Client\Phpredis\Client::getCommandString
@@ -16,6 +17,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('This test needs the PHP Redis extension to work');
+        } elseif (version_compare(phpversion('redis'), '4.0.0') >= 0) {
+            $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
         }
 
         $method = new \ReflectionMethod(
