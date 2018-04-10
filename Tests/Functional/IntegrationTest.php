@@ -62,15 +62,6 @@ class IntegrationTest extends WebTestCase
         $response = $this->profileRequest('GET', '/user/create');
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
-
-        $redis = new \Redis();
-        $redis->connect('localhost');
-        $redis->select(1);
-
-        $keys = $redis->keys('*');
-        $this->assertCount(2, $keys);
-        $this->assertContains('[Snc\RedisBundle\Tests\Functional\App\Entity\User$CLASSMETADATA][1]', $keys);
-        $this->assertContains('DoctrineNamespaceCacheKey[]', $keys);
     }
 
     public function testViewUser()
