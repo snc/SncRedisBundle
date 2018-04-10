@@ -50,7 +50,14 @@ class RedisLogger
         ++$this->nbCommands;
 
         if (null !== $this->logger) {
+
+            // if run in CLI only save the last 100 commands to prevent memory leaks in daemon like processes
+            if (php_sapi_name() === 'cli' && count($this->commands) > 100) {
+                array_shift($this->commands);
+            }
+
             $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
+
             if ($error) {
                 $message = 'Command "' . $command . '" failed (' . $error . ')';
 
