@@ -90,7 +90,7 @@ class IntegrationTest extends WebTestCase
         $kernel = static::createClient()->getKernel();
 
         /** @var EntityManagerInterface $em */
-        $em = $kernel->getContainer()->get('doctrine')->getManager();
+        $em = $kernel->getContainer()->get('public_doctrine')->getManager();
         $schemaTool = new SchemaTool($em);
         $metadata = $em->getMetadataFactory()->getAllMetadata();
         $schemaTool->createSchema($metadata);

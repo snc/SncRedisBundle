@@ -94,9 +94,14 @@ services:
         autoconfigure: true
         public: false
 
-    Redis: "@snc_redis.default"
+    Redis: '@snc_redis.default'
 
-    logger: { class: Psr\Log\NullLogger }
+    public_doctrine:
+        alias: 'doctrine'
+        public: true
+
+    logger:
+        class: Psr\Log\NullLogger
 
     Snc\RedisBundle\Tests\Functional\App\Controller\:
         resource: './Controller'
