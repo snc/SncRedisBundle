@@ -180,6 +180,18 @@ class SncRedisExtensionTest extends TestCase
 
     /**
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage requires it to reference either an entity manager or document manager
+     */
+    public function testInvalidDoctrineCacheConfigLoad()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getInvalidDoctrineCacheConfig());
+        $extension->load(array($config), $this->getContainer());
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage You have to disable logging for the client
      */
     public function testInvalidMonologConfigLoad()
     {
@@ -442,6 +454,23 @@ swiftmailer:
 profiler_storage:
     client: default
     ttl: 3600
+EOF;
+    }
+
+    private function getInvalidDoctrineCacheConfig()
+    {
+        return <<<'EOF'
+clients:
+    cache:
+        type: predis
+        dsn: redis://localhost
+doctrine:
+    metadata_cache:
+        client: cache
+    result_cache:
+        client: cache
+    query_cache:
+        client: cache
 EOF;
     }
 

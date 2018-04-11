@@ -343,6 +343,10 @@ class SncRedisExtension extends Extension
     protected function loadDoctrine(array $config, ContainerBuilder $container)
     {
         foreach ($config['doctrine'] as $name => $cache) {
+            if (empty($cache['entity_managers']) && empty($cache['document_managers'])) {
+                throw new InvalidConfigurationException(sprintf('Enabling the doctrine %s section requires it to reference either an entity manager or document manager', $name));
+            }
+
             if ('second_level_cache' === $name) {
                 $name = 'second_level_cache.region_cache_driver';
             }
