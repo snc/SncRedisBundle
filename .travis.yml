@@ -25,7 +25,7 @@ cache:
 
 env:
   global:
-    - SYMFONY_DEPRECATIONS_HELPER="strict"
+    - SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
 
 before_install:
   - phpenv config-rm xdebug.ini || true

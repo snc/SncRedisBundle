@@ -75,12 +75,9 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
-     * @param string $name     Name
-     * @param string $expected Expected value
-     *
-     * @dataProvider parameterValues
+     * Test default config for resulting tagged services
      */
-    public function testDefaultClientTaggedServicesConfigLoad($name, $expected)
+    public function testDefaultClientTaggedServicesConfigLoad()
     {
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getMinimalYamlConfig());
@@ -369,7 +366,6 @@ class SncRedisExtensionTest extends TestCase
 clients:
     default:
         type: predis
-        alias: default
         dsn: redis://localhost
 EOF;
     }
@@ -388,7 +384,6 @@ clients:
             prefix: snc:
     cache:
         type: predis
-        alias: cache
         dsn: redis://localhost/1
         logging: true
     monolog:

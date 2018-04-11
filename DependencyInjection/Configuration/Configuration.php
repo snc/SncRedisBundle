@@ -85,12 +85,23 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('clients')
                     ->useAttributeAsKey('alias', false)
+                    ->beforeNormalization()
+                        ->always()
+                        ->then(function($v) {
+                            foreach ($v as $name => &$client) {
+                                if (!isset($client['alias'])) {
+                                    $client['alias'] = $name;
+                                }
+                            }
+                            return $v;
+                        })
+                    ->end()
                     ->prototype('array')
                         ->fixXmlConfig('dsn')
                         ->children()
                             ->scalarNode('type')->isRequired()
                                 ->validate()
-                                    ->ifTrue(function($v) { return !in_array($v, array('predis', 'phpredis')); })
+                                    ->ifNotInArray(['predis', 'phpredis'])
                                     ->thenInvalid('The redis client type %s is invalid.')
                                 ->end()
                             ->end()
@@ -104,7 +115,6 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->prototype('variable')->end()
                             ->end()
-                            ->scalarNode('alias')->isRequired()->end()
                             ->arrayNode('options')
                                 ->addDefaultsIfNotSet()
                                 ->children()

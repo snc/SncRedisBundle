@@ -72,12 +72,9 @@ class SncRedisExtensionEnvTest extends TestCase
     }
 
     /**
-     * @param string $name     Name
-     * @param string $expected Expected value
-     *
-     * @dataProvider parameterValues
+     * Test default config for resulting tagged services
      */
-    public function testDefaultClientTaggedServicesConfigLoad($name, $expected)
+    public function testDefaultClientTaggedServicesConfigLoad()
     {
         $container = $this->getConfiguredContainer($this->getMinimalYamlConfig());
 
@@ -147,7 +144,6 @@ class SncRedisExtensionEnvTest extends TestCase
 clients:
     default:
         type: predis
-        alias: default
         dsn: "%env(REDIS_URL)%"
 EOF;
     }
