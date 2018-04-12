@@ -270,7 +270,16 @@ LUA;
     /**
      * Shutdown handler, replacement for class destructor as it might not be called.
      */
-    public function shutdown() {
+    public function shutdown()
+    {
         $this->close();
+    }
+
+    /**
+     * Destructor.
+     */
+    public function __destruct()
+    {
+        $this->shutdown();
     }
 }
