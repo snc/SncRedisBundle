@@ -297,6 +297,12 @@ class SncRedisExtension extends Extension
         if (null !== $dsn->getDatabase()) {
             $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
         }
+        if ($client['options']['serialization']) {
+            $phpredisDef->addMethodCall(
+                'setOption',
+                array(\Redis::OPT_SERIALIZER, $this->loadSerializationType($client['options']['serialization']))
+            );
+        }
         $container->setDefinition($phpredisId, $phpredisDef);
 
         $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
@@ -427,7 +433,43 @@ class SncRedisExtension extends Extension
     }
 
     /**
-     * Loads the profiler storage configuration.
+     * Load the correct serializer for Redis
+     *
+     * @param string $type
+     *
+     * @return string
+     * @throws InvalidConfigurationException
+     */
+    public function loadSerializationType($type)
+    {
+        // not using constants, because it would fail if phpredis extension is not enabled
+        $types = array(
+            "none" => 0, // \Redis::SERIALIZER_NONE,
+            "php" => 1,  // \Redis::SERIALIZER_PHP,
+            "igbinary" => 2 // \Redis::SERIALIZER_IGBINARY
+        );
+
+        // allow user to pass in default serialization in which case we should automatically decide for them
+        if ('default' == $type) {
+            if (defined('HHVM_VERSION')) {
+                return $types['php'];
+            }
+
+            return defined('Redis::SERIALIZER_IGBINARY') ? $types['igbinary'] : $types['php'];
+        } elseif (array_key_exists($type, $types)) {
+            return $types[$type];
+        }
+
+        throw new InvalidConfigurationException(
+            sprintf(
+                '%s in not a valid serializer. Valid serializers: %s',
+                $type,
+                implode(", ", array_keys($types))
+            )
+        );
+    }
+
+     /* Loads the profiler storage configuration.
      *
      * @param array            $config    A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance

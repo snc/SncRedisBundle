@@ -309,6 +309,41 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * Test valid config of the serialization option
+     */
+    public function testClientSerializationOption()
+    {
+         $extension = new SncRedisExtension();
+         $config = $this->parseYaml($this->getSerializationYamlConfig());
+         $extension->load(array($config), $container = $this->getContainer());
+         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+         $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+         $this->assertSame($options['serialization'], $masterParameters['serialization']);
+    }
+
+    /**
+     * Test validity of serialization type
+     */
+    public function testLoadSerializationType()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSerializationYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $serializationType = $extension->loadSerializationType($options['serialization']);
+        $this->assertTrue(is_integer($serializationType));
+
+        if (defined('HHVM_VERSION')) {
+            $defaultType = 1;
+        } else {
+            $defaultType = defined('Redis::SERIALIZER_IGBINARY') ? 2 : 1;
+        }
+
+        $this->assertEquals($defaultType, $serializationType);
+    }
+
+    /**
      * Test valid config of the sentinel replication option
      */
     public function testSentinelOption()
@@ -359,6 +394,21 @@ class SncRedisExtensionTest extends TestCase
         $parser = new Parser();
 
         return $parser->parse($yaml);
+    }
+
+    private function getSerializationYamlConfig()
+     {
+         return <<<'EOF'
+clients:
+ default:
+     type: predis
+     alias: default
+     dsn:
+         - redis://localhost?alias=master
+         - redis://otherhost
+     options:
+         serialization: "default"
+EOF;
     }
 
     private function getMinimalYamlConfig()
