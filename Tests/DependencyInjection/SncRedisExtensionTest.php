@@ -334,11 +334,7 @@ class SncRedisExtensionTest extends TestCase
         $serializationType = $extension->loadSerializationType($options['serialization']);
         $this->assertTrue(is_integer($serializationType));
 
-        if (defined('HHVM_VERSION')) {
-            $defaultType = 1;
-        } else {
-            $defaultType = defined('Redis::SERIALIZER_IGBINARY') ? 2 : 1;
-        }
+        $defaultType = defined('Redis::SERIALIZER_IGBINARY') ? 2 : 1;
 
         $this->assertEquals($defaultType, $serializationType);
     }
