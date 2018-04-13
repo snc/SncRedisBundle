@@ -14,7 +14,7 @@ namespace Snc\RedisBundle\DependencyInjection\Configuration;
 /**
  * RedisDsn
  */
-class RedisDsn
+class RedisDsn implements RedisDsnInterface
 {
     /**
      * @var string
