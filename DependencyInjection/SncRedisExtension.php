@@ -442,11 +442,10 @@ class SncRedisExtension extends Extension
      */
     public function loadSerializationType($type)
     {
-        // not using constants, because it would fail if phpredis extension is not enabled
         $types = array(
-            'none' => 0, // \Redis::SERIALIZER_NONE,
-            'php' => 1,  // \Redis::SERIALIZER_PHP,
-            'igbinary' => 2 // \Redis::SERIALIZER_IGBINARY
+            'none' => \Redis::SERIALIZER_NONE,
+            'php' => \Redis::SERIALIZER_PHP,
+            'igbinary' => \Redis::SERIALIZER_IGBINARY
         );
 
         // allow user to pass in default serialization in which case we should automatically decide for them
