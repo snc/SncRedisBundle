@@ -20,10 +20,11 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
-        "doctrine/orm": "^2.5.11",
         "doctrine/doctrine-bundle": "^1.6.10",
-        "predis/predis": "^1.0",
+        "doctrine/orm": "^2.5.11",
         "phpunit/phpunit": "^6.5 || ^7.1",
+        "predis/predis": "^1.0",
+        "swiftmailer/swiftmailer": "^6.0",
         "symfony/browser-kit": "^3.4 || ^4.0",
         "symfony/console": "^3.4 || ^4.0",
         "symfony/phpunit-bridge": "^3.4 || ^4.0",

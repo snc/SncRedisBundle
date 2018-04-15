@@ -29,7 +29,7 @@ class SwiftMailerPass implements CompilerPassInterface
         if ($container->hasDefinition($serviceId)) {
             $handlerDefinition = $container->getDefinition($serviceId);
             if (RedisSpool::class === $handlerDefinition->getClass()) {
-                if (!class_exists('\\Swift_Spool')) {
+                if (!interface_exists('\\Swift_Spool')) {
                     throw new LogicException('SncRedisBundle SwiftMailer integration needs SwiftMailer to be installed');
                 }
 

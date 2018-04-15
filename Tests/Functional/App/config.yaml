@@ -81,9 +81,9 @@ snc_redis:
 #    monolog:
 #        client: cache
 #        key: monolog
-#    swiftmailer:
-#        client: default
-#        key: swiftmailer
+    swiftmailer:
+        client: default
+        key: swiftmailer
     profiler_storage:
         client: profiler_storage
         ttl: 3600
