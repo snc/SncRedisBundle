@@ -99,7 +99,9 @@ class RedisSessionHandler implements \SessionHandlerInterface
             $this->lockMaxWait = self::DEFAULT_MAX_EXECUTION_TIME;
         }
 
-        register_shutdown_function(array($this, 'shutdown'));
+        if (true === $locking) {
+            register_shutdown_function(array($this, 'shutdown'));
+        }
     }
 
     /**
