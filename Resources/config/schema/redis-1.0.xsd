@@ -56,11 +56,21 @@
         <xsd:attribute name="read-write-timeout" type="xsd:int" />
         <xsd:attribute name="iterable-multibulk" type="xsd:boolean" />
         <xsd:attribute name="throw-errors" type="xsd:boolean" />
+        <xsd:attribute name="serialization" type="phpredis-serialization-type" />
         <xsd:attribute name="profile" type="client-profile" />
         <xsd:attribute name="cluster" type="xsd:string" />
         <xsd:attribute name="prefix" type="xsd:string" />
         <xsd:attribute name="replication" type="xsd:boolean" />
     </xsd:complexType>
+
+    <xsd:simpleType name="phpredis-serialization-type">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="default" />
+            <xsd:enumeration value="none" />
+            <xsd:enumeration value="php" />
+            <xsd:enumeration value="igbinary" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:simpleType name="client-profile">
         <xsd:restriction base="xsd:string">
