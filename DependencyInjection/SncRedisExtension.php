@@ -453,7 +453,7 @@ class SncRedisExtension extends Extension
 
         // allow user to pass in default serialization in which case we should automatically decide for them
         if ('default' == $type) {
-            return $types['igbinary'] ?? $types['php'];
+            return isset($types['igbinary']) ? $types['igbinary'] : $types['php'];
         } elseif (array_key_exists($type, $types)) {
             return $types[$type];
         }
