@@ -444,13 +444,16 @@ class SncRedisExtension extends Extension
     {
         $types = array(
             'none' => \Redis::SERIALIZER_NONE,
-            'php' => \Redis::SERIALIZER_PHP,
-            'igbinary' => \Redis::SERIALIZER_IGBINARY
+            'php' => \Redis::SERIALIZER_PHP
         );
+
+        if (defined('Redis::SERIALIZER_IGBINARY')) {
+            $types['igbinary'] = \Redis::SERIALIZER_IGBINARY;
+        }
 
         // allow user to pass in default serialization in which case we should automatically decide for them
         if ('default' == $type) {
-            return defined('Redis::SERIALIZER_IGBINARY') ? $types['igbinary'] : $types['php'];
+            return $types['igbinary'] ?? $types['php'];
         } elseif (array_key_exists($type, $types)) {
             return $types[$type];
         }
