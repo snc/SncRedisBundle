@@ -32,4 +32,17 @@ class SncRedisBundle extends Bundle
         $container->addCompilerPass(new MonologPass());
         $container->addCompilerPass(new SwiftMailerPass());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function shutdown()
+    {
+        // Close session handler connection to avoid using up all available connection slots in tests
+        if ($this->container->has('snc_redis.session.handler')) {
+            if (!method_exists($this->container, 'initialized') || $this->container->initialized('snc_redis.session.handler')) {
+                $this->container->get('snc_redis.session.handler')->close();
+            }
+        }
+    }
 }
