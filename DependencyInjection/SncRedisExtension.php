@@ -443,6 +443,7 @@ class SncRedisExtension extends Extension
     public function loadSerializationType($type)
     {
         $types = array(
+            'default' => \Redis::SERIALIZER_NONE,
             'none' => \Redis::SERIALIZER_NONE,
             'php' => \Redis::SERIALIZER_PHP
         );
@@ -451,20 +452,11 @@ class SncRedisExtension extends Extension
             $types['igbinary'] = \Redis::SERIALIZER_IGBINARY;
         }
 
-        // allow user to pass in default serialization in which case we should automatically decide for them
-        if ('default' == $type) {
-            return isset($types['igbinary']) ? $types['igbinary'] : $types['php'];
-        } elseif (array_key_exists($type, $types)) {
+        if (array_key_exists($type, $types)) {
             return $types[$type];
         }
 
-        throw new InvalidConfigurationException(
-            sprintf(
-                '%s in not a valid serializer. Valid serializers: %s',
-                $type,
-                implode(", ", array_keys($types))
-            )
-        );
+        throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $type, implode(", ", array_keys($types))));
     }
 
      /* Loads the profiler storage configuration.
