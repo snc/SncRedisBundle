@@ -344,10 +344,7 @@ class SncRedisExtensionTest extends TestCase
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $serializationType = $extension->loadSerializationType($options['serialization']);
         $this->assertTrue(is_integer($serializationType));
-
-        $defaultType = defined('Redis::SERIALIZER_IGBINARY') ? 2 : 1;
-
-        $this->assertEquals($defaultType, $serializationType);
+        $this->assertEquals(\Redis::SERIALIZER_NONE, $serializationType);
     }
 
     /**
