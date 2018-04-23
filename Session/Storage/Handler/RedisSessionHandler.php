@@ -276,4 +276,12 @@ LUA;
     {
         $this->close();
     }
+
+    /**
+     * Destructor.
+     */
+    public function __destruct()
+    {
+        $this->shutdown();
+    }
 }
