@@ -100,6 +100,26 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertTrue($container->hasAlias('snc_redis.default_client'));
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+
+        $connectionArguments = $container->getDefinition('snc_redis.connection.default_parameters.default')->getArguments();
+        $this->assertCount(3, $connectionArguments);
+        $this->assertSame(
+            array(
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'profile' => 'default',
+                'prefix' => null,
+                'service' => null,
+                'async_connect' => false,
+                'timeout' => 5,
+                'persistent' => false,
+                'exceptions' => true,
+                'logging' => false,
+                'alias' => 'default',
+            ),
+            $connectionArguments[0]
+        );
+        $this->assertSame('Predis\Connection\Parameters', $connectionArguments[1]);
     }
 
     /**
@@ -202,7 +222,6 @@ EOF;
 
         $container->registerExtension($extension);
         $container->prependExtensionConfig($extension->getAlias(), $config);
-
         $pass = new MergeExtensionConfigurationPass();
         $pass->process($container);
 
