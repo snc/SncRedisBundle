@@ -106,6 +106,7 @@ class SncRedisExtensionEnvTest extends TestCase
             array(
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
+                'serialization' => 'default',
                 'profile' => 'default',
                 'prefix' => null,
                 'service' => null,
