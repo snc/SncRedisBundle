@@ -259,7 +259,7 @@ class SncRedisExtensionTest extends TestCase
     {
         $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config/xml'));
         $loader->load('valid.xml');
     }
 
@@ -270,7 +270,7 @@ class SncRedisExtensionTest extends TestCase
     {
         $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config/xml'));
         $loader->load('invalid.xml');
     }
 
