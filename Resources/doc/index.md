@@ -220,6 +220,23 @@ snc_redis:
             entity_manager: default
 ```
 
+### On Demand Connect ###
+Wrap the phpredis client and only connect on demand. Calls to `Redis::connect`, `Redis::pconnect`, `Redis::open`, `Redis::setOption`,  `Redis::auth`, `Redis::select`, and `Redis::close` are delayed until another method is called.
+
+``` yaml
+snc_redis:
+    clients:
+        on_demand:
+            type: phpredis
+            alias: on_demand
+            dsn: redis://localhost
+            logging: false
+            options:
+                on_demand_connect: true #default false
+                connection_persistent: true
+```
+
+
 ### Monolog logging ###
 
 You can store your logs in a redis `LIST` by adding this to your config:

@@ -36,22 +36,65 @@ class Client extends Redis
     protected $alias;
 
     /**
+     * Whether an on demand connection is still being awaited
+     *
+     * @var bool
+     */
+    protected $onDemandPending = false;
+
+    /**
+     * An array of delayed calls arrays for on demand connections
+     * A delayed call array has two keys, "method" - method name and "args" - an array of arguments;
+     * @var array
+     */
+    protected $delayedCalls = array();
+
+    /**
      * Constructor.
      *
-     * @param array       $parameters List of parameters (only `alias` key is handled)
+     * @param array       $parameters List of parameters (only `alias` and `on_demand_connect` keys are handled)
      * @param RedisLogger $logger     A RedisLogger instance
      */
     public function __construct(array $parameters = array(), RedisLogger $logger = null)
     {
         $this->logger = $logger;
         $this->alias = isset($parameters['alias']) ? $parameters['alias'] : '';
+        $this->onDemandPending = isset($parameters['on_demand_connect']) ? $parameters['on_demand_connect'] : false;
     }
+
+    /**
+     * Delays the method call until an ondemand connection is established
+     *
+     * @param string $methodName
+     * @param array $arguments
+     */
+    private function delay($methodName, array $arguments)
+    {
+        if ($this->onDemandPending) {
+            $this->delayedCalls[] = array("method" => $methodName, "args" => $arguments);
+        } else {
+            call_user_func_array("parent::$methodName", $arguments);
+        }
+    }
+
+
+    /**
+     * Handles the delayed connection and any delayed calls
+     */
+    private function onDemandCalls()
+    {
+        foreach ($this->delayedCalls as $delayedCallArr) {
+            call_user_func_array('parent::' . $delayedCallArr['method'], $delayedCallArr['args']);
+        }
+        $this->onDemandPending = false;
+    }
+
 
     /**
      * Proxy function.
      *
      * @param string $name      A command name
-     * @param array  $arguments Lit of command arguments
+     * @param array  $arguments Lit of command argumentsfor on demand connections before connections are establish
      *
      * @throws \RuntimeException If no Redis instance is defined
      *
@@ -59,6 +102,9 @@ class Client extends Redis
      */
     private function call($name, array $arguments = array())
     {
+        if ($this->onDemandPending) {
+            $this->onDemandCalls();
+        }
         $startTime = microtime(true);
         $result = call_user_func_array("parent::$name", $arguments);
         $duration = (microtime(true) - $startTime) * 1000;
@@ -107,6 +153,63 @@ class Client extends Redis
                 $this->flatten($item, $list);
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setOption()
+    {
+        return $this->delay("setOption", func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function auth()
+    {
+        return $this->delay("auth", func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function select()
+    {
+        return $this->delay("select", func_get_args());
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function pconnect()
+    {
+        return $this->delay("pconnect", func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function connect()
+    {
+        return $this->delay("connect", func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function open()
+    {
+        return $this->delay("open", func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        return $this->delay("close", func_get_args());
     }
 
     /**

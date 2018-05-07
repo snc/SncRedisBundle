@@ -105,6 +105,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertCount(3, $connectionArguments);
         $this->assertSame(
             array(
+                'on_demand_connect' => false,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
                 'serialization' => 'default',
