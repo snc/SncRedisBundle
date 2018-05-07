@@ -294,10 +294,12 @@ class SncRedisExtension extends Extension
         }
 
         $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
-        if ($client['logging']) {
+        $logger = $client['logging'] ? new Reference('snc_redis.logger') : null;
+        $onDemandConnect = $client['options']['on_demand_connect'];
+        if ($logger || $onDemandConnect) {
             $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
-            $phpredisDef->addArgument(array('alias' => $client['alias']));
-            $phpredisDef->addArgument(new Reference('snc_redis.logger'));
+            $phpredisDef->addArgument(array('alias' => $client['alias'], 'on_demand_connect' => $onDemandConnect));
+            $phpredisDef->addArgument($logger);
         }
 
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
@@ -484,7 +486,7 @@ class SncRedisExtension extends Extension
 
         if (array_key_exists($type, $types)) {
             return $types[$type];
-        }
+       }
 
         throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $type, implode(", ", array_keys($types))));
     }

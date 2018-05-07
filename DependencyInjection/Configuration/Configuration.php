@@ -108,6 +108,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('options')
                                 ->addDefaultsIfNotSet()
                                 ->children()
+                                    ->booleanNode('on_demand_connect')->defaultFalse()->end()
                                     ->booleanNode('connection_async')->defaultFalse()->end()
                                     ->booleanNode('connection_persistent')->defaultFalse()->end()
                                     ->scalarNode('connection_timeout')->defaultValue(5)->end()
