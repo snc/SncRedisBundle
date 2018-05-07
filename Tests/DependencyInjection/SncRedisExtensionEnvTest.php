@@ -2,17 +2,13 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
-use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
-use Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ParameterBag\EnvPlaceholderParameterBag;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Yaml\Parser;
 use PHPUnit\Framework\TestCase;
+use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\HttpKernel\Kernel;
 
-/**
- * SncRedisExtensionTest
- */
 class SncRedisExtensionEnvTest extends TestCase
 {
     /**
@@ -27,119 +23,27 @@ class SncRedisExtensionEnvTest extends TestCase
         }
     }
 
-    /**
-     * @static
-     *
-     * @return array
-     */
-    public static function parameterValues()
+    public function testDefaultParameterConfigLoad()
     {
-        return array(
-            array('snc_redis.client.class', 'Predis\Client'),
-            array('snc_redis.client_options.class', 'Predis\Configuration\Options'),
-            array('snc_redis.connection_parameters.class', 'Predis\Connection\Parameters'),
-            array('snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory'),
-            array('snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'),
-            array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
-            array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
-            array('snc_redis.doctrine_cache_phpredis.class', 'Doctrine\Common\Cache\RedisCache'),
-            array('snc_redis.doctrine_cache_predis.class', 'Doctrine\Common\Cache\PredisCache'),
-            array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
-            array('snc_redis.swiftmailer_spool.class', 'Snc\RedisBundle\SwiftMailer\RedisSpool'),
-        );
-    }
+        $container = $this->getConfiguredContainer('env_minimal');
 
-    public function testEmptyConfigLoad()
-    {
-        $extension = new SncRedisExtension();
-        $config = array();
-        $extension->load(array($config), $this->getContainer());
-    }
-
-    /**
-     * @param string $name     Name
-     * @param string $expected Expected value
-     *
-     * @dataProvider parameterValues
-     */
-    public function testDefaultParameterConfigLoad($name, $expected)
-    {
-        $container = $this->getConfiguredContainer($this->getMinimalYamlConfig());
-
-        $this->assertEquals($expected, $container->getParameter($name));
-    }
-
-    /**
-     * @param string $name     Name
-     * @param string $expected Expected value
-     *
-     * @dataProvider parameterValues
-     */
-    public function testDefaultClientTaggedServicesConfigLoad($name, $expected)
-    {
-        $container = $this->getConfiguredContainer($this->getMinimalYamlConfig());
-
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertCount(1, $container->findTaggedServiceIds('snc_redis.client'), 'Minimal Yaml should have tagged 1 client');
-    }
-
-    /**
-     * Test loading of minimal config
-     */
-    public function testMinimalConfigLoad()
-    {
-        $container = $this->getConfiguredContainer($this->getMinimalYamlConfig());
-
-        $this->assertTrue($container->hasDefinition('snc_redis.logger'));
-        $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
-
-        $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters.default'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
-        $this->assertTrue($container->hasDefinition('snc_redis.default'));
-        $this->assertTrue($container->hasAlias('snc_redis.default_client'));
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
-
-        $connectionArguments = $container->getDefinition('snc_redis.connection.default_parameters.default')->getArguments();
-        $this->assertCount(3, $connectionArguments);
         $this->assertSame(
-            array(
-                'read_write_timeout' => null,
-                'iterable_multibulk' => false,
-                'serialization' => 'default',
-                'profile' => 'default',
-                'prefix' => null,
-                'service' => null,
-                'async_connect' => false,
-                'timeout' => 5,
-                'persistent' => false,
-                'exceptions' => true,
-                'logging' => false,
-                'alias' => 'default',
-            ),
-            $connectionArguments[0]
+            ['Snc\RedisBundle\Factory\EnvParametersFactory', 'create'],
+            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory()
         );
-        $this->assertSame('Predis\Connection\Parameters', $connectionArguments[1]);
     }
 
-    /**
-     * Test profile option
-     */
     public function testProfileOption()
     {
-        $container = $this->getConfiguredContainer($this->getProfileYamlConfig());
+        $container = $this->getConfiguredContainer('env_profile');
 
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertSame('Predis\Profile\RedisVersion260', $container->getDefinition('snc_redis.client.default_profile')->getClass());
     }
 
-    /**
-     * Test valid config of the cluster option
-     */
     public function testClusterOption()
     {
-        $container = $this->getConfiguredContainer($this->getClusterYamlConfig());
+        $container = $this->getConfiguredContainer('env_cluster');
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertEquals('redis', $options['cluster']);
@@ -153,78 +57,24 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
-    private function parseYaml($yaml)
+    private function getConfiguredContainer($file)
     {
-        $parser = new Parser();
+        $container = new ContainerBuilder();
 
-        return $parser->parse($yaml);
-    }
+        $container->setParameter('kernel.debug', false);
+        $container->setParameter('kernel.bundles', array());
+        $container->setParameter('kernel.cache_dir', sys_get_temp_dir());
+        $container->setParameter('kernel.environment', 'test');
+        $container->setParameter('kernel.root_dir', __DIR__ . '/../../');
 
-    private function getMinimalYamlConfig()
-    {
-        return <<<'EOF'
-clients:
-    default:
-        type: predis
-        alias: default
-        dsn: "%env(REDIS_URL)%"
-EOF;
-    }
+        $container->registerExtension(new SncRedisExtension());
 
-    public function getClusterYamlConfig()
-    {
-        return <<<'EOF'
-clients:
-    default:
-        type: predis
-        alias: default
-        dsn:
-            - "%env(REDIS_URL_1)%"
-            - "%env(REDIS_URL_2)%"
-        options:
-            cluster: "redis"
-EOF;
-    }
+        $locator = new FileLocator(__DIR__.'/Fixtures/config/yaml');
+        $loader = new YamlFileLoader($container, $locator);
+        $loader->load($file.'.yaml');
 
-    private function getProfileYamlConfig()
-    {
-        return <<<'EOF'
-clients:
-    default:
-        type: predis
-        alias: default
-        dsn: "%env(REDIS_URL)%"
-        options:
-            profile: "%env(REDIS_PROFILE)%"
-EOF;
-    }
-
-    private function getContainer()
-    {
-        return new ContainerBuilder(new EnvPlaceholderParameterBag(array(
-            'kernel.debug' => false,
-            'kernel.bundles' => array(),
-            'kernel.cache_dir' => sys_get_temp_dir(),
-            'kernel.environment' => 'test',
-            'kernel.root_dir' => __DIR__ . '/../../',
-            'env(REDIS_URL)' => 'redis://localhost',
-            'env(REDIS_URL_1)' => 'redis://localhost',
-            'env(REDIS_URL_2)' => 'redis://localhost',
-            'env(REDIS_PROFILE)' => '2.6',
-        )));
-    }
-
-    private function getConfiguredContainer($yaml)
-    {
-        $extension = new SncRedisExtension();
-        $config = $this->parseYaml($yaml);
-
-        $container = $this->getContainer();
-
-        $container->registerExtension($extension);
-        $container->prependExtensionConfig($extension->getAlias(), $config);
-        $pass = new MergeExtensionConfigurationPass();
-        $pass->process($container);
+        $container->getCompilerPassConfig()->setRemovingPasses(array());
+        $container->compile();
 
         return $container;
     }

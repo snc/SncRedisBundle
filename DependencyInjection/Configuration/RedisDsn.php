@@ -11,10 +11,7 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
-/**
- * RedisDsn
- */
-class RedisDsn implements RedisDsnInterface
+class RedisDsn
 {
     /**
      * @var string
@@ -57,12 +54,17 @@ class RedisDsn implements RedisDsnInterface
     protected $alias;
 
     /**
-     * Constructor
-     *
-     * @param string $dsn
+     * @var bool
      */
-    public function __construct($dsn)
+    protected $isEnv;
+
+    /**
+     * @param string $dsn
+     * @param bool $isEnv
+     */
+    public function __construct($dsn, $isEnv)
     {
+        $this->isEnv = $isEnv;
         $this->dsn = $dsn;
         $this->parseDsn($dsn);
     }
@@ -136,10 +138,32 @@ class RedisDsn implements RedisDsnInterface
     }
 
     /**
+     * Return the env DSN if one exists, null otherwise
+     *
+     * @return string|null
+     */
+    public function getEnvDsn()
+    {
+        return $this->isEnv() ? $this->dsn : null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnv()
+    {
+        return $this->isEnv;
+    }
+
+    /**
      * @return bool
      */
     public function isValid()
     {
+        if ($this->isEnv()) {
+            return true;
+        }
+
         if (0 !== strpos($this->dsn, 'redis://')) {
             return false;
         }
@@ -160,6 +184,10 @@ class RedisDsn implements RedisDsnInterface
      */
     protected function parseDsn($dsn)
     {
+        if ($this->isEnv()) {
+            return;
+        }
+
         $dsn = str_replace('redis://', '', $dsn); // remove "redis://"
         if (false !== $pos = strrpos($dsn, '@')) {
             // parse password

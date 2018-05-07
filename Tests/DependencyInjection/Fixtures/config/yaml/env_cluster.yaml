@@ -1,0 +1,14 @@
+parameters:
+    env(REDIS_URL_1): redis://localhost
+    env(REDIS_URL_2): redis://localhost2
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn:
+                - "%env(REDIS_URL_1)%"
+                - "%env(REDIS_URL_2)%"
+            options:
+                cluster: "redis"
