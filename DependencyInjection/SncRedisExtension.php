@@ -135,6 +135,8 @@ class SncRedisExtension extends Extension
     {
         if (null === $client['options']['cluster']) {
             unset($client['options']['cluster']);
+        } else {
+            unset($client['options']['replication']);
         }
 
         // predis connection parameters have been renamed in v0.8
