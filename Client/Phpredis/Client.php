@@ -83,7 +83,8 @@ class Client extends Redis
      */
     private function onDemandCalls()
     {
-        foreach ($this->delayedCalls as $delayedCallArr) {
+        while (!empty($this->delayedCalls)) {
+            $delayedCallArr = array_shift($this->delayedCalls);
             call_user_func_array('parent::' . $delayedCallArr['method'], $delayedCallArr['args']);
         }
         $this->onDemandPending = false;
