@@ -132,6 +132,8 @@ class SncRedisExtension extends Extension
     {
         if (null === $client['options']['cluster']) {
             unset($client['options']['cluster']);
+        } else {
+            unset($client['options']['replication']);
         }
 
         // predis connection parameters have been renamed in v0.8
@@ -207,7 +209,7 @@ class SncRedisExtension extends Extension
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
         $clientDef->setPublic(false);
         $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
-        if (1 === $connectionCount) {
+        if (1 === $connectionCount && !isset($client['options']['cluster'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = array();
