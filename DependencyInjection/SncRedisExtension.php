@@ -13,6 +13,8 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
+use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -101,7 +103,11 @@ class SncRedisExtension extends Extension
                 $container->resolveEnvPlaceholders($dsn, null, $usedEnvs);
             }
 
-            $parsedDsn = new RedisDsn($dsn, !empty($usedEnvs));
+            if ($usedEnvs) {
+                return new RedisEnvDsn($dsn);
+            }
+
+            $parsedDsn = new RedisDsn($dsn);
 
             if ($parsedDsn->isValid()) {
                 return $parsedDsn;
@@ -151,7 +157,8 @@ class SncRedisExtension extends Extension
 
         /** @var RedisDsn $dsn */
         foreach ($client['dsns'] as $i => $dsn) {
-            if (!$connectionAlias = $dsn->getAlias()) {
+            $connectionAlias = $dsn instanceof RedisDsn ? $dsn->getAlias() : null;
+            if (!$connectionAlias) {
                 $connectionAlias = 1 === $connectionCount ? $client['alias'] : $client['alias'] . ($i + 1);
             }
             $connectionAliases[] = $connectionAlias;
@@ -160,7 +167,7 @@ class SncRedisExtension extends Extension
             $connection['logging'] = $client['logging'];
             $connection['alias'] = $connectionAlias;
 
-            if (!$dsn->isEnv()) {
+            if ($dsn instanceof RedisDsn) {
                 if (null !== $dsn->getSocket()) {
                     $connection['scheme'] = 'unix';
                     $connection['path'] = $dsn->getSocket();
@@ -226,12 +233,12 @@ class SncRedisExtension extends Extension
     /**
      * Loads a connection.
      *
-     * @param string           $clientAlias The client alias
-     * @param array            $connection  A connection configuration
-     * @param ContainerBuilder $container   A ContainerBuilder instance
-     * @param string|null      $envDsn      Env DSN
+     * @param string               $clientAlias The client alias
+     * @param array                $connection  A connection configuration
+     * @param ContainerBuilder     $container   A ContainerBuilder instance
+     * @param RedisEnvDsn|RedisDsn $dsn         DSN object
      */
-    protected function loadPredisConnectionParameters($clientAlias, array $connection, ContainerBuilder $container, RedisDsn $dsn)
+    protected function loadPredisConnectionParameters($clientAlias, array $connection, ContainerBuilder $container, $dsn)
     {
         $parametersClass = $container->getParameter('snc_redis.connection_parameters.class');
 
@@ -240,10 +247,10 @@ class SncRedisExtension extends Extension
         $parameterDef->setPublic(false);
         $parameterDef->addArgument($connection);
 
-        if ($dsn->isEnv()) {
-            $parameterDef->setFactory(array('Snc\RedisBundle\Factory\EnvParametersFactory', 'create'));
+        if ($dsn instanceof RedisEnvDsn) {
+            $parameterDef->setFactory(array('Snc\RedisBundle\Factory\PredisEnvParametersFactory', 'create'));
             $parameterDef->addArgument($parametersClass);
-            $parameterDef->addArgument($dsn->getEnvDsn());
+            $parameterDef->addArgument((string) $dsn);
         }
 
         $parameterDef->addTag('snc_redis.connection_parameters', array('clientAlias' => $clientAlias));
@@ -276,52 +283,24 @@ class SncRedisExtension extends Extension
             @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
         }
 
-        $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_client.class'));
+        $phpredisClientclass = $container->getParameter('snc_redis.phpredis_client.class');
         if ($client['logging']) {
-            $phpredisDef = new Definition($container->getParameter('snc_redis.phpredis_connection_wrapper.class'));
-            $phpredisDef->addArgument(array('alias' => $client['alias']));
-            $phpredisDef->addArgument(new Reference('snc_redis.logger'));
+            $phpredisClientclass = $container->getParameter('snc_redis.phpredis_connection_wrapper.class');
         }
-
+        $phpredisDef = new Definition($phpredisClientclass);
+        $phpredisDef->setFactory(array(
+            new Definition('Snc\RedisBundle\Factory\PhpredisClientFactory', array(new Reference('snc_redis.logger'))),
+            'create'
+        ));
+        $phpredisDef->addArgument($phpredisClientclass);
+        $phpredisDef->addArgument((string) $dsn);
+        $phpredisDef->addArgument($client['options']);
+        $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         $phpredisDef->setPublic(false);
-        $connectMethod = $client['options']['connection_persistent'] ? 'pconnect' : 'connect';
-        $connectParameters = array();
-        if (null !== $dsn->getSocket()) {
-            $connectParameters[] = $dsn->getSocket();
-            $connectParameters[] = null;
-        } else {
-            $connectParameters[] = $dsn->getHost();
-            $connectParameters[] = $dsn->getPort();
-        }
-        if ($client['options']['connection_timeout']) {
-            $connectParameters[] = $client['options']['connection_timeout'];
-        } else {
-            $connectParameters[] = null;
-        }
-        if ($client['options']['connection_persistent']) {
-            $connectParameters[] = $dsn->getPersistentId();
-        }
 
-        $phpredisDef->addMethodCall($connectMethod, $connectParameters);
-        if ($client['options']['prefix']) {
-            $phpredisDef->addMethodCall('setOption', array(\Redis::OPT_PREFIX, $client['options']['prefix']));
-        }
-        if (null !== $dsn->getPassword()) {
-            $phpredisDef->addMethodCall('auth', array($dsn->getPassword()));
-        }
-        if (null !== $dsn->getDatabase()) {
-            $phpredisDef->addMethodCall('select', array($dsn->getDatabase()));
-        }
-        if ($client['options']['serialization']) {
-            $phpredisDef->addMethodCall(
-                'setOption',
-                array(\Redis::OPT_SERIALIZER, $this->loadSerializationType($client['options']['serialization']))
-            );
-        }
         $container->setDefinition($phpredisId, $phpredisDef);
-
-        $container->setAlias(sprintf('snc_redis.%s', $client['alias']), $phpredisId);
+        $container->setAlias(sprintf('snc_redis.%s', $client['alias']), new Alias($phpredisId, true));
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), $phpredisId);
     }
 
@@ -443,33 +422,6 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool.redis', 'snc_redis.swiftmailer.spool');
-    }
-
-    /**
-     * Load the correct serializer for Redis
-     *
-     * @param string $type
-     *
-     * @return string
-     * @throws InvalidConfigurationException
-     */
-    public function loadSerializationType($type)
-    {
-        $types = array(
-            'default' => \Redis::SERIALIZER_NONE,
-            'none' => \Redis::SERIALIZER_NONE,
-            'php' => \Redis::SERIALIZER_PHP
-        );
-
-        if (defined('Redis::SERIALIZER_IGBINARY')) {
-            $types['igbinary'] = \Redis::SERIALIZER_IGBINARY;
-        }
-
-        if (array_key_exists($type, $types)) {
-            return $types[$type];
-        }
-
-        throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $type, implode(", ", array_keys($types))));
     }
 
      /* Loads the profiler storage configuration.

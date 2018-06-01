@@ -53,7 +53,8 @@ class SncRedisExtensionTest extends TestCase
     {
         $extension = new SncRedisExtension();
         $config = array();
-        $extension->load(array($config), $this->getContainer());
+        $extension->load(array($config), $container = $this->getContainer());
+        $this->assertArrayNotHasKey('snc_redis.client', $container->getDefinitions());
     }
 
     /**
@@ -319,20 +320,6 @@ class SncRedisExtensionTest extends TestCase
          $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
          $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
          $this->assertSame($options['serialization'], $masterParameters['serialization']);
-    }
-
-    /**
-     * Test validity of serialization type
-     */
-    public function testLoadSerializationType()
-    {
-        $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getSerializationYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
-        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
-        $serializationType = $extension->loadSerializationType($options['serialization']);
-        $this->assertTrue(is_integer($serializationType));
-        $this->assertEquals(\Redis::SERIALIZER_NONE, $serializationType);
     }
 
     /**

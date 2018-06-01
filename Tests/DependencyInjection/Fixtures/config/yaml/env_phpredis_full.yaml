@@ -1,0 +1,15 @@
+parameters:
+    env(TEST_URL_2): redis://whatever-host
+
+snc_redis:
+    clients:
+        one_client:
+            type: phpredis
+            alias: alias_test
+            dsn: '%env(TEST_URL_2)%'
+            logging: true
+            options:
+                connection_timeout: 10
+                connection_persistent: true
+                prefix: totoprofix
+                serialization: php
