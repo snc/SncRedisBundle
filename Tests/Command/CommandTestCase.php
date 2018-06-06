@@ -72,7 +72,7 @@ abstract class CommandTestCase extends TestCase
 
         $command = $this->getCommand();
         $this->application->add($command);
-        $command->setContainer($this->container);
+        $command->setClientLocator($this->container);
     }
 
     protected function registerPredisClient()
