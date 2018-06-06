@@ -18,9 +18,11 @@
         </service>
         <service id="snc_redis.command.flush_all" class="Snc\RedisBundle\Command\RedisFlushallCommand" public="false">
             <tag name="console.command" command="redis:flushall" />
+            <tag name="snc_redis.command" />
         </service>
         <service id="snc_redis.command.flush_db" class="Snc\RedisBundle\Command\RedisFlushdbCommand" public="false">
             <tag name="console.command" command="redis:flushdb" />
+            <tag name="snc_redis.command" />
         </service>
     </services>
 

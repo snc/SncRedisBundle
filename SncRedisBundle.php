@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle;
 
+use Snc\RedisBundle\DependencyInjection\Compiler\ClientLocatorPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\SwiftMailerPass;
@@ -31,5 +32,6 @@ class SncRedisBundle extends Bundle
         $container->addCompilerPass(new LoggingPass());
         $container->addCompilerPass(new MonologPass());
         $container->addCompilerPass(new SwiftMailerPass());
+        $container->addCompilerPass(new ClientLocatorPass());
     }
 }
