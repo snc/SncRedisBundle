@@ -171,7 +171,8 @@ class RedisSessionHandler implements \SessionHandlerInterface
             end
 LUA;
 
-            $this->redis->eval($script, array($this->getRedisKey($this->lockKey), $this->token), 1);
+            $token = $this->redis->_serialize($this->token());
+            $this->redis->eval($script, array($this->getRedisKey($this->lockKey), $token), 1);
         } else {
             $this->redis->getProfile()->defineCommand('sncFreeSessionLock', 'Snc\RedisBundle\Session\Storage\Handler\FreeLockCommand');
             $this->redis->sncFreeSessionLock($this->getRedisKey($this->lockKey), $this->token);
