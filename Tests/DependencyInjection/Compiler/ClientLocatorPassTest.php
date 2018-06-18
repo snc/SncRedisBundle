@@ -17,11 +17,10 @@ class ClientLocatorPassTest extends TestCase
     private $clientLocatorPass;
 
     /**
-     * @test
      * @expectedException \RuntimeException
      * @expectedExceptionMessage service id snc_redis.client_locator already assigned
      */
-    public function throwRuntimeExceptionWhenServiceIdExists()
+    public function testThrowRuntimeExceptionWhenServiceIdExists()
     {
         $container = $this->getContainerMock([], [], true);
 
@@ -60,21 +59,17 @@ class ClientLocatorPassTest extends TestCase
     }
 
     /**
-     * @test
      * @expectedException \RuntimeException
      * @expectedExceptionMessage no redis clients found (tag name: snc_redis.client)
      */
-    public function throwRuntimeExceptionWhenNoRedisClientsExist()
+    public function testThrowRuntimeExceptionWhenNoRedisClientsExist()
     {
         $container = $this->getContainerMock([]);
 
         $this->clientLocatorPass->process($container->reveal());
     }
 
-    /**
-     * @test
-     */
-    public function addClientLocatorToContainer()
+    public function testAddClientLocatorToContainer()
     {
         $clientDefinition   = new Definition('\Predis\Client');
         $clientDefinitions  = [
