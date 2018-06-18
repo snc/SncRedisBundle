@@ -39,7 +39,7 @@ class ClientLocatorPass implements CompilerPassInterface
 
         $clientLocatorDefinition = $this->createClientLocatorDefinition($container, $clients);
 
-        $this->passClientLocatorToSncRedisCommans($container, $clientLocatorDefinition);
+        $this->passClientLocatorToSncRedisCommands($container, $clientLocatorDefinition);
     }
 
     /**
@@ -105,7 +105,7 @@ class ClientLocatorPass implements CompilerPassInterface
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      * @param \Symfony\Component\DependencyInjection\Definition       $clientLocatorDefinition
      */
-    private function passClientLocatorToSncRedisCommans(ContainerBuilder $container, Definition $clientLocatorDefinition)
+    private function passClientLocatorToSncRedisCommands(ContainerBuilder $container, Definition $clientLocatorDefinition)
     {
         $commandDefinitions = $container->findTaggedServiceIds('snc_redis.command');
         foreach (array_keys($commandDefinitions) as $key) {
