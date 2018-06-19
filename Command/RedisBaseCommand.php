@@ -11,9 +11,9 @@
 
 namespace Snc\RedisBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -23,8 +23,19 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  *
  * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
-abstract class RedisBaseCommand extends ContainerAwareCommand
+abstract class RedisBaseCommand extends Command
 {
+    /** @var \Psr\Container\ContainerInterface */
+    protected $clientLocator;
+
+    /**
+     * @param \Psr\Container\ContainerInterface $clientLocator
+     *
+     */
+    public function setClientLocator(\Psr\Container\ContainerInterface $clientLocator)
+    {
+        $this->clientLocator = $clientLocator;
+    }
 
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
@@ -49,7 +60,8 @@ abstract class RedisBaseCommand extends ContainerAwareCommand
         $this->addOption(
             'client',
             null,
-            InputOption::VALUE_REQUIRED, 'The name of the predis client to interact with',
+            InputOption::VALUE_REQUIRED,
+            'The name of the predis client to interact with',
             'default'
         );
     }
@@ -64,7 +76,7 @@ abstract class RedisBaseCommand extends ContainerAwareCommand
 
         $client = $this->input->getOption('client');
         try {
-            $this->redisClient = $this->getContainer()->get('snc_redis.' . $client);
+            $this->redisClient = $this->clientLocator->get('snc_redis.' . $client);
         } catch (ServiceNotFoundException $e) {
             $this->output->writeln('<error>The client ' . $client . ' is not defined</error>');
             return;
@@ -83,7 +95,7 @@ abstract class RedisBaseCommand extends ContainerAwareCommand
      *
      * @return boolean true if either no-interaction was chosen or the user wants to proceed
      */
-    protected function proceedingAllowed()
+    protected function proceedingAllowed(): bool
     {
         if ($this->input->getOption('no-interaction')) {
             return true;
