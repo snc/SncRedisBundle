@@ -4,7 +4,7 @@ namespace Snc\RedisBundle\Factory;
 
 use Predis\Connection\ParametersInterface;
 
-class EnvParametersFactory
+class PredisEnvParametersFactory
 {
     /**
      * @param array $options

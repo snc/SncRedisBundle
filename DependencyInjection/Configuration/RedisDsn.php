@@ -54,17 +54,10 @@ class RedisDsn
     protected $alias;
 
     /**
-     * @var bool
-     */
-    protected $isEnv;
-
-    /**
      * @param string $dsn
-     * @param bool $isEnv
      */
-    public function __construct($dsn, $isEnv)
+    public function __construct($dsn)
     {
-        $this->isEnv = $isEnv;
         $this->dsn = $dsn;
         $this->parseDsn($dsn);
     }
@@ -138,32 +131,10 @@ class RedisDsn
     }
 
     /**
-     * Return the env DSN if one exists, null otherwise
-     *
-     * @return string|null
-     */
-    public function getEnvDsn()
-    {
-        return $this->isEnv() ? $this->dsn : null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnv()
-    {
-        return $this->isEnv;
-    }
-
-    /**
      * @return bool
      */
     public function isValid()
     {
-        if ($this->isEnv()) {
-            return true;
-        }
-
         if (0 !== strpos($this->dsn, 'redis://')) {
             return false;
         }
@@ -184,10 +155,6 @@ class RedisDsn
      */
     protected function parseDsn($dsn)
     {
-        if ($this->isEnv()) {
-            return;
-        }
-
         $dsn = str_replace('redis://', '', $dsn); // remove "redis://"
         if (false !== $pos = strrpos($dsn, '@')) {
             // parse password
@@ -202,12 +169,12 @@ class RedisDsn
             $dsn = substr($dsn, $pos + 1);
         }
         $dsn = preg_replace_callback('/\?(.*)$/', array($this, 'parseParameters'), $dsn); // parse parameters
-        if (preg_match('#^(.*)/(\d+|%[^%]+%|env_\w+_[[:xdigit:]]{32,})$#', $dsn, $matches)) {
+        if (preg_match('#^(.*)/(\d+|%[^%]+%)$#', $dsn, $matches)) {
             // parse database
             $this->database = is_numeric($matches[2]) ? (int) $matches[2] : $matches[2];
             $dsn = $matches[1];
         }
-        if (preg_match('#^([^:]+)(:(\d+|%[^%]+%|env_\w+_[[:xdigit:]]{32,}))?$#', $dsn, $matches)) {
+        if (preg_match('#^([^:]+)(:(\d+|%[^%]+%))?$#', $dsn, $matches)) {
             if (!empty($matches[1])) {
                 // parse host/ip or socket
                 if ('/' === $matches[1]{0}) {
@@ -254,5 +221,10 @@ class RedisDsn
         }
 
         return '';
+    }
+
+    public function __toString()
+    {
+        return $this->dsn;
     }
 }
