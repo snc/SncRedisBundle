@@ -28,7 +28,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $container = $this->getConfiguredContainer('env_predis_minimal');
 
         $this->assertSame(
-            array('Snc\RedisBundle\Factory\PredisEnvParametersFactory', 'create'),
+            array('Snc\RedisBundle\Factory\PredisParametersFactory', 'create'),
             $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory()
         );
     }
