@@ -3,9 +3,9 @@
 namespace Snc\RedisBundle\Tests\Factory;
 
 use PHPUnit\Framework\TestCase;
-use Snc\RedisBundle\Factory\EnvParametersFactory;
+use Snc\RedisBundle\Factory\PredisEnvParametersFactory;
 
-class EnvParametersFactoryTest extends TestCase
+class PredisEnvParametersFactoryTest extends TestCase
 {
     public function createDp()
     {
@@ -37,7 +37,7 @@ class EnvParametersFactoryTest extends TestCase
      */
     public function testCreate($dsn, $class, $options)
     {
-        $parameters = EnvParametersFactory::create($options, $class, $dsn);
+        $parameters = PredisEnvParametersFactory::create($options, $class, $dsn);
 
         $this->assertInstanceOf($class, $parameters);
 
@@ -51,6 +51,6 @@ class EnvParametersFactoryTest extends TestCase
      */
     public function testCreateException()
     {
-        EnvParametersFactory::create(array(), '\stdClass', 'redis://localhost');
+        PredisEnvParametersFactory::create(array(), '\stdClass', 'redis://localhost');
     }
 }

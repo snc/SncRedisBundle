@@ -73,7 +73,7 @@ class RedisDsnTest extends TestCase
      */
     public function testHost($dsn, $host)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($host, $dsn->getHost());
     }
 
@@ -106,7 +106,7 @@ class RedisDsnTest extends TestCase
      */
     public function testSocket($dsn, $socket)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($socket, $dsn->getSocket());
     }
 
@@ -147,7 +147,7 @@ class RedisDsnTest extends TestCase
      */
     public function testPort($dsn, $port)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($port, $dsn->getPort());
     }
 
@@ -176,11 +176,6 @@ class RedisDsnTest extends TestCase
             array('redis://%redis_host%:%redis_port%', null),
             array('redis://%redis_host%:%redis_port%/%redis_db%', '%redis_db%'),
             array('redis://pw@%redis_host%:%redis_port%/%redis_db%', '%redis_db%'),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed', null),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed/env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a', 'env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a'),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed:env_REDIS_PORT_0458150d4bf631c8ac63b0fa4d257a21', null),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed:env_REDIS_PORT_0458150d4bf631c8ac63b0fa4d257a21/env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a', 'env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a'),
-            array('redis://env_REDIS_PW_e7406513a853fd4692343d101baecb7c@env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed:env_REDIS_PORT_0458150d4bf631c8ac63b0fa4d257a21/env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a', 'env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a'),
             array('redis:///redis.sock', null),
             array('redis:///redis.sock/0', 0),
             array('redis:///redis.sock/1', 1),
@@ -198,7 +193,7 @@ class RedisDsnTest extends TestCase
      */
     public function testDatabase($dsn, $database)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($database, $dsn->getDatabase());
     }
 
@@ -242,7 +237,7 @@ class RedisDsnTest extends TestCase
      */
     public function testPassword($dsn, $password)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($password, $dsn->getPassword());
     }
 
@@ -269,15 +264,9 @@ class RedisDsnTest extends TestCase
             array('redis://%redis_host%:%redis_port%', true),
             array('redis://%redis_host%:%redis_port%/%redis_db%', true),
             array('redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', true),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed', true),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed/env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a', true),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed:env_REDIS_PORT_0458150d4bf631c8ac63b0fa4d257a21', true),
-            array('redis://env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed:env_REDIS_PORT_0458150d4bf631c8ac63b0fa4d257a21/env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a', true),
-            array('redis://env_REDIS_PW_e7406513a853fd4692343d101baecb7c@env_REDIS_HOST_1ef60d9ef7a55747f99d0a42206e58ed:env_REDIS_PORT_0458150d4bf631c8ac63b0fa4d257a21/env_REDIS_DB_0d1da5bfb707f91e21a1f78cd11fcd0a', true),
             array('localhost', false),
             array('localhost/1', false),
             array('pw@localhost:63790/10', false),
-            array('env_REDIS_URL_e07910a06a086c83ba41827aa00b26ed', false),
         );
     }
 
@@ -289,23 +278,8 @@ class RedisDsnTest extends TestCase
      */
     public function testIsValid($dsn, $valid)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($valid, $dsn->isValid());
-        $this->assertFalse($dsn->isEnv());
-        $this->assertNull($dsn->getEnvDsn());
-    }
-
-    /**
-     * @param string $dsn   DSN
-     *
-     * @dataProvider isValidValues
-     */
-    public function testIsValidEnvDsn($dsn)
-    {
-        $dsnObject = new RedisDsn($dsn, true);
-        $this->assertTrue($dsnObject->isValid());
-        $this->assertTrue($dsnObject->isEnv());
-        $this->assertSame($dsn, $dsnObject->getEnvDsn());
     }
 
     /**
@@ -339,7 +313,7 @@ class RedisDsnTest extends TestCase
      */
     public function testParameterValues($dsn, $weight, $alias)
     {
-        $dsn = new RedisDsn($dsn, false);
+        $dsn = new RedisDsn($dsn);
         $this->assertSame($weight, $dsn->getWeight());
         $this->assertSame($alias, $dsn->getAlias());
     }

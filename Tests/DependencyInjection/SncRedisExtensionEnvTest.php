@@ -26,13 +26,76 @@ class SncRedisExtensionEnvTest extends TestCase
         }
     }
 
-    public function testDefaultParameterConfigLoad()
+    public function testPredisDefaultParameterConfigLoad()
     {
-        $container = $this->getConfiguredContainer('env_minimal');
+        $container = $this->getConfiguredContainer('env_predis_minimal');
 
         $this->assertSame(
-            ['Snc\RedisBundle\Factory\EnvParametersFactory', 'create'],
+            array('Snc\RedisBundle\Factory\PredisEnvParametersFactory', 'create'),
             $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory()
+        );
+    }
+
+    public function testPhpredisDefaultParameterConfig()
+    {
+        $container = $this->getConfiguredContainer('env_phpredis_minimal');
+
+        $clientDefinition = $container->findDefinition('snc_redis.default');
+
+        $this->assertSame($clientDefinition, $container->findDefinition('snc_redis.default_client'));
+        $this->assertSame('Redis', $clientDefinition->getClass());
+        $this->assertSame('Redis', $clientDefinition->getArgument(0));
+        $this->assertContains('REDIS_URL', $clientDefinition->getArgument(1));
+        $this->assertSame('default', $clientDefinition->getArgument(3));
+
+        $this->assertSame(array(
+                'connection_async' => false,
+                'connection_persistent' => false,
+                'connection_timeout' => 5,
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+                'serialization' => 'default',
+                'profile' => 'default',
+                'cluster' => null,
+                'prefix' => null,
+                'service' => null,
+            ),
+            $clientDefinition->getArgument(2)
+        );
+    }
+
+    public function testPhpredisFullConfig()
+    {
+        $container = $this->getConfiguredContainer('env_phpredis_full');
+
+        $clientDefinition = $container->findDefinition('snc_redis.alias_test');
+
+        $clientClass = 'Snc\RedisBundle\Client\Phpredis\Client';
+        if (version_compare(phpversion('redis'), '4.0.0') >= 0) {
+            // Logging is not supported for this version >=4.0.0 of phpredis
+            $clientClass = 'Redis';
+        }
+
+        $this->assertSame($clientDefinition, $container->findDefinition('snc_redis.alias_test_client'));
+        $this->assertSame($clientClass, $clientDefinition->getClass());
+        $this->assertSame($clientClass, $clientDefinition->getArgument(0));
+        $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1));
+        $this->assertSame('alias_test', $clientDefinition->getArgument(3));
+        $this->assertSame(array(
+                'connection_timeout' => 10,
+                'connection_persistent' => true,
+                'prefix' => 'totoprofix',
+                'serialization' => 'php',
+                'connection_async' => false,
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+                'profile' => 'default',
+                'cluster' => null,
+                'service' => null,
+            ),
+            $clientDefinition->getArgument(2)
         );
     }
 
@@ -41,7 +104,7 @@ class SncRedisExtensionEnvTest extends TestCase
      */
     public function testProfileOption()
     {
-        $container = $this->getConfiguredContainer('env_profile');
+        $container = $this->getConfiguredContainer('env_predis_profile');
 
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertSame('Predis\Profile\RedisVersion260', $container->getDefinition('snc_redis.client.default_profile')->getClass());
@@ -49,7 +112,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
     public function testClusterOption()
     {
-        $container = $this->getConfiguredContainer('env_cluster');
+        $container = $this->getConfiguredContainer('env_predis_cluster');
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertEquals('redis', $options['cluster']);
