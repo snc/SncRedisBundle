@@ -386,3 +386,14 @@ snc_redis:
         client: profiler_storage
         ttl: 3600
 ```
+
+## Troubleshooting ##
+
+If cache warmup fails for prod because a redis server is not available,
+try to install [`symfony/proxy-manager-bridge`](https://symfony.com/doc/master/service_container/lazy_services.html):
+
+``` bash
+$ composer require symfony/proxy-manager-bridge
+```
+
+Once done some services will be lazy-loaded and could prevent unwanted connection call. 
