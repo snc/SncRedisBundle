@@ -276,6 +276,7 @@ class SncRedisExtension extends Extension
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         $phpredisDef->setPublic(false);
+        $phpredisDef->setLazy(true);
 
         $container->setDefinition($phpredisId, $phpredisDef);
         $container->setAlias(sprintf('snc_redis.%s', $client['alias']), new Alias($phpredisId, true));
