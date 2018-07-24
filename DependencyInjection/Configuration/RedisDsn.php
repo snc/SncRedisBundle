@@ -39,6 +39,11 @@ class RedisDsn
     protected $socket;
 
     /**
+     * @var bool
+     */
+    protected $tls;
+
+    /**
      * @var int
      */
     protected $database;
@@ -115,6 +120,14 @@ class RedisDsn
     }
 
     /**
+     * @return bool
+     */
+    public function getTls()
+    {
+        return $this->tls;
+    }
+
+    /**
      * @return string
      */
     public function getAlias()
@@ -135,7 +148,7 @@ class RedisDsn
      */
     public function isValid()
     {
-        if (0 !== strpos($this->dsn, 'redis://')) {
+        if (0 !== strpos($this->dsn, 'redis://') && 0 !== strpos($this->dsn, 'rediss://')) {
             return false;
         }
 
@@ -155,7 +168,7 @@ class RedisDsn
      */
     protected function parseDsn($dsn)
     {
-        $dsn = str_replace('redis://', '', $dsn); // remove "redis://"
+        $dsn = preg_replace('#rediss?://#', '', $dsn); // remove "redis://" and "rediss://"
         if (false !== $pos = strrpos($dsn, '@')) {
             // parse password
             $password = substr($dsn, 0, $pos);
@@ -195,6 +208,8 @@ class RedisDsn
                 $this->port = (int) $matches[3];
             }
         }
+
+        $this->tls = 0 === strpos($this->dsn, 'rediss://');
     }
 
     /**

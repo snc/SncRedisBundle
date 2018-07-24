@@ -37,7 +37,7 @@ class PredisParametersFactory
             $options['scheme'] = 'unix';
             $options['path'] = $dsn->getSocket();
         } else {
-            $options['scheme'] = 'tcp';
+            $options['scheme'] = $dsn->getTls() ? 'tls' : 'tcp';
             $options['host'] = $dsn->getHost();
             $options['port'] = $dsn->getPort();
             if (null !== $dsn->getDatabase()) {
