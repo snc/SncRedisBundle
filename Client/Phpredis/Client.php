@@ -13,7 +13,7 @@
 
 namespace Snc\RedisBundle\Client\Phpredis;
 
-use Redis;
+use Predis\Client as Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
