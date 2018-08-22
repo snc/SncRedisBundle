@@ -2,6 +2,7 @@
 
 namespace Snc\RedisBundle\Factory;
 
+use Snc\RedisBundle\Client\Phpredis\ClientCluster;
 use Snc\RedisBundle\Client\Phpredis\Client;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\Logger\RedisLogger;
@@ -28,39 +29,50 @@ class PhpredisClientFactory
      * @param array  $options Options provided in bundle client config
      * @param string $alias   Connection alias provided in bundle client config
      *
-     * @return \Redis|Client
+     * @return \Redis|Client|\RedisCluster|ClientCluster
      * @throws InvalidConfigurationException
      */
     public function create($class, $dsn, $options, $alias)
     {
-        if (!is_a($class, \Redis::class, true)) {
-            throw new \RuntimeException(sprintf('The factory can only instantiate \Redis classes: %s asked', $class));
+        if (!is_a($class, \Redis::class, true)
+            && !is_a($class, \RedisCluster::class, true)
+        ) {
+            throw new \RuntimeException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
         }
 
-        $client            = $this->createClient($class, $alias);
-        $parsedDsn         = new RedisDsn($dsn);
-        $connectParameters = array();
+        $parsedDsn = new RedisDsn($dsn);
 
-        if (null !== $parsedDsn->getSocket()) {
-            $connectParameters[] = $parsedDsn->getSocket();
-            $connectParameters[] = null;
+        if (is_a($class, \Redis::class, true)) {
+            $client = $this->createClient($class, $alias);
         } else {
-            $connectParameters[] = $parsedDsn->getHost();
-            $connectParameters[] = $parsedDsn->getPort();
+            $seeds = array($parsedDsn->getHost() . ':' . $parsedDsn->getPort());
+            $client = $this->createClusterClient($class, $alias, $seeds);
         }
 
-        if (isset($options['connection_timeout'])) {
-            $connectParameters[] = $options['connection_timeout'];
-        } else {
-            $connectParameters[] = null;
-        }
+        if (is_a($class, \Redis::class, true)) {
+            $connectParameters = array();
 
-        if (!empty($options['connection_persistent'])) {
-            $connectParameters[] = $parsedDsn->getPersistentId();
-        }
+            if (null !== $parsedDsn->getSocket()) {
+                $connectParameters[] = $parsedDsn->getSocket();
+                $connectParameters[] = null;
+            } else {
+                $connectParameters[] = $parsedDsn->getHost();
+                $connectParameters[] = $parsedDsn->getPort();
+            }
 
-        $connectMethod = !empty($options['connection_persistent']) ? 'pconnect' : 'connect';
-        call_user_func_array(array($client, $connectMethod), $connectParameters);
+            if (isset($options['connection_timeout'])) {
+                $connectParameters[] = $options['connection_timeout'];
+            } else {
+                $connectParameters[] = null;
+            }
+
+            if (!empty($options['connection_persistent'])) {
+                $connectParameters[] = $parsedDsn->getPersistentId();
+            }
+
+            $connectMethod = !empty($options['connection_persistent']) ? 'pconnect' : 'connect';
+            call_user_func_array(array($client, $connectMethod), $connectParameters);
+        }
 
         if (isset($options['prefix'])) {
             $client->setOption(\Redis::OPT_PREFIX, $options['prefix']);
@@ -72,9 +84,10 @@ class PhpredisClientFactory
             $client->auth($options['parameters']['password']);
         }
 
-        if (null !== $parsedDsn->getDatabase()) {
+        // RedisCluster has no select method, 'cause use only db:0
+        if (null !== $parsedDsn->getDatabase() && method_exists($client, 'select')) {
             $client->select($parsedDsn->getDatabase());
-        } elseif (isset($options['parameters']['database'])) {
+        } elseif (isset($options['parameters']['database']) && method_exists($client, 'select')) {
             $client->select($options['parameters']['database']);
         }
 
@@ -90,14 +103,32 @@ class PhpredisClientFactory
     }
 
     /**
+     * @param string   $class Redis class to instantiate
+     * @param string   $alias Connection alias provided in bundle client config
+     * @param array    $seeds Connection parameters
+     *
+     * @return \RedisCluster|ClientCluster
+     */
+    private function createClusterClient($class, $alias, array $seeds): \RedisCluster
+    {
+        if (is_a($class, ClientCluster::class, true)) {
+            $client = new $class($seeds, array('alias' => $alias), $this->logger);
+        } else {
+            $client = new $class(NULL, $seeds);
+        }
+
+        return $client;
+    }
+
+    /**
      * @param string $class Redis class to instantiate
      * @param string $alias Connection alias provided in bundle client config
      *
      * @return \Redis|Client
      */
-    private function createClient($class, $alias)
+    private function createClient($class, $alias): \Redis
     {
-        if (is_a($class, '\Snc\RedisBundle\Client\Phpredis\Client', true)) {
+        if (is_a($class, Client::class, true)) {
             $client = new $class(array('alias' => $alias), $this->logger);
         } else {
             $client = new $class();

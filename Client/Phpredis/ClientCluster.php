@@ -1,29 +1,16 @@
 <?php
 
-/*
- * This file is part of the SncRedisBundle package.
- *
- * (c) Henrik Westphal <henrik.westphal@gmail.com>
- * (c) Yassine Khial <yassine.khial@blablacar.com>
- * (c) Pierre Boudelle <pierre.boudelle@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Snc\RedisBundle\Client\Phpredis;
 
-use Redis;
+use RedisCluster;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
- * PHP Redis client with logger.
+ * PHP RedisCluster client with logger.
  *
- * @author Henrik Westphal <henrik.westphal@gmail.com>
- * @author Yassine Khial <yassine.khial@blablacar.com>
- * @author Pierre Boudelle <pierre.boudelle@gmail.com>
+ * @author Igor Scabini <furester@gmail.com>
  */
-class Client extends Redis
+class ClientCluster extends RedisCluster
 {
     /**
      * @var RedisLogger
@@ -41,10 +28,12 @@ class Client extends Redis
      * @param array       $parameters List of parameters (only `alias` key is handled)
      * @param RedisLogger $logger     A RedisLogger instance
      */
-    public function __construct(array $parameters = array(), RedisLogger $logger = null)
+    public function __construct(array $seeds = array(), array $parameters = array(), RedisLogger $logger = null)
     {
         $this->logger = $logger;
-        $this->alias = isset($parameters['alias']) ? $parameters['alias'] : '';
+        $this->alias = $parameters['alias'] ?? '';
+
+        parent::__construct(null, $seeds);
     }
 
     /**
@@ -112,71 +101,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function connect($host, $port = 6379, $timeout = 0.0, $reserved = null, $retry_interval = 0, $read_timeout = 0.0)
-    {
-        return $this->call('connect', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isConnected()
-    {
-        return $this->call('isConnected', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function open($host, $port = 6379, $timeout = 0.0, $reserved = null, $retry_interval = 0, $read_timeout = 0.0)
-    {
-        return $this->call('open', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pconnect($host, $port = 6379, $timeout = 0.0, $persistent_id = null, $retry_interval = 0, $read_timeout = 0.0)
-    {
-        return $this->call('pconnect', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function popen($host, $port = 6379, $timeout = 0.0, $persistent_id = '', $retry_interval = 0, $read_timeout = 0.0)
-    {
-        return $this->call('popen', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        return $this->call('close', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOption($name, $value)
-    {
-        return $this->call('setOption', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getOption($name)
-    {
-        return $this->call('getOption', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ping()
+    public function ping($key_or_address)
     {
         return $this->call('ping', func_get_args());
     }
@@ -211,7 +136,7 @@ class Client extends Redis
     public function psetex($key, $ttl, $value)
     {
         return $this->call('psetex', func_get_args());
-    }
+    }    
 
     /**
      * {@inheritdoc}
@@ -248,7 +173,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function multi($mode = Redis::MULTI)
+    public function multi($mode = RedisCluster::MULTI)
     {
         return $this->call('multi', func_get_args());
     }
@@ -312,9 +237,9 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function pubsub($cmd, ...$args)
+    public function pubsub($key_or_address, $arg = null, ...$other_args)
     {
-        return $this->call('pubsub', array_merge([$cmd], $args));
+        return $this->call('pubsub', array_merge([$key_or_address, $arg], $other_args));
     }
 
     /**
@@ -528,7 +453,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function lRem($key, $value, $count)
+    public function lRem($key, $value)
     {
         return $this->call('lRem', func_get_args());
     }
@@ -688,7 +613,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sScan($key, &$iterator, $pattern = null, $count = 0)
+    public function sScan($key, &$iterator, $pattern = null, $count = null)
     {
         return $this->call('sScan', array($key, &$iterator, $pattern, $count));
     }
@@ -704,25 +629,9 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function randomKey()
+    public function randomKey($key_or_address)
     {
         return $this->call('randomKey', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function select($dbindex)
-    {
-        return $this->call('select', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function move($key, $dbindex)
-    {
-        return $this->call('move', func_get_args());
     }
 
     /**
@@ -808,7 +717,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function dbSize()
+    public function dbSize($key_or_address)
     {
         return $this->call('dbSize', func_get_args());
     }
@@ -816,15 +725,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function auth($password)
-    {
-        return $this->call('auth', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function bgrewriteaof()
+    public function bgrewriteaof($key_or_address)
     {
         return $this->call('bgrewriteaof', func_get_args());
     }
@@ -848,7 +749,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function save()
+    public function save($key_or_address)
     {
         return $this->call('save', func_get_args());
     }
@@ -856,7 +757,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function bgsave()
+    public function bgsave($key_or_address)
     {
         return $this->call('bgsave', func_get_args());
     }
@@ -864,7 +765,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function lastSave()
+    public function lastSave($key_or_address)
     {
         return $this->call('lastSave', func_get_args());
     }
@@ -968,7 +869,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushDB($async = NULL)
+    public function flushDB($key_or_address, $async = null)
     {
         return $this->call('flushDB', func_get_args());
     }
@@ -976,9 +877,9 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushAll($async = NULL)
+    public function flushAll(...$args)
     {
-        return $this->call('flushAll', func_get_args());
+        return $this->call('flushAll', $args);
     }
 
     /**
@@ -992,7 +893,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function info($option = null)
+    public function info($key_or_address, $option = null)
     {
         return $this->call('info', func_get_args());
     }
@@ -1232,23 +1133,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zUnion($Output, $ZSetKeys, array $Weights = null, $aggregateFunction = 'SUM')
-    {
-        return $this->call('zUnion', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function zInter($Output, $ZSetKeys, array $Weights = null, $aggregateFunction = 'SUM')
-    {
-        return $this->call('zInter', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function zScan($key, &$iterator, $pattern = null, $count = 0)
+    public function zScan($key, &$iterator, $pattern = null, $count = null)
     {
         return $this->call('zScan', array($key, &$iterator, $pattern, $count));
     }
@@ -1346,7 +1231,7 @@ class Client extends Redis
      */
     public function hMSet($key, $hashKeys)
     {
-        return $this->call('hMSet', func_get_args());
+        return $this->call('hMset', func_get_args());
     }
 
     /**
@@ -1360,7 +1245,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function hScan($key, &$iterator, $pattern = null, $count = 0)
+    public function hScan($key, &$iterator, $pattern = null, $count = null)
     {
         return $this->call('hScan', array($key, &$iterator, $pattern, $count));
     }
@@ -1368,7 +1253,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function config($cmd, $key, $value = null)
+    public function config($key_or_address, $arg = null, ...$other_args)
     {
         return $this->call('config', func_get_args());
     }
@@ -1400,7 +1285,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function script($cmd, ...$args)
+    public function script($key_or_address, $arg = null, ...$other_args)
     {
         return $this->call('script', func_get_args());
     }
@@ -1480,7 +1365,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function scan(&$iterator, $pattern = null, $count = 0)
+    public function scan(&$i_iterator, $str_node, $str_pattern = null, $i_count = null)
     {
         return $this->call('scan', array(&$iterator, $pattern, $count));
     }

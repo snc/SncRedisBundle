@@ -16,7 +16,7 @@ class PredisParametersFactory
      */
     public static function create($options, $class, $dsn)
     {
-        if (!is_a($class, '\Predis\Connection\ParametersInterface', true)) {
+        if (!is_a($class, ParametersInterface::class, true)) {
             throw new \InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', __CLASS__, __METHOD__, ParametersInterface::class));
         }
 

@@ -11,7 +11,6 @@
 
 namespace Snc\RedisBundle\Command;
 
-
 /**
  * Symfony command to execute redis flushall
  *
@@ -19,7 +18,6 @@ namespace Snc\RedisBundle\Command;
  */
 class RedisFlushallCommand extends RedisBaseCommand
 {
-
     /**
      * {@inheritDoc}
      */
@@ -48,6 +46,10 @@ class RedisFlushallCommand extends RedisBaseCommand
      */
     private function flushAll()
     {
+        if ($this->redisClient instanceof \RedisCluster) {
+            throw new \RuntimeException('\RedisCluster support is not yet implemented for this command');
+        }
+
         if (!($this->redisClient instanceof \IteratorAggregate) || // BC for Predis 1.0
             // bug fix https://github.com/nrk/predis/issues/552
             !($this->redisClient->getConnection() instanceof \Traversable)
@@ -62,5 +64,4 @@ class RedisFlushallCommand extends RedisBaseCommand
 
         $this->output->writeln('<info>All redis databases flushed</info>');
     }
-
 }

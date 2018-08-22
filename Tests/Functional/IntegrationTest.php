@@ -15,7 +15,6 @@ namespace Snc\RedisBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
-use Snc\RedisBundle\Command\RedisFlushallCommand;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -24,7 +23,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Profiler\Profile;
 
 /**
  * IntegrationTest

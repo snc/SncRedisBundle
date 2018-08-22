@@ -24,6 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
+use Predis\Command\Processor\KeyPrefixProcessor;
 
 class SncRedisExtension extends Extension
 {
@@ -193,7 +194,7 @@ class SncRedisExtension extends Extension
         $profileDef->setPublic(false);
         if (null !== $client['options']['prefix']) {
             $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
-            $processorDef = new Definition('Predis\Command\Processor\KeyPrefixProcessor');
+            $processorDef = new Definition(KeyPrefixProcessor::class);
             $processorDef->setArguments(array($client['options']['prefix']));
             $container->setDefinition($processorId, $processorDef);
             $profileDef->addMethodCall('setProcessor', array(new Reference($processorId)));
@@ -259,11 +260,10 @@ class SncRedisExtension extends Extension
         $connectionCount = count($client['dsns']);
 
         if (1 !== $connectionCount) {
-            throw new \RuntimeException('Support for RedisArray is not yet implemented.');
+            throw new \RuntimeException(
+                sprintf('RedisCluster does not support multiple hosts yet and support for RedisArray is not yet implemented. %s DSNs configured.', $connectionCount)
+            );
         }
-
-        /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
-        $dsn = $client['dsns'][0];
 
         $phpRedisVersion = phpversion('redis');
         if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
@@ -271,17 +271,29 @@ class SncRedisExtension extends Extension
             @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
         }
 
-        $phpredisClientclass = $container->getParameter('snc_redis.phpredis_client.class');
-        if ($client['logging']) {
-            $phpredisClientclass = $container->getParameter('snc_redis.phpredis_connection_wrapper.class');
+        if (null === $client['options']['cluster']) {
+            $phpredisClientClass =
+                $client['logging']
+                ? $container->getParameter('snc_redis.phpredis_connection_wrapper.class')
+                : $container->getParameter('snc_redis.phpredis_client.class');
+
+        } else {
+            $phpredisClientClass =
+                $client['logging']
+                    ? $container->getParameter('snc_redis.phpredis_clusterclient_connection_wrapper.class')
+                    : $container->getParameter('snc_redis.phpredis_clusterclient.class');
         }
-        $phpredisDef = new Definition($phpredisClientclass);
+
+        /** @var RedisDsn $dsn */
+        $dsn = (string) $client['dsns'][0];
+
+        $phpredisDef = new Definition($phpredisClientClass);
         $phpredisDef->setFactory(array(
             new Definition(PhpredisClientFactory::class, [new Reference('snc_redis.logger')]),
             'create'
         ));
-        $phpredisDef->addArgument($phpredisClientclass);
-        $phpredisDef->addArgument((string) $dsn);
+        $phpredisDef->addArgument($phpredisClientClass);
+        $phpredisDef->addArgument($dsn);
         $phpredisDef->addArgument($client['options']);
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));

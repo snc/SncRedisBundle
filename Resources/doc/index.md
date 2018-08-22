@@ -141,6 +141,23 @@ be omitted from the DSNs. Also make sure to use the sentinel port number
 (26379 by default) in the DSNs, and not the default Redis port.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
 
+A setup using `RedisCluster` from `phpredis`  could look like this:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsn:
+                - redis://localhost:7000
+                - redis://localhost:7001
+                - redis://localhost:7002
+            options:
+                cluster: true
+```
+
+
 ### Sessions ###
 
 Use Redis sessions by adding the following to your config:
@@ -348,7 +365,7 @@ snc_redis:
                 read_write_timeout: 30
                 iterable_multibulk: false
                 throw_errors: true
-                cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
+                cluster: predis
     session:
         client: default
         prefix: foo

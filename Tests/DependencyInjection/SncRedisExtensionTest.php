@@ -457,6 +457,22 @@ class SncRedisExtensionTest extends TestCase
         $this->assertSame('pass', $redis->getAuth());
     }
 
+    /**
+     * Test minimal RedisCluster configuration
+     */
+    public function testPhpRedisClusterParameters()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPhpRedisClusterYamlMinimalConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.default');
+
+        $redis = $container->get('snc_redis.default');
+
+        $this->assertInstanceOf('\RedisCluster', $redis);
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -532,7 +548,7 @@ clients:
             read_write_timeout: 30
             iterable_multibulk: false
             throw_errors: true
-            cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
+            cluster: predis
             parameters:
                 database: 1
                 password: pass
@@ -760,6 +776,19 @@ clients:
 EOF;
     }
 
+    private function getPhpRedisClusterYamlMinimalConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: ["redis://localhost:7000/0"]
+        options:
+            cluster: true
+EOF;
+    }
+    
     private function getContainer()
     {
         return new ContainerBuilder(new ParameterBag(array(

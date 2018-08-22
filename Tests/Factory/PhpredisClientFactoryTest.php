@@ -14,9 +14,7 @@ class PhpredisClientFactoryTest extends TestCase
     {
         if (!class_exists(\Redis::class)) {
             $this->markTestSkipped(sprintf('The %s requires phpredis extension.', __CLASS__));
-        }
-
-        if (!@fsockopen('127.0.0.1', 6379)) {
+        } elseif (!@fsockopen('127.0.0.1', 6379)) {
             $this->markTestSkipped(sprintf('The %s requires a redis instance listening on 127.0.0.1:6379.', __CLASS__));
         }
 
@@ -36,6 +34,17 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0, $client->getDBNum());
         $this->assertNull($client->getAuth());
         $this->assertNull($client->getPersistentID());
+    }
+
+    public function testCreateMinimalClusterConfig()
+    {
+        $factory = new PhpredisClientFactory();
+
+        $client = $factory->create(\RedisCluster::class, 'redis://localhost:7000/0', array(), 'phprediscluster');
+
+        $this->assertInstanceOf(\RedisCluster::class, $client);
+        $this->assertNull($client->getOption(\Redis::OPT_PREFIX));
+        $this->assertSame(0, $client->getOption(\Redis::OPT_SERIALIZER));
     }
 
     public function testCreateFullConfig()
