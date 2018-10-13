@@ -23,6 +23,10 @@ class PredisParametersFactory
         $dsnOptions = static::parseDsn(new RedisDsn($dsn));
         $dsnOptions = array_merge($options, $dsnOptions);
 
+        if (isset($dsnOptions['persistent'], $dsnOptions['database']) && true === $dsnOptions['persistent']) {
+            $dsnOptions['persistent'] = (int)$dsnOptions['database'];
+        }
+
         return new $class($dsnOptions);
     }
 
