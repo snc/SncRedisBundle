@@ -1,6 +1,6 @@
 parameters:
     env(REDIS_URL): redis://localhost
-    env(REDIS_PROFILE): '2.6'
+    env(REDIS_PROFILE): 2.6
 
 snc_redis:
     clients:

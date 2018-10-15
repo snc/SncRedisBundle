@@ -61,6 +61,17 @@ class PredisParametersFactoryTest extends TestCase
                     'password' => 'pw',
                     'database' => 10,
                 ),
+            ),
+            array(
+                'rediss://pw@localhost:6380',
+                'Predis\Connection\Parameters',
+                array(),
+                array(
+                    'scheme' => 'tls',
+                    'host' => 'localhost',
+                    'port' => 6380,
+                    'password' => 'pw'
+                )
             )
         );
     }

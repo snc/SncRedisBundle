@@ -23,6 +23,10 @@ class PredisParametersFactory
         $dsnOptions = static::parseDsn(new RedisDsn($dsn));
         $dsnOptions = array_merge($options, $dsnOptions);
 
+        if (isset($dsnOptions['persistent'], $dsnOptions['database']) && true === $dsnOptions['persistent']) {
+            $dsnOptions['persistent'] = (int)$dsnOptions['database'];
+        }
+
         return new $class($dsnOptions);
     }
 
@@ -37,7 +41,7 @@ class PredisParametersFactory
             $options['scheme'] = 'unix';
             $options['path'] = $dsn->getSocket();
         } else {
-            $options['scheme'] = 'tcp';
+            $options['scheme'] = $dsn->getTls() ? 'tls' : 'tcp';
             $options['host'] = $dsn->getHost();
             $options['port'] = $dsn->getPort();
             if (null !== $dsn->getDatabase()) {

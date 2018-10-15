@@ -9,9 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\Kernel;
 
-/**
- * SncRedisExtensionTest
- */
 class SncRedisExtensionEnvTest extends TestCase
 {
     /**
@@ -99,9 +96,6 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
-    /**
-     * Test profile option
-     */
     public function testProfileOption()
     {
         $container = $this->getConfiguredContainer('env_predis_profile');
