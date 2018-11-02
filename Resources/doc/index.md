@@ -380,6 +380,21 @@ snc_redis:
         ttl: 3600
 ```
 
+## Usage with `symfony/web-profiler-bundle`
+
+If you are using [`symfony/web-profiler-bundle`](https://github.com/symfony/web-profiler-bundle)
+and want to inspect commands sent by a configured Redis client, logging needs to be enabled for that client.
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: redis://localhost/
+            logging: '%kernel.debug%'
+```
+
 ## Troubleshooting ##
 
 If cache warmup fails for prod because a redis server is not available,
