@@ -37,3 +37,6 @@ install:
 
 before_script:
   - mkdir Snc && ln -s ../ Snc/RedisBundle
+
+script:
+  - bin/phpunit
