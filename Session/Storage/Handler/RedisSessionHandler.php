@@ -209,15 +209,15 @@ class RedisSessionHandler extends AbstractSessionHandler
                     $token,
                     array('NX', 'PX' => $ttl)
                 );
-            } else {
-                return $redis->set(
-                    $key,
-                    $token,
-                    'PX',
-                    $ttl,
-                    'NX'
-                );
             }
+
+            return $redis->set(
+                $key,
+                $token,
+                'PX',
+                $ttl,
+                'NX'
+            );
         };
 
         for ($i = 0;$i < $attempts;++$i) {
