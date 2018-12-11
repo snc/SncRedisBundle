@@ -41,8 +41,7 @@
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
         "predis/predis": "If you want to use predis.",
-        "symfony/console": "If you want to use commands to interact with the redis database",
-        "symfony/proxy-manager-bridge": "If you want to lazy-load some services"
+        "symfony/console": "If you want to use commands to interact with the redis database"
     },
     "config": {
         "bin-dir": "bin/",
