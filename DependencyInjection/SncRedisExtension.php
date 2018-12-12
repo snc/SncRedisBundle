@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the SncRedisBundle package.
- *
- * (c) Henrik Westphal <henrik.westphal@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Snc\RedisBundle\DependencyInjection;
 
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -278,11 +269,14 @@ class SncRedisExtension extends Extension
         $phpredisDef->setPublic(false);
 
         // Older version of phpredis extension do not support lazy loading
-        $supportsLazyServices = version_compare($phpRedisVersion, '4.1.1', '>=');
+        $minimumVersionForLazyLoading = '4.1.1';
+        $supportsLazyServices = version_compare($phpRedisVersion, $minimumVersionForLazyLoading, '>=');
         if (!$supportsLazyServices) {
-            @trigger_error(sprintf('Lazy loading Redis is not supported on PhpRedis %s', $phpRedisVersion), E_USER_WARNING);
-        }
-        if ($supportsLazyServices) {
+            @trigger_error(
+                sprintf('Lazy loading Redis is not supported on PhpRedis %s. Please update to Phpredis %s or higher.', $phpRedisVersion, $minimumVersionForLazyLoading), 
+                E_USER_WARNING
+            );
+        } else {
             $phpredisDef->setLazy(true);
         }
 
