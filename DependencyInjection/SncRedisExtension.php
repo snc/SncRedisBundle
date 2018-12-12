@@ -280,13 +280,12 @@ class SncRedisExtension extends Extension
         // Older version of phpredis extension do not support lazy loading
         $minimumVersionForLazyLoading = '4.1.1';
         $supportsLazyServices = version_compare($phpRedisVersion, $minimumVersionForLazyLoading, '>=');
+        $phpredisDef->setLazy($supportsLazyServices);
         if (!$supportsLazyServices) {
             @trigger_error(
                 sprintf('Lazy loading Redis is not supported on PhpRedis %s. Please update to Phpredis %s or higher.', $phpRedisVersion, $minimumVersionForLazyLoading), 
                 E_USER_WARNING
-            );
-        } else {
-            $phpredisDef->setLazy(true);
+            );    
         }
 
         $container->setDefinition($phpredisId, $phpredisDef);
