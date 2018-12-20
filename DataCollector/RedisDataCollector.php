@@ -42,7 +42,7 @@ class RedisDataCollector extends DataCollector
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->data = array(
-            'commands' => null !== $this->logger ? $this->logger->getCommands() : array(),
+            'commands' => $this->logger->getCommands(),
         );
     }
 

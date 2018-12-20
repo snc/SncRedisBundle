@@ -2,16 +2,23 @@
     "name": "snc/redis-bundle",
     "type": "symfony-bundle",
     "description": "A Redis bundle for Symfony",
-    "keywords": ["redis", "nosql", "symfony"],
+    "keywords": [
+        "redis",
+        "nosql",
+        "symfony"
+    ],
     "homepage": "https://github.com/snc/SncRedisBundle",
     "license": "MIT",
-    "authors": [{
-        "name": "Henrik Westphal",
-        "email": "henrik.westphal@gmail.com"
-    },{
-        "name": "Community contributors",
-        "homepage": "https://github.com/snc/SncRedisBundle/contributors"
-    }],
+    "authors": [
+        {
+            "name": "Henrik Westphal",
+            "email": "henrik.westphal@gmail.com"
+        },
+        {
+            "name": "Community contributors",
+            "homepage": "https://github.com/snc/SncRedisBundle/contributors"
+        }
+    ],
     "require": {
         "php": "^7.0",
         "symfony/framework-bundle": "^3.4 || ^4.0",
@@ -37,9 +44,6 @@
         "symfony/console": "If you want to use commands to interact with the redis database",
         "symfony/proxy-manager-bridge": "If you want to lazy-load some services"
     },
-    "autoload": {
-        "psr-4": { "Snc\\RedisBundle\\": "" }
-    },
     "config": {
         "bin-dir": "bin/",
         "sort-packages": true
@@ -47,6 +51,11 @@
     "extra": {
         "branch-alias": {
             "dev-master": "3.x-dev"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Snc\\RedisBundle\\": ""
         }
     }
 }

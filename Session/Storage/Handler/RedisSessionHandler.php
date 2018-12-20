@@ -121,10 +121,8 @@ class RedisSessionHandler extends AbstractSessionHandler
      */
     public function close()
     {
-        if ($this->locking) {
-            if ($this->locked) {
-                $this->unlockSession();
-            }
+        if ($this->locking && $this->locked) {
+            $this->unlockSession();
         }
 
         return true;
@@ -156,12 +154,8 @@ class RedisSessionHandler extends AbstractSessionHandler
      */
     protected function doRead($sessionId)
     {
-        if ($this->locking) {
-            if (!$this->locked) {
-                if (!$this->lockSession($sessionId)) {
-                    return false;
-                }
-            }
+        if ($this->locking && !$this->locked && !$this->lockSession($sessionId)) {
+            return false;
         }
 
         return $this->redis->get($this->getRedisKey($sessionId)) ?: '';
@@ -209,15 +203,15 @@ class RedisSessionHandler extends AbstractSessionHandler
                     $token,
                     array('NX', 'PX' => $ttl)
                 );
-            } else {
-                return $redis->set(
-                    $key,
-                    $token,
-                    'PX',
-                    $ttl,
-                    'NX'
-                );
             }
+
+            return $redis->set(
+                $key,
+                $token,
+                'PX',
+                $ttl,
+                'NX'
+            );
         };
 
         for ($i = 0;$i < $attempts;++$i) {
