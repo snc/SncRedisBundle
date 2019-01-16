@@ -23,6 +23,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Snc\RedisBundle\Factory\PhpredisClientFactory;
 
 class SncRedisExtension extends Extension
 {
@@ -227,7 +228,7 @@ class SncRedisExtension extends Extension
 
         $parameterDef = new Definition($parametersClass);
         $parameterDef->setPublic(false);
-        $parameterDef->setFactory(array('Snc\RedisBundle\Factory\PredisParametersFactory', 'create'));
+        $parameterDef->setFactory(array(PredisParametersFactory::class, 'create'));
         $parameterDef->addArgument($connection);
         $parameterDef->addArgument($parametersClass);
         $parameterDef->addArgument((string) $dsn);
@@ -253,7 +254,7 @@ class SncRedisExtension extends Extension
 
         /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
         $dsn = $client['dsns'][0];
-        $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
+        $phpredisId = sprintf('snc_redis.%s', $client['alias']);
 
         $phpRedisVersion = phpversion('redis');
         if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
@@ -267,7 +268,7 @@ class SncRedisExtension extends Extension
         }
         $phpredisDef = new Definition($phpredisClientclass);
         $phpredisDef->setFactory(array(
-            new Definition('Snc\RedisBundle\Factory\PhpredisClientFactory', array(new Reference('snc_redis.logger'))),
+            new Definition(PhpredisClientFactory::class, [new Reference('snc_redis.logger')]),
             'create'
         ));
         $phpredisDef->addArgument($phpredisClientclass);
@@ -279,7 +280,7 @@ class SncRedisExtension extends Extension
         $phpredisDef->setLazy(true);
 
         $container->setDefinition($phpredisId, $phpredisDef);
-        $container->setAlias(sprintf('snc_redis.%s', $client['alias']), new Alias($phpredisId, true));
+        $container->setAlias(sprintf('snc_redis.phpredis.%s', $client['alias']), new Alias($phpredisId, true));
         $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), $phpredisId);
     }
 
