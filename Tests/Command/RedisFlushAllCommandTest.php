@@ -77,7 +77,7 @@ class RedisFlushallCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'notExisting', '--no-interaction' => true));
 
-        $this->assertRegExp('/The client notExisting is not defined/', $commandTester->getDisplay());
+        $this->assertRegExp('/The client "notExisting" is not defined/', $commandTester->getDisplay());
     }
 
     protected function getCommand()
