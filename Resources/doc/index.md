@@ -395,7 +395,7 @@ snc_redis:
             logging: '%kernel.debug%'
 ```
 
-## Troubleshooting ##
+## Troubleshooting
 
 If cache warmup fails for prod because a redis server is not available,
 try to install [`symfony/proxy-manager-bridge`](https://symfony.com/doc/master/service_container/lazy_services.html):

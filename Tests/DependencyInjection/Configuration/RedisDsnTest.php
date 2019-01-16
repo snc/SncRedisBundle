@@ -62,6 +62,7 @@ class RedisDsnTest extends TestCase
             array('redis://%redis_host%:%redis_port%', '%redis_host%'),
             array('redis://%redis_host%:%redis_port%/%redis_db%', '%redis_host%'),
             array('redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', '%redis_host%'),
+            array('rediss://localhost', 'localhost'),
         );
     }
 
@@ -110,6 +111,26 @@ class RedisDsnTest extends TestCase
         $this->assertSame($socket, $dsn->getSocket());
     }
 
+    public function tlsValues()
+    {
+        return array(
+            array('redis://localhost', false),
+            array('rediss://localhost', true),
+        );
+    }
+
+    /**
+     * @param string $dsn DSN
+     * @param string $tls TLS
+     *
+     * @dataProvider tlsValues
+     */
+    public function testTls($dsn, $tls)
+    {
+        $dsn = new RedisDsn($dsn);
+        $this->assertSame($tls, $dsn->getTls());
+    }
+
     /**
      * @static
      *
@@ -120,6 +141,7 @@ class RedisDsnTest extends TestCase
         return array(
             array('redis://localhost', 6379),
             array('redis://localhost/1', 6379),
+            array('rediss://localhost:6380', 6380),
             array('redis://localhost:63790', 63790),
             array('redis://localhost:63790/10', 63790),
             array('redis://pw@localhost:63790/10', 63790),
@@ -250,6 +272,7 @@ class RedisDsnTest extends TestCase
     {
         return array(
             array('redis://localhost', true),
+            array('rediss://localhost', true),
             array('redis://localhost/1', true),
             array('redis://pw@localhost:63790/10', true),
             array('redis://127.0.0.1', true),
