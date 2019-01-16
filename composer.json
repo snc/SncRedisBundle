@@ -35,7 +35,7 @@
         "symfony/console": "^3.4 || ^4.0",
         "symfony/phpunit-bridge": "^3.4 || ^4.0",
         "symfony/profiler-pack": "^1.0",
-        "symfony/swiftmailer-bundle": "^3.4 || ^4.0",
+        "symfony/swiftmailer-bundle": "^2.0 || ^3.0",
         "symfony/twig-bundle": "^3.4 || ^4.0"
     },
     "suggest": {
