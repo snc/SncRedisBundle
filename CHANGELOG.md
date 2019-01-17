@@ -1,11 +1,75 @@
 # Change Log
 
-## [Unreleased](https://github.com/snc/SncRedisBundle/tree/HEAD)
-
-[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.0...HEAD)
+## [3.0.0](https://github.com/snc/SncRedisBundle/tree/3.0.0) (2019-01-17)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.7...3.0.0)
 
 **Merged pull requests:**
 
+- No memory limit for composer in TravisCI [\#492](https://github.com/snc/SncRedisBundle/pull/492) ([B-Galati](https://github.com/B-Galati))
+- Fix TravisCI after merging 2.1 into master [\#491](https://github.com/snc/SncRedisBundle/pull/491) ([B-Galati](https://github.com/B-Galati))
+- Conditionally enable lazy loading for `phpredis` [\#487](https://github.com/snc/SncRedisBundle/pull/487) ([rvanlaak](https://github.com/rvanlaak))
+- Excluded tests from classmap [\#486](https://github.com/snc/SncRedisBundle/pull/486) ([samnela](https://github.com/samnela))
+- Fix: Make script step explicit [\#477](https://github.com/snc/SncRedisBundle/pull/477) ([localheinz](https://github.com/localheinz))
+- Enhancement: Normalize composer.json [\#475](https://github.com/snc/SncRedisBundle/pull/475) ([localheinz](https://github.com/localheinz))
+- Fix: Explicitly configure Travis build matrix [\#474](https://github.com/snc/SncRedisBundle/pull/474) ([localheinz](https://github.com/localheinz))
+- Fix: Remove useless else [\#473](https://github.com/snc/SncRedisBundle/pull/473) ([localheinz](https://github.com/localheinz))
+- Fix: Combine conditions [\#472](https://github.com/snc/SncRedisBundle/pull/472) ([localheinz](https://github.com/localheinz))
+- Supply name for new TreeBuilder instead of calling root method [\#471](https://github.com/snc/SncRedisBundle/pull/471) ([rpkamp](https://github.com/rpkamp))
+- Enhancement: Add note about usage with symfony/web-profiler-bundle [\#470](https://github.com/snc/SncRedisBundle/pull/470) ([localheinz](https://github.com/localheinz))
+- Fix: No need to verify whether hard dependency is not null [\#469](https://github.com/snc/SncRedisBundle/pull/469) ([localheinz](https://github.com/localheinz))
+- Fix: Travis CI badge URLs [\#468](https://github.com/snc/SncRedisBundle/pull/468) ([localheinz](https://github.com/localheinz))
+- Add Symfony 4.1, 4.2 and php nightly to the CI [\#450](https://github.com/snc/SncRedisBundle/pull/450) ([B-Galati](https://github.com/B-Galati))
+
+## [2.1.7](https://github.com/snc/SncRedisBundle/tree/2.1.7) (2018-10-15)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.6...2.1.7)
+
+**Merged pull requests:**
+
+- \[Fix\]\[Predis\] Fixes persistent connections when used many databases on the same instance [\#462](https://github.com/snc/SncRedisBundle/pull/462) ([qRoC](https://github.com/qRoC))
+- Fix connection via TLS \(rediss://\) \(\#444\) [\#445](https://github.com/snc/SncRedisBundle/pull/445) ([jankramer](https://github.com/jankramer))
+
+## [2.1.6](https://github.com/snc/SncRedisBundle/tree/2.1.6) (2018-07-31)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.5...2.1.6)
+
+## [2.1.5](https://github.com/snc/SncRedisBundle/tree/2.1.5) (2018-07-18)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.4...2.1.5)
+
+**Merged pull requests:**
+
+- \#434 Enable Lazy service for phpredis [\#440](https://github.com/snc/SncRedisBundle/pull/440) ([B-Galati](https://github.com/B-Galati))
+
+## [2.1.4](https://github.com/snc/SncRedisBundle/tree/2.1.4) (2018-06-25)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.3...2.1.4)
+
+**Merged pull requests:**
+
+- \#425 Use RedisDsn to build connection options for env based config  [\#439](https://github.com/snc/SncRedisBundle/pull/439) ([B-Galati](https://github.com/B-Galati))
+-  \#182 token serialization while lock remove [\#437](https://github.com/snc/SncRedisBundle/pull/437) ([piotrkochan](https://github.com/piotrkochan))
+- \#419: Create a service locator for clients to be used in the commands. [\#433](https://github.com/snc/SncRedisBundle/pull/433) ([Basster](https://github.com/Basster))
+- \#428 \#356 Fix support for DSN env variable with phpredis [\#432](https://github.com/snc/SncRedisBundle/pull/432) ([B-Galati](https://github.com/B-Galati))
+
+## [2.1.3](https://github.com/snc/SncRedisBundle/tree/2.1.3) (2018-05-09)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.2...2.1.3)
+
+**Merged pull requests:**
+
+- Remove env placeholder regexp [\#422](https://github.com/snc/SncRedisBundle/pull/422) ([B-Galati](https://github.com/B-Galati))
+- Create cluster connection correctly for one host [\#416](https://github.com/snc/SncRedisBundle/pull/416) ([linasm83](https://github.com/linasm83))
+- Close connections on shutdown [\#415](https://github.com/snc/SncRedisBundle/pull/415) ([supersmile2009](https://github.com/supersmile2009))
+- Fix support for Heroku style REDIS\_URL env variables [\#413](https://github.com/snc/SncRedisBundle/pull/413) ([B-Galati](https://github.com/B-Galati))
+
+## [2.1.2](https://github.com/snc/SncRedisBundle/tree/2.1.2) (2018-04-23)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.1...2.1.2)
+
+## [2.1.1](https://github.com/snc/SncRedisBundle/tree/2.1.1) (2018-04-18)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.0...2.1.1)
+
+**Merged pull requests:**
+
+- Use destructor to close session \(partially reverted \#348\) [\#412](https://github.com/snc/SncRedisBundle/pull/412) ([supersmile2009](https://github.com/supersmile2009))
+- Add Serialization option [\#411](https://github.com/snc/SncRedisBundle/pull/411) ([yellow1912](https://github.com/yellow1912))
+- Make all bundle services private [\#409](https://github.com/snc/SncRedisBundle/pull/409) ([curry684](https://github.com/curry684))
+- fix predis logging using symfony cache component [\#408](https://github.com/snc/SncRedisBundle/pull/408) ([vchebotarev](https://github.com/vchebotarev))
 - New session handler [\#404](https://github.com/snc/SncRedisBundle/pull/404) ([Seldaek](https://github.com/Seldaek))
 
 ## [2.1.0](https://github.com/snc/SncRedisBundle/tree/2.1.0) (2018-04-06)
@@ -39,7 +103,7 @@
 **Merged pull requests:**
 
 - Fix ci warning caused by PHPUnit Api deprecation [\#373](https://github.com/snc/SncRedisBundle/pull/373) ([SiM07](https://github.com/SiM07))
-- Provides Symfony 4 compatibility [\#370](https://github.com/snc/SncRedisBundle/pull/370) ([romain-pierre](https://github.com/romain-pierre))
+- Provides Symfony 4 compatibility [\#370](https://github.com/snc/SncRedisBundle/pull/370) ([symcaster](https://github.com/symcaster))
 - forward compatibility with Symfony 4.0 [\#366](https://github.com/snc/SncRedisBundle/pull/366) ([xabbuh](https://github.com/xabbuh))
 
 ## [2.0.4](https://github.com/snc/SncRedisBundle/tree/2.0.4) (2017-10-02)
