@@ -17,11 +17,12 @@ class PredisParametersFactory
     public static function create($options, $class, $dsn)
     {
         if (!is_a($class, '\Predis\Connection\ParametersInterface', true)) {
-            throw new \InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', __CLASS__, __METHOD__, '\Predis\Connection\ParametersInterface'));
+            throw new \InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', __CLASS__, __METHOD__, ParametersInterface::class));
         }
 
+        $defaultOptions = ['timeout' => null]; // Allow to be consistent will old version of Predis where default timeout was 5
         $dsnOptions = static::parseDsn(new RedisDsn($dsn));
-        $dsnOptions = array_merge($options, $dsnOptions);
+        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
 
         if (isset($dsnOptions['persistent'], $dsnOptions['database']) && true === $dsnOptions['persistent']) {
             $dsnOptions['persistent'] = (int)$dsnOptions['database'];

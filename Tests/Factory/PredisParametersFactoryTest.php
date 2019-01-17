@@ -4,6 +4,7 @@ namespace Snc\RedisBundle\Tests\Factory;
 
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
+use Predis\Connection\Parameters;
 
 class PredisParametersFactoryTest extends TestCase
 {
@@ -12,7 +13,7 @@ class PredisParametersFactoryTest extends TestCase
         return array(
             array(
                 'redis://z:df577d779b4f724c8c29b5eff5bcc534b732722b9df308a661f1b79014175063d5@ec2-34-321-123-45.us-east-1.compute.amazonaws.com:3210',
-                'Predis\Connection\Parameters',
+                Parameters::class,
                 array(
                     'test' => 123,
                     'some' => 'string',
@@ -40,7 +41,7 @@ class PredisParametersFactoryTest extends TestCase
             ),
             array(
                 'redis://pw@/var/run/redis/redis-1.sock/10',
-                'Predis\Connection\Parameters',
+                Parameters::class,
                 array(
                     'test' => 124,
                     'password' => 'toto',
@@ -64,7 +65,7 @@ class PredisParametersFactoryTest extends TestCase
             ),
             array(
                 'rediss://pw@localhost:6380',
-                'Predis\Connection\Parameters',
+                Parameters::class,
                 array(),
                 array(
                     'scheme' => 'tls',
@@ -103,6 +104,6 @@ class PredisParametersFactoryTest extends TestCase
      */
     public function testCreateException()
     {
-        PredisParametersFactory::create(array(), '\stdClass', 'redis://localhost');
+        PredisParametersFactory::create(array(), \stdClass::class, 'redis://localhost');
     }
 }
