@@ -12,7 +12,7 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 ## Branches ##
 
-* Use version `2.*` for Symfony 2.7+ and 3.0+. [![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)](https://travis-ci.org/snc/SncRedisBundle)
+* Use version `2.*` for Symfony 2.7+ and 3.0+. [![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=2.1)](https://travis-ci.org/snc/SncRedisBundle)
 * Use version `1.1.*` or the `1.1` branch if you are using Symfony `>=2.1,<3.0`. [![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=1.1)](https://travis-ci.org/snc/SncRedisBundle)
 * Use version `1.0.*` or the `1.0` branch if you are using Symfony `2.0.*`. [![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=1.0)](https://travis-ci.org/snc/SncRedisBundle)
 
