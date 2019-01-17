@@ -57,6 +57,9 @@
     "autoload": {
         "psr-4": {
             "Snc\\RedisBundle\\": ""
-        }
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
     }
 }
