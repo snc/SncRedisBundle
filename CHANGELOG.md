@@ -1,12 +1,13 @@
 # Change Log
 
-## [3.0.0](https://github.com/snc/SncRedisBundle/tree/3.0.0) (2019-01-17)
-[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.7...3.0.0)
+## [2.1.8](https://github.com/snc/SncRedisBundle/tree/2.1.8) (2019-02-04)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.7...2.1.8)
 
 **Merged pull requests:**
 
 - No memory limit for composer in TravisCI [\#492](https://github.com/snc/SncRedisBundle/pull/492) ([B-Galati](https://github.com/B-Galati))
 - Fix TravisCI after merging 2.1 into master [\#491](https://github.com/snc/SncRedisBundle/pull/491) ([B-Galati](https://github.com/B-Galati))
+- set logger on the connection wrapper only [\#489](https://github.com/snc/SncRedisBundle/pull/489) ([xabbuh](https://github.com/xabbuh))
 - Conditionally enable lazy loading for `phpredis` [\#487](https://github.com/snc/SncRedisBundle/pull/487) ([rvanlaak](https://github.com/rvanlaak))
 - Excluded tests from classmap [\#486](https://github.com/snc/SncRedisBundle/pull/486) ([samnela](https://github.com/samnela))
 - Fix: Make script step explicit [\#477](https://github.com/snc/SncRedisBundle/pull/477) ([localheinz](https://github.com/localheinz))
