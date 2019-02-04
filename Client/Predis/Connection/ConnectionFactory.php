@@ -65,8 +65,8 @@ class ConnectionFactory extends Factory
             if (null !== $this->wrapper) {
                 $wrapper = $this->wrapper;
                 $connection = new $wrapper($connection);
+                $connection->setLogger($this->logger);
             }
-            $connection->setLogger($this->logger);
         }
 
         return $connection;
