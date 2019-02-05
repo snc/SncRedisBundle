@@ -20,8 +20,9 @@ class PredisParametersFactory
             throw new \InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', __CLASS__, __METHOD__, '\Predis\Connection\ParametersInterface'));
         }
 
+        $defaultOptions = array('timeout' => null); // Allow to be consistent with old version of Predis where default timeout was 5
         $dsnOptions = static::parseDsn(new RedisDsn($dsn));
-        $dsnOptions = array_merge($options, $dsnOptions);
+        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
 
         if (isset($dsnOptions['persistent'], $dsnOptions['database']) && true === $dsnOptions['persistent']) {
             $dsnOptions['persistent'] = (int)$dsnOptions['database'];
@@ -48,11 +49,17 @@ class PredisParametersFactory
                 $options['path'] = $dsn->getDatabase();
             }
         }
+
         if (null !== $dsn->getDatabase()) {
             $options['database'] = $dsn->getDatabase();
         }
+
         $options['password'] = $dsn->getPassword();
         $options['weight'] = $dsn->getWeight();
+
+        if (null !== $dsn->getAlias()) {
+            $options['alias'] = $dsn->getAlias();
+        }
 
         return $options;
     }
