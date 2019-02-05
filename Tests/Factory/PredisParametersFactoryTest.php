@@ -87,7 +87,25 @@ class PredisParametersFactoryTest extends TestCase
                     'alias' => 'master',
                     'timeout' => null,
                 )
-            )
+            ),
+            array(
+                'redis://localhost?alias=connection_alias',
+                'Predis\Connection\Parameters',
+                array(
+                    'replication' => true,
+                    'alias' => 'client_alias',
+                ),
+                array(
+                    'scheme' => 'tcp',
+                    'host' => 'localhost',
+                    'port' => 6379,
+                    'replication' => true,
+                    'password' => null,
+                    'weight' => null,
+                    'alias' => 'connection_alias',
+                    'timeout' => null,
+                )
+            ),
         );
     }
 
