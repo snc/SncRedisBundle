@@ -67,7 +67,7 @@ snc_redis:
             type: predis
             alias: default
             dsn: redis://localhost
-            logging: %kernel.debug%
+            logging: '%kernel.debug%'
         cache:
             type: predis
             alias: cache
