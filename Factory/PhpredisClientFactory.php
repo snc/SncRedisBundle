@@ -57,6 +57,14 @@ class PhpredisClientFactory
         }
         if (isset($options['connection_persistent'])) {
             $connectParameters[] = $parsedDsn->getPersistentId();
+        } else {
+            $connectParameters[] = null;
+        }
+
+        $connectParameters[] = 100; // reconnect delay in ms
+        
+        if (isset($options['read_write_timeout'])) {
+            $connectParameters[] = $options['read_write_timeout'];
         }
 
         $connectMethod = !empty($options['connection_persistent']) ? 'pconnect' : 'connect';
