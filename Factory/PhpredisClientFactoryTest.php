@@ -45,6 +45,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_persistent' => true,
                 'prefix' => 'toto',
                 'serialization' => 'php',
+                'read_write_timeout' => 4,
             ),
             'alias_test'
         );
@@ -52,6 +53,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertInstanceOf('\Snc\RedisBundle\Client\Phpredis\Client', $client);
         $this->assertSame('toto', $client->getOption(\Redis::OPT_PREFIX));
         $this->assertSame(1, $client->getOption(\Redis::OPT_SERIALIZER));
+        $this->assertSame(4., $client->getOption(\Redis::OPT_READ_TIMEOUT));
         $this->assertAttributeSame($logger, 'logger', $client);
     }
 }
