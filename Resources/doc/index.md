@@ -349,7 +349,6 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
-                replication: false
     session:
         client: default
         prefix: foo

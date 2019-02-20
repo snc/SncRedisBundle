@@ -14,6 +14,8 @@
 
 - All services created by the bundle are now private as per Symfony recommended
   practices. Use Dependency Injection or Service Locators to access services.
+  
+- Option "replication" with value "false" has been removed as it is not supported anymore by Predis. 
 
 ## 2.0.0 ##
 

@@ -446,7 +446,6 @@ clients:
             iterable_multibulk: false
             throw_errors: true
             cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
-            replication: false
             parameters:
                 database: 1
                 password: pass

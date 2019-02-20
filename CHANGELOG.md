@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.1.9](https://github.com/snc/SncRedisBundle/tree/2.1.9) (2019-02-20)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.8...2.1.9)
+
+**Merged pull requests:**
+
+- fix \#498 - Add read\_timeout connection option to phpredis [\#499](https://github.com/snc/SncRedisBundle/pull/499) ([B-Galati](https://github.com/B-Galati))
+- Not quoting the % indicator is deprecated [\#495](https://github.com/snc/SncRedisBundle/pull/495) ([magnetik](https://github.com/magnetik))
+-  Fix \#312 - deprecation option cannot be false  [\#494](https://github.com/snc/SncRedisBundle/pull/494) ([B-Galati](https://github.com/B-Galati))
+- Fix \#449 - No master server available for replication [\#493](https://github.com/snc/SncRedisBundle/pull/493) ([B-Galati](https://github.com/B-Galati))
+
 ## [2.1.8](https://github.com/snc/SncRedisBundle/tree/2.1.8) (2019-02-04)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.7...2.1.8)
 
