@@ -14,7 +14,6 @@ namespace Snc\RedisBundle\DependencyInjection;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
-use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -141,6 +140,15 @@ class SncRedisExtension extends Extension
         if (null === $client['options']['cluster']) {
             unset($client['options']['cluster']);
         } else {
+            unset($client['options']['replication']);
+        }
+
+        if (isset($client['options']['replication']) && false === $client['options']['replication']) {
+            @trigger_error(
+                'Option "replication" with value "false" is deprecated since 2.1.9, to be removed in 3.0. Please choose a valid value or remove this option.',
+                E_USER_DEPRECATED
+            );
+
             unset($client['options']['replication']);
         }
 

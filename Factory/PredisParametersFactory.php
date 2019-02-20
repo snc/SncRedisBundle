@@ -49,11 +49,17 @@ class PredisParametersFactory
                 $options['path'] = $dsn->getDatabase();
             }
         }
+
         if (null !== $dsn->getDatabase()) {
             $options['database'] = $dsn->getDatabase();
         }
+
         $options['password'] = $dsn->getPassword();
         $options['weight'] = $dsn->getWeight();
+
+        if (null !== $dsn->getAlias()) {
+            $options['alias'] = $dsn->getAlias();
+        }
 
         return $options;
     }
