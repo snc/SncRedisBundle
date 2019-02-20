@@ -143,6 +143,15 @@ class SncRedisExtension extends Extension
             unset($client['options']['replication']);
         }
 
+        if (isset($client['options']['replication']) && false === $client['options']['replication']) {
+            @trigger_error(
+                'Option "replication" with value "false" is deprecated since 2.1.9, to be removed in 3.0. Please choose a valid value or remove this option.',
+                E_USER_DEPRECATED
+            );
+
+            unset($client['options']['replication']);
+        }
+
         // predis connection parameters have been renamed in v0.8
         $client['options']['async_connect'] = $client['options']['connection_async'];
         $client['options']['timeout'] = $client['options']['connection_timeout'];
