@@ -210,7 +210,6 @@ class SncRedisExtension extends Extension
         }
         $clientDef->addArgument(new Reference($optionId));
         $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
     }
 
     /**
@@ -254,7 +253,6 @@ class SncRedisExtension extends Extension
 
         /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
         $dsn = $client['dsns'][0];
-        $phpredisId = sprintf('snc_redis.%s', $client['alias']);
 
         $phpRedisVersion = phpversion('redis');
         if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
@@ -277,21 +275,20 @@ class SncRedisExtension extends Extension
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         $phpredisDef->setPublic(false);
-        
+
         // Older version of phpredis extension do not support lazy loading
         $minimumVersionForLazyLoading = '4.1.1';
         $supportsLazyServices = version_compare($phpRedisVersion, $minimumVersionForLazyLoading, '>=');
         $phpredisDef->setLazy($supportsLazyServices);
         if (!$supportsLazyServices) {
             @trigger_error(
-                sprintf('Lazy loading Redis is not supported on PhpRedis %s. Please update to PhpRedis %s or higher.', $phpRedisVersion, $minimumVersionForLazyLoading), 
+                sprintf('Lazy loading Redis is not supported on PhpRedis %s. Please update to PhpRedis %s or higher.', $phpRedisVersion, $minimumVersionForLazyLoading),
                 E_USER_WARNING
-            );    
+            );
         }
 
+        $phpredisId = sprintf('snc_redis.%s', $client['alias']);
         $container->setDefinition($phpredisId, $phpredisDef);
-        $container->setAlias(sprintf('snc_redis.phpredis.%s', $client['alias']), new Alias($phpredisId, true));
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), $phpredisId);
     }
 
     /**

@@ -39,7 +39,6 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.default');
 
-        $this->assertSame($clientDefinition, $container->findDefinition('snc_redis.default_client'));
         $this->assertSame('Redis', $clientDefinition->getClass());
         $this->assertSame('Redis', $clientDefinition->getArgument(0));
         $this->assertContains('REDIS_URL', $clientDefinition->getArgument(1));
@@ -74,7 +73,6 @@ class SncRedisExtensionEnvTest extends TestCase
             $clientClass = 'Redis';
         }
 
-        $this->assertSame($clientDefinition, $container->findDefinition('snc_redis.alias_test_client'));
         $this->assertSame($clientClass, $clientDefinition->getClass());
         $this->assertSame($clientClass, $clientDefinition->getArgument(0));
         $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1));
