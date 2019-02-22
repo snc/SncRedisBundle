@@ -94,7 +94,6 @@ class RedisSessionHandler extends AbstractSessionHandler
 
         $this->locking = $locking;
         $this->locked = false;
-        $this->lockKey = null;
         $this->spinLockWait = $spinLockWait;
         $this->lockMaxWait = ini_get('max_execution_time');
         if (!$this->lockMaxWait) {
@@ -194,7 +193,7 @@ class RedisSessionHandler extends AbstractSessionHandler
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
 
         $this->token = uniqid();
-        $this->lockKey = $sessionId.'.lock';
+        $this->lockKey = $this->getRedisKey($sessionId).'.lock';
 
         $setFunction = function ($redis, $key, $token, $ttl) {
             if ($redis instanceof \Redis) {
@@ -217,7 +216,7 @@ class RedisSessionHandler extends AbstractSessionHandler
         for ($i = 0;$i < $attempts;++$i) {
 
             // We try to aquire the lock
-            $success = $setFunction($this->redis, $this->getRedisKey($this->lockKey), $this->token, $this->lockMaxWait * 1000 + 1);
+            $success = $setFunction($this->redis, $this->lockKey, $this->token, $this->lockMaxWait * 1000 + 1);
             if ($success) {
                 $this->locked = true;
 
@@ -246,10 +245,10 @@ class RedisSessionHandler extends AbstractSessionHandler
 LUA;
 
             $token = $this->redis->_serialize($this->token);
-            $this->redis->eval($script, array($this->getRedisKey($this->lockKey), $token), 1);
+            $this->redis->eval($script, array($this->lockKey, $token), 1);
         } else {
-            $this->redis->getProfile()->defineCommand('sncFreeSessionLock', 'Snc\RedisBundle\Session\Storage\Handler\FreeLockCommand');
-            $this->redis->sncFreeSessionLock($this->getRedisKey($this->lockKey), $this->token);
+            $this->redis->getProfile()->defineCommand('sncFreeSessionLock', FreeLockCommand::class);
+            $this->redis->sncFreeSessionLock($this->lockKey, $this->token);
         }
         $this->locked = false;
         $this->token = null;
