@@ -1,8 +1,9 @@
 <?php
 
-namespace Snc\RedisBundle\Factory;
+namespace Snc\RedisBundle\Tests\Factory;
 
 use PHPUnit\Framework\TestCase;
+use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 class PhpredisClientFactoryTest extends TestCase
@@ -30,10 +31,18 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertInstanceOf('\Redis', $client);
         $this->assertNull($client->getOption(\Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(\Redis::OPT_SERIALIZER));
+        $this->assertSame(0, $client->getDBNum());
+        $this->assertNull($client->getAuth());
     }
 
     public function testCreateFullConfig()
     {
+        // @todo: Remove this condition when the inheritance from `\Redis` is fixed
+        // see https://github.com/snc/SncRedisBundle/issues/399
+        if (version_compare(phpversion('redis'), '4.0.0') >= 0) {
+            $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
+        }
+
         $logger = $this->getMockBuilder('Snc\RedisBundle\Logger\RedisLogger')->getMock();
         $factory = new PhpredisClientFactory($logger);
 
@@ -46,6 +55,10 @@ class PhpredisClientFactoryTest extends TestCase
                 'prefix' => 'toto',
                 'serialization' => 'php',
                 'read_write_timeout' => 4,
+                'parameters' => [
+                    'database' => 3,
+                    'password' => 'secret',
+                ],
             ),
             'alias_test'
         );
@@ -54,6 +67,29 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame('toto', $client->getOption(\Redis::OPT_PREFIX));
         $this->assertSame(1, $client->getOption(\Redis::OPT_SERIALIZER));
         $this->assertSame(4., $client->getOption(\Redis::OPT_READ_TIMEOUT));
+        $this->assertSame(3, $client->getDBNum());
+        $this->assertSame('secret', $client->getAuth());
         $this->assertAttributeSame($logger, 'logger', $client);
+    }
+
+    public function testDsnConfig()
+    {
+        $factory = new PhpredisClientFactory();
+
+        $client = $factory->create(
+            '\Redis',
+            'redis://redis:pass@localhost:6379/2',
+            array(
+                'parameters' => [
+                    'database' => 3,
+                    'password' => 'secret',
+                ],
+            ),
+            'alias_test'
+        );
+
+        $this->assertInstanceOf('\Redis', $client);
+        $this->assertSame(2, $client->getDBNum());
+        $this->assertSame('pass', $client->getAuth());
     }
 }

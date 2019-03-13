@@ -68,10 +68,14 @@ class PhpredisClientFactory
 
         if (null !== $parsedDsn->getPassword()) {
             $client->auth($parsedDsn->getPassword());
+        } elseif (isset($options['parameters']['password'])) {
+            $client->auth($options['parameters']['password']);
         }
 
         if (null !== $parsedDsn->getDatabase()) {
             $client->select($parsedDsn->getDatabase());
+        } elseif (isset($options['parameters']['database'])) {
+            $client->select($options['parameters']['database']);
         }
 
         if (isset($options['read_write_timeout'])) {
