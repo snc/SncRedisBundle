@@ -368,6 +368,19 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
+    /**
+     * Test valid config for the phpredis client id
+     */
+    public function testPhpredisClientId()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPhpredisSimpleYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $this->assertTrue($container->hasDefinition('snc_redis.default'));
+        $this->assertSame('Redis', $container->getDefinition('snc_redis.default')->getClass());
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -600,6 +613,17 @@ clients:
         options:
             replication: true
             prefix: secondprefix
+EOF;
+    }
+
+    private function getPhpredisSimpleYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://defaultslave
 EOF;
     }
 
