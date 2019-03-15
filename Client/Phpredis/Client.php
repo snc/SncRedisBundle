@@ -114,7 +114,7 @@ class Client extends Redis
      */
     public function connect($host, $port = 6379, $timeout = 0.0, $reserved = null, $retry_interval = 0, $read_timeout = 0.0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('connect', func_get_args());
     }
 
     /**
@@ -122,7 +122,7 @@ class Client extends Redis
      */
     public function isConnected()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('isConnected', func_get_args());
     }
 
     /**
@@ -130,7 +130,7 @@ class Client extends Redis
      */
     public function open($host, $port = 6379, $timeout = 0.0, $reserved = null, $retry_interval = 0, $read_timeout = 0.0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('open', func_get_args());
     }
 
     /**
@@ -138,7 +138,7 @@ class Client extends Redis
      */
     public function pconnect($host, $port = 6379, $timeout = 0.0, $persistent_id = null, $retry_interval = 0, $read_timeout = 0.0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pconnect', func_get_args());
     }
 
     /**
@@ -146,7 +146,7 @@ class Client extends Redis
      */
     public function popen($host, $port = 6379, $timeout = 0.0, $persistent_id = '', $retry_interval = 0, $read_timeout = 0.0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('popen', func_get_args());
     }
 
     /**
@@ -154,7 +154,7 @@ class Client extends Redis
      */
     public function close()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('close', func_get_args());
     }
 
     /**
@@ -162,7 +162,7 @@ class Client extends Redis
      */
     public function setOption($name, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('setOption', func_get_args());
     }
 
     /**
@@ -170,7 +170,7 @@ class Client extends Redis
      */
     public function getOption($name)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getOption', func_get_args());
     }
 
     /**
@@ -178,7 +178,7 @@ class Client extends Redis
      */
     public function ping()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('ping', func_get_args());
     }
 
     /**
@@ -186,7 +186,7 @@ class Client extends Redis
      */
     public function get($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('get', func_get_args());
     }
 
     /**
@@ -194,7 +194,7 @@ class Client extends Redis
      */
     public function set($key, $value, $timeout = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('set', func_get_args());
     }
 
     /**
@@ -202,7 +202,7 @@ class Client extends Redis
      */
     public function setex($key, $ttl, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('setex', func_get_args());
     }
 
     /**
@@ -210,7 +210,7 @@ class Client extends Redis
      */
     public function psetex($key, $ttl, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('psetex', func_get_args());
     }
 
     /**
@@ -218,7 +218,7 @@ class Client extends Redis
      */
     public function setnx($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('setnx', func_get_args());
     }
 
     /**
@@ -226,7 +226,7 @@ class Client extends Redis
      */
     public function del($key1, $key2 = null, $key3 = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('del', func_get_args());
     }
 
     /**
@@ -234,7 +234,7 @@ class Client extends Redis
      */
     public function delete($key1, $key2 = null, $key3 = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('delete', func_get_args());
     }
 
     /**
@@ -242,7 +242,7 @@ class Client extends Redis
      */
     public function unlink($key1, $key2 = null, $key3 = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('unlink', func_get_args());
     }
 
     /**
@@ -250,7 +250,7 @@ class Client extends Redis
      */
     public function multi($mode = Redis::MULTI)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('multi', func_get_args());
     }
 
     /**
@@ -258,7 +258,7 @@ class Client extends Redis
      */
     public function exec()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('exec', func_get_args());
     }
 
     /**
@@ -266,7 +266,7 @@ class Client extends Redis
      */
     public function discard()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('discard', func_get_args());
     }
 
     /**
@@ -274,7 +274,7 @@ class Client extends Redis
      */
     public function watch($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('watch', func_get_args());
     }
 
     /**
@@ -282,7 +282,7 @@ class Client extends Redis
      */
     public function unwatch()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('unwatch', func_get_args());
     }
 
     /**
@@ -290,7 +290,7 @@ class Client extends Redis
      */
     public function subscribe($channels, $callback)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('subscribe', func_get_args());
     }
 
     /**
@@ -298,7 +298,7 @@ class Client extends Redis
      */
     public function psubscribe($patterns, $callback)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('psubscribe', func_get_args());
     }
 
     /**
@@ -306,7 +306,7 @@ class Client extends Redis
      */
     public function publish($channel, $message)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('publish', func_get_args());
     }
 
     /**
@@ -314,7 +314,7 @@ class Client extends Redis
      */
     public function pubsub($keyword, $argument)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pubsub', func_get_args());
     }
 
     /**
@@ -322,7 +322,7 @@ class Client extends Redis
      */
     public function unsubscribe($channels = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('unsubscribe', func_get_args());
     }
 
     /**
@@ -330,7 +330,7 @@ class Client extends Redis
      */
     public function punsubscribe($patterns = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('punsubscribe', func_get_args());
     }
 
     /**
@@ -338,7 +338,7 @@ class Client extends Redis
      */
     public function exists($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('exists', func_get_args());
     }
 
     /**
@@ -346,7 +346,7 @@ class Client extends Redis
      */
     public function incr($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('incr', func_get_args());
     }
 
     /**
@@ -354,7 +354,7 @@ class Client extends Redis
      */
     public function incrByFloat($key, $increment)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('incrByFloat', func_get_args());
     }
 
     /**
@@ -362,7 +362,7 @@ class Client extends Redis
      */
     public function incrBy($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('incrBy', func_get_args());
     }
 
     /**
@@ -370,7 +370,7 @@ class Client extends Redis
      */
     public function decr($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('decr', func_get_args());
     }
 
     /**
@@ -378,7 +378,7 @@ class Client extends Redis
      */
     public function decrBy($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('decrBy', func_get_args());
     }
 
     /**
@@ -386,7 +386,7 @@ class Client extends Redis
      */
     public function getMultiple(array $keys)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getMultiple', func_get_args());
     }
 
     /**
@@ -394,7 +394,7 @@ class Client extends Redis
      */
     public function lPush($key, $value1, $value2 = null, $valueN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lPush', func_get_args());
     }
 
     /**
@@ -402,7 +402,7 @@ class Client extends Redis
      */
     public function rPush($key, $value1, $value2 = null, $valueN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('rPush', func_get_args());
     }
 
     /**
@@ -410,7 +410,7 @@ class Client extends Redis
      */
     public function lPushx($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lPushx', func_get_args());
     }
 
     /**
@@ -418,7 +418,7 @@ class Client extends Redis
      */
     public function rPushx($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('rPushx', func_get_args());
     }
 
     /**
@@ -426,7 +426,7 @@ class Client extends Redis
      */
     public function lPop($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lPop', func_get_args());
     }
 
     /**
@@ -434,7 +434,7 @@ class Client extends Redis
      */
     public function rPop($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('rPop', func_get_args());
     }
 
     /**
@@ -442,7 +442,7 @@ class Client extends Redis
      */
     public function blPop(array $keys, $timeout)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('blPop', func_get_args());
     }
 
     /**
@@ -450,7 +450,7 @@ class Client extends Redis
      */
     public function brPop(array $keys, $timeout)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('brPop', func_get_args());
     }
 
     /**
@@ -458,7 +458,7 @@ class Client extends Redis
      */
     public function lLen($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lLen', func_get_args());
     }
 
     /**
@@ -466,7 +466,7 @@ class Client extends Redis
      */
     public function lSize($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lSize', func_get_args());
     }
 
     /**
@@ -474,7 +474,7 @@ class Client extends Redis
      */
     public function lIndex($key, $index)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lIndex', func_get_args());
     }
 
     /**
@@ -482,7 +482,7 @@ class Client extends Redis
      */
     public function lGet($key, $index)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lGet', func_get_args());
     }
 
     /**
@@ -490,7 +490,7 @@ class Client extends Redis
      */
     public function lSet($key, $index, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lSet', func_get_args());
     }
 
     /**
@@ -498,7 +498,7 @@ class Client extends Redis
      */
     public function lRange($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lRange', func_get_args());
     }
 
     /**
@@ -506,7 +506,7 @@ class Client extends Redis
      */
     public function lGetRange($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lGetRange', func_get_args());
     }
 
     /**
@@ -514,7 +514,7 @@ class Client extends Redis
      */
     public function lTrim($key, $start, $stop)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lTrim', func_get_args());
     }
 
     /**
@@ -522,7 +522,7 @@ class Client extends Redis
      */
     public function listTrim($key, $start, $stop)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('listTrim', func_get_args());
     }
 
     /**
@@ -530,7 +530,7 @@ class Client extends Redis
      */
     public function lRem($key, $value, $count)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lRem', func_get_args());
     }
 
     /**
@@ -538,7 +538,7 @@ class Client extends Redis
      */
     public function lRemove($key, $value, $count)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lRemove', func_get_args());
     }
 
     /**
@@ -546,7 +546,7 @@ class Client extends Redis
      */
     public function lInsert($key, $position, $pivot, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lInsert', func_get_args());
     }
 
     /**
@@ -554,7 +554,7 @@ class Client extends Redis
      */
     public function sAdd($key, $value1, $value2 = null, $valueN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sAdd', func_get_args());
     }
 
     /**
@@ -562,7 +562,7 @@ class Client extends Redis
      */
     public function sRem($key, $member1, $member2 = null, $memberN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sRem', func_get_args());
     }
 
     /**
@@ -570,7 +570,7 @@ class Client extends Redis
      */
     public function sRemove($key, $member1, $member2 = null, $memberN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sRemove', func_get_args());
     }
 
     /**
@@ -578,7 +578,7 @@ class Client extends Redis
      */
     public function sMove($srcKey, $dstKey, $member)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sMove', func_get_args());
     }
 
     /**
@@ -586,7 +586,7 @@ class Client extends Redis
      */
     public function sIsMember($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sIsMember', func_get_args());
     }
 
     /**
@@ -594,7 +594,7 @@ class Client extends Redis
      */
     public function sContains($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sContains', func_get_args());
     }
 
     /**
@@ -602,7 +602,7 @@ class Client extends Redis
      */
     public function sCard($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sCard', func_get_args());
     }
 
     /**
@@ -610,7 +610,7 @@ class Client extends Redis
      */
     public function sPop($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sPop', func_get_args());
     }
 
     /**
@@ -618,7 +618,7 @@ class Client extends Redis
      */
     public function sRandMember($key, $count = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sRandMember', func_get_args());
     }
 
     /**
@@ -626,7 +626,7 @@ class Client extends Redis
      */
     public function sInter($key1, $key2, $keyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sInter', func_get_args());
     }
 
     /**
@@ -634,7 +634,7 @@ class Client extends Redis
      */
     public function sInterStore($dstKey, $key1, $key2, $keyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sInterStore', func_get_args());
     }
 
     /**
@@ -642,7 +642,7 @@ class Client extends Redis
      */
     public function sUnion($key1, $key2, $keyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sUnion', func_get_args());
     }
 
     /**
@@ -650,7 +650,7 @@ class Client extends Redis
      */
     public function sUnionStore($dstKey, $key1, $key2, $keyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sUnionStore', func_get_args());
     }
 
     /**
@@ -658,7 +658,7 @@ class Client extends Redis
      */
     public function sDiff($key1, $key2, $keyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sDiff', func_get_args());
     }
 
     /**
@@ -666,7 +666,7 @@ class Client extends Redis
      */
     public function sDiffStore($dstKey, $key1, $key2, $keyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sDiffStore', func_get_args());
     }
 
     /**
@@ -674,7 +674,7 @@ class Client extends Redis
      */
     public function sMembers($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sMembers', func_get_args());
     }
 
     /**
@@ -682,7 +682,7 @@ class Client extends Redis
      */
     public function sGetMembers($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sGetMembers', func_get_args());
     }
 
     /**
@@ -690,7 +690,7 @@ class Client extends Redis
      */
     public function sScan($key, &$iterator, $pattern = null, $count = 0)
     {
-        return $this->call(__FUNCTION__, array($key, &$iterator, $pattern, $count));
+        return $this->call('sScan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -698,7 +698,7 @@ class Client extends Redis
      */
     public function getSet($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getSet', func_get_args());
     }
 
     /**
@@ -706,7 +706,7 @@ class Client extends Redis
      */
     public function randomKey()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('randomKey', func_get_args());
     }
 
     /**
@@ -714,7 +714,7 @@ class Client extends Redis
      */
     public function select($dbindex)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('select', func_get_args());
     }
 
     /**
@@ -722,7 +722,7 @@ class Client extends Redis
      */
     public function move($key, $dbindex)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('move', func_get_args());
     }
 
     /**
@@ -730,7 +730,7 @@ class Client extends Redis
      */
     public function rename($srcKey, $dstKey)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('rename', func_get_args());
     }
 
     /**
@@ -738,7 +738,7 @@ class Client extends Redis
      */
     public function renameKey($srcKey, $dstKey)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('renameKey', func_get_args());
     }
 
     /**
@@ -746,7 +746,7 @@ class Client extends Redis
      */
     public function renameNx($srcKey, $dstKey)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('renameNx', func_get_args());
     }
 
     /**
@@ -754,7 +754,7 @@ class Client extends Redis
      */
     public function expire($key, $ttl)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('expire', func_get_args());
     }
 
     /**
@@ -762,7 +762,7 @@ class Client extends Redis
      */
     public function pExpire($key, $ttl)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pExpire', func_get_args());
     }
 
     /**
@@ -770,7 +770,7 @@ class Client extends Redis
      */
     public function setTimeout($key, $ttl)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('setTimeout', func_get_args());
     }
 
     /**
@@ -778,7 +778,7 @@ class Client extends Redis
      */
     public function expireAt($key, $timestamp)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('expireAt', func_get_args());
     }
 
     /**
@@ -786,7 +786,7 @@ class Client extends Redis
      */
     public function pExpireAt($key, $timestamp)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pExpireAt', func_get_args());
     }
 
     /**
@@ -794,7 +794,7 @@ class Client extends Redis
      */
     public function keys($pattern)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('keys', func_get_args());
     }
 
     /**
@@ -802,7 +802,7 @@ class Client extends Redis
      */
     public function getKeys($pattern)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getKeys', func_get_args());
     }
 
     /**
@@ -810,7 +810,7 @@ class Client extends Redis
      */
     public function dbSize()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('dbSize', func_get_args());
     }
 
     /**
@@ -818,7 +818,7 @@ class Client extends Redis
      */
     public function auth($password)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('auth', func_get_args());
     }
 
     /**
@@ -826,7 +826,7 @@ class Client extends Redis
      */
     public function bgrewriteaof()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('bgrewriteaof', func_get_args());
     }
 
     /**
@@ -834,7 +834,7 @@ class Client extends Redis
      */
     public function slaveof($host = '127.0.0.1', $port = 6379)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('slaveof', func_get_args());
     }
 
     /**
@@ -842,7 +842,7 @@ class Client extends Redis
      */
     public function object($string = '', $key = '')
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('object', func_get_args());
     }
 
     /**
@@ -850,7 +850,7 @@ class Client extends Redis
      */
     public function save()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('save', func_get_args());
     }
 
     /**
@@ -858,7 +858,7 @@ class Client extends Redis
      */
     public function bgsave()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('bgsave', func_get_args());
     }
 
     /**
@@ -866,7 +866,7 @@ class Client extends Redis
      */
     public function lastSave()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('lastSave', func_get_args());
     }
 
     /**
@@ -874,7 +874,7 @@ class Client extends Redis
      */
     public function wait($numSlaves, $timeout)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('wait', func_get_args());
     }
 
     /**
@@ -882,7 +882,7 @@ class Client extends Redis
      */
     public function type($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('type', func_get_args());
     }
 
     /**
@@ -890,7 +890,7 @@ class Client extends Redis
      */
     public function append($key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('append', func_get_args());
     }
 
     /**
@@ -898,7 +898,7 @@ class Client extends Redis
      */
     public function getRange($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getRange', func_get_args());
     }
 
     /**
@@ -906,7 +906,7 @@ class Client extends Redis
      */
     public function substr($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('substr', func_get_args());
     }
 
     /**
@@ -914,7 +914,7 @@ class Client extends Redis
      */
     public function setRange($key, $offset, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('setRange', func_get_args());
     }
 
     /**
@@ -922,7 +922,7 @@ class Client extends Redis
      */
     public function strlen($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('strlen', func_get_args());
     }
 
     /**
@@ -930,7 +930,7 @@ class Client extends Redis
      */
     public function bitpos($key, $bit, $start = 0, $end = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('bitpos', func_get_args());
     }
 
     /**
@@ -938,7 +938,7 @@ class Client extends Redis
      */
     public function getBit($key, $offset)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getBit', func_get_args());
     }
 
     /**
@@ -946,7 +946,7 @@ class Client extends Redis
      */
     public function setBit($key, $offset, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('setBit', func_get_args());
     }
 
     /**
@@ -954,7 +954,7 @@ class Client extends Redis
      */
     public function bitCount($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('bitCount', func_get_args());
     }
 
     /**
@@ -962,7 +962,7 @@ class Client extends Redis
      */
     public function bitOp($operation, $retKey, $key1, $key2, $key3 = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('bitOp', func_get_args());
     }
 
     /**
@@ -970,7 +970,7 @@ class Client extends Redis
      */
     public function flushDB()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('flushDB', func_get_args());
     }
 
     /**
@@ -978,7 +978,7 @@ class Client extends Redis
      */
     public function flushAll()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('flushAll', func_get_args());
     }
 
     /**
@@ -986,7 +986,7 @@ class Client extends Redis
      */
     public function sort($key, $option = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('sort', func_get_args());
     }
 
     /**
@@ -994,7 +994,7 @@ class Client extends Redis
      */
     public function info($option = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('info', func_get_args());
     }
 
     /**
@@ -1002,7 +1002,7 @@ class Client extends Redis
      */
     public function resetStat()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('resetStat', func_get_args());
     }
 
     /**
@@ -1010,7 +1010,7 @@ class Client extends Redis
      */
     public function ttl($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('ttl', func_get_args());
     }
 
     /**
@@ -1018,7 +1018,7 @@ class Client extends Redis
      */
     public function pttl($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pttl', func_get_args());
     }
 
     /**
@@ -1026,7 +1026,7 @@ class Client extends Redis
      */
     public function persist($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('persist', func_get_args());
     }
 
     /**
@@ -1034,7 +1034,7 @@ class Client extends Redis
      */
     public function mset(array $array)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('mset', func_get_args());
     }
 
     /**
@@ -1042,7 +1042,7 @@ class Client extends Redis
      */
     public function mget(array $array)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('mget', func_get_args());
     }
 
     /**
@@ -1050,7 +1050,7 @@ class Client extends Redis
      */
     public function msetnx(array $array)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('msetnx', func_get_args());
     }
 
     /**
@@ -1058,7 +1058,7 @@ class Client extends Redis
      */
     public function rpoplpush($srcKey, $dstKey)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('rpoplpush', func_get_args());
     }
 
     /**
@@ -1066,7 +1066,7 @@ class Client extends Redis
      */
     public function brpoplpush($srcKey, $dstKey, $timeout)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('brpoplpush', func_get_args());
     }
 
     /**
@@ -1074,7 +1074,7 @@ class Client extends Redis
      */
     public function zAdd($key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zAdd', func_get_args());
     }
 
     /**
@@ -1082,7 +1082,7 @@ class Client extends Redis
      */
     public function zRange($key, $start, $end, $withscores = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRange', func_get_args());
     }
 
     /**
@@ -1090,7 +1090,7 @@ class Client extends Redis
      */
     public function zRem($key, $member1, $member2 = null, $memberN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRem', func_get_args());
     }
 
     /**
@@ -1098,7 +1098,7 @@ class Client extends Redis
      */
     public function zDelete($key, $member1, $member2 = null, $memberN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zDelete', func_get_args());
     }
 
     /**
@@ -1106,7 +1106,7 @@ class Client extends Redis
      */
     public function zRevRange($key, $start, $end, $withscore = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRevRange', func_get_args());
     }
 
     /**
@@ -1114,7 +1114,7 @@ class Client extends Redis
      */
     public function zRangeByScore($key, $start, $end, array $options = array())
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRangeByScore', func_get_args());
     }
 
     /**
@@ -1122,7 +1122,7 @@ class Client extends Redis
      */
     public function zRevRangeByScore($key, $start, $end, array $options = array())
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRevRangeByScore', func_get_args());
     }
 
     /**
@@ -1130,7 +1130,7 @@ class Client extends Redis
      */
     public function zRangeByLex($key, $min, $max, $offset = null, $limit = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRangeByLex', func_get_args());
     }
 
     /**
@@ -1138,7 +1138,7 @@ class Client extends Redis
      */
     public function zRevRangeByLex($key, $min, $max, $offset = null, $limit = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRevRangeByLex', func_get_args());
     }
 
     /**
@@ -1146,7 +1146,7 @@ class Client extends Redis
      */
     public function zCount($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zCount', func_get_args());
     }
 
     /**
@@ -1154,7 +1154,7 @@ class Client extends Redis
      */
     public function zRemRangeByScore($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRemRangeByScore', func_get_args());
     }
 
     /**
@@ -1162,7 +1162,7 @@ class Client extends Redis
      */
     public function zDeleteRangeByScore($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zDeleteRangeByScore', func_get_args());
     }
 
     /**
@@ -1170,7 +1170,7 @@ class Client extends Redis
      */
     public function zRemRangeByRank($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRemRangeByRank', func_get_args());
     }
 
     /**
@@ -1178,7 +1178,7 @@ class Client extends Redis
      */
     public function zDeleteRangeByRank($key, $start, $end)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zDeleteRangeByRank', func_get_args());
     }
 
     /**
@@ -1186,7 +1186,7 @@ class Client extends Redis
      */
     public function zCard($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zCard', func_get_args());
     }
 
     /**
@@ -1194,7 +1194,7 @@ class Client extends Redis
      */
     public function zSize($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zSize', func_get_args());
     }
 
     /**
@@ -1202,7 +1202,7 @@ class Client extends Redis
      */
     public function zScore($key, $member)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zScore', func_get_args());
     }
 
     /**
@@ -1210,7 +1210,7 @@ class Client extends Redis
      */
     public function zRank($key, $member)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRank', func_get_args());
     }
 
     /**
@@ -1218,7 +1218,7 @@ class Client extends Redis
      */
     public function zRevRank($key, $member)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zRevRank', func_get_args());
     }
 
     /**
@@ -1226,7 +1226,7 @@ class Client extends Redis
      */
     public function zIncrBy($key, $value, $member)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zIncrBy', func_get_args());
     }
 
     /**
@@ -1234,7 +1234,7 @@ class Client extends Redis
      */
     public function zUnion($Output, $ZSetKeys, array $Weights = null, $aggregateFunction = 'SUM')
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zUnion', func_get_args());
     }
 
     /**
@@ -1242,7 +1242,7 @@ class Client extends Redis
      */
     public function zInter($Output, $ZSetKeys, array $Weights = null, $aggregateFunction = 'SUM')
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('zInter', func_get_args());
     }
 
     /**
@@ -1250,7 +1250,7 @@ class Client extends Redis
      */
     public function zScan($key, &$iterator, $pattern = null, $count = 0)
     {
-        return $this->call(__FUNCTION__, array($key, &$iterator, $pattern, $count));
+        return $this->call('zScan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -1258,7 +1258,7 @@ class Client extends Redis
      */
     public function hSet($key, $hashKey, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hSet', func_get_args());
     }
 
     /**
@@ -1266,7 +1266,7 @@ class Client extends Redis
      */
     public function hSetNx($key, $hashKey, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hSetNx', func_get_args());
     }
 
     /**
@@ -1274,7 +1274,7 @@ class Client extends Redis
      */
     public function hGet($key, $hashKey)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hGet', func_get_args());
     }
 
     /**
@@ -1282,7 +1282,7 @@ class Client extends Redis
      */
     public function hLen($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hLen', func_get_args());
     }
 
     /**
@@ -1290,7 +1290,7 @@ class Client extends Redis
      */
     public function hDel($key, $hashKey1, $hashKey2 = null, $hashKeyN = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hDel', func_get_args());
     }
 
     /**
@@ -1298,7 +1298,7 @@ class Client extends Redis
      */
     public function hKeys($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hKeys', func_get_args());
     }
 
     /**
@@ -1306,7 +1306,7 @@ class Client extends Redis
      */
     public function hVals($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hVals', func_get_args());
     }
 
     /**
@@ -1314,7 +1314,7 @@ class Client extends Redis
      */
     public function hGetAll($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hGetAll', func_get_args());
     }
 
     /**
@@ -1322,7 +1322,7 @@ class Client extends Redis
      */
     public function hExists($key, $hashKey)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hExists', func_get_args());
     }
 
     /**
@@ -1330,7 +1330,7 @@ class Client extends Redis
      */
     public function hIncrBy($key, $hashKey, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hIncrBy', func_get_args());
     }
 
     /**
@@ -1338,7 +1338,7 @@ class Client extends Redis
      */
     public function hIncrByFloat($key, $field, $increment)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hIncrByFloat', func_get_args());
     }
 
     /**
@@ -1346,7 +1346,7 @@ class Client extends Redis
      */
     public function hMSet($key, $hashKeys)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hMSet', func_get_args());
     }
 
     /**
@@ -1354,7 +1354,7 @@ class Client extends Redis
      */
     public function hMGet($key, $hashKeys)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('hMGet', func_get_args());
     }
 
     /**
@@ -1362,7 +1362,7 @@ class Client extends Redis
      */
     public function hScan($key, &$iterator, $pattern = null, $count = 0)
     {
-        return $this->call(__FUNCTION__, array($key, &$iterator, $pattern, $count));
+        return $this->call('hScan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -1370,7 +1370,7 @@ class Client extends Redis
      */
     public function config($operation, $key, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('config', func_get_args());
     }
 
     /**
@@ -1378,7 +1378,7 @@ class Client extends Redis
      */
     public function evaluate($script, $args = array(), $numKeys = 0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('evaluate', func_get_args());
     }
 
     /**
@@ -1386,7 +1386,7 @@ class Client extends Redis
      */
     public function evalSha($scriptSha, $args = array(), $numKeys = 0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('evalSha', func_get_args());
     }
 
     /**
@@ -1394,7 +1394,7 @@ class Client extends Redis
      */
     public function evaluateSha($scriptSha, $args = array(), $numKeys = 0)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('evaluateSha', func_get_args());
     }
 
     /**
@@ -1402,7 +1402,7 @@ class Client extends Redis
      */
     public function script($command, $script)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('script', func_get_args());
     }
 
     /**
@@ -1410,7 +1410,7 @@ class Client extends Redis
      */
     public function getLastError()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getLastError', func_get_args());
     }
 
     /**
@@ -1418,7 +1418,7 @@ class Client extends Redis
      */
     public function clearLastError()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('clearLastError', func_get_args());
     }
 
     /**
@@ -1426,7 +1426,7 @@ class Client extends Redis
      */
     public function _prefix($value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('_prefix', func_get_args());
     }
 
     /**
@@ -1434,7 +1434,7 @@ class Client extends Redis
      */
     public function _unserialize($value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('_unserialize', func_get_args());
     }
 
     /**
@@ -1442,7 +1442,7 @@ class Client extends Redis
      */
     public function _serialize($value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('_serialize', func_get_args());
     }
 
     /**
@@ -1450,7 +1450,7 @@ class Client extends Redis
      */
     public function dump($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('dump', func_get_args());
     }
 
     /**
@@ -1458,7 +1458,7 @@ class Client extends Redis
      */
     public function restore($key, $ttl, $value)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('restore', func_get_args());
     }
 
     /**
@@ -1466,7 +1466,7 @@ class Client extends Redis
      */
     public function migrate($host, $port, $key, $db, $timeout, $copy = false, $replace = false)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('migrate', func_get_args());
     }
 
     /**
@@ -1474,7 +1474,7 @@ class Client extends Redis
      */
     public function time()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('time', func_get_args());
     }
 
     /**
@@ -1482,7 +1482,7 @@ class Client extends Redis
      */
     public function scan(&$iterator, $pattern = null, $count = 0)
     {
-        return $this->call(__FUNCTION__, array($key, &$iterator, $pattern, $count));
+        return $this->call('scan', array($key, &$iterator, $pattern, $count));
     }
 
     /**
@@ -1490,7 +1490,7 @@ class Client extends Redis
      */
     public function pfAdd($key, array $elements)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pfAdd', func_get_args());
     }
 
     /**
@@ -1498,7 +1498,7 @@ class Client extends Redis
      */
     public function pfCount($key)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pfCount', func_get_args());
     }
 
     /**
@@ -1506,7 +1506,7 @@ class Client extends Redis
      */
     public function pfMerge($destkey, array $sourcekeys)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('pfMerge', func_get_args());
     }
 
     /**
@@ -1514,7 +1514,7 @@ class Client extends Redis
      */
     public function rawCommand($command, $arguments)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('rawCommand', func_get_args());
     }
 
     /**
@@ -1522,7 +1522,7 @@ class Client extends Redis
      */
     public function getMode()
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('getMode', func_get_args());
     }
 
     /**
@@ -1530,7 +1530,7 @@ class Client extends Redis
      */
     public function xAck($stream, $group, $arr_messages)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xAck', func_get_args());
     }
 
     /**
@@ -1538,7 +1538,7 @@ class Client extends Redis
      */
     public function xAdd($str_key, $str_id, $arr_message)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xAdd', func_get_args());
     }
 
     /**
@@ -1546,7 +1546,7 @@ class Client extends Redis
      */
     public function xClaim($str_key, $str_group, $str_consumer, $min_idle_time, $arr_ids, $arr_options = [])
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xClaim', func_get_args());
     }
 
     /**
@@ -1554,7 +1554,7 @@ class Client extends Redis
      */
     public function xDel($str_key, $arr_ids)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xDel', func_get_args());
     }
 
     /**
@@ -1562,7 +1562,7 @@ class Client extends Redis
      */
     public function xGroup($operation, $str_key, $str_group, $str_msg_id)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xGroup', func_get_args());
     }
 
     /**
@@ -1570,7 +1570,7 @@ class Client extends Redis
      */
     public function xInfo($operation, $str_stream, $str_group)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xInfo', func_get_args());
     }
 
     /**
@@ -1578,7 +1578,7 @@ class Client extends Redis
      */
     public function xLen($str_stream)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xLen', func_get_args());
     }
 
     /**
@@ -1586,7 +1586,7 @@ class Client extends Redis
      */
     public function xPending($str_stream, $str_group, $str_start = null, $str_end = null, $i_count = null, $str_consumer = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xPending', func_get_args());
     }
 
     /**
@@ -1594,7 +1594,7 @@ class Client extends Redis
      */
     public function xRange($str_stream, $str_start, $str_end, $i_count = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xRange', func_get_args());
     }
 
     /**
@@ -1602,7 +1602,7 @@ class Client extends Redis
      */
     public function xRead($arr_streams, $i_count = null, $i_block = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xRead', func_get_args());
     }
 
     /**
@@ -1610,7 +1610,7 @@ class Client extends Redis
      */
     public function xReadGroup($str_group, $str_consumer, $arr_streams, $i_count, $i_block = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xReadGroup', func_get_args());
     }
 
     /**
@@ -1618,7 +1618,7 @@ class Client extends Redis
      */
     public function xRevRange($str_stream, $str_end, $str_start, $i_count = null)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xRevRange', func_get_args());
     }
 
     /**
@@ -1626,6 +1626,6 @@ class Client extends Redis
      */
     public function xTrim($str_stream, $i_max_len, $boo_approximate)
     {
-        return $this->call(__FUNCTION__, func_get_args());
+        return $this->call('xTrim', func_get_args());
     }
 }
