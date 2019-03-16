@@ -146,7 +146,7 @@ foreach ($reflectedMethods as $reflectedMethod) {
             $method .= $rp->getType();
             $method .= ' ';
         }
-        if ($rp->isVariadic()) {
+        if (method_exists($rp, 'isVariadic') && $rp->isVariadic()) {
             $method .= '...';
         }
         if ($rp->isPassedByReference()) {
@@ -165,7 +165,7 @@ foreach ($reflectedMethods as $reflectedMethod) {
 
     $method .= ')';
 
-    if (method_exists($rp, 'hasReturnType') && $reflectedMethod->hasReturnType()) {
+    if (method_exists($reflectedMethod, 'hasReturnType') && $reflectedMethod->hasReturnType()) {
         $method .= ': ';
         $method .= $reflectedMethod->getReturnType();
     }
