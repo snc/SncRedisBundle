@@ -40,6 +40,7 @@ class Client2_2_8 extends Redis
         $this->logger = $logger;
         $this->alias = isset($parameters['alias']) ? $parameters['alias'] : '';
     }
+
     /**
      * Proxy function.
      *
@@ -60,6 +61,7 @@ class Client2_2_8 extends Redis
         }
         return $result;
     }
+
     /**
      * Returns a string representation of the given command including arguments.
      *
@@ -74,6 +76,7 @@ class Client2_2_8 extends Redis
         $this->flatten($arguments, $list);
         return trim(strtoupper($command).' '.implode(' ', $list));
     }
+
     /**
      * Flatten arguments to single dimension array.
      *
@@ -95,6 +98,7 @@ class Client2_2_8 extends Redis
             }
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -102,6 +106,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('__destruct');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -109,6 +114,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('connect');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -116,6 +122,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pconnect');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -123,6 +130,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('close');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -130,13 +138,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('ping');
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function echo()
-    {
-        return $this->call('echo');
-    }
+
     /**
      * {@inheritdoc}
      */
@@ -144,6 +146,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('get');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -151,6 +154,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('set');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -158,6 +162,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('setex');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -165,6 +170,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('psetex');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -172,6 +178,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('setnx');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -179,6 +186,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getSet');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -186,6 +194,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('randomKey');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -193,6 +202,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('renameKey');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -200,6 +210,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('renameNx');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -207,6 +218,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getMultiple');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -214,6 +226,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('exists');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -221,6 +234,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('delete');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -228,6 +242,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('incr');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -235,6 +250,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('incrBy');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -242,6 +258,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('incrByFloat');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -249,6 +266,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('decr');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -256,6 +274,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('decrBy');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -263,6 +282,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('type');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -270,6 +290,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('append');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -277,6 +298,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getRange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -284,6 +306,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('setRange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -291,6 +314,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getBit');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -298,6 +322,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('setBit');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -305,6 +330,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('strlen');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -312,6 +338,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getKeys');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -319,6 +346,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sort');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -326,6 +354,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sortAsc');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -333,6 +362,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sortAscAlpha');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -340,6 +370,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sortDesc');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -347,6 +378,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sortDescAlpha');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -354,6 +386,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lPush');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -361,6 +394,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('rPush');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -368,6 +402,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lPushx');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -375,6 +410,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('rPushx');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -382,6 +418,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lPop');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -389,6 +426,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('rPop');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -396,6 +434,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('blPop');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -403,6 +442,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('brPop');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -410,6 +450,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lSize');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -417,6 +458,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lRemove');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -424,6 +466,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('listTrim');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -431,6 +474,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lGet');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -438,6 +482,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lGetRange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -445,6 +490,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lSet');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -452,6 +498,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lInsert');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -459,6 +506,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sAdd');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -466,6 +514,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sAddArray');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -473,6 +522,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sSize');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -480,6 +530,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sRemove');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -487,6 +538,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sMove');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -494,6 +546,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sPop');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -501,6 +554,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sRandMember');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -508,6 +562,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sContains');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -515,6 +570,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sMembers');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -522,6 +578,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sInter');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -529,6 +586,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sInterStore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -536,6 +594,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sUnion');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -543,6 +602,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sUnionStore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -550,6 +610,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sDiff');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -557,6 +618,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sDiffStore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -564,6 +626,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('setTimeout');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -571,6 +634,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('save');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -578,6 +642,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('bgSave');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -585,6 +650,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lastSave');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -592,6 +658,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('flushDB');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -599,6 +666,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('flushAll');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -606,6 +674,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('dbSize');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -613,6 +682,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('auth');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -620,6 +690,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('ttl');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -627,6 +698,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pttl');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -634,6 +706,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('persist');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -641,6 +714,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('info');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -648,6 +722,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('select');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -655,6 +730,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('move');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -662,6 +738,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('bgrewriteaof');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -669,6 +746,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('slaveof');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -676,6 +754,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('object');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -683,6 +762,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('bitop');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -690,6 +770,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('bitcount');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -697,6 +778,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('bitpos');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -704,6 +786,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('mset');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -711,6 +794,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('msetnx');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -718,6 +802,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('rpoplpush');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -725,6 +810,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('brpoplpush');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -732,6 +818,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zAdd');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -739,6 +826,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zDelete');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -746,6 +834,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -753,6 +842,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRevRange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -760,6 +850,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRangeByScore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -767,6 +858,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRevRangeByScore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -774,6 +866,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRangeByLex');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -781,6 +874,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRevRangeByLex');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -788,6 +882,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zLexCount');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -795,6 +890,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRemRangeByLex');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -802,6 +898,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zCount');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -809,6 +906,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zDeleteRangeByScore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -816,6 +914,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zDeleteRangeByRank');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -823,6 +922,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zCard');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -830,6 +930,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zScore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -837,6 +938,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRank');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -844,6 +946,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRevRank');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -851,6 +954,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zInter');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -858,6 +962,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zUnion');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -865,6 +970,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zIncrBy');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -872,6 +978,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('expireAt');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -879,6 +986,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pexpire');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -886,6 +994,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pexpireAt');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -893,6 +1002,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hGet');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -900,6 +1010,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hSet');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -907,6 +1018,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hSetNx');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -914,6 +1026,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hDel');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -921,6 +1034,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hLen');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -928,6 +1042,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hKeys');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -935,6 +1050,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hVals');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -942,6 +1058,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hGetAll');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -949,6 +1066,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hExists');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -956,6 +1074,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hIncrBy');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -963,6 +1082,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hIncrByFloat');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -970,6 +1090,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hMset');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -977,6 +1098,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hMget');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -984,6 +1106,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('multi');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -991,6 +1114,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('discard');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -998,6 +1122,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('exec');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1005,6 +1130,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pipeline');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1012,6 +1138,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('watch');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1019,6 +1146,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('unwatch');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1026,6 +1154,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('publish');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1033,6 +1162,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('subscribe');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1040,6 +1170,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('psubscribe');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1047,6 +1178,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('unsubscribe');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1054,6 +1186,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('punsubscribe');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1061,6 +1194,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('time');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1068,6 +1202,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('role');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1075,6 +1210,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('eval');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1082,6 +1218,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('evalsha');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1089,6 +1226,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('script');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1096,6 +1234,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('debug');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1103,6 +1242,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('dump');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1110,6 +1250,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('restore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1117,6 +1258,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('migrate');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1124,6 +1266,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getLastError');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1131,6 +1274,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('clearLastError');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1138,6 +1282,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('_prefix');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1145,6 +1290,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('_serialize');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1152,6 +1298,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('_unserialize');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1159,6 +1306,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('client');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1166,6 +1314,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('command');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1173,6 +1322,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('scan', array(&$i_iterator, $str_pattern, $i_count));
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1180,6 +1330,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('hscan', array($str_key, &$i_iterator, $str_pattern, $i_count));
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1187,6 +1338,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zscan', array($str_key, &$i_iterator, $str_pattern, $i_count));
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1194,6 +1346,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sscan', array($str_key, &$i_iterator, $str_pattern, $i_count));
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1201,6 +1354,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pfadd');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1208,6 +1362,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pfcount');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1215,6 +1370,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pfmerge');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1222,6 +1378,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getOption');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1229,6 +1386,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('setOption');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1236,6 +1394,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('config');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1243,6 +1402,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('slowlog');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1250,6 +1410,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('rawcommand');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1257,6 +1418,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getHost');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1264,6 +1426,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getPort');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1271,6 +1434,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getDBNum');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1278,6 +1442,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getTimeout');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1285,6 +1450,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getReadTimeout');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1292,6 +1458,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getPersistentID');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1299,6 +1466,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getAuth');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1306,6 +1474,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('isConnected');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1313,6 +1482,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('getMode');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1320,6 +1490,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('wait');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1327,6 +1498,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('pubsub');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1334,6 +1506,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('open');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1341,6 +1514,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('popen');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1348,6 +1522,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lLen');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1355,6 +1530,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sGetMembers');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1362,6 +1538,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('mget');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1369,6 +1546,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('expire');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1376,6 +1554,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zunionstore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1383,6 +1562,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zinterstore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1390,6 +1570,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRemove');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1397,6 +1578,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRem');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1404,6 +1586,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRemoveRangeByScore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1411,6 +1594,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRemRangeByScore');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1418,6 +1602,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zRemRangeByRank');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1425,6 +1610,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zSize');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1432,6 +1618,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('substr');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1439,6 +1626,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('rename');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1446,6 +1634,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('del');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1453,6 +1642,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('keys');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1460,6 +1650,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lrem');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1467,6 +1658,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('ltrim');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1474,6 +1666,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lindex');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1481,6 +1674,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('lrange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1488,6 +1682,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('scard');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1495,6 +1690,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('srem');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1502,6 +1698,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sismember');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1509,6 +1706,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('zReverseRange');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1516,6 +1714,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('sendEcho');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -1523,6 +1722,7 @@ class Client2_2_8 extends Redis
     {
         return $this->call('evaluate');
     }
+
     /**
      * {@inheritdoc}
      */

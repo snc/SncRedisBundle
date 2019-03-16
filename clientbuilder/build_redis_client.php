@@ -119,7 +119,7 @@ $reflectedMethods = $rc->getMethods(\ReflectionMethod::IS_PUBLIC);
 
 /* @var $reflectedMethod \ReflectionMethod */
 foreach ($reflectedMethods as $reflectedMethod) {
-    if ($reflectedMethod->isFinal() || $reflectedMethod->isConstructor()) {
+    if ($reflectedMethod->isFinal() || $reflectedMethod->isConstructor() || in_array($reflectedMethod->getName(), ['echo'], true)) {
         continue;
     }
     $method = "\n    /**\n";

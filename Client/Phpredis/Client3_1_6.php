@@ -152,14 +152,6 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function echo()
-    {
-        return $this->call('echo');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function get()
     {
         return $this->call('get');
