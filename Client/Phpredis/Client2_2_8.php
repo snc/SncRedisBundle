@@ -1206,14 +1206,6 @@ class Client2_2_8 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function eval()
-    {
-        return $this->call('eval');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function evalsha()
     {
         return $this->call('evalsha');

@@ -119,9 +119,10 @@ $reflectedMethods = $rc->getMethods(\ReflectionMethod::IS_PUBLIC);
 
 /* @var $reflectedMethod \ReflectionMethod */
 foreach ($reflectedMethods as $reflectedMethod) {
-    if ($reflectedMethod->isFinal() || $reflectedMethod->isConstructor() || in_array($reflectedMethod->getName(), ['echo'], true)) {
+    if ($reflectedMethod->isFinal() || $reflectedMethod->isConstructor() || PHP_VERSION_ID < 70000 && in_array($reflectedMethod->getName(), ['echo', 'eval'], true)) {
         continue;
     }
+
     $method = "\n    /**\n";
     $method .= "     * {@inheritdoc}\n";
     $method .= "     */\n";

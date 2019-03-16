@@ -910,6 +910,14 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
+    public function echo()
+    {
+        return $this->call('echo');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function pipeline()
     {
         return $this->call('pipeline');
