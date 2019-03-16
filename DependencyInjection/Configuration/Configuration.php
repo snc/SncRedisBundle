@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
 
     public function __construct($debug)
     {
-        $this->debug = (Boolean) $debug;
+        $this->debug = (bool) $debug;
     }
 
     /**
@@ -85,8 +85,6 @@ class Configuration implements ConfigurationInterface
      */
     private function addClientsSection(ArrayNodeDefinition $rootNode)
     {
-        $loggingDefault = (version_compare(phpversion('redis'), '4.0.0') >= 0 ? false : $this->debug);
-
         $rootNode
             ->fixXmlConfig('client')
             ->children()
@@ -108,7 +106,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('alias')->isRequired()->end()
-                            ->booleanNode('logging')->defaultValue($loggingDefault)->end()
+                            ->booleanNode('logging')->defaultValue($this->debug)->end()
                             ->arrayNode('dsns')
                                 ->isRequired()
                                 ->performNoDeepMerging()

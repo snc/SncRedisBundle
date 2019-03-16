@@ -25,14 +25,10 @@ class RedisLogger
     /**
      * Constructor.
      *
-     * @param PsrLoggerInterface $logger A LoggerInterface instance
+     * @param PsrLoggerInterface|null $logger A LoggerInterface instance
      */
-    public function __construct($logger = null)
+    public function __construct(PsrLoggerInterface $logger = null)
     {
-        if (!$logger instanceof PsrLoggerInterface && null !== $logger) {
-            throw new \InvalidArgumentException(sprintf('RedisLogger needs a PSR-3 LoggerInterface, "%s" was injected instead.', is_object($logger) ? get_class($logger) : gettype($logger)));
-        }
-
         $this->logger = $logger;
     }
 

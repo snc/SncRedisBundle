@@ -25,6 +25,9 @@ doctrine:
                 dir: '%kernel.project_dir%/Entity'
                 prefix: 'Snc\RedisBundle\Tests\Functional\App\Entity'
 
+twig:
+    strict_variables: '%kernel.debug%'
+
 snc_redis:
     clients:
         default:

@@ -24,6 +24,12 @@
             <tag name="console.command" command="redis:flushdb" />
             <tag name="snc_redis.command" />
         </service>
+
+        <service id="snc_redis.phpredis.client_builder" class="Snc\RedisBundle\Client\Phpredis\ClientBuilder" public="false" />
+        <service id="snc_redis.phpredis.client_cache_warmer" class="Snc\RedisBundle\Client\Phpredis\ClientCacheWarmer" public="false">
+            <argument type="service" id="snc_redis.phpredis.client_builder" />
+            <tag name="kernel.cache_warmer"/>
+        </service>
     </services>
 
 </container>

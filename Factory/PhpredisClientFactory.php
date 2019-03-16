@@ -33,7 +33,7 @@ class PhpredisClientFactory
      */
     public function create($class, $dsn, $options, $alias)
     {
-        if (!is_a($class, '\Redis', true)) {
+        if (!is_a($class, \Redis::class, true)) {
             throw new \RuntimeException(sprintf('The factory can only instantiate \Redis classes: %s asked', $class));
         }
 
@@ -97,7 +97,7 @@ class PhpredisClientFactory
      */
     private function createClient($class, $alias)
     {
-        if (is_a($class, '\Snc\RedisBundle\Client\Phpredis\Client', true)) {
+        if (is_a($class, Client::class, true)) {
             $client = new $class(array('alias' => $alias), $this->logger);
         } else {
             $client = new $class();
@@ -122,7 +122,7 @@ class PhpredisClientFactory
             'php' => \Redis::SERIALIZER_PHP
         );
 
-        if (defined('Redis::SERIALIZER_IGBINARY')) {
+        if (defined('\Redis::SERIALIZER_IGBINARY')) {
             $types['igbinary'] = \Redis::SERIALIZER_IGBINARY;
         }
 

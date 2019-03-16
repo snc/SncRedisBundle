@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle;
 
+use Snc\RedisBundle\Client\Phpredis\Client;
 use Snc\RedisBundle\DependencyInjection\Compiler\ClientLocatorPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
@@ -23,6 +24,24 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class SncRedisBundle extends Bundle
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function boot()
+    {
+        parent::boot();
+
+        if ($this->container->getParameter('snc_redis.phpredis_client.class') === Client::class) {
+            if (!class_exists(Client::class)) {
+                if (!file_exists($file = $this->container->getParameter('kernel.cache_dir').'/snc_phpredis_client.php')) {
+                    throw new \LogicException(sprintf('You must warmup the cache before using the %s class', Client::class));
+                }
+
+                require $file;
+            }
+        }
+    }
+
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      */

@@ -4,6 +4,7 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Snc\RedisBundle\Client\Phpredis\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -67,14 +68,8 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.alias_test');
 
-        $clientClass = 'Snc\RedisBundle\Client\Phpredis\Client';
-        if (version_compare(phpversion('redis'), '4.0.0') >= 0) {
-            // Logging is not supported for this version >=4.0.0 of phpredis
-            $clientClass = 'Redis';
-        }
-
-        $this->assertSame($clientClass, $clientDefinition->getClass());
-        $this->assertSame($clientClass, $clientDefinition->getArgument(0));
+        $this->assertSame(Client::class, $clientDefinition->getClass());
+        $this->assertSame(Client::class, $clientDefinition->getArgument(0));
         $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1));
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
         $this->assertSame(array(
