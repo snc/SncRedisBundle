@@ -1310,7 +1310,7 @@ class Client2_2_8 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function scan(&$i_iterator, $str_pattern, $i_count)
+    public function scan(&$i_iterator, $str_pattern = null, $i_count = null)
     {
         return $this->call('scan', array(&$i_iterator, $str_pattern, $i_count));
     }
@@ -1318,7 +1318,7 @@ class Client2_2_8 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function hscan($str_key, &$i_iterator, $str_pattern, $i_count)
+    public function hscan($str_key, &$i_iterator, $str_pattern = null, $i_count = null)
     {
         return $this->call('hscan', array($str_key, &$i_iterator, $str_pattern, $i_count));
     }
@@ -1326,7 +1326,7 @@ class Client2_2_8 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zscan($str_key, &$i_iterator, $str_pattern, $i_count)
+    public function zscan($str_key, &$i_iterator, $str_pattern = null, $i_count = null)
     {
         return $this->call('zscan', array($str_key, &$i_iterator, $str_pattern, $i_count));
     }
@@ -1334,7 +1334,7 @@ class Client2_2_8 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sscan($str_key, &$i_iterator, $str_pattern, $i_count)
+    public function sscan($str_key, &$i_iterator, $str_pattern = null, $i_count = null)
     {
         return $this->call('sscan', array($str_key, &$i_iterator, $str_pattern, $i_count));
     }

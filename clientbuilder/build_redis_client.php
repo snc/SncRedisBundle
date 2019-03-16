@@ -139,7 +139,6 @@ foreach ($reflectedMethods as $reflectedMethod) {
     $method .= 'function ';
     $method .= $reflectedMethod->getName();
     $method .= '(';
-
     $args = $reflectedMethod->getParameters();
     /* @var $rp \ReflectionParameter */
     foreach ($args as $rp) {
@@ -155,9 +154,9 @@ foreach ($reflectedMethods as $reflectedMethod) {
         }
         $method .= '$';
         $method .= $rp->getName();
-        if ($rp->isDefaultValueAvailable()) {
+        if ($rp->isDefaultValueAvailable() || $rp->isOptional()) {
             $method .= ' = ';
-            $method .= $rp->getDefaultValue();
+            $method .= $rp->isDefaultValueAvailable() ? $rp->getDefaultValue() : 'null';
         }
         if ($rp->getPosition() < count($reflectedMethod->getParameters()) - 1) {
             $method .= ', ';
