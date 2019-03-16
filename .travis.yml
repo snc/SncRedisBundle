@@ -56,4 +56,6 @@ before_install:
 
 install: composer update
 
-before_script: mkdir Snc && ln -s ../ Snc/RedisBundle
+before_script:
+  - mkdir Snc && ln -s ../ Snc/RedisBundle
+  - php clientbuilder/build_redis_client.php
