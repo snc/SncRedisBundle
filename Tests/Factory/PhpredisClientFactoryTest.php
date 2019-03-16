@@ -1,8 +1,9 @@
 <?php
 
-namespace Snc\RedisBundle\Factory;
+namespace Snc\RedisBundle\Tests\Factory;
 
 use PHPUnit\Framework\TestCase;
+use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 class PhpredisClientFactoryTest extends TestCase
