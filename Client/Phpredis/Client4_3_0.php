@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -9,9 +10,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Snc\RedisBundle\Client\Phpredis;
+
 use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
+
 /**
  * PHP Redis client with logger.
  *
@@ -19,16 +23,18 @@ use Snc\RedisBundle\Logger\RedisLogger;
  * @author Yassine Khial <yassine.khial@blablacar.com>
  * @author Pierre Boudelle <pierre.boudelle@gmail.com>
  */
-class Client4_2_0 extends Redis
+class Client4_3_0 extends Redis
 {
     /**
      * @var RedisLogger
      */
     protected $logger;
+
     /**
      * @var string
      */
     protected $alias;
+
     /**
      * Constructor.
      *
@@ -56,9 +62,11 @@ class Client4_2_0 extends Redis
         $startTime = microtime(true);
         $result = call_user_func_array("parent::$name", $arguments);
         $duration = (microtime(true) - $startTime) * 1000;
+
         if (null !== $this->logger) {
             $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
         }
+
         return $result;
     }
 
@@ -74,6 +82,7 @@ class Client4_2_0 extends Redis
     {
         $list = array();
         $this->flatten($arguments, $list);
+
         return trim(strtoupper($command).' '.implode(' ', $list));
     }
 
@@ -89,6 +98,7 @@ class Client4_2_0 extends Redis
             if (!is_numeric($key)) {
                 $list[] = $key;
             }
+
             if (is_scalar($item)) {
                 $list[] = strval($item);
             } elseif (null === $item) {
@@ -182,7 +192,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function bitpos($key, $bit, $start, $end)
+    public function bitpos($key, $bit, $start = null, $end = null)
     {
         return $this->call('bitpos', array($key, $bit, $start, $end));
     }
@@ -209,6 +219,22 @@ class Client4_2_0 extends Redis
     public function brpoplpush($src, $dst, $timeout)
     {
         return $this->call('brpoplpush', array($src, $dst, $timeout));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function bzPopMax($key, $timeout_or_key, ...$extra_args)
+    {
+        return $this->call('bzPopMax', array($key, $timeout_or_key, $extra_args));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function bzPopMin($key, $timeout_or_key, ...$extra_args)
+    {
+        return $this->call('bzPopMin', array($key, $timeout_or_key, $extra_args));
     }
 
     /**
@@ -246,7 +272,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function config($cmd, $key, $value)
+    public function config($cmd, $key, $value = null)
     {
         return $this->call('config', array($cmd, $key, $value));
     }
@@ -254,7 +280,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function connect($host, $port, $timeout, $retry_interval)
+    public function connect($host, $port = null, $timeout = null, $retry_interval = null)
     {
         return $this->call('connect', array($host, $port, $timeout, $retry_interval));
     }
@@ -318,7 +344,15 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function eval($script, $args, $num_keys)
+    public function echo($msg)
+    {
+        return $this->call('echo', array($msg));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function eval($script, $args = null, $num_keys = null)
     {
         return $this->call('eval', array($script, $args, $num_keys));
     }
@@ -326,7 +360,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function evalsha($script_sha, $args, $num_keys)
+    public function evalsha($script_sha, $args = null, $num_keys = null)
     {
         return $this->call('evalsha', array($script_sha, $args, $num_keys));
     }
@@ -358,7 +392,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushAll($async)
+    public function flushAll($async = null)
     {
         return $this->call('flushAll', array($async));
     }
@@ -366,7 +400,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushDB($async)
+    public function flushDB($async = null)
     {
         return $this->call('flushDB', array($async));
     }
@@ -382,7 +416,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function geodist($key, $src, $dst, $unit)
+    public function geodist($key, $src, $dst, $unit = null)
     {
         return $this->call('geodist', array($key, $src, $dst, $unit));
     }
@@ -406,7 +440,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function georadius($key, $lng, $lan, $radius, $unit, array $opts)
+    public function georadius($key, $lng, $lan, $radius, $unit, array $opts = null)
     {
         return $this->call('georadius', array($key, $lng, $lan, $radius, $unit, $opts));
     }
@@ -414,9 +448,25 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function georadiusbymember($key, $member, $radius, $unit, array $opts)
+    public function georadius_ro($key, $lng, $lan, $radius, $unit, array $opts = null)
+    {
+        return $this->call('georadius_ro', array($key, $lng, $lan, $radius, $unit, $opts));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function georadiusbymember($key, $member, $radius, $unit, array $opts = null)
     {
         return $this->call('georadiusbymember', array($key, $member, $radius, $unit, $opts));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function georadiusbymember_ro($key, $member, $radius, $unit, array $opts = null)
+    {
+        return $this->call('georadiusbymember_ro', array($key, $member, $radius, $unit, $opts));
     }
 
     /**
@@ -694,7 +744,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function info($option)
+    public function info($option = null)
     {
         return $this->call('info', array($option));
     }
@@ -798,7 +848,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function migrate($host, $port, $key, $db, $timeout, $copy, $replace)
+    public function migrate($host, $port, $key, $db, $timeout, $copy = null, $replace = null)
     {
         return $this->call('migrate', array($host, $port, $key, $db, $timeout, $copy, $replace));
     }
@@ -830,7 +880,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function multi($mode)
+    public function multi($mode = null)
     {
         return $this->call('multi', array($mode));
     }
@@ -846,7 +896,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function pconnect($host, $port, $timeout)
+    public function pconnect($host, $port = null, $timeout = null)
     {
         return $this->call('pconnect', array($host, $port, $timeout));
     }
@@ -910,14 +960,6 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function echo()
-    {
-        return $this->call('echo');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function pipeline()
     {
         return $this->call('pipeline');
@@ -934,9 +976,9 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function psubscribe(array $patterns)
+    public function psubscribe(array $patterns, $callback)
     {
-        return $this->call('psubscribe', array($patterns));
+        return $this->call('psubscribe', array($patterns, $callback));
     }
 
     /**
@@ -1134,7 +1176,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sRandMember($key, $count)
+    public function sRandMember($key, $count = null)
     {
         return $this->call('sRandMember', array($key, $count));
     }
@@ -1206,7 +1248,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value, $opts)
+    public function set($key, $value, $opts = null)
     {
         return $this->call('set', array($key, $value, $opts));
     }
@@ -1262,7 +1304,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function slaveof($host, $port)
+    public function slaveof($host = null, $port = null)
     {
         return $this->call('slaveof', array($host, $port));
     }
@@ -1270,7 +1312,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function slowlog($arg, $option)
+    public function slowlog($arg, $option = null)
     {
         return $this->call('slowlog', array($arg, $option));
     }
@@ -1278,7 +1320,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sort($key, array $options)
+    public function sort($key, array $options = null)
     {
         return $this->call('sort', array($key, $options));
     }
@@ -1286,7 +1328,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sortAsc($key, $pattern, $get, $start, $end, $getList)
+    public function sortAsc($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
         return $this->call('sortAsc', array($key, $pattern, $get, $start, $end, $getList));
     }
@@ -1294,7 +1336,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sortAscAlpha($key, $pattern, $get, $start, $end, $getList)
+    public function sortAscAlpha($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
         return $this->call('sortAscAlpha', array($key, $pattern, $get, $start, $end, $getList));
     }
@@ -1302,7 +1344,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sortDesc($key, $pattern, $get, $start, $end, $getList)
+    public function sortDesc($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
         return $this->call('sortDesc', array($key, $pattern, $get, $start, $end, $getList));
     }
@@ -1310,7 +1352,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sortDescAlpha($key, $pattern, $get, $start, $end, $getList)
+    public function sortDescAlpha($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
         return $this->call('sortDescAlpha', array($key, $pattern, $get, $start, $end, $getList));
     }
@@ -1334,9 +1376,9 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function subscribe(array $channels)
+    public function subscribe(array $channels, $callback)
     {
-        return $this->call('subscribe', array($channels));
+        return $this->call('subscribe', array($channels, $callback));
     }
 
     /**
@@ -1422,7 +1464,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xadd($str_key, $str_id, array $arr_fields, $i_maxlen, $boo_approximate)
+    public function xadd($str_key, $str_id, array $arr_fields, $i_maxlen = null, $boo_approximate = null)
     {
         return $this->call('xadd', array($str_key, $str_id, $arr_fields, $i_maxlen, $boo_approximate));
     }
@@ -1430,7 +1472,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xclaim($str_key, $str_group, $str_consumer, $i_min_idle, array $arr_ids, array $arr_opts)
+    public function xclaim($str_key, $str_group, $str_consumer, $i_min_idle, array $arr_ids, array $arr_opts = null)
     {
         return $this->call('xclaim', array($str_key, $str_group, $str_consumer, $i_min_idle, $arr_ids, $arr_opts));
     }
@@ -1446,7 +1488,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xgroup($str_operation, $str_key, $str_arg1, $str_arg2, $str_arg3)
+    public function xgroup($str_operation, $str_key = null, $str_arg1 = null, $str_arg2 = null, $str_arg3 = null)
     {
         return $this->call('xgroup', array($str_operation, $str_key, $str_arg1, $str_arg2, $str_arg3));
     }
@@ -1454,7 +1496,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xinfo($str_cmd, $str_key, $str_group)
+    public function xinfo($str_cmd, $str_key = null, $str_group = null)
     {
         return $this->call('xinfo', array($str_cmd, $str_key, $str_group));
     }
@@ -1470,7 +1512,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xpending($str_key, $str_group, $str_start, $str_end, $i_count, $str_consumer)
+    public function xpending($str_key, $str_group, $str_start = null, $str_end = null, $i_count = null, $str_consumer = null)
     {
         return $this->call('xpending', array($str_key, $str_group, $str_start, $str_end, $i_count, $str_consumer));
     }
@@ -1478,7 +1520,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xrange($str_key, $str_start, $str_end, $i_count)
+    public function xrange($str_key, $str_start, $str_end, $i_count = null)
     {
         return $this->call('xrange', array($str_key, $str_start, $str_end, $i_count));
     }
@@ -1486,7 +1528,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xread(array $arr_streams, $i_count, $i_block)
+    public function xread(array $arr_streams, $i_count = null, $i_block = null)
     {
         return $this->call('xread', array($arr_streams, $i_count, $i_block));
     }
@@ -1494,7 +1536,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xreadgroup($str_group, $str_consumer, array $arr_streams, $i_count, $i_block)
+    public function xreadgroup($str_group, $str_consumer, array $arr_streams, $i_count = null, $i_block = null)
     {
         return $this->call('xreadgroup', array($str_group, $str_consumer, $arr_streams, $i_count, $i_block));
     }
@@ -1502,7 +1544,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xrevrange($str_key, $str_start, $str_end, $i_count)
+    public function xrevrange($str_key, $str_start, $str_end, $i_count = null)
     {
         return $this->call('xrevrange', array($str_key, $str_start, $str_end, $i_count));
     }
@@ -1510,7 +1552,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function xtrim($str_key, $i_maxlen, $boo_approximate)
+    public function xtrim($str_key, $i_maxlen, $boo_approximate = null)
     {
         return $this->call('xtrim', array($str_key, $i_maxlen, $boo_approximate));
     }
@@ -1574,7 +1616,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zInter($key, array $keys, array $weights, $aggregate)
+    public function zInter($key, array $keys, array $weights = null, $aggregate = null)
     {
         return $this->call('zInter', array($key, $keys, $weights, $aggregate));
     }
@@ -1590,7 +1632,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zRange($key, $start, $end, $scores)
+    public function zRange($key, $start, $end, $scores = null)
     {
         return $this->call('zRange', array($key, $start, $end, $scores));
     }
@@ -1598,7 +1640,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zRangeByLex($key, $min, $max, $offset, $limit)
+    public function zRangeByLex($key, $min, $max, $offset = null, $limit = null)
     {
         return $this->call('zRangeByLex', array($key, $min, $max, $offset, $limit));
     }
@@ -1606,7 +1648,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zRangeByScore($key, $start, $end, array $options)
+    public function zRangeByScore($key, $start, $end, array $options = null)
     {
         return $this->call('zRangeByScore', array($key, $start, $end, $options));
     }
@@ -1630,7 +1672,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zRevRange($key, $start, $end, $scores)
+    public function zRevRange($key, $start, $end, $scores = null)
     {
         return $this->call('zRevRange', array($key, $start, $end, $scores));
     }
@@ -1638,7 +1680,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zRevRangeByLex($key, $min, $max, $offset, $limit)
+    public function zRevRangeByLex($key, $min, $max, $offset = null, $limit = null)
     {
         return $this->call('zRevRangeByLex', array($key, $min, $max, $offset, $limit));
     }
@@ -1646,7 +1688,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zRevRangeByScore($key, $start, $end, array $options)
+    public function zRevRangeByScore($key, $start, $end, array $options = null)
     {
         return $this->call('zRevRangeByScore', array($key, $start, $end, $options));
     }
@@ -1670,7 +1712,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zUnion($key, array $keys, array $weights, $aggregate)
+    public function zUnion($key, array $keys, array $weights = null, $aggregate = null)
     {
         return $this->call('zUnion', array($key, $keys, $weights, $aggregate));
     }
@@ -1686,6 +1728,22 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
+    public function zPopMax($key)
+    {
+        return $this->call('zPopMax', array($key));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function zPopMin($key)
+    {
+        return $this->call('zPopMin', array($key));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function del($key, ...$other_keys)
     {
         return $this->call('del', array($key, $other_keys));
@@ -1694,7 +1752,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function evaluate($script, $args, $num_keys)
+    public function evaluate($script, $args = null, $num_keys = null)
     {
         return $this->call('evaluate', array($script, $args, $num_keys));
     }
@@ -1702,7 +1760,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function evaluateSha($script_sha, $args, $num_keys)
+    public function evaluateSha($script_sha, $args = null, $num_keys = null)
     {
         return $this->call('evaluateSha', array($script_sha, $args, $num_keys));
     }
@@ -1774,7 +1832,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function open($host, $port, $timeout, $retry_interval)
+    public function open($host, $port = null, $timeout = null, $retry_interval = null)
     {
         return $this->call('open', array($host, $port, $timeout, $retry_interval));
     }
@@ -1782,7 +1840,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function popen($host, $port, $timeout)
+    public function popen($host, $port = null, $timeout = null)
     {
         return $this->call('popen', array($host, $port, $timeout));
     }
@@ -1886,7 +1944,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zReverseRange($key, $start, $end, $scores)
+    public function zReverseRange($key, $start, $end, $scores = null)
     {
         return $this->call('zReverseRange', array($key, $start, $end, $scores));
     }
@@ -1902,7 +1960,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zinterstore($key, array $keys, array $weights, $aggregate)
+    public function zinterstore($key, array $keys, array $weights = null, $aggregate = null)
     {
         return $this->call('zinterstore', array($key, $keys, $weights, $aggregate));
     }
@@ -1910,7 +1968,7 @@ class Client4_2_0 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zunionstore($key, array $keys, array $weights, $aggregate)
+    public function zunionstore($key, array $keys, array $weights = null, $aggregate = null)
     {
         return $this->call('zunionstore', array($key, $keys, $weights, $aggregate));
     }

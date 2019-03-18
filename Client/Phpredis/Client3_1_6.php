@@ -120,17 +120,17 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function connect()
+    public function connect($host, $port, $timeout = null, $retry_interval = null)
     {
-        return $this->call('connect');
+        return $this->call('connect', array($host, $port, $timeout, $retry_interval));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pconnect()
+    public function pconnect($host, $port, $timeout = null)
     {
-        return $this->call('pconnect');
+        return $this->call('pconnect', array($host, $port, $timeout));
     }
 
     /**
@@ -147,14 +147,6 @@ class Client3_1_6 extends Redis
     public function ping()
     {
         return $this->call('ping');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function echo()
-    {
-        return $this->call('echo');
     }
 
     /**
@@ -232,9 +224,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function getMultiple()
+    public function getMultiple(array $keys)
     {
-        return $this->call('getMultiple');
+        return $this->call('getMultiple', array($keys));
     }
 
     /**
@@ -368,33 +360,33 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sortAsc()
+    public function sortAsc($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
-        return $this->call('sortAsc');
+        return $this->call('sortAsc', array($key, $pattern, $get, $start, $end, $getList));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sortAscAlpha()
+    public function sortAscAlpha($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
-        return $this->call('sortAscAlpha');
+        return $this->call('sortAscAlpha', array($key, $pattern, $get, $start, $end, $getList));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sortDesc()
+    public function sortDesc($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
-        return $this->call('sortDesc');
+        return $this->call('sortDesc', array($key, $pattern, $get, $start, $end, $getList));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sortDescAlpha()
+    public function sortDescAlpha($key, $pattern = null, $get = null, $start = null, $end = null, $getList = null)
     {
-        return $this->call('sortDescAlpha');
+        return $this->call('sortDescAlpha', array($key, $pattern, $get, $start, $end, $getList));
     }
 
     /**
@@ -560,9 +552,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sPop()
+    public function sPop($key)
     {
-        return $this->call('sPop');
+        return $this->call('sPop', array($key));
     }
 
     /**
@@ -696,9 +688,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function auth()
+    public function auth($password)
     {
-        return $this->call('auth');
+        return $this->call('auth', array($password));
     }
 
     /**
@@ -736,17 +728,17 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function select()
+    public function select($dbindex)
     {
-        return $this->call('select');
+        return $this->call('select', array($dbindex));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function move()
+    public function move($key, $dbindex)
     {
-        return $this->call('move');
+        return $this->call('move', array($key, $dbindex));
     }
 
     /**
@@ -760,9 +752,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function slaveof()
+    public function slaveof($host = null, $port = null)
     {
-        return $this->call('slaveof');
+        return $this->call('slaveof', array($host, $port));
     }
 
     /**
@@ -800,17 +792,17 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function mset()
+    public function mset(array $pairs)
     {
-        return $this->call('mset');
+        return $this->call('mset', array($pairs));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function msetnx()
+    public function msetnx(array $pairs)
     {
-        return $this->call('msetnx');
+        return $this->call('msetnx', array($pairs));
     }
 
     /**
@@ -1232,14 +1224,6 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function eval()
-    {
-        return $this->call('eval');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function evalsha()
     {
         return $this->call('evalsha');
@@ -1280,9 +1264,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function migrate()
+    public function migrate($host, $port, $key, $db, $timeout, $copy = null, $replace = null)
     {
-        return $this->call('migrate');
+        return $this->call('migrate', array($host, $port, $key, $db, $timeout, $copy, $replace));
     }
 
     /**
@@ -1328,9 +1312,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function client()
+    public function client($cmd, ...$args)
     {
-        return $this->call('client');
+        return $this->call('client', array($cmd, $args));
     }
 
     /**
@@ -1400,41 +1384,41 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function getOption()
+    public function getOption($option)
     {
-        return $this->call('getOption');
+        return $this->call('getOption', array($option));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOption()
+    public function setOption($option, $value)
     {
-        return $this->call('setOption');
+        return $this->call('setOption', array($option, $value));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function config()
+    public function config($cmd, $key, $value = null)
     {
-        return $this->call('config');
+        return $this->call('config', array($cmd, $key, $value));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function slowlog()
+    public function slowlog($arg, $option = null)
     {
-        return $this->call('slowlog');
+        return $this->call('slowlog', array($arg, $option));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rawcommand()
+    public function rawcommand($cmd, ...$args)
     {
-        return $this->call('rawcommand');
+        return $this->call('rawcommand', array($cmd, $args));
     }
 
     /**
@@ -1560,33 +1544,33 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function wait()
+    public function wait($numslaves, $timeout)
     {
-        return $this->call('wait');
+        return $this->call('wait', array($numslaves, $timeout));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pubsub()
+    public function pubsub($cmd, ...$args)
     {
-        return $this->call('pubsub');
+        return $this->call('pubsub', array($cmd, $args));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function open()
+    public function open($host, $port, $timeout = null, $retry_interval = null)
     {
-        return $this->call('open');
+        return $this->call('open', array($host, $port, $timeout, $retry_interval));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function popen()
+    public function popen($host, $port, $timeout = null)
     {
-        return $this->call('popen');
+        return $this->call('popen', array($host, $port, $timeout));
     }
 
     /**
@@ -1608,9 +1592,9 @@ class Client3_1_6 extends Redis
     /**
      * {@inheritdoc}
      */
-    public function mget()
+    public function mget(array $keys)
     {
-        return $this->call('mget');
+        return $this->call('mget', array($keys));
     }
 
     /**

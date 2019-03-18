@@ -146,15 +146,17 @@ foreach ($reflectedMethods as $reflectedMethod) {
             $method .= $rp->getType();
             $method .= ' ';
         }
+        $isVariadic = false;
         if (method_exists($rp, 'isVariadic') && $rp->isVariadic()) {
             $method .= '...';
+            $isVariadic = true;
         }
         if ($rp->isPassedByReference()) {
             $method .= '&';
         }
         $method .= '$';
         $method .= $rp->getName();
-        if ($rp->isDefaultValueAvailable() || $rp->isOptional()) {
+        if ($rp->isDefaultValueAvailable() || $rp->isOptional() && !$isVariadic) {
             $method .= ' = ';
             $method .= $rp->isDefaultValueAvailable() ? $rp->getDefaultValue() : 'null';
         }
@@ -195,9 +197,9 @@ foreach ($reflectedMethods as $reflectedMethod) {
 $class .= "}\n";
 
 $classname = 'Client'.str_replace('.', '_', phpversion('redis'));
-$class = str_replace('{{classname}}', $classname, $class);
 $file = __DIR__.'/../Client/Phpredis/'.$classname.'.php';
+$class = str_replace('{{classname}}', $classname, $class);
 
-file_put_contents($file, $class);
+// file_put_contents($file, $class);
 
 echo $class;

@@ -7,7 +7,7 @@ $loader->add('Doctrine\\Tests', $vendorDir . '/doctrine/cache/tests');
 // just for testing purposes, remove next lines before merging
 $version = phpversion('redis');
 if (version_compare($version, '4.0.0') >= 0) {
-    class_alias('\Snc\RedisBundle\Client\Phpredis\Client4_2_0', '\Snc\RedisBundle\Client\Phpredis\Client');
+    class_alias('\Snc\RedisBundle\Client\Phpredis\Client4_3_0', '\Snc\RedisBundle\Client\Phpredis\Client');
 } elseif (version_compare($version, '3.0.0') >= 0) {
     class_alias('\Snc\RedisBundle\Client\Phpredis\Client3_1_6', '\Snc\RedisBundle\Client\Phpredis\Client');
 } elseif (version_compare($version, '2.0.0') >= 0) {
