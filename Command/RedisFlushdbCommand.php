@@ -47,7 +47,9 @@ class RedisFlushdbCommand extends RedisBaseCommand
      */
     private function flushDbForClient()
     {
-        $this->redisClient->flushdb();
+        foreach ($this->redisClient as $nodeClient) {
+            $nodeClient->flushdb();
+        }
 
         $this->output->writeln('<info>redis database flushed</info>');
     }
