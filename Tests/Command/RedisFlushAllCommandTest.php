@@ -40,12 +40,12 @@ class RedisFlushallCommandTest extends CommandTestCase
                 ->with($this->equalTo('flushall'))
                 ->will($this->returnValue(true));
         } else {
-            $node1 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node1 = $this->getMockBuilder('\Predis\Client')->getMock();
             $node1->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
                 ->will($this->returnValue(true));
-            $node2 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node2 = $this->getMockBuilder('\Predis\Client')->getMock();
             $node2->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
@@ -75,12 +75,12 @@ class RedisFlushallCommandTest extends CommandTestCase
                 ->with($this->equalTo('flushall'))
                 ->will($this->returnValue(true));
         } else {
-            $node1 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node1 = $this->getMockBuilder('\Predis\Client')->getMock();
             $node1->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
                 ->will($this->returnValue(true));
-            $node2 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node2 = $this->getMockBuilder('\Predis\Client')->getMock();
             $node2->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
