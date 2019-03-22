@@ -48,8 +48,13 @@ class RedisFlushallCommand extends RedisBaseCommand
      */
     private function flushAll()
     {
-        foreach ($this->redisClient as $nodeClient) {
-            $nodeClient->flushall();
+        if (!($this->redisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
+            $this->redisClient->flushall();
+        } else {
+            // flushall in all nodes of cluster
+            foreach ($this->redisClient as $nodeClient) {
+                $nodeClient->flushall();
+            }
         }
 
         $this->output->writeln('<info>All redis databases flushed</info>');

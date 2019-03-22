@@ -30,24 +30,31 @@ class RedisFlushdbCommandTest extends CommandTestCase
 
     public function testDefaultClientAndNoInteraction()
     {
-        $node1 = $this->getMockBuilder('\Predis\\Client')->getMock();
-        $node1->expects($this->once())
-            ->method('__call')
-            ->with($this->equalTo('flushdb'))
-            ->will($this->returnValue(true));
-        $node2 = $this->getMockBuilder('\Predis\\Client')->getMock();
-        $node2->expects($this->once())
-            ->method('__call')
-            ->with($this->equalTo('flushdb'))
-            ->will($this->returnValue(true));
-
         $this->container->expects($this->once())
             ->method('get')
             ->with($this->equalTo('snc_redis.default'));
 
-        $this->predisClient->expects($this->once())
-            ->method('getIterator')
-            ->will($this->returnValue(new \ArrayIterator([$node1, $node2])));
+        if (!($this->predisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
+            $this->predisClient->expects($this->once())
+                ->method('__call')
+                ->with($this->equalTo('flushdb'))
+                ->will($this->returnValue(true));
+        } else {
+            $node1 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node1->expects($this->once())
+                ->method('__call')
+                ->with($this->equalTo('flushdb'))
+                ->will($this->returnValue(true));
+            $node2 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node2->expects($this->once())
+                ->method('__call')
+                ->with($this->equalTo('flushdb'))
+                ->will($this->returnValue(true));
+
+            $this->predisClient->expects($this->once())
+                ->method('getIterator')
+                ->will($this->returnValue(new \ArrayIterator([$node1, $node2])));
+        }
 
         $command = $this->application->find('redis:flushdb');
         $commandTester = new CommandTester($command);
@@ -58,24 +65,31 @@ class RedisFlushdbCommandTest extends CommandTestCase
 
     public function testClientOption()
     {
-        $node1 = $this->getMockBuilder('\Predis\\Client')->getMock();
-        $node1->expects($this->once())
-            ->method('__call')
-            ->with($this->equalTo('flushdb'))
-            ->will($this->returnValue(true));
-        $node2 = $this->getMockBuilder('\Predis\\Client')->getMock();
-        $node2->expects($this->once())
-            ->method('__call')
-            ->with($this->equalTo('flushdb'))
-            ->will($this->returnValue(true));
-
         $this->container->expects($this->once())
             ->method('get')
             ->with($this->equalTo('snc_redis.special'));
 
-        $this->predisClient->expects($this->once())
-            ->method('getIterator')
-            ->will($this->returnValue(new \ArrayIterator([$node1, $node2])));
+        if (!($this->predisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
+            $this->predisClient->expects($this->once())
+                ->method('__call')
+                ->with($this->equalTo('flushdb'))
+                ->will($this->returnValue(true));
+        } else {
+            $node1 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node1->expects($this->once())
+                ->method('__call')
+                ->with($this->equalTo('flushdb'))
+                ->will($this->returnValue(true));
+            $node2 = $this->getMockBuilder('\Predis\\Client')->getMock();
+            $node2->expects($this->once())
+                ->method('__call')
+                ->with($this->equalTo('flushdb'))
+                ->will($this->returnValue(true));
+
+            $this->predisClient->expects($this->once())
+                ->method('getIterator')
+                ->will($this->returnValue(new \ArrayIterator([$node1, $node2])));
+        }
 
         $command = $this->application->find('redis:flushdb');
         $commandTester = new CommandTester($command);
@@ -91,8 +105,13 @@ class RedisFlushdbCommandTest extends CommandTestCase
             ->with($this->equalTo('snc_redis.notExisting'))
             ->will($this->throwException(new \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException('')));
 
-        $this->predisClient->expects($this->never())
-            ->method('getIterator');
+        if (!($this->predisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
+            $this->predisClient->expects($this->never())
+                ->method('__call');
+        } else {
+            $this->predisClient->expects($this->never())
+                ->method('getIterator');
+        }
 
         $command = $this->application->find('redis:flushdb');
         $commandTester = new CommandTester($command);
