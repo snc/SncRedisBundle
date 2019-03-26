@@ -368,6 +368,46 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
+    /**
+     * Test provided options are respected
+     */
+    public function testPhpRedisParameters()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPhpRedisYamlConfigWithParameters());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.phpredis.default');
+
+        $this->assertSame(1, $defaultParameters->getArgument(2)['parameters']['database']);
+        $this->assertSame('pass', $defaultParameters->getArgument(2)['parameters']['password']);
+
+        $redis = $container->get('snc_redis.phpredis.default');
+
+        $this->assertSame(1, $redis->getDBNum());
+        $this->assertSame('pass', $redis->getAuth());
+    }
+
+    /**
+     * Test parameters provided at DSN overrides the provided options
+     */
+    public function testPhpRedisDuplicatedParameters()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPhpRedisYamlConfigWithDuplicatedParameters());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.phpredis.default');
+
+        $this->assertSame(2, $defaultParameters->getArgument(2)['parameters']['database']);
+        $this->assertSame('word', $defaultParameters->getArgument(2)['parameters']['password']);
+
+        $redis = $container->get('snc_redis.phpredis.default');
+
+        $this->assertSame(1, $redis->getDBNum());
+        $this->assertSame('pass', $redis->getAuth());
+    }
+
     private function parseYaml($yaml)
     {
         $parser = new Parser();
@@ -600,6 +640,36 @@ clients:
         options:
             replication: true
             prefix: secondprefix
+EOF;
+    }
+
+    private function getPhpRedisYamlConfigWithParameters()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://localhost
+        options:
+            parameters:
+                database: 1
+                password: pass
+EOF;
+    }
+
+    private function getPhpRedisYamlConfigWithDuplicatedParameters()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://redis:pass@localhost/1
+        options:
+            parameters:
+                database: 2
+                password: word
 EOF;
     }
 
