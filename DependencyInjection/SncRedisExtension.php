@@ -215,9 +215,13 @@ class SncRedisExtension extends Extension
             }
             $clientDef->addArgument($connections);
         }
+
+        $clientDefId = sprintf('snc_redis.%s', $client['alias']);
+        $clientAliasId = sprintf('snc_redis.%s_client', $client['alias']);
+
         $clientDef->addArgument(new Reference($optionId));
-        $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), sprintf('snc_redis.%s', $client['alias']));
+        $container->setDefinition($clientDefId, $clientDef);
+        $container->setAlias($clientAliasId, $clientDefId);
     }
 
     /**
@@ -261,7 +265,6 @@ class SncRedisExtension extends Extension
 
         /** @var \Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn $dsn */
         $dsn = $client['dsns'][0];
-        $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
 
         $phpRedisVersion = phpversion('redis');
         if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
@@ -296,9 +299,17 @@ class SncRedisExtension extends Extension
             );    
         }
 
+        $phpredisId = sprintf('snc_redis.phpredis.%s', $client['alias']);
+        $phpredisAliasId = sprintf('snc_redis.%s_client', $client['alias']);
+        $phpredisAliasId2 = sprintf('snc_redis.%s', $client['alias']);
+
+        if (method_exists($phpredisDef, 'setDeprecated')) {
+            $phpredisDef->setDeprecated(true, '"%service_id%" service is deprecated since 2.1.10, to be removed in 3.0. Please use "'.$phpredisAliasId2.'" instead.');
+        }
+
         $container->setDefinition($phpredisId, $phpredisDef);
-        $container->setAlias(sprintf('snc_redis.%s', $client['alias']), new Alias($phpredisId, true));
-        $container->setAlias(sprintf('snc_redis.%s_client', $client['alias']), $phpredisId);
+        $container->setAlias($phpredisAliasId2, new Alias($phpredisId, true));
+        $container->setAlias($phpredisAliasId, $phpredisId);
     }
 
     /**
@@ -319,7 +330,7 @@ class SncRedisExtension extends Extension
 
         $client = $container->getParameter('snc_redis.session.client');
 
-        $client = sprintf('snc_redis.%s_client', $client);
+        $client = sprintf('snc_redis.%s', $client);
 
         $container->setAlias('snc_redis.session.client', $client);
 
@@ -367,7 +378,7 @@ class SncRedisExtension extends Extension
                     break;
             }
 
-            $client = new Reference(sprintf('snc_redis.%s_client', $cache['client']));
+            $client = new Reference(sprintf('snc_redis.%s', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
                 $def = call_user_func_array($definitionFunction, array($client, $cache));
                 $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);
@@ -435,7 +446,7 @@ class SncRedisExtension extends Extension
         $container->setParameter('snc_redis.profiler_storage.ttl', $config['profiler_storage']['ttl']);
 
         $client = $container->getParameter('snc_redis.profiler_storage.client');
-        $client = sprintf('snc_redis.%s_client', $client);
+        $client = sprintf('snc_redis.%s', $client);
         $container->setAlias('snc_redis.profiler_storage.client', $client);
     }
 
