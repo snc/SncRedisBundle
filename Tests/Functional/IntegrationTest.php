@@ -53,7 +53,7 @@ class IntegrationTest extends WebTestCase
 
         if (version_compare(phpversion('redis'), '4.0.0') < 0) {
             // Logging is currently disabled on PHPRedis 4+
-            $this->assertCount(2, $collector->getCommands());
+            $this->assertCount(4, $collector->getCommands());
         }
     }
 

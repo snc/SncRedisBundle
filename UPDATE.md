@@ -13,9 +13,12 @@
   it changed.
 
 - All services created by the bundle are now private as per Symfony recommended
-  practices. Use Dependency Injection or Service Locators to access services.
+  practices. Use Dependency Injection or Service Locators/Service Subscribers to access services.
   
-- Option "replication" with value "false" has been removed as it is not supported anymore by Predis. 
+- Option "replication" with value "false" has been removed as it is not supported anymore by Predis.
+
+- Removed all client services aliases in favor of one definition which is `snc_redis.{alias}`.
+  Thus, `snc_redis.{alias}_client` and `snc_redis.phpredis.{alias}` have been removed.
 
 ## 2.0.0 ##
 

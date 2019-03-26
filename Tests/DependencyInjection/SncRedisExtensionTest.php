@@ -100,7 +100,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
-        $this->assertTrue($container->hasAlias('snc_redis.default_client'));
+        $this->assertFalse($container->hasAlias('snc_redis.default_client'));
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
@@ -121,19 +121,19 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
-        $this->assertTrue($container->hasAlias('snc_redis.default_client'));
+        $this->assertFalse($container->hasAlias('snc_redis.default_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_parameters.cache'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cache'));
-        $this->assertTrue($container->hasAlias('snc_redis.cache_client'));
+        $this->assertFalse($container->hasAlias('snc_redis.cache_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.monolog_parameters.monolog'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
-        $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
+        $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster1_parameters.cluster'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster2_parameters.cluster'));
@@ -141,7 +141,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
-        $this->assertTrue($container->hasAlias('snc_redis.cluster_client'));
+        $this->assertFalse($container->hasAlias('snc_redis.cluster_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.session.handler'));
 
@@ -158,7 +158,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave2_result_cache'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
-        $this->assertTrue($container->hasAlias('snc_redis.monolog_client'));
+        $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog.handler'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
@@ -375,6 +375,46 @@ class SncRedisExtensionTest extends TestCase
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
+    /**
+     * Test provided options are respected
+     */
+    public function testPhpRedisParameters()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPhpRedisYamlConfigWithParameters());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.default');
+
+        $this->assertSame(1, $defaultParameters->getArgument(2)['parameters']['database']);
+        $this->assertSame('pass', $defaultParameters->getArgument(2)['parameters']['password']);
+
+        $redis = $container->get('snc_redis.default');
+
+        $this->assertSame(1, $redis->getDBNum());
+        $this->assertSame('pass', $redis->getAuth());
+    }
+
+    /**
+     * Test parameters provided at DSN overrides the provided options
+     */
+    public function testPhpRedisDuplicatedParameters()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPhpRedisYamlConfigWithDuplicatedParameters());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.default');
+
+        $this->assertSame(2, $defaultParameters->getArgument(2)['parameters']['database']);
+        $this->assertSame('word', $defaultParameters->getArgument(2)['parameters']['password']);
+
+        $redis = $container->get('snc_redis.default');
+
+        $this->assertSame(1, $redis->getDBNum());
+        $this->assertSame('pass', $redis->getAuth());
     }
 
     private function parseYaml($yaml)
@@ -623,6 +663,36 @@ clients:
         options:
             replication: true
             prefix: secondprefix
+EOF;
+    }
+
+    private function getPhpRedisYamlConfigWithParameters()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://localhost
+        options:
+            parameters:
+                database: 1
+                password: pass
+EOF;
+    }
+
+    private function getPhpRedisYamlConfigWithDuplicatedParameters()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://redis:pass@localhost/1
+        options:
+            parameters:
+                database: 2
+                password: word
 EOF;
     }
 
