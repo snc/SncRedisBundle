@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\Tests;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
 use PHPUnit\Framework\TestCase;
@@ -29,17 +30,17 @@ abstract class CommandTestCase extends TestCase
     protected $application;
 
     /**
-     * @var \Predis\Client
+     * @var \Predis\Client|MockObject
      */
     protected $predisClient;
 
     /**
-     * @var PhpredisClient
+     * @var PhpredisClient|MockObject
      */
     protected $phpredisClient;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface|MockObject
      */
     protected $container;
 

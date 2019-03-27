@@ -51,9 +51,14 @@ class RedisFlushdbCommandTest extends CommandTestCase
                 ->with($this->equalTo('flushdb'))
                 ->will($this->returnValue(true));
 
+            $connection = $this->getMockBuilder('\Predis\Connection\Aggregate\PredisCluster')->getMock();
+
             $this->predisClient->expects($this->once())
                 ->method('getIterator')
-                ->will($this->returnValue(new \ArrayIterator([$node1, $node2])));
+                ->will($this->returnValue(new \ArrayIterator(array($node1, $node2))));
+            $this->predisClient->expects($this->once())
+                ->method('getConnection')
+                ->will($this->returnValue($connection));
         }
 
         $command = $this->application->find('redis:flushdb');
@@ -86,9 +91,14 @@ class RedisFlushdbCommandTest extends CommandTestCase
                 ->with($this->equalTo('flushdb'))
                 ->will($this->returnValue(true));
 
+            $connection = $this->getMockBuilder('\Predis\Connection\Aggregate\PredisCluster')->getMock();
+
             $this->predisClient->expects($this->once())
                 ->method('getIterator')
-                ->will($this->returnValue(new \ArrayIterator([$node1, $node2])));
+                ->will($this->returnValue(new \ArrayIterator(array($node1, $node2))));
+            $this->predisClient->expects($this->once())
+                ->method('getConnection')
+                ->will($this->returnValue($connection));
         }
 
         $command = $this->application->find('redis:flushdb');
@@ -105,19 +115,43 @@ class RedisFlushdbCommandTest extends CommandTestCase
             ->with($this->equalTo('snc_redis.notExisting'))
             ->will($this->throwException(new \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException('')));
 
-        if (!($this->predisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
-            $this->predisClient->expects($this->never())
-                ->method('__call');
-        } else {
-            $this->predisClient->expects($this->never())
-                ->method('getIterator');
-        }
+        $this->predisClient->expects($this->never())
+            ->method('__call');
+        $this->predisClient->expects($this->never())
+            ->method('getIterator');
 
         $command = $this->application->find('redis:flushdb');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'notExisting', '--no-interaction' => true));
 
         $this->assertRegExp('/The client notExisting is not defined/', $commandTester->getDisplay());
+    }
+
+    public function testBugFixInPredis()
+    {
+        if (!($this->predisClient instanceof \IteratorAggregate)) {
+            $this->markTestSkipped('This test for Predis 1.1');
+        }
+
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('snc_redis.default'));
+
+        $connection = $this->getMockBuilder('\Predis\Connection\ConnectionInterface')->getMock();
+
+        $this->predisClient->expects($this->once())
+            ->method('__call')
+            ->with($this->equalTo('flushdb'))
+            ->will($this->returnValue(true));
+        $this->predisClient->expects($this->once())
+            ->method('getConnection')
+            ->will($this->returnValue($connection));
+
+        $command = $this->application->find('redis:flushdb');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
+
+        $this->assertRegExp('/redis database flushed/', $commandTester->getDisplay());
     }
 
     protected function getCommand()
