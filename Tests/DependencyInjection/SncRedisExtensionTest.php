@@ -323,6 +323,31 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * Test valid config of the single host sentinel replication option
+     */
+    public function testSingleSentinelOption()
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getSingleSentinelYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertEquals('sentinel', $options['replication']);
+        $this->assertEquals('mymaster', $options['service']);
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertEquals('snc_redis.connection.default_parameters.default', (string) $parameters[0]);
+        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertEquals('sentinel', $masterParameters['replication']);
+        $this->assertEquals('mymaster', $masterParameters['service']);
+        $this->assertInternalType('array', $masterParameters['parameters']);
+        $this->assertEquals('1', $masterParameters['parameters']['database']);
+        $this->assertEquals('pass', $masterParameters['parameters']['password']);
+
+        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
+    /**
      * Test valid config of the sentinel replication option
      */
     public function testSentinelOption()
@@ -581,6 +606,23 @@ clients:
             - redis://otherhost
         options:
             replication: true
+EOF;
+    }
+
+    private function getSingleSentinelYamlConfig()
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost
+        options:
+            replication: sentinel
+            service: mymaster
+            parameters:
+                database: 1
+                password: pass
 EOF;
     }
 
