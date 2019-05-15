@@ -80,10 +80,10 @@
         </span>
     </span>
 {% else %}
-    <span class="label {{ collector.commandcount == 0 ? 'disabled' }}">
+    <span class="label label-status-{{ collector.erroredCommandsCount > 0 ? 'error' : '' }} {{ collector.commandcount == 0 ? 'disabled' }}">
         <span class="icon">{{ include('@SncRedis/Collector/icon.svg.twig', {colors: {light: '#DDD', dark: '#999'}}) }}</span>
         <strong>Redis</strong>
-        {% if 0 != collector.erroredCommandsCount %}
+        {% if collector.erroredCommandsCount > 0 %}
             <span class="count">
                 <span>{{ collector.erroredCommandsCount }}</span>
             </span>
@@ -102,6 +102,25 @@
             <p{% if profiler_markup_version == 1 %} style="font-style:italic;"{% endif %}>No commands were executed or the logger is disabled.</p>
         </div>
     {% else %}
+        <div class="metrics">
+            <div class="metric">
+                <span class="value">{{ collector.commandcount }}</span>
+                <span class="label">Queries</span>
+            </div>
+
+            <div class="metric">
+                <span class="value">{{ '%0.2f'|format(collector.time) }} <span class="unit">ms</span></span>
+                <span class="label">Query time</span>
+            </div>
+
+            {% if collector.erroredCommandsCount > 0 %}
+                <div class="metric highlight">
+                    <span class="value error">{{ collector.erroredCommandsCount }}</span>
+                    <span class="label">Failed Queries</span>
+                </div>
+            {% endif %}
+        </div>
+
         <table class="alt">
             <thead>
                 <tr>
