@@ -113,12 +113,10 @@
                 <span class="label">Query time</span>
             </div>
 
-            {% if collector.erroredCommandsCount > 0 %}
-                <div class="metric highlight">
-                    <span class="value error">{{ collector.erroredCommandsCount }}</span>
-                    <span class="label">Failed Queries</span>
-                </div>
-            {% endif %}
+            <div class="metric highlight">
+                <span class="value{% if collector.erroredCommandsCount > 0 %} error{% endif %}">{{ collector.erroredCommandsCount }}</span>
+                <span class="label">Failed Queries</span>
+            </div>
         </div>
 
         <table class="alt">
