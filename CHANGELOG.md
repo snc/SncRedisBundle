@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.0.0](https://github.com/snc/SncRedisBundle/tree/2.1.10) (2019-07-28)
+## [3.0.0](https://github.com/snc/SncRedisBundle/tree/3.0.0) (2019-07-28)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.10...3.0.0)
 
 - Remove single php 7.3 from travis
