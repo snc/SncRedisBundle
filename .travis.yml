@@ -19,16 +19,13 @@ matrix:
     - php: 7.3
       env: SYMFONY_VERSION="4.2.*"
     - php: 7.3
-      env: SYMFONY_VERSION="4.3.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
+      env: SYMFONY_VERSION="4.3.*""
     - php: 7.3
-      env: SYMFONY_VERSION="dev-4.3" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
-    - php: 7.3
-      env: SYMFONY_VERSION="dev-4.4" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
+      env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
     - php: nightly
   allow_failures:
     - php: nightly
-    - env: SYMFONY_VERSION="dev-4.3" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
-    - env: SYMFONY_VERSION="dev-4.4" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
+    - env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
 
 sudo: false
 
