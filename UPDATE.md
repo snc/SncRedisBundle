@@ -2,7 +2,11 @@
 
 ## 3.0.0 ##
 
-- Dropped support for Symfony 3.3 and below, as well as PHP 5.x
+- Bumped Symfony minimum version to 3.4
+
+- Bumped PHP minimum version to 7.1.3
+
+- Bumped Predis minimum version to 1.1
 
 - Dropped official support for HHVM
 
