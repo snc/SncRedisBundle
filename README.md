@@ -12,9 +12,9 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 ## Branches ##
 
-Version `2.*` supports Symfony 2.7+, 3.x and 4.x. ![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=2.1)
+Version `3.*` supports Symfony 3.4 and 4.x. ![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
 
-Version `3.*` supports Symfony 3.4 and 4.x, but is currently considered unstable. ![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
+Version `2.*` supports Symfony 2.7+, 3.x and 4.x. ![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=2.1)
 
 This bundle is also available via [composer](https://github.com/composer/composer), find it on [packagist](https://packagist.org/packages/snc/redis-bundle).
 
