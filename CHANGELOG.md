@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.1.10](https://github.com/snc/SncRedisBundle/tree/2.1.10) (2019-04-09)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.9...2.1.10)
+
+**Merged pull requests:**
+
+- Wrap Parameters in array when using replication - fix \#381 [\#516](https://github.com/snc/SncRedisBundle/pull/516) ([duxet](https://github.com/duxet))
+- Execute flushdb/flushall in all nodes of cluster [\#514](https://github.com/snc/SncRedisBundle/pull/514) ([peter-gribanov](https://github.com/peter-gribanov))
+- Use semver for PHP version at `composer.json`, added support for PHP 7.3 at Travis [\#508](https://github.com/snc/SncRedisBundle/pull/508) ([phansys](https://github.com/phansys))
+- Update method signatures in `Client` in order to respect its parent [\#507](https://github.com/snc/SncRedisBundle/pull/507) ([phansys](https://github.com/phansys))
+- Leverage "options.parameters" config in `PhpredisClientFactory::create\(\)` [\#505](https://github.com/snc/SncRedisBundle/pull/505) ([phansys](https://github.com/phansys))
+- fix \#249 - fix session handler lock key prefix [\#503](https://github.com/snc/SncRedisBundle/pull/503) ([B-Galati](https://github.com/B-Galati))
+- fix \#383 - deprecates redis service alias in favor of 'snc\_redis.{alias}' [\#501](https://github.com/snc/SncRedisBundle/pull/501) ([B-Galati](https://github.com/B-Galati))
+
 ## [2.1.9](https://github.com/snc/SncRedisBundle/tree/2.1.9) (2019-02-20)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.8...2.1.9)
 
@@ -114,7 +127,7 @@
 **Merged pull requests:**
 
 - Fix ci warning caused by PHPUnit Api deprecation [\#373](https://github.com/snc/SncRedisBundle/pull/373) ([SiM07](https://github.com/SiM07))
-- Provides Symfony 4 compatibility [\#370](https://github.com/snc/SncRedisBundle/pull/370) ([symcaster](https://github.com/symcaster))
+- Provides Symfony 4 compatibility [\#370](https://github.com/snc/SncRedisBundle/pull/370) ([ghost](https://github.com/ghost))
 - forward compatibility with Symfony 4.0 [\#366](https://github.com/snc/SncRedisBundle/pull/366) ([xabbuh](https://github.com/xabbuh))
 
 ## [2.0.4](https://github.com/snc/SncRedisBundle/tree/2.0.4) (2017-10-02)
