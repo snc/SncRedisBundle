@@ -1,5 +1,41 @@
 # Change Log
 
+## [3.0.0](https://github.com/snc/SncRedisBundle/tree/2.1.10) (2019-07-28)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.10...3.0.0)
+
+- Remove single php 7.3 from travis
+- Bump predis minimum version to 1.1
+- Add 4.3-dev and 4.4-dev symfony version to CI
+- Bump php minimum version to 7.1.3 (Same as Symfony 4)
+- fix #249 - fix session handler lock key prefix (#503)
+- Fix Swiftmailer version in requirements
+- Fix: Explicitly configure Travis build matrix (#474)
+- Supply name for new TreeBuilder instead of calling root method (#471)
+- Enhancement: Add note about usage with symfony/web-profiler-bundle (#470)
+- Fix: No need to verify whether hard dependency is not null (#469)
+- Enable Lazy service for phpredis (#440)
+- Use RedisDsn to build connection options for env based config (#439)
+- Fix support for DSN env variable with phpredis (#432)
+- fix #182 token serialization while lock remove (#437)
+- fix #419: Create a service locator for clients to be used in the commands. (#433)
+- Create cluster connection correctly for one host (#416)
+- Fix support for Heroku style REDIS_URL env variables (#413)
+- Use destructor to close session (partially reverted #348) (#412)
+- Add Serialization option (#411)
+- Remove ancient logging facilities
+- Properly detect Swiftmailer install
+- Check that Doctrine cache configs reference an object manager
+- Fix predis logging using symfony cache component
+- Make alias configuration default to client name
+- Command executions should be logged as DEBUG instead of INFO. In systems where INFO is being used to log informative messages like 'user logged in'.A loop with redis for e.g. in a background-process will pollute the logs extremely.
+- Update docs about private services
+- Make all bundle services private
+- Improve DX when dependencies are missing
+- Add PHPUnit 7 support and fix sample config for Symfony 3/4
+- Add session fixation note in the update notes
+- Default 7.1/7.2 builds use symfony 4.0 so force 3.4 instead of building twice with 4.0
+- Implement new Symfony 3.4+ session handler to gain session fixation protection and avoid unnecessary writes
+
 ## [2.1.10](https://github.com/snc/SncRedisBundle/tree/2.1.10) (2019-04-09)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.9...2.1.10)
 
