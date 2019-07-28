@@ -47,7 +47,18 @@ class RedisFlushdbCommand extends RedisBaseCommand
      */
     private function flushDbForClient()
     {
-        $this->redisClient->flushdb();
+        if (
+            !($this->redisClient instanceof \IteratorAggregate) || // BC for Predis 1.0
+            // bug fix https://github.com/nrk/predis/issues/552
+            !($this->redisClient->getConnection() instanceof \Traversable)
+        ) {
+            $this->redisClient->flushdb();
+        } else {
+            // flushall in all nodes of cluster
+            foreach ($this->redisClient as $nodeClient) {
+                $nodeClient->flushdb();
+            }
+        }
 
         $this->output->writeln('<info>redis database flushed</info>');
     }
