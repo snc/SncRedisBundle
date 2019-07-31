@@ -303,13 +303,13 @@ class SncRedisExtension extends Extension
         $phpredisAliasId = sprintf('snc_redis.%s_client', $client['alias']);
         $phpredisAliasId2 = sprintf('snc_redis.%s', $client['alias']);
 
-        if (method_exists($phpredisDef, 'setDeprecated')) {
-            $phpredisDef->setDeprecated(true, '"%service_id%" service is deprecated since 2.1.10, to be removed in 3.0. Please use "'.$phpredisAliasId2.'" instead.');
-        }
-
         $container->setDefinition($phpredisId, $phpredisDef);
         $container->setAlias($phpredisAliasId2, new Alias($phpredisId, true));
-        $container->setAlias($phpredisAliasId, $phpredisId);
+        $alias = $container->setAlias($phpredisAliasId, $phpredisId);
+
+        if (method_exists($alias, 'setDeprecated')) {
+            $alias->setDeprecated(true, '"%alias_id%" service is deprecated since 2.1.10, to be removed in 3.0. Please use "'.$phpredisAliasId2.'" instead.');
+        }
     }
 
     /**
