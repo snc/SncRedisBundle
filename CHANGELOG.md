@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.1.11](https://github.com/snc/SncRedisBundle/tree/2.1.11) (2019-07-31)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.10...2.1.11)
+
+- fix #523: deprecate alias only (SF 4.3+ required)
+
 ## [3.0.0](https://github.com/snc/SncRedisBundle/tree/3.0.0) (2019-07-28)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.10...3.0.0)
 
