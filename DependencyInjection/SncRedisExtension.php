@@ -119,12 +119,19 @@ class SncRedisExtension extends Extension
 
         $client['dsns'] = array_map($dsnResolver, $client['dsns']);
 
+        if (method_exists($container, 'resolveEnvPlaceholders')) {
+            $client['type'] = $container->resolveEnvPlaceholders($client['type'], true);
+        }
+
         switch ($client['type']) {
             case 'predis':
                 $this->loadPredisClient($client, $container);
                 break;
             case 'phpredis':
                 $this->loadPhpredisClient($client, $container);
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('The redis client type %s is invalid.', $client['type']));
                 break;
         }
     }
