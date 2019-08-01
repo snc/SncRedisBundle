@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.1.0](https://github.com/snc/SncRedisBundle/tree/3.1.0) (2019-08-01)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.0.0...3.1.0)
+
+- Add support for env variable for client type (#525)
+- Add metrics to Profiler page (#517)
+
 ## [2.1.11](https://github.com/snc/SncRedisBundle/tree/2.1.11) (2019-07-31)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/2.1.10...2.1.11)
 
