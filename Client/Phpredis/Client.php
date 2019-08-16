@@ -1482,7 +1482,7 @@ class Client extends Redis
      */
     public function scan(&$iterator, $pattern = null, $count = 0)
     {
-        return $this->call('scan', array($key, &$iterator, $pattern, $count));
+        return $this->call('scan', array(&$iterator, $pattern, $count));
     }
 
     /**
