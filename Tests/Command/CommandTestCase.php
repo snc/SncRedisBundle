@@ -12,10 +12,14 @@
 namespace Snc\RedisBundle\Tests\Command;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
+use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Predis\Client;
 
 /**
  * Base Class for command tests
@@ -24,81 +28,66 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 abstract class CommandTestCase extends TestCase
 {
-
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Console\Application
+     * @var Application
      */
     protected $application;
 
     /**
-     * @var \Predis\Client|MockObject
+     * @var Client|MockObject
      */
     protected $predisClient;
 
     /**
-     * @var PhpredisClient|MockObject
-     */
-    protected $phpredisClient;
-
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface|MockObject
+     * @var SymfonyContainerInterface|MockObject
      */
     protected $container;
+
+    /**
+     * @var ServiceLocator|MockObject
+     */
+    protected $clientLocator;
 
     /**
      * SetUp called before each tests, setting up the environment (application, globally used mocks)
      */
     public function setUp()
     {
-        $this->container = $this->getMockBuilder('\\Symfony\\Component\\DependencyInjection\\ContainerInterface')->getMock();
+        $this->container = $this->createMock(SymfonyContainerInterface::class);
+        $this->clientLocator = $this->createMock(ServiceLocator::class);
 
-        /** @var Kernel|MockObject $kernel */
-        $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
-            ->disableOriginalConstructor()
-            ->getMock();
+        /** @var KernelInterface|MockObject $kernel */
+        $kernel = $this->createMock(KernelInterface::class);
         $kernel->expects($this->once())
             ->method('getBundles')
-            ->will($this->returnValue(array()));
+            ->willReturn(array());
         $kernel->expects($this->any())
             ->method('getContainer')
-            ->will($this->returnValue($this->container));
+            ->willReturn($this->container);
+
+        $this->predisClient = $this->createMock(Client::class);
+
+        $command = $this->getCommand($this->clientLocator);
+
         $this->application = new Application($kernel);
-
-        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
-
-        $this->phpredisClient = $this->getMockBuilder('PhpredisClient')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $command = $this->getCommand();
         $this->application->add($command);
-        $command->setClientLocator($this->container);
     }
 
     protected function registerPredisClient()
     {
-        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
+        $this->predisClient = $this->createMock(Client::class);
 
-        $this->container->expects($this->once())
+        $this->clientLocator->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($this->predisClient));
-    }
-
-    protected function registerPhpredisClient()
-    {
-        $this->phpredisClient = $this->getMockBuilder('\\Snc\\RedisBundle\\Client\\Phpredis\\Client')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->container->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($this->phpredisClient));
+            ->willReturn($this->predisClient);
     }
 
     /**
      * Method used by the implementation of the command test to return the actual command object
      *
-     * @return mixed The command to be tested
+     * @param ServiceLocator $clientLocator
+     *
+     * @return Command The command to be tested
      */
-    abstract protected function getCommand();
+    abstract protected function getCommand(ServiceLocator $clientLocator);
 }

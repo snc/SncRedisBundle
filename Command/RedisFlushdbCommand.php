@@ -18,6 +18,7 @@ namespace Snc\RedisBundle\Command;
  */
 class RedisFlushdbCommand extends RedisBaseCommand
 {
+    protected static $defaultName = 'redis:flushdb';
 
     /**
      * {@inheritDoc}
@@ -26,7 +27,7 @@ class RedisFlushdbCommand extends RedisBaseCommand
     {
         parent::configure();
 
-        $this->setName('redis:flushdb')
+        $this->setName(self::$defaultName)
             ->setDescription('Flushes the redis database using the redis flushdb command');
     }
 
@@ -62,6 +63,4 @@ class RedisFlushdbCommand extends RedisBaseCommand
 
         $this->output->writeln('<info>redis database flushed</info>');
     }
-
 }
-

@@ -4,11 +4,14 @@ framework:
     default_locale: en
     profiler: { collect: true }
     session:
-        storage_id:     session.storage.mock_file
+        storage_id: session.storage.mock_file
 
 web_profiler:
     toolbar: false
     intercept_redirects: false
+
+twig:
+    strict_variables: '%kernel.debug%'
 
 doctrine:
     dbal:

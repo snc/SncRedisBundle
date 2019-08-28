@@ -15,6 +15,7 @@ namespace Snc\RedisBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use PHPUnit\Framework\SkippedTestSuiteError;
 use Snc\RedisBundle\Command\RedisFlushallCommand;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
@@ -86,6 +87,10 @@ class IntegrationTest extends WebTestCase
     public static function setUpBeforeClass()
     {
         static::deleteTmpDir();
+
+        if (!class_exists('\\Redis', false)) {
+            throw new SkippedTestSuiteError('This test needs the PHP Redis extension to work');
+        }
 
         $kernel = static::createClient()->getKernel();
 

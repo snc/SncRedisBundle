@@ -1,113 +1,89 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\DependencyInjection\Compiler;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Snc\RedisBundle\Command\RedisFlushallCommand;
+use Snc\RedisBundle\Command\RedisFlushdbCommand;
 use Snc\RedisBundle\DependencyInjection\Compiler\ClientLocatorPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ClientLocatorPassTest extends TestCase
 {
-    /** @var ClientLocatorPass */
-    private $clientLocatorPass;
-
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage service id snc_redis.client_locator already assigned
-     */
-    public function testThrowRuntimeExceptionWhenServiceIdExists()
-    {
-        $container = $this->getContainerMock([], [], true);
-
-        $this->clientLocatorPass->process($container->reveal());
-    }
-
-    /**
-     * @param array $clientServiceDefinitions
-     *
-     * @param array $commandDefinitions
-     * @param bool  $hasLocatorService
-     *
-     * @return \Prophecy\Prophecy\ObjectProphecy|\Symfony\Component\DependencyInjection\ContainerBuilder
-     */
-    private function getContainerMock(
-      array $clientServiceDefinitions,
-      array $commandDefinitions = [],
-      $hasLocatorService = false
-    ) {
-        $container = $this->prophesize(ContainerBuilder::class);
-        $container->has('snc_redis.client_locator')->shouldBeCalled()->willReturn($hasLocatorService);
-        if (!$hasLocatorService) {
-            $container
-              ->findTaggedServiceIds('snc_redis.client')
-              ->shouldBeCalled()
-              ->willReturn($clientServiceDefinitions);
-        }
-        if ($commandDefinitions) {
-            $container
-              ->findTaggedServiceIds('snc_redis.command')
-              ->shouldBeCalled()
-              ->willReturn($commandDefinitions);
-        }
-
-        return $container;
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage no redis clients found (tag name: snc_redis.client)
+     * @expectedExceptionMessage No redis clients found (tag name: snc_redis.client)
      */
     public function testThrowRuntimeExceptionWhenNoRedisClientsExist()
     {
-        $container = $this->getContainerMock([]);
+        $container = $this->createMock(ContainerBuilder::class);
+        $container->expects($this->any())
+            ->method('findTaggedServiceIds')
+            ->with('snc_redis.client')
+            ->willReturn([]);
 
-        $this->clientLocatorPass->process($container->reveal());
+        (new ClientLocatorPass())->process($container);
     }
 
     public function testAddClientLocatorToContainer()
     {
-        $clientDefinition   = new Definition('\Predis\Client');
-        $clientDefinitions  = [
-          'snc_redis.predis' => $clientDefinition,
+        $container = $this->createMock(ContainerBuilder::class);
+        $container->expects($this->any())
+            ->method('findTaggedServiceIds')
+            ->willReturnCallback(
+                function () {
+                    return $this->getData()->current();
+                }
+            );
+        $container->expects($this->any())
+            ->method('has')
+            ->with($this->stringContains('service_locator.'));
+        $container->expects($this->any())
+            ->method('hasDefinition')
+            ->with($this->stringContains('service_locator.'));
+        $container->expects($this->atLeast(2))
+            ->method('setDefinition')
+            ->with($this->logicalAnd(
+                $this->stringContains('service_locator.'),
+                $this->anything()
+            ));
+
+        $clients = [
+            'snc_redis.predis' => new Reference('snc_redis.predis'),
         ];
+
         $commandDefinitions = [
-          RedisFlushallCommand::class => new Definition(RedisFlushallCommand::class),
+            RedisFlushallCommand::class => [],
+            RedisFlushdbCommand::class => [],
         ];
 
-        $container             = $this->getContainerMock($clientDefinitions, $commandDefinitions);
-        $commandDefinitionMock = $this->prophesize(Definition::class);
+        foreach ($commandDefinitions as $commandDefinition => $tags) {
+            $commandDefinitionMock = $this->createMock(Definition::class);
+            $commandDefinitionMock->expects($this->any())
+                ->method('addArgument')
+                ->withAnyParameters();
 
-        $definitionsAssertion = function (array $definitions) use (&$clientLocatorDefinition) {
-            self::assertCount(1, $definitions);
-            /** @var Definition $definition */
-            $definition = $definitions[0];
-            self::assertInstanceOf(Definition::class, $definition);
-            self::assertTrue($definition->isPrivate());
-            self::assertSame(ServiceLocator::class, $definition->getClass());
+            $container
+                ->expects($this->atLeastOnce())
+                ->method('findDefinition')
+                ->willReturn($commandDefinitionMock);
+        }
 
-            $clientLocatorDefinition = $definition;
-
-            return true;
-        };
-        $container->addDefinitions(Argument::that($definitionsAssertion))->shouldBeCalled();
-
-        $container->getDefinition(RedisFlushallCommand::class)->shouldBeCalled()->willReturn(
-          $commandDefinitionMock->reveal()
-        );
-        $commandDefinitionMock->addMethodCall('setClientLocator', Argument::that($definitionsAssertion))
-                              ->shouldBeCalled();
-
-
-        $this->clientLocatorPass->process($container->reveal());
+        (new ClientLocatorPass())->process($container);
     }
 
-    protected function setUp()
+    private function getData(): \Generator
     {
-        $this->clientLocatorPass = new ClientLocatorPass();
+        yield [
+            RedisFlushallCommand::class => [],
+            RedisFlushdbCommand::class => [],
+        ];
+        yield [
+            'snc_redis.predis' => ['snc_redis.predis'],
+        ];
     }
 }

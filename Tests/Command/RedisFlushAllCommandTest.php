@@ -13,13 +13,14 @@ namespace Snc\RedisBundle\Tests\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use Snc\RedisBundle\Command\RedisFlushallCommand;
+use Predis\Client;
+use Predis\Connection\Aggregate\PredisCluster;
+use Predis\Connection\ConnectionInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
-/**
- * RedisFlushallCommandTest
- */
-class RedisFlushallCommandTest extends CommandTestCase
+class RedisFlushAllCommandTest extends CommandTestCase
 {
-
     public function setUp()
     {
         parent::setUp();
@@ -29,7 +30,7 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testWithDefaultClientAndNoInteraction()
     {
-        $this->container->expects($this->once())
+        $this->clientLocator->expects($this->once())
             ->method('get')
             ->with($this->equalTo('snc_redis.default'));
 
@@ -37,27 +38,27 @@ class RedisFlushallCommandTest extends CommandTestCase
             $this->predisClient->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
-                ->will($this->returnValue(true));
+                ->willReturn(true);
         } else {
-            $node1 = $this->getMockBuilder('\Predis\Client')->getMock();
+            $node1 = $this->createMock(Client::class);
             $node1->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
-                ->will($this->returnValue(true));
-            $node2 = $this->getMockBuilder('\Predis\Client')->getMock();
+                ->willReturn(true);
+            $node2 = $this->createMock(Client::class);
             $node2->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
-                ->will($this->returnValue(true));
+                ->willReturn(true);
 
-            $connection = $this->getMockBuilder('\Predis\Connection\Aggregate\PredisCluster')->getMock();
+            $connection = $this->createMock(PredisCluster::class);
 
             $this->predisClient->expects($this->once())
                 ->method('getIterator')
-                ->will($this->returnValue(new \ArrayIterator(array($node1, $node2))));
+                ->willReturn(new \ArrayIterator(array($node1, $node2)));
             $this->predisClient->expects($this->once())
                 ->method('getConnection')
-                ->will($this->returnValue($connection));
+                ->willReturn($connection);
         }
 
         $command = $this->application->find('redis:flushall');
@@ -69,7 +70,7 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testClientOption()
     {
-        $this->container->expects($this->once())
+        $this->clientLocator->expects($this->once())
             ->method('get')
             ->with($this->equalTo('snc_redis.special'));
 
@@ -77,27 +78,27 @@ class RedisFlushallCommandTest extends CommandTestCase
             $this->predisClient->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
-                ->will($this->returnValue(true));
+                ->willReturn(true);
         } else {
-            $node1 = $this->getMockBuilder('\Predis\Client')->getMock();
+            $node1 = $this->createMock(Client::class);
             $node1->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
-                ->will($this->returnValue(true));
-            $node2 = $this->getMockBuilder('\Predis\Client')->getMock();
+                ->willReturn(true);
+            $node2 = $this->createMock(Client::class);
             $node2->expects($this->once())
                 ->method('__call')
                 ->with($this->equalTo('flushall'))
-                ->will($this->returnValue(true));
+                ->willReturn(true);
 
-            $connection = $this->getMockBuilder('\Predis\Connection\Aggregate\PredisCluster')->getMock();
+            $connection = $this->createMock(PredisCluster::class);
 
             $this->predisClient->expects($this->once())
                 ->method('getIterator')
-                ->will($this->returnValue(new \ArrayIterator(array($node1, $node2))));
+                ->willReturn(new \ArrayIterator(array($node1, $node2)));
             $this->predisClient->expects($this->once())
                 ->method('getConnection')
-                ->will($this->returnValue($connection));
+                ->willReturn($connection);
         }
 
         $command = $this->application->find('redis:flushall');
@@ -109,10 +110,10 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testClientOptionWithNotExistingClient()
     {
-        $this->container->expects($this->once())
+        $this->clientLocator->expects($this->once())
             ->method('get')
             ->with($this->equalTo('snc_redis.notExisting'))
-            ->will($this->throwException(new \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException('')));
+            ->willThrowException(new ServiceNotFoundException(''));
 
         $this->predisClient->expects($this->never())
             ->method('__call');
@@ -128,23 +129,23 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testBugFixInPredis()
     {
-        if (!($this->predisClient instanceof \IteratorAggregate)) {
+        if (!$this->predisClient instanceof \IteratorAggregate) {
             $this->markTestSkipped('This test for Predis 1.1');
         }
 
-        $this->container->expects($this->once())
+        $this->clientLocator->expects($this->once())
             ->method('get')
             ->with($this->equalTo('snc_redis.default'));
 
-        $connection = $this->getMockBuilder('\Predis\Connection\ConnectionInterface')->getMock();
+        $connection = $this->createMock(ConnectionInterface::class);
 
         $this->predisClient->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->predisClient->expects($this->once())
             ->method('getConnection')
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $command = $this->application->find('redis:flushall');
         $commandTester = new CommandTester($command);
@@ -153,8 +154,8 @@ class RedisFlushallCommandTest extends CommandTestCase
         $this->assertRegExp('/All redis databases flushed/', $commandTester->getDisplay());
     }
 
-    protected function getCommand()
+    protected function getCommand(ServiceLocator $serviceLocator)
     {
-        return new RedisFlushallCommand();
+        return new RedisFlushallCommand($serviceLocator);
     }
 }

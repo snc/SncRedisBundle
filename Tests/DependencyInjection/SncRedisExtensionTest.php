@@ -407,6 +407,10 @@ class SncRedisExtensionTest extends TestCase
      */
     public function testPhpRedisParameters()
     {
+        if (!class_exists('\\Redis', false)) {
+            $this->markTestSkipped('This test needs the PHP Redis extension to work');
+        }
+
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getPhpRedisYamlConfigWithParameters());
         $extension->load(array($config), $container = $this->getContainer());
@@ -427,6 +431,10 @@ class SncRedisExtensionTest extends TestCase
      */
     public function testPhpRedisDuplicatedParameters()
     {
+        if (!class_exists('\\Redis', false)) {
+            $this->markTestSkipped('This test needs the PHP Redis extension to work');
+        }
+
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getPhpRedisYamlConfigWithDuplicatedParameters());
         $extension->load(array($config), $container = $this->getContainer());

@@ -11,7 +11,6 @@
 
 namespace Snc\RedisBundle\Command;
 
-
 /**
  * Symfony command to execute redis flushall
  *
@@ -19,6 +18,7 @@ namespace Snc\RedisBundle\Command;
  */
 class RedisFlushallCommand extends RedisBaseCommand
 {
+    protected static $defaultName = 'redis:flushall';
 
     /**
      * {@inheritDoc}
@@ -27,7 +27,7 @@ class RedisFlushallCommand extends RedisBaseCommand
     {
         parent::configure();
 
-        $this->setName('redis:flushall')
+        $this->setName(self::$defaultName)
             ->setDescription('Flushes the redis database using the redis flushall command');
     }
 
@@ -62,5 +62,4 @@ class RedisFlushallCommand extends RedisBaseCommand
 
         $this->output->writeln('<info>All redis databases flushed</info>');
     }
-
 }
