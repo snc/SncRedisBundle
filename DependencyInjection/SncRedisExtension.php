@@ -388,11 +388,7 @@ class SncRedisExtension extends Extension
      */
     protected function loadMonolog(array $config, ContainerBuilder $container)
     {
-        if ('phpredis' === $config['clients'][$config['monolog']['client']]['type']) {
-            $ref = new Reference(sprintf('snc_redis.phpredis.%s', $config['monolog']['client']));
-        } else {
-            $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
-        }
+        $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
 
         $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), array(
             $ref,
