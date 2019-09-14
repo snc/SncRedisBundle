@@ -9,7 +9,9 @@ use Snc\RedisBundle\Command\RedisFlushallCommand;
 use Snc\RedisBundle\DependencyInjection\Compiler\ClientLocatorPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
 class ClientLocatorPassTest extends TestCase
 {
@@ -17,45 +19,10 @@ class ClientLocatorPassTest extends TestCase
     private $clientLocatorPass;
 
     /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage service id snc_redis.client_locator already assigned
-     */
-    public function testThrowRuntimeExceptionWhenServiceIdExists()
-    {
-        $container = $this->getContainerMock([], [], true);
-
-        $this->clientLocatorPass->process($container->reveal());
-    }
-
-    /**
-     * @param array $clientServiceDefinitions
-     *
-     * @param array $commandDefinitions
-     * @param bool  $hasLocatorService
-     *
      * @return \Prophecy\Prophecy\ObjectProphecy|\Symfony\Component\DependencyInjection\ContainerBuilder
      */
-    private function getContainerMock(
-      array $clientServiceDefinitions,
-      array $commandDefinitions = [],
-      $hasLocatorService = false
-    ) {
-        $container = $this->prophesize(ContainerBuilder::class);
-        $container->has('snc_redis.client_locator')->shouldBeCalled()->willReturn($hasLocatorService);
-        if (!$hasLocatorService) {
-            $container
-              ->findTaggedServiceIds('snc_redis.client')
-              ->shouldBeCalled()
-              ->willReturn($clientServiceDefinitions);
-        }
-        if ($commandDefinitions) {
-            $container
-              ->findTaggedServiceIds('snc_redis.command')
-              ->shouldBeCalled()
-              ->willReturn($commandDefinitions);
-        }
-
-        return $container;
+    private function getContainerMock() {
+        return $this->prophesize(ContainerBuilder::class);
     }
 
     /**
@@ -64,46 +31,30 @@ class ClientLocatorPassTest extends TestCase
      */
     public function testThrowRuntimeExceptionWhenNoRedisClientsExist()
     {
-        $container = $this->getContainerMock([]);
+        $container = $this->getContainerMock();
 
         $this->clientLocatorPass->process($container->reveal());
     }
 
-    public function testAddClientLocatorToContainer()
+    public function testConfigureClientLocatorInContainer()
     {
-        $clientDefinition   = new Definition('\Predis\Client');
-        $clientDefinitions  = [
-          'snc_redis.predis' => $clientDefinition,
-        ];
-        $commandDefinitions = [
-          RedisFlushallCommand::class => new Definition(RedisFlushallCommand::class),
-        ];
+        $container = new ContainerBuilder();
 
-        $container             = $this->getContainerMock($clientDefinitions, $commandDefinitions);
-        $commandDefinitionMock = $this->prophesize(Definition::class);
+        $client = new Definition('\Predis\Client');
+        $client->addTag('snc_redis.client');
 
-        $definitionsAssertion = function (array $definitions) use (&$clientLocatorDefinition) {
-            self::assertCount(1, $definitions);
-            /** @var Definition $definition */
-            $definition = $definitions[0];
-            self::assertInstanceOf(Definition::class, $definition);
-            self::assertTrue($definition->isPrivate());
-            self::assertSame(ServiceLocator::class, $definition->getClass());
+        $locator = new Definition(ServiceLocator::class);
 
-            $clientLocatorDefinition = $definition;
+        $container->addDefinitions([
+            'snc_redis.default' => $client,
+            'snc_redis.client_locator' => $locator
+        ]);
 
-            return true;
-        };
-        $container->addDefinitions(Argument::that($definitionsAssertion))->shouldBeCalled();
+        $this->clientLocatorPass->process($container);
 
-        $container->getDefinition(RedisFlushallCommand::class)->shouldBeCalled()->willReturn(
-          $commandDefinitionMock->reveal()
-        );
-        $commandDefinitionMock->addMethodCall('setClientLocator', Argument::that($definitionsAssertion))
-                              ->shouldBeCalled();
+        $locator = $container->getDefinition('snc_redis.client_locator');
 
-
-        $this->clientLocatorPass->process($container->reveal());
+        $this->assertEquals([['snc_redis.default' => new Reference('snc_redis.default')]], $locator->getArguments());
     }
 
     protected function setUp()

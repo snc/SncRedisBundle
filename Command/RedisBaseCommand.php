@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
 /**
  * Base command for redis interaction through the command line
@@ -25,30 +26,27 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  */
 abstract class RedisBaseCommand extends Command
 {
-    /** @var \Psr\Container\ContainerInterface */
+    /** @var ServiceLocator */
     protected $clientLocator;
 
-    /**
-     * @param \Psr\Container\ContainerInterface $clientLocator
-     *
-     */
-    public function setClientLocator(\Psr\Container\ContainerInterface $clientLocator)
+    public function __construct(ServiceLocator $clientLocator)
     {
+        parent::__construct();
         $this->clientLocator = $clientLocator;
     }
 
     /**
-     * @var \Symfony\Component\Console\Input\InputInterface
+     * @var InputInterface
      */
     protected $input;
 
     /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var OutputInterface
      */
     protected $output;
 
     /**
-     * @var mixed (Either \Predis\Client or \Snc\RedisBundle\Client\Phpredis\Client)
+     * @var \Predis\Client|\Snc\RedisBundle\Client\Phpredis\Client
      */
     protected $redisClient;
 

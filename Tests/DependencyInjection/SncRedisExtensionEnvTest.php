@@ -4,6 +4,7 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -122,12 +123,15 @@ class SncRedisExtensionEnvTest extends TestCase
     {
         $container = new ContainerBuilder();
 
+        $sncRedisBundle = new SncRedisBundle();
+
         $container->setParameter('kernel.debug', false);
-        $container->setParameter('kernel.bundles', array());
+        $container->setParameter('kernel.bundles', array($sncRedisBundle));
         $container->setParameter('kernel.cache_dir', sys_get_temp_dir());
         $container->setParameter('kernel.environment', 'test');
         $container->setParameter('kernel.root_dir', __DIR__ . '/../../');
 
+        $sncRedisBundle->build($container);
         $container->registerExtension(new SncRedisExtension());
 
         $locator = new FileLocator(__DIR__.'/Fixtures/config/yaml');

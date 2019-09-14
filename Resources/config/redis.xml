@@ -16,13 +16,17 @@
             <tag name="data_collector" template="@SncRedis/Collector/redis.html.twig" id="redis" />
             <argument type="service" id="snc_redis.logger" />
         </service>
-        <service id="snc_redis.command.flush_all" class="Snc\RedisBundle\Command\RedisFlushallCommand" public="false">
-            <tag name="console.command" command="redis:flushall" />
-            <tag name="snc_redis.command" />
+        <service id="snc_redis.client_locator" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+            <tag name="container.service_locator" />
         </service>
-        <service id="snc_redis.command.flush_db" class="Snc\RedisBundle\Command\RedisFlushdbCommand" public="false">
+        <service id="snc_redis.command" abstract="true" public="false">
+            <argument type="service" id="snc_redis.client_locator" />
+        </service>
+        <service id="snc_redis.command.flush_all" class="Snc\RedisBundle\Command\RedisFlushallCommand" parent="snc_redis.command" public="false">
+            <tag name="console.command" command="redis:flushall" />
+        </service>
+        <service id="snc_redis.command.flush_db" class="Snc\RedisBundle\Command\RedisFlushdbCommand" parent="snc_redis.command" public="false">
             <tag name="console.command" command="redis:flushdb" />
-            <tag name="snc_redis.command" />
         </service>
     </services>
 

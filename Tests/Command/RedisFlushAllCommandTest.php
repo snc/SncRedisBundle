@@ -11,13 +11,12 @@
 
 namespace Snc\RedisBundle\Tests\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Snc\RedisBundle\Command\RedisFlushallCommand;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
-/**
- * RedisFlushallCommandTest
- */
-class RedisFlushallCommandTest extends CommandTestCase
+class RedisFlushAllCommandTest extends CommandTestCase
 {
 
     public function setUp()
@@ -29,10 +28,6 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testWithDefaultClientAndNoInteraction()
     {
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('snc_redis.default'));
-
         if (!($this->predisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
             $this->predisClient->expects($this->once())
                 ->method('__call')
@@ -60,7 +55,7 @@ class RedisFlushallCommandTest extends CommandTestCase
                 ->will($this->returnValue($connection));
         }
 
-        $command = $this->application->find('redis:flushall');
+        $command = $this->createApplication(['snc_redis.default' => $this->predisClient])->find('redis:flushall');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
 
@@ -69,10 +64,6 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testClientOption()
     {
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('snc_redis.special'));
-
         if (!($this->predisClient instanceof \IteratorAggregate)) { // BC for Predis 1.0
             $this->predisClient->expects($this->once())
                 ->method('__call')
@@ -100,7 +91,7 @@ class RedisFlushallCommandTest extends CommandTestCase
                 ->will($this->returnValue($connection));
         }
 
-        $command = $this->application->find('redis:flushall');
+        $command = $this->createApplication(['snc_redis.special' => $this->predisClient])->find('redis:flushall');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'special', '--no-interaction' => true));
 
@@ -109,17 +100,7 @@ class RedisFlushallCommandTest extends CommandTestCase
 
     public function testClientOptionWithNotExistingClient()
     {
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('snc_redis.notExisting'))
-            ->will($this->throwException(new \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException('')));
-
-        $this->predisClient->expects($this->never())
-            ->method('__call');
-        $this->predisClient->expects($this->never())
-            ->method('getIterator');
-
-        $command = $this->application->find('redis:flushall');
+        $command = $this->createApplication([])->find('redis:flushall');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'notExisting', '--no-interaction' => true));
 
@@ -132,10 +113,6 @@ class RedisFlushallCommandTest extends CommandTestCase
             $this->markTestSkipped('This test for Predis 1.1');
         }
 
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('snc_redis.default'));
-
         $connection = $this->getMockBuilder('\Predis\Connection\ConnectionInterface')->getMock();
 
         $this->predisClient->expects($this->once())
@@ -146,15 +123,15 @@ class RedisFlushallCommandTest extends CommandTestCase
             ->method('getConnection')
             ->will($this->returnValue($connection));
 
-        $command = $this->application->find('redis:flushall');
+        $command = $this->createApplication(['snc_redis.default' => $this->predisClient])->find('redis:flushall');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
 
         $this->assertRegExp('/All redis databases flushed/', $commandTester->getDisplay());
     }
 
-    protected function getCommand()
+    protected function getCommand(ServiceLocator $locator): Command
     {
-        return new RedisFlushallCommand();
+        return new RedisFlushallCommand($locator);
     }
 }

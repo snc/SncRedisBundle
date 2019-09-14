@@ -15,6 +15,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
@@ -24,11 +27,10 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 abstract class CommandTestCase extends TestCase
 {
-
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Console\Application
+     * @var Kernel
      */
-    protected $application;
+    private $kernel;
 
     /**
      * @var \Predis\Client|MockObject
@@ -36,69 +38,70 @@ abstract class CommandTestCase extends TestCase
     protected $predisClient;
 
     /**
-     * @var PhpredisClient|MockObject
+     * @var PhpRedisClient|MockObject
      */
     protected $phpredisClient;
 
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface|MockObject
-     */
-    protected $container;
-
-    /**
-     * SetUp called before each tests, setting up the environment (application, globally used mocks)
-     */
     public function setUp()
     {
-        $this->container = $this->getMockBuilder('\\Symfony\\Component\\DependencyInjection\\ContainerInterface')->getMock();
-
-        /** @var Kernel|MockObject $kernel */
-        $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $kernel->expects($this->once())
-            ->method('getBundles')
-            ->will($this->returnValue(array()));
-        $kernel->expects($this->any())
-            ->method('getContainer')
-            ->will($this->returnValue($this->container));
-        $this->application = new Application($kernel);
-
         $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
-
         $this->phpredisClient = $this->getMockBuilder('PhpredisClient')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $command = $this->getCommand();
-        $this->application->add($command);
-        $command->setClientLocator($this->container);
+        $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $kernel->method('getBundles')->willReturn([]);
+        $kernel->method('getContainer')->willReturn(new Container());
+
+        $this->kernel = $kernel;
     }
 
-    protected function registerPredisClient()
+    /**
+     * @param array<string, object> $clients
+     */
+    public function createApplication(array $clients): Application
+    {
+        $locator = new ServiceLocator(
+            array_map(
+                function ($service) {
+                    return function () use ($service) {
+                        return $service;
+                    };
+                },
+                $clients
+            )
+        );
+
+        $application = new Application($this->kernel);
+        $application->add($this->getCommand($locator));
+
+        return $application;
+    }
+
+    protected function registerPredisClient(): void
     {
         $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
 
-        $this->container->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($this->predisClient));
+        $this->clientLocator = new ServiceLocator([
+            'snc_redis.default' => function() { return $this->predisClient; }
+        ]);
     }
 
-    protected function registerPhpredisClient()
+    protected function registerPhpredisClient(): void
     {
         $this->phpredisClient = $this->getMockBuilder('\\Snc\\RedisBundle\\Client\\Phpredis\\Client')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->container->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($this->phpredisClient));
+        $this->clientLocator = new ServiceLocator([
+            'snc_redis.default' => function() { return $this->phpredisClient; }
+        ]);
     }
 
     /**
      * Method used by the implementation of the command test to return the actual command object
-     *
-     * @return mixed The command to be tested
      */
-    abstract protected function getCommand();
+    abstract protected function getCommand(ServiceLocator $locator): Command;
 }
