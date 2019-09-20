@@ -11,13 +11,11 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Compiler;
 
-use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\ServiceLocator;
 
 /**
  * Class ClientLocatorPass
@@ -31,32 +29,22 @@ class ClientLocatorPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $this->checkForExistingLocatorService($container);
-
         $clientDefinitions = $this->getRedisClientDefinitions($container);
 
-        $clients = $this->generateServiceClosures($clientDefinitions);
-
-        $clientLocatorDefinition = $this->createClientLocatorDefinition($container, $clients);
-
-        $this->passClientLocatorToSncRedisCommands($container, $clientLocatorDefinition);
-    }
-
-    /**
-     * @param \Psr\Container\ContainerInterface $container
-     */
-    private function checkForExistingLocatorService(ContainerInterface $container)
-    {
-        if ($container->has('snc_redis.client_locator')) {
-            throw new \RuntimeException('service id snc_redis.client_locator already assigned');
+        $refMap = [];
+        foreach ($clientDefinitions as $id => $clientDefinition) {
+            $refMap[$id] = new Reference($id);
         }
-    }
 
+        $clientLocator = ServiceLocatorTagPass::register($container, $refMap);
+
+        $this->passClientLocatorToSncRedisCommands($container, $clientLocator);
+    }
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      *
-     * @return array
+     * @return array<string, Definition>
      */
     private function getRedisClientDefinitions(ContainerBuilder $container): array
     {
@@ -68,49 +56,16 @@ class ClientLocatorPass implements CompilerPassInterface
         return $clientDefinitions;
     }
 
-
-    /**
-     * @param array $clientDefinitions
-     *
-     * @return array
-     */
-    private function generateServiceClosures(array $clientDefinitions): array
-    {
-        $clients = [];
-        foreach (array_keys($clientDefinitions) as $key) {
-            $clients[$key] = new ServiceClosureArgument(new Reference($key));
-        }
-
-        return $clients;
-    }
-
-
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param array                                                   $clients
-     *
-     * @return \Symfony\Component\DependencyInjection\Definition
+     * @param \Symfony\Component\DependencyInjection\Reference        $clientLocator
      */
-    private function createClientLocatorDefinition(ContainerBuilder $container, array $clients): Definition
-    {
-        $clientLocatorDefinition = new Definition(ServiceLocator::class, [$clients]);
-        $clientLocatorDefinition->setPrivate(true);
-
-        $container->addDefinitions([$clientLocatorDefinition]);
-
-        return $clientLocatorDefinition;
-    }
-
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param \Symfony\Component\DependencyInjection\Definition       $clientLocatorDefinition
-     */
-    private function passClientLocatorToSncRedisCommands(ContainerBuilder $container, Definition $clientLocatorDefinition)
+    private function passClientLocatorToSncRedisCommands(ContainerBuilder $container, Reference $clientLocator)
     {
         $commandDefinitions = $container->findTaggedServiceIds('snc_redis.command');
         foreach (array_keys($commandDefinitions) as $key) {
             $commandDefinition = $container->getDefinition($key);
-            $commandDefinition->addMethodCall('setClientLocator', [$clientLocatorDefinition]);
+            $commandDefinition->addMethodCall('setClientLocator', [$clientLocator]);
         }
     }
 }
