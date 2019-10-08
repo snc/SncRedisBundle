@@ -95,11 +95,14 @@ class Configuration implements ConfigurationInterface
                     ->beforeNormalization()
                         ->always()
                         ->then(function($v) {
-                            foreach ($v as $name => &$client) {
-                                if (!isset($client['alias'])) {
-                                    $client['alias'] = $name;
+                            if (is_iterable($v)) {
+                                foreach ($v as $name => &$client) {
+                                    if (!isset($client['alias'])) {
+                                        $client['alias'] = $name;
+                                    }
                                 }
                             }
+
                             return $v;
                         })
                     ->end()
