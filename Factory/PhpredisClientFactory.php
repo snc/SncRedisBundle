@@ -55,7 +55,7 @@ class PhpredisClientFactory
             $connectParameters[] = null;
         }
 
-        if (isset($options['connection_persistent'])) {
+        if (!empty($options['connection_persistent'])) {
             $connectParameters[] = $parsedDsn->getPersistentId();
         }
 
