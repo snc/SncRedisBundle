@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\DependencyInjection;
 
+use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
@@ -72,6 +73,9 @@ class SncRedisExtension extends Extension
         if (isset($config['profiler_storage'])) {
             $this->loadProfilerStorage($config, $container, $loader);
         }
+
+        $container->registerForAutoconfiguration(RedisBaseCommand::class)
+            ->addTag('snc_redis.command');
     }
 
     /**
