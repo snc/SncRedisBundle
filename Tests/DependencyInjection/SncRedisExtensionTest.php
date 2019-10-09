@@ -73,6 +73,21 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * @param string $name     Name
+     * @param string $expected Expected value
+     *
+     * @dataProvider parameterValues
+     */
+    public function testNoClientsConfigLoad($name, $expected)
+    {
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getNoClientYamlConfig());
+        $extension->load(array($config), $container = $this->getContainer());
+
+        $this->assertEquals($expected, $container->getParameter($name));
+    }
+
+    /**
      * Test default config for resulting tagged services
      */
     public function testDefaultClientTaggedServicesConfigLoad()
@@ -461,6 +476,13 @@ clients:
          - redis://otherhost
      options:
          serialization: "default"
+EOF;
+    }
+
+    private function getNoClientYamlConfig()
+    {
+        return <<<'EOF'
+clients:
 EOF;
     }
 
