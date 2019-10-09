@@ -6,12 +6,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisLogger;
+use Snc\RedisBundle\Client\Phpredis\Client;
 
 class PhpredisClientFactoryTest extends TestCase
 {
     protected function setUp()
     {
-        if (!class_exists('\Redis')) {
+        if (!class_exists(\Redis::class)) {
             $this->markTestSkipped(sprintf('The %s requires phpredis extension.', __CLASS__));
         }
 
@@ -27,13 +28,14 @@ class PhpredisClientFactoryTest extends TestCase
     {
         $factory = new PhpredisClientFactory();
 
-        $client = $factory->create('\Redis', 'redis://localhost:6379', array(), 'default');
+        $client = $factory->create(\Redis::class, 'redis://localhost:6379', array(), 'default');
 
-        $this->assertInstanceOf('\Redis', $client);
+        $this->assertInstanceOf(\Redis::class, $client);
         $this->assertNull($client->getOption(\Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(\Redis::OPT_SERIALIZER));
         $this->assertSame(0, $client->getDBNum());
         $this->assertNull($client->getAuth());
+        $this->assertNull($client->getPersistentID());
     }
 
     public function testCreateFullConfig()
@@ -44,15 +46,15 @@ class PhpredisClientFactoryTest extends TestCase
             $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
         }
 
-        $logger = $this->getMockBuilder('Snc\RedisBundle\Logger\RedisLogger')->getMock();
+        $logger = $this->getMockBuilder(RedisLogger::class)->getMock();
         $factory = new PhpredisClientFactory($logger);
 
         $client = $factory->create(
-            '\Snc\RedisBundle\Client\Phpredis\Client',
+            Client::class,
             'redis://localhost:6379',
             array(
                 'connection_timeout' => 10,
-                'connection_persistent' => true,
+                'connection_persistent' => 'x',
                 'prefix' => 'toto',
                 'serialization' => 'php',
                 'read_write_timeout' => 4,
@@ -64,13 +66,15 @@ class PhpredisClientFactoryTest extends TestCase
             'alias_test'
         );
 
-        $this->assertInstanceOf('\Snc\RedisBundle\Client\Phpredis\Client', $client);
+        $this->assertInstanceOf(Client::class, $client);
         $this->assertSame('toto', $client->getOption(\Redis::OPT_PREFIX));
         $this->assertSame(1, $client->getOption(\Redis::OPT_SERIALIZER));
         $this->assertSame(4., $client->getOption(\Redis::OPT_READ_TIMEOUT));
         $this->assertSame(3, $client->getDBNum());
         $this->assertSame('secret', $client->getAuth());
         $this->assertAttributeSame($logger, 'logger', $client);
+        $this->assertNotNull($client->getPersistentID());
+        $this->assertNotFalse($client->getPersistentID());
     }
 
     public function testDsnConfig()
@@ -78,7 +82,7 @@ class PhpredisClientFactoryTest extends TestCase
         $factory = new PhpredisClientFactory();
 
         $client = $factory->create(
-            '\Redis',
+            \Redis::class,
             'redis://redis:pass@localhost:6379/2',
             array(
                 'parameters' => [
@@ -89,8 +93,9 @@ class PhpredisClientFactoryTest extends TestCase
             'alias_test'
         );
 
-        $this->assertInstanceOf('\Redis', $client);
+        $this->assertInstanceOf(\Redis::class, $client);
         $this->assertSame(2, $client->getDBNum());
         $this->assertSame('pass', $client->getAuth());
+        $this->assertNull($client->getPersistentID());
     }
 }

@@ -33,7 +33,7 @@ class PhpredisClientFactory
      */
     public function create($class, $dsn, $options, $alias)
     {
-        if (!is_a($class, '\Redis', true)) {
+        if (!is_a($class, \Redis::class, true)) {
             throw new \RuntimeException(sprintf('The factory can only instantiate \Redis classes: %s asked', $class));
         }
 
