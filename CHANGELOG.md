@@ -1,5 +1,16 @@
 # Change Log
 
+## [3.1.1](https://github.com/snc/SncRedisBundle/tree/3.1.1) (2019-10-09)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.1.0...3.1.1)
+
+- Autoconfigure RedisBaseCommand to add snc_redis.command tag (#528) - Maxime Helias
+- Simplify injection of client locator using ServiceLocatorTagPass (#535) - Remon van de Kamp
+- Fix check for connection_persistent with phpredis factory (#538) - Gijs van Lammeren
+- Added simple condition to get rid of Warning: Invalid argument supplied for foreach() (#534) - Adrian Szuszkiewicz
+- No longer use curly brackets for substring (#532) - Remon van de Kamp
+- Fix a non-existent service "snc_redis.phpredis.monolog" (#531) - Bonn
+- Fix C&P error in Phpredis Client Proxy Class - (#526) Jan Ole Behrens
+
 ## [3.1.0](https://github.com/snc/SncRedisBundle/tree/3.1.0) (2019-08-01)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.0.0...3.1.0)
 
