@@ -32,7 +32,7 @@ class ClientClusterTest extends TestCase
 
         $method->setAccessible(true);
 
-        $seeds = array('127.0.0.1:7000', '127.0.0.1:7002');
+        $seeds = array('127.0.0.1:7000', '127.0.0.1:7001', '127.0.0.1:7002', '127.0.0.1:7003');
         $name = 'foo';
         $arguments = array(array('chuck', 'norris'));
 

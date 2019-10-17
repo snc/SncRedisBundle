@@ -23,17 +23,33 @@ class ClientCluster extends RedisCluster
     protected $alias;
 
     /**
-     * Constructor.
+     * @param array            $parameters  List of parameters (only `alias` key is handled)
+     * @param RedisLogger|null $logger      A RedisLogger instance
+     * @param array            $seeds       https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#readme
+     * @param float|null       $timeout     https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#readme
+     * @param float|null       $readTimeout https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#readme
+     * @param bool|null        $persistent  https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#readme
+     * @param string|null      $password    https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#readme
      *
-     * @param array       $parameters List of parameters (only `alias` key is handled)
-     * @param RedisLogger $logger     A RedisLogger instance
+     * @throws \RedisClusterException
      */
-    public function __construct(array $seeds = array(), array $parameters = array(), RedisLogger $logger = null)
-    {
+    public function __construct(
+        array $parameters,
+        ?RedisLogger $logger,
+        array $seeds,
+        ?float $timeout,
+        ?float $readTimeout,
+        ?bool $persistent,
+        string $password = null
+    ) {
         $this->logger = $logger;
         $this->alias = $parameters['alias'] ?? '';
 
-        parent::__construct(null, $seeds);
+        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
+            parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false, $password);
+        } else {
+            parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false);
+        }
     }
 
     /**
