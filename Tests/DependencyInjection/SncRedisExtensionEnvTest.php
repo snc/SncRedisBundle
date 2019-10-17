@@ -118,6 +118,33 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
+    public function testPhpRedisClusterOption()
+    {
+        $container = $this->getConfiguredContainer('env_phpredis_cluster');
+        $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
+
+        $this->assertSame('RedisCluster', $clientDefinition->getClass());
+        $this->assertSame('RedisCluster', $clientDefinition->getArgument(0));
+        $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1));
+        $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
+
+        $this->assertSame(array(
+                'cluster' => true,
+                'connection_async' => false,
+                'connection_persistent' => false,
+                'connection_timeout' => 5,
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+                'serialization' => 'default',
+                'profile' => 'default',
+                'prefix' => null,
+                'service' => null,
+            ),
+            $clientDefinition->getArgument(2)
+        );
+    }
+
     private function getConfiguredContainer($file)
     {
         $container = new ContainerBuilder();

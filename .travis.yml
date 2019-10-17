@@ -26,6 +26,7 @@ matrix:
     - php: nightly
     - env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
 
+dist: xenial
 sudo: false
 
 cache:
@@ -39,15 +40,17 @@ env:
 
 before_install:
   - phpenv config-rm xdebug.ini || true
-  - if [[ $TRAVIS_PHP_VERSION != hhvm ]]; then echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
+  - if [[ ${TRAVIS_PHP_VERSION} != hhvm ]]; then echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
   - php -i | grep -i --color=never "Redis Version"
-  - if [[ $TRAVIS_PHP_VERSION != hhvm ]]; then phpenv rehash; fi;
+  - if [[ ${TRAVIS_PHP_VERSION} != hhvm ]]; then phpenv rehash; fi;
   - composer self-update
-  - if ! [ -z "$STABILITY" ]; then composer config minimum-stability ${STABILITY}; fi;
-  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/symfony:${SYMFONY_VERSION}; fi;
+  - if ! [ -z "${STABILITY}" ]; then composer config minimum-stability ${STABILITY}; fi;
+  - if [ "${SYMFONY_VERSION}" != "" ]; then composer require --no-update symfony/symfony:${SYMFONY_VERSION}; fi;
+  - for PORT in {7000..7008}; do sudo redis-server --port ${PORT} --cluster-enabled yes --cluster-config-file ${PORT}.conf --daemonize yes; echo 127.0.0.1:${PORT}; done
+  - echo yes | redis-cli --cluster create $(seq -f 127.0.0.1:%g 7000 7008) --cluster-replicas 2
 
 install:
-  - composer update --no-interaction --no-progress $COMPOSER_FLAGS
+  - composer update --no-interaction --no-progress ${COMPOSER_FLAGS}
 
 before_script:
   - mkdir Snc && ln -s ../ Snc/RedisBundle
