@@ -17,8 +17,6 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * RedisBundle configuration class.
- *
  * @author Henrik Westphal <henrik.westphal@gmail.com>
  */
 class Configuration implements ConfigurationInterface
@@ -269,6 +267,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('profiler_storage')
+                    ->setDeprecated('Redis profiler storage is not available anymore since Symfony 4.4')
                     ->canBeUnset()
                     ->children()
                         ->scalarNode('client')->isRequired()->end()

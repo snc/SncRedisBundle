@@ -1,5 +1,9 @@
 # Update notes #
 
+## 4.0.0 ##
+
+- Removed redis profiler storage feature `snc_redis.profiler_storage`
+
 ## 3.0.0 ##
 
 - Bumped Symfony minimum version to 3.4

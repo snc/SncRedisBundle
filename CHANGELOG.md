@@ -1,5 +1,9 @@
 # Change Log
 
+## Next release
+
+- Deprecate support for redis profiler storage
+
 ## [3.1.1](https://github.com/snc/SncRedisBundle/tree/3.1.1) (2019-10-09)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.1.0...3.1.1)
 

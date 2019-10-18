@@ -25,6 +25,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Symfony\Component\HttpKernel\Kernel;
 
 class SncRedisExtension extends Extension
 {
@@ -437,6 +438,12 @@ class SncRedisExtension extends Extension
      */
     protected function loadProfilerStorage(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
+        if (Kernel::VERSION_ID >= 40400) {
+            @trigger_error('Redis profiler storage is not available anymore since Symfony 4.4. The option has been disabled automatically.', E_USER_WARNING);
+
+            return;
+        }
+
         $loader->load('profiler_storage.xml');
 
         $container->setParameter('snc_redis.profiler_storage.client', $config['profiler_storage']['client']);

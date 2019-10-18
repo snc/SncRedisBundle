@@ -15,6 +15,8 @@ use Symfony\Component\HttpKernel\Profiler\Profile;
 use Symfony\Component\HttpKernel\Profiler\ProfilerStorageInterface;
 
 /**
+ * @deprecated since version 3.2.0 as \Symfony\Component\HttpKernel\Profiler\ProfilerStorageInterface is now marked as internal
+ *
  * RedisProfilerStorage stores profiling information in Redis.
  *
  * This class is a reimplementation of
