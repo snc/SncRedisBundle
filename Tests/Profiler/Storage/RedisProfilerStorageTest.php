@@ -17,6 +17,9 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group legacy
+ */
 class RedisProfilerStorageTest extends TestCase
 {
     protected static $storage;

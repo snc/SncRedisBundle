@@ -79,10 +79,10 @@ abstract class RedisBaseCommand extends Command
             $this->redisClient = $this->clientLocator->get('snc_redis.' . $client);
         } catch (ServiceNotFoundException $e) {
             $this->output->writeln('<error>The client "' . $client . '" is not defined</error>');
-            return;
+            return 0;
         }
 
-        $this->executeRedisCommand();
+        return $this->executeRedisCommand();
     }
 
     /**

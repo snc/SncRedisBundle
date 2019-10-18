@@ -16,27 +16,55 @@ namespace Snc\RedisBundle\Tests\Functional;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
+use Snc\RedisBundle\Tests\Functional\App\Entity\User;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * IntegrationTest
- *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
 class IntegrationTest extends WebTestCase
 {
-    /** @var Client */
+    /** @var KernelBrowser */
     private $client;
+
+    /** @var EntityManagerInterface */
+    private $em;
 
     protected function setUp()
     {
+        $fs = new Filesystem();
+        $fs->remove(__DIR__ .'/App/var');
+
+        parent::setUp();
+
         $this->client = static::createClient();
+
+        $kernel = $this->client->getKernel();
+
+        $this->em = $kernel->getContainer()->get('public_doctrine')->getManager();
+        $schemaTool = new SchemaTool($this->em);
+        $metadata = $this->em->getMetadataFactory()->getAllMetadata();
+        $schemaTool->createSchema($metadata);
+
+        // Clear Redis databases
+        $application = new Application($kernel);
+        $command = $application->find('redis:flushall');
+        $commandTester = new CommandTester($command);
+        $this->assertSame(0, $commandTester->execute(array('command' => $command->getName(), '-n' => true)));
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $this->client = null;
+        $this->em = null;
     }
 
     public function testIntegration()
@@ -51,7 +79,7 @@ class IntegrationTest extends WebTestCase
 
         if (version_compare(phpversion('redis'), '4.0.0', '<')) {
             // Logging is currently disabled on PHPRedis 4+
-            $this->assertCount(4, $collector->getCommands());
+            $this->assertCount(5, $collector->getCommands());
         }
     }
 
@@ -64,6 +92,15 @@ class IntegrationTest extends WebTestCase
 
     public function testViewUser()
     {
+        $user = (new User())
+            ->setUsername('foo')
+            ->setEmail('bar@example.org')
+        ;
+
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
+
         $response = $this->profileRequest('GET', '/user/view');
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -76,43 +113,6 @@ class IntegrationTest extends WebTestCase
         $client->request($method, $uri);
 
         return $client->getResponse();
-    }
-
-    /**
-     * Manage schema and cleanup chores
-     */
-    public static function setUpBeforeClass()
-    {
-        static::deleteTmpDir();
-
-        $kernel = static::createClient()->getKernel();
-
-        /** @var EntityManagerInterface $em */
-        $em = $kernel->getContainer()->get('public_doctrine')->getManager();
-        $schemaTool = new SchemaTool($em);
-        $metadata = $em->getMetadataFactory()->getAllMetadata();
-        $schemaTool->createSchema($metadata);
-
-        // Clear Redis databases
-        $application = new Application($kernel);
-        $command = $application->find('redis:flushall');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
-    }
-
-    public static function tearDownAfterClass()
-    {
-        static::deleteTmpDir();
-    }
-
-    protected static function deleteTmpDir()
-    {
-        if (!file_exists($dir = __DIR__ .'/App/var')) {
-            return;
-        }
-
-        $fs = new Filesystem();
-        $fs->remove($dir);
     }
 
     protected static function getKernelClass()

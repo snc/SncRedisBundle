@@ -6,6 +6,9 @@ framework:
     session:
         storage_id:     session.storage.mock_file
 
+twig:
+    strict_variables: true
+
 web_profiler:
     toolbar: false
     intercept_redirects: false
@@ -37,11 +40,6 @@ snc_redis:
             alias: cache
             dsn: redis://localhost/1
             logging: false
-        profiler_storage:
-            type: predis
-            alias: profiler_storage
-            dsn: redis://localhost/2
-            logging: true
         cluster:
             type: predis
             alias: cluster
@@ -83,9 +81,6 @@ snc_redis:
     swiftmailer:
         client: default
         key: swiftmailer
-    profiler_storage:
-        client: profiler_storage
-        ttl: 3600
 
 services:
     _defaults:

@@ -38,7 +38,10 @@ class RedisFlushallCommand extends RedisBaseCommand
             $this->flushAll();
         } else {
             $this->output->writeln('<error>Flushing cancelled</error>');
+            return 1;
         }
+
+        return 0;
     }
 
     /**
