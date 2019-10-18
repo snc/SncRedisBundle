@@ -48,4 +48,4 @@ install:
 
 script:
   - composer validate --strict --no-check-lock
-  - bin/phpunit -v --testdox
+  - bin/phpunit -v
