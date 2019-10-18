@@ -45,7 +45,7 @@ class ClientCluster extends RedisCluster
         $this->logger = $logger;
         $this->alias = $parameters['alias'] ?? '';
 
-        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
+        if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
             parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false, $password);
         } else {
             parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false);

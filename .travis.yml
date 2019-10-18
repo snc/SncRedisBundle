@@ -28,7 +28,7 @@ cache:
 
 env:
   global:
-    - SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
+    - SYMFONY_DEPRECATIONS_HELPER="max[self]=0"
     - COMPOSER_MEMORY_LIMIT=-1
 
 before_install:
@@ -44,7 +44,7 @@ before_install:
 
 install:
   - composer global require --no-progress --no-scripts --no-plugins symfony/flex
-  - composer install --no-interaction --no-progress ${COMPOSER_FLAGS}
+  - composer update --no-interaction --no-progress ${COMPOSER_FLAGS}
 
 script:
   - composer validate --strict --no-check-lock

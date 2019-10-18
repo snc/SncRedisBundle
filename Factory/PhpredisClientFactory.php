@@ -92,10 +92,10 @@ class PhpredisClientFactory
         $args[] = (bool) ($options['connection_persistent'] ?? null);
 
         $password = $options['parameters']['password'] ?? null;
-        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
+        if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
             $args[] = $password;
         } elseif ($password) {
-            throw new \LogicException('\RedisCluster v3 does not support password authentication');
+            throw new \LogicException('Your phpredis version "" does not support \RedisCluster password authentication');
         }
 
         $client = new $class(...$args);
