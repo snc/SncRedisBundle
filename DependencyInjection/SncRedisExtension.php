@@ -258,34 +258,29 @@ class SncRedisExtension extends Extension
     protected function loadPhpredisClient(array $client, ContainerBuilder $container)
     {
         $connectionCount = count($client['dsns']);
+        $hasClusterOption = null !== $client['options']['cluster'];
 
-        if (1 !== $connectionCount) {
-            throw new \RuntimeException(
-                sprintf('RedisCluster does not support multiple hosts yet and support for RedisArray is not yet implemented. %s DSNs configured.', $connectionCount)
-            );
+        if ($connectionCount > 1 && !$hasClusterOption) {
+            throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
         }
 
         $phpRedisVersion = phpversion('redis');
-        if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
+        if (version_compare($phpRedisVersion, '4.0.0', '>=') && $client['logging']) {
             $client['logging'] = false;
             @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
         }
 
-        if (null === $client['options']['cluster']) {
-            $phpredisClientClass =
-                $client['logging']
-                ? $container->getParameter('snc_redis.phpredis_connection_wrapper.class')
-                : $container->getParameter('snc_redis.phpredis_client.class');
-
-        } else {
+        if ($hasClusterOption) {
             $phpredisClientClass =
                 $client['logging']
                     ? $container->getParameter('snc_redis.phpredis_clusterclient_connection_wrapper.class')
                     : $container->getParameter('snc_redis.phpredis_clusterclient.class');
+        } else {
+            $phpredisClientClass =
+                $client['logging']
+                ? $container->getParameter('snc_redis.phpredis_connection_wrapper.class')
+                : $container->getParameter('snc_redis.phpredis_client.class');
         }
-
-        /** @var RedisDsn $dsn */
-        $dsn = (string) $client['dsns'][0];
 
         $phpredisDef = new Definition($phpredisClientClass);
         $phpredisDef->setFactory(array(
@@ -293,7 +288,7 @@ class SncRedisExtension extends Extension
             'create'
         ));
         $phpredisDef->addArgument($phpredisClientClass);
-        $phpredisDef->addArgument($dsn);
+        $phpredisDef->addArgument(array_map('strval', $client['dsns']));
         $phpredisDef->addArgument($client['options']);
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));

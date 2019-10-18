@@ -213,8 +213,7 @@ class RedisSessionHandler extends AbstractSessionHandler
             );
         };
 
-        for ($i = 0;$i < $attempts;++$i) {
-
+        for ($i = 0; $i < $attempts; ++$i) {
             // We try to aquire the lock
             $success = $setFunction($this->redis, $this->lockKey, $this->token, $this->lockMaxWait * 1000 + 1);
             if ($success) {

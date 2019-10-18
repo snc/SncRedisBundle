@@ -4,27 +4,18 @@ services:
   - redis-server
 
 matrix:
+  fast_finish: true
   include:
     - php: 7.1
     - php: 7.1
-      env: COMPOSER_FLAGS="--prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak"
+      env: COMPOSER_FLAGS="--prefer-lowest"
     - php: 7.2
-    - php: 7.3
-      env: SYMFONY_VERSION="3.4.*"
-    - php: 7.3
-      env: SYMFONY_VERSION="4.0.*"
-    - php: 7.3
-      env: SYMFONY_VERSION="4.1.*"
-    - php: 7.3
-      env: SYMFONY_VERSION="4.2.*"
     - php: 7.3
       env: SYMFONY_VERSION="4.3.*""
     - php: 7.3
-      env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
-    - php: nightly
+      env: SYMFONY_VERSION="4.4.*" STABILITY="dev"
   allow_failures:
-    - php: nightly
-    - env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
+    - env: SYMFONY_VERSION="4.4.*" STABILITY="dev"
 
 dist: xenial
 sudo: false
@@ -35,7 +26,7 @@ cache:
 
 env:
   global:
-    - SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
+    - SYMFONY_DEPRECATIONS_HELPER="max[self]=0"
     - COMPOSER_MEMORY_LIMIT=-1
 
 before_install:
@@ -50,10 +41,9 @@ before_install:
   - echo yes | redis-cli --cluster create $(seq -f 127.0.0.1:%g 7000 7008) --cluster-replicas 2
 
 install:
+  - composer global require --no-progress --no-scripts --no-plugins symfony/flex
   - composer update --no-interaction --no-progress ${COMPOSER_FLAGS}
 
-before_script:
-  - mkdir Snc && ln -s ../ Snc/RedisBundle
-
 script:
-  - bin/phpunit
+  - composer validate --strict --no-check-lock
+  - bin/phpunit -v

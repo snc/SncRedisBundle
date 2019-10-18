@@ -8,6 +8,9 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
+/**
+ * @internal
+ */
 class PhpredisClientFactory
 {
     /**
@@ -25,70 +28,145 @@ class PhpredisClientFactory
 
     /**
      * @param string $class   Redis class to instantiate
-     * @param string $dsn     One DSN string
+     * @param array  $dsns    Multiple DSN string
      * @param array  $options Options provided in bundle client config
      * @param string $alias   Connection alias provided in bundle client config
      *
      * @return \Redis|Client|\RedisCluster|ClientCluster
      * @throws InvalidConfigurationException
+     * @throws \LogicException
      */
-    public function create($class, $dsn, $options, $alias)
+    public function create($class, array $dsns, $options, $alias)
     {
         if (!is_a($class, \Redis::class, true)
             && !is_a($class, \RedisCluster::class, true)
         ) {
-            throw new \RuntimeException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
+            throw new \LogicException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
         }
 
-        $parsedDsn = new RedisDsn($dsn);
+        $parsedDsns = array_map(static function (string $dsn) {
+            return new RedisDsn($dsn);
+        }, $dsns);
 
         if (is_a($class, \Redis::class, true)) {
-            $client = $this->createClient($class, $alias);
+            if (count($parsedDsns) > 1) {
+                throw new \LogicException('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
+            }
+
+            return $this->createClient($parsedDsns[0], $class, $alias, $options);
+        }
+
+        return $this->createClusterClient($parsedDsns, $class, $alias, $options);
+    }
+
+    /**
+     * @param RedisDsn[] $dsns
+     * @param string     $class Redis class to instantiate
+     * @param string     $alias Connection alias provided in bundle client config
+     * @param array      $options
+     *
+     * @return \RedisCluster|ClientCluster
+     *
+     * @throws InvalidConfigurationException
+     * @throws \LogicException
+     */
+    private function createClusterClient(array $dsns, $class, $alias, array $options): \RedisCluster
+    {
+        $args = [];
+
+        if (is_a($class, ClientCluster::class, true)) {
+            $args[] = ['alias' => $alias];
+            $args[] = $this->logger;
         } else {
-            $seeds = array($parsedDsn->getHost() . ':' . $parsedDsn->getPort());
-            $client = $this->createClusterClient($class, $alias, $seeds);
+            $args[] = null;
         }
 
-        if (is_a($class, \Redis::class, true)) {
-            $connectParameters = array();
+        $seeds = [];
+        foreach ($dsns as $dsn) {
+            $seeds[] = $dsn->getHost() . ':' . $dsn->getPort();
+        }
 
-            if (null !== $parsedDsn->getSocket()) {
-                $connectParameters[] = $parsedDsn->getSocket();
-                $connectParameters[] = null;
-            } else {
-                $connectParameters[] = $parsedDsn->getHost();
-                $connectParameters[] = $parsedDsn->getPort();
-            }
+        $args[] = $seeds;
+        $args[] = $options['connection_timeout'] ?? null;
+        $args[] = $options['read_write_timeout'] ?? null;
+        $args[] = (bool) ($options['connection_persistent'] ?? null);
 
-            if (isset($options['connection_timeout'])) {
-                $connectParameters[] = $options['connection_timeout'];
-            } else {
-                $connectParameters[] = null;
-            }
+        $password = $options['parameters']['password'] ?? null;
+        if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
+            $args[] = $password;
+        } elseif ($password) {
+            throw new \LogicException('Your phpredis version "'.phpversion('redis').'" does not support \RedisCluster password authentication, you need at least "4.3.0"');
+        }
 
-            if (!empty($options['connection_persistent'])) {
-                $connectParameters[] = $parsedDsn->getPersistentId();
-            }
+        $client = new $class(...$args);
 
-            $connectMethod = !empty($options['connection_persistent']) ? 'pconnect' : 'connect';
-            call_user_func_array(array($client, $connectMethod), $connectParameters);
+        if (isset($options['prefix'])) {
+            $client->setOption(\RedisCluster::OPT_PREFIX, $options['prefix']);
+        }
+
+        if (isset($options['serialization'])) {
+            $client->setOption(\RedisCluster::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
+        }
+
+        return $client;
+    }
+
+    /**
+     * @param RedisDsn $dsn
+     * @param string   $class   Redis class to instantiate
+     * @param string   $alias   Connection alias provided in bundle client config
+     * @param array    $options
+     *
+     * @return \Redis|Client
+     * @throws InvalidConfigurationException
+     */
+    private function createClient(RedisDsn $dsn, $class, $alias, array $options): \Redis
+    {
+        /** @var \Redis $client */
+        if (is_a($class, Client::class, true)) {
+            $client = new $class(['alias' => $alias], $this->logger);
+        } else {
+            $client = new $class();
+        }
+
+        $connectParameters = array();
+
+        if (null !== $dsn->getSocket()) {
+            $connectParameters[] = $dsn->getSocket();
+            $connectParameters[] = null;
+        } else {
+            $connectParameters[] = $dsn->getHost();
+            $connectParameters[] = $dsn->getPort();
+        }
+
+        if (isset($options['connection_timeout'])) {
+            $connectParameters[] = $options['connection_timeout'];
+        } else {
+            $connectParameters[] = null;
+        }
+
+        if (!empty($options['connection_persistent'])) {
+            $connectParameters[] = $dsn->getPersistentId();
+        }
+
+        if (!empty($options['connection_persistent'])) {
+            $client->pconnect(...$connectParameters);
+        } else {
+            $client->connect(...$connectParameters);
+        }
+
+        $password = $dsn->getPassword() ?? $options['parameters']['password'] ?? null;
+        if ($password) {
+            $client->auth($password);
+        }
+
+            $db = $dsn->getDatabase() ?? $options['parameters']['database'] ?? null;
+        if (null !== $db && $db !== '') {
+            $client->select($db);
         }
 
         if (isset($options['prefix'])) {
             $client->setOption(\Redis::OPT_PREFIX, $options['prefix']);
-        }
-
-        if (null !== $parsedDsn->getPassword()) {
-            $client->auth($parsedDsn->getPassword());
-        } elseif (isset($options['parameters']['password'])) {
-            $client->auth($options['parameters']['password']);
-        }
-
-        // RedisCluster has no select method, 'cause use only db:0
-        if (null !== $parsedDsn->getDatabase() && method_exists($client, 'select')) {
-            $client->select($parsedDsn->getDatabase());
-        } elseif (isset($options['parameters']['database']) && method_exists($client, 'select')) {
-            $client->select($options['parameters']['database']);
         }
 
         if (isset($options['read_write_timeout'])) {
@@ -97,41 +175,6 @@ class PhpredisClientFactory
 
         if (isset($options['serialization'])) {
             $client->setOption(\Redis::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
-        }
-
-        return $client;
-    }
-
-    /**
-     * @param string   $class Redis class to instantiate
-     * @param string   $alias Connection alias provided in bundle client config
-     * @param array    $seeds Connection parameters
-     *
-     * @return \RedisCluster|ClientCluster
-     */
-    private function createClusterClient($class, $alias, array $seeds): \RedisCluster
-    {
-        if (is_a($class, ClientCluster::class, true)) {
-            $client = new $class($seeds, array('alias' => $alias), $this->logger);
-        } else {
-            $client = new $class(NULL, $seeds);
-        }
-
-        return $client;
-    }
-
-    /**
-     * @param string $class Redis class to instantiate
-     * @param string $alias Connection alias provided in bundle client config
-     *
-     * @return \Redis|Client
-     */
-    private function createClient($class, $alias): \Redis
-    {
-        if (is_a($class, Client::class, true)) {
-            $client = new $class(array('alias' => $alias), $this->logger);
-        } else {
-            $client = new $class();
         }
 
         return $client;
@@ -147,11 +190,11 @@ class PhpredisClientFactory
      */
     private function loadSerializationType($type)
     {
-        $types = array(
+        $types = [
             'default' => \Redis::SERIALIZER_NONE,
             'none' => \Redis::SERIALIZER_NONE,
             'php' => \Redis::SERIALIZER_PHP
-        );
+        ];
 
         if (defined('Redis::SERIALIZER_IGBINARY')) {
             $types['igbinary'] = \Redis::SERIALIZER_IGBINARY;

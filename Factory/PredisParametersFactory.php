@@ -5,6 +5,9 @@ namespace Snc\RedisBundle\Factory;
 use Predis\Connection\ParametersInterface;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
+/**
+ * @internal
+ */
 class PredisParametersFactory
 {
     /**

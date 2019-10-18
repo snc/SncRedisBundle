@@ -1,0 +1,19 @@
+parameters:
+    env(REDIS_URL_1): redis://localhost:7000
+    env(REDIS_URL_2): redis://localhost:7001
+    env(REDIS_URL_3): redis://localhost:7002
+
+snc_redis:
+    clients:
+        phprediscluster:
+            type: phpredis
+            alias: phprediscluster
+            dsn:
+                - "%env(REDIS_URL_1)%"
+                - "%env(REDIS_URL_2)%"
+                - "%env(REDIS_URL_3)%"
+            options:
+                cluster: true
+                read_write_timeout: 1.5
+                connection_timeout: 1.5
+                connection_persistent: true

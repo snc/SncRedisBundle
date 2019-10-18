@@ -8,6 +8,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\Kernel;
+use Snc\RedisBundle\Client\Phpredis\Client;
 
 class SncRedisExtensionEnvTest extends TestCase
 {
@@ -41,10 +42,11 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame('Redis', $clientDefinition->getClass());
         $this->assertSame('Redis', $clientDefinition->getArgument(0));
-        $this->assertContains('REDIS_URL', $clientDefinition->getArgument(1));
+        $this->assertContains('REDIS_URL', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('default', $clientDefinition->getArgument(3));
 
-        $this->assertSame(array(
+        $this->assertSame(
+            array(
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -67,17 +69,18 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.alias_test');
 
-        $clientClass = 'Snc\RedisBundle\Client\Phpredis\Client';
-        if (version_compare(phpversion('redis'), '4.0.0') >= 0) {
+        $clientClass = Client::class;
+        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
             // Logging is not supported for this version >=4.0.0 of phpredis
             $clientClass = 'Redis';
         }
 
         $this->assertSame($clientClass, $clientDefinition->getClass());
         $this->assertSame($clientClass, $clientDefinition->getArgument(0));
-        $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1));
+        $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
-        $this->assertSame(array(
+        $this->assertSame(
+            array(
                 'connection_timeout' => 10,
                 'connection_persistent' => true,
                 'prefix' => 'totoprofix',
@@ -115,7 +118,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertEquals('snc_redis.connection.default2_parameters.default', (string) $parameters[1]);
 
         $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     public function testPhpRedisClusterOption()
@@ -125,10 +128,11 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame('RedisCluster', $clientDefinition->getClass());
         $this->assertSame('RedisCluster', $clientDefinition->getArgument(0));
-        $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1));
+        $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
 
-        $this->assertSame(array(
+        $this->assertSame(
+            array(
                 'cluster' => true,
                 'connection_async' => false,
                 'connection_persistent' => false,
@@ -143,6 +147,44 @@ class SncRedisExtensionEnvTest extends TestCase
             ),
             $clientDefinition->getArgument(2)
         );
+    }
+
+    public function testPhpRedisClusterOptionMultipleDsn(): void
+    {
+        $container = $this->getConfiguredContainer('env_phpredis_cluster_multiple_dsn');
+        $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
+
+        $this->assertSame('RedisCluster', $clientDefinition->getClass());
+        $this->assertSame('RedisCluster', $clientDefinition->getArgument(0));
+        $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
+        $this->assertContains('REDIS_URL_2', $clientDefinition->getArgument(1)[1]);
+        $this->assertContains('REDIS_URL_3', $clientDefinition->getArgument(1)[2]);
+        $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
+
+        $this->assertSame(
+            [
+                'cluster' => true,
+                'read_write_timeout' => 1.5,
+                'connection_timeout' => 1.5,
+                'connection_persistent' => true,
+                'connection_async' => false,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+                'serialization' => 'default',
+                'profile' => 'default',
+                'prefix' => null,
+                'service' => null,
+            ],
+            $clientDefinition->getArgument(2)
+        );
+    }
+
+    public function testPhpRedisArrayIsNotSupported(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('RedisArray is not supported yet');
+
+        $this->getConfiguredContainer('env_phpredis_array_not_supported');
     }
 
     private function getConfiguredContainer($file)

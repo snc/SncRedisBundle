@@ -17,6 +17,8 @@ use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
+ * @internal
+ *
  * PHP Redis client with logger.
  *
  * @author Henrik Westphal <henrik.westphal@gmail.com>
@@ -44,7 +46,7 @@ class Client extends Redis
     public function __construct(array $parameters = array(), RedisLogger $logger = null)
     {
         $this->logger = $logger;
-        $this->alias = isset($parameters['alias']) ? $parameters['alias'] : '';
+        $this->alias = $parameters['alias'] ?? '';
     }
 
     /**
@@ -968,7 +970,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushDB($async = NULL)
+    public function flushDB($async = null)
     {
         return $this->call('flushDB', func_get_args());
     }
@@ -976,7 +978,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushAll($async = NULL)
+    public function flushAll($async = null)
     {
         return $this->call('flushAll', func_get_args());
     }

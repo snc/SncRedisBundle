@@ -184,7 +184,9 @@ class RedisProfilerStorage implements ProfilerStorageInterface
         $data = array(
             'token' => $profile->getToken(),
             'parent' => $profile->getParentToken(),
-            'children' => array_map(function ($p) { return $p->getToken(); }, $profile->getChildren()),
+            'children' => array_map(function ($p) {
+                return $p->getToken();
+            }, $profile->getChildren()),
             'data' => $profile->getCollectors(),
             'ip' => $profile->getIp(),
             'method' => $profile->getMethod(),
