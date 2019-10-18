@@ -24,7 +24,8 @@ class ClientClusterTest extends TestCase
     public function testGetCommandString()
     {
         $method = new \ReflectionMethod(
-            ClientCluster::class, 'getCommandString'
+            ClientCluster::class,
+            'getCommandString'
         );
 
         $method->setAccessible(true);
@@ -34,25 +35,29 @@ class ClientClusterTest extends TestCase
         $arguments = array(array('chuck', 'norris'));
 
         $this->assertEquals(
-            'FOO chuck norris', $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            'FOO chuck norris',
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
         );
 
         $arguments = array('chuck:norris');
 
         $this->assertEquals(
-            'FOO chuck:norris', $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            'FOO chuck:norris',
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
         );
 
         $arguments = array('chuck:norris fab:pot');
 
         $this->assertEquals(
-            'FOO chuck:norris fab:pot', $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            'FOO chuck:norris fab:pot',
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
         );
 
         $arguments = array('foo' => 'bar', 'baz' => null);
 
         $this->assertEquals(
-            'FOO foo bar baz <null>', $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            'FOO foo bar baz <null>',
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
         );
     }
 }

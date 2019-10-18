@@ -152,7 +152,7 @@ class ClientCluster extends RedisCluster
     public function psetex($key, $ttl, $value)
     {
         return $this->call('psetex', func_get_args());
-    }    
+    }
 
     /**
      * {@inheritdoc}

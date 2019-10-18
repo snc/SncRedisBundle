@@ -22,7 +22,8 @@ class ClientTest extends TestCase
         }
 
         $method = new \ReflectionMethod(
-            '\Snc\RedisBundle\Client\Phpredis\Client', 'getCommandString'
+            '\Snc\RedisBundle\Client\Phpredis\Client',
+            'getCommandString'
         );
 
         $method->setAccessible(true);
@@ -31,25 +32,29 @@ class ClientTest extends TestCase
         $arguments = array(array('chuck', 'norris'));
 
         $this->assertEquals(
-            'FOO chuck norris', $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
+            'FOO chuck norris',
+            $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
         );
 
         $arguments = array('chuck:norris');
 
         $this->assertEquals(
-            'FOO chuck:norris', $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
+            'FOO chuck:norris',
+            $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
         );
 
         $arguments = array('chuck:norris fab:pot');
 
         $this->assertEquals(
-            'FOO chuck:norris fab:pot', $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
+            'FOO chuck:norris fab:pot',
+            $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
         );
 
         $arguments = array('foo' => 'bar', 'baz' => null);
 
         $this->assertEquals(
-            'FOO foo bar baz <null>', $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
+            'FOO foo bar baz <null>',
+            $method->invoke(new \Snc\RedisBundle\Client\Phpredis\Client(array('alias' => 'bar')), $name, $arguments)
         );
     }
 }

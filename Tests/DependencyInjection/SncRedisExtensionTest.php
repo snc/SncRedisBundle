@@ -481,7 +481,7 @@ class SncRedisExtensionTest extends TestCase
     }
 
     private function getSerializationYamlConfig()
-     {
+    {
          return <<<'EOF'
 clients:
  default:

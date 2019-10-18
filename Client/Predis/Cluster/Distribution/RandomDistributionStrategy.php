@@ -52,7 +52,7 @@ class RandomDistributionStrategy implements DistributionStrategyInterface, HashG
      */
     public function remove($node)
     {
-        $this->_nodes = array_filter($this->_nodes, function($n) use($node) {
+        $this->_nodes = array_filter($this->_nodes, function ($n) use ($node) {
             return $n !== $node;
         });
         $this->_nodesCount = count($this->_nodes);

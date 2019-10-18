@@ -109,7 +109,7 @@ class RedisSessionHandlerTest extends TestCase
                 $this->equalTo($lockMaxWait * 1000 + 1),
                 $this->equalTo('NX')
             )
-            ->will($this->onConsecutiveCalls(0,1))
+            ->will($this->onConsecutiveCalls(0, 1))
         ;
 
         // We prepare our handlers

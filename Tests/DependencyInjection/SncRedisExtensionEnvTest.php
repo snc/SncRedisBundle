@@ -45,7 +45,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertContains('REDIS_URL', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('default', $clientDefinition->getArgument(3));
 
-        $this->assertSame(array(
+        $this->assertSame(
+            array(
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -78,7 +79,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame($clientClass, $clientDefinition->getArgument(0));
         $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
-        $this->assertSame(array(
+        $this->assertSame(
+            array(
                 'connection_timeout' => 10,
                 'connection_persistent' => true,
                 'prefix' => 'totoprofix',
@@ -129,7 +131,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
 
-        $this->assertSame(array(
+        $this->assertSame(
+            array(
                 'cluster' => true,
                 'connection_async' => false,
                 'connection_persistent' => false,
@@ -158,7 +161,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertContains('REDIS_URL_3', $clientDefinition->getArgument(1)[2]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
 
-        $this->assertSame([
+        $this->assertSame(
+            [
                 'cluster' => true,
                 'read_write_timeout' => 1.5,
                 'connection_timeout' => 1.5,

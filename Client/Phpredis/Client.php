@@ -970,7 +970,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushDB($async = NULL)
+    public function flushDB($async = null)
     {
         return $this->call('flushDB', func_get_args());
     }
@@ -978,7 +978,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function flushAll($async = NULL)
+    public function flushAll($async = null)
     {
         return $this->call('flushAll', func_get_args());
     }

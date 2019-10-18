@@ -44,7 +44,9 @@ class PhpredisClientFactory
             throw new \LogicException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
         }
 
-        $parsedDsns = array_map(static function(string $dsn) {return new RedisDsn($dsn);}, $dsns);
+        $parsedDsns = array_map(static function (string $dsn) {
+            return new RedisDsn($dsn);
+        }, $dsns);
 
         if (is_a($class, \Redis::class, true)) {
             if (count($parsedDsns) > 1) {

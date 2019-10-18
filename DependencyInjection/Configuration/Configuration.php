@@ -96,7 +96,7 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('alias', false)
                     ->beforeNormalization()
                         ->always()
-                        ->then(function($v) {
+                        ->then(function ($v) {
                             if (is_iterable($v)) {
                                 foreach ($v as $name => &$client) {
                                     if (!isset($client['alias'])) {
@@ -118,7 +118,9 @@ class Configuration implements ConfigurationInterface
                                 ->isRequired()
                                 ->performNoDeepMerging()
                                 ->beforeNormalization()
-                                    ->ifString()->then(function($v) { return (array) $v; })
+                                    ->ifString()->then(function ($v) {
+                                        return (array) $v;
+                                    })
                                 ->end()
                                 ->prototype('variable')->end()
                             ->end()
@@ -197,7 +199,9 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->arrayNode('entity_managers')
                                 ->defaultValue(array())
-                                ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
+                                ->beforeNormalization()->ifString()->then(function ($v) {
+                                    return (array) $v;
+                                })->end()
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()
@@ -205,7 +209,9 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->arrayNode('document_managers')
                                 ->defaultValue(array())
-                                ->beforeNormalization()->ifString()->then(function($v) { return (array) $v; })->end()
+                                ->beforeNormalization()->ifString()->then(function ($v) {
+                                    return (array) $v;
+                                })->end()
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()

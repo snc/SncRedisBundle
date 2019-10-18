@@ -65,5 +65,4 @@ class Kernel extends BaseKernel
     {
         return __DIR__ . '/var';
     }
-
 }
