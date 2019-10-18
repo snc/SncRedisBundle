@@ -95,7 +95,7 @@ class PhpredisClientFactory
         if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
             $args[] = $password;
         } elseif ($password) {
-            throw new \LogicException('Your phpredis version "" does not support \RedisCluster password authentication');
+            throw new \LogicException('Your phpredis version "'.phpversion('redis').'" does not support \RedisCluster password authentication, you need at least "4.3.0"');
         }
 
         $client = new $class(...$args);
