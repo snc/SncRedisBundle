@@ -13,6 +13,7 @@ namespace Symfony\Component\HttpKernel\Tests\Profiler;
 
 use Snc\RedisBundle\Profiler\Storage\RedisProfilerStorage;
 use Snc\RedisBundle\Tests\Profiler\Storage\Mock\RedisMock;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use PHPUnit\Framework\TestCase;
 
@@ -22,6 +23,11 @@ class RedisProfilerStorageTest extends TestCase
 
     protected function setUp()
     {
+        if (Kernel::VERSION_ID >= 40400) {
+            $this->markTestSkipped('Redis profiler storage is not supported since Symfony 4.4');
+        }
+
+
         $redisMock = new RedisMock();
         $redisMock->connect('127.0.0.1', 6379);
 
