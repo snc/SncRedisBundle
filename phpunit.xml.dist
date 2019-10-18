@@ -10,10 +10,6 @@
         <env name="SHELL_VERBOSITY" value="-1" />
     </php>
 
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
-    </listeners>
-
     <testsuites>
         <testsuite name="RedisBundle Test Suite">
             <directory>./Tests</directory>
