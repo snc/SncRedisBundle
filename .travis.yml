@@ -44,6 +44,9 @@ install:
   - composer global require --no-progress --no-scripts --no-plugins symfony/flex
   - composer update --no-interaction --no-progress ${COMPOSER_FLAGS}
 
+before_script:
+  - mkdir Snc && ln -s ../ Snc/RedisBundle
+
 script:
   - composer validate --strict --no-check-lock
   - bin/phpunit -v
