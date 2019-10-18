@@ -8,16 +8,16 @@ matrix:
   include:
     - php: 7.1
     - php: 7.1
-      env: COMPOSER_FLAGS="--prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak"
+      env: COMPOSER_FLAGS="--prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="max[total]=99999"
     - php: 7.2
     - php: 7.3
       env: SYMFONY_VERSION="4.3.*""
     - php: 7.3
-      env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
-    - php: nightly
+      env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="max[total]=99999" STABILITY="dev"
+    - php: 7.4
   allow_failures:
-    - php: nightly
-    - env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="weak" STABILITY="dev"
+    - php: 7.4
+    - env: SYMFONY_VERSION="4.4.*" SYMFONY_DEPRECATIONS_HELPER="max[total]=99999" STABILITY="dev"
 
 dist: xenial
 sudo: false
