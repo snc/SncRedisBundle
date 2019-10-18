@@ -26,7 +26,7 @@ class PhpredisClientFactoryTest extends TestCase
     {
         $factory = new PhpredisClientFactory();
 
-        $client = $factory->create(\Redis::class, 'redis://localhost:6379', array(), 'default');
+        $client = $factory->create(\Redis::class, ['redis://localhost:6379'], array(), 'default');
 
         $this->assertInstanceOf(\Redis::class, $client);
         $this->assertNull($client->getOption(\Redis::OPT_PREFIX));
@@ -40,7 +40,7 @@ class PhpredisClientFactoryTest extends TestCase
     {
         $factory = new PhpredisClientFactory();
 
-        $client = $factory->create(\RedisCluster::class, 'redis://localhost:7000/0', array(), 'phprediscluster');
+        $client = $factory->create(\RedisCluster::class, ['redis://localhost:7000'], array(), 'phprediscluster');
 
         $this->assertInstanceOf(\RedisCluster::class, $client);
         $this->assertNull($client->getOption(\Redis::OPT_PREFIX));
@@ -51,7 +51,7 @@ class PhpredisClientFactoryTest extends TestCase
     {
         // @todo: Remove this condition when the inheritance from `\Redis` is fixed
         // see https://github.com/snc/SncRedisBundle/issues/399
-        if (version_compare(phpversion('redis'), '4.0.0') >= 0) {
+        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
             $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
         }
 
@@ -60,7 +60,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Client::class,
-            'redis://localhost:6379',
+            ['redis://localhost:6379'],
             array(
                 'connection_timeout' => 10,
                 'connection_persistent' => 'x',
@@ -92,7 +92,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             \Redis::class,
-            'redis://redis:pass@localhost:6379/2',
+            ['redis://redis:pass@localhost:6379/2'],
             array(
                 'parameters' => [
                     'database' => 3,

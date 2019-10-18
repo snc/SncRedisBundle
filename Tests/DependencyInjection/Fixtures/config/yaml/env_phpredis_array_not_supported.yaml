@@ -1,11 +1,12 @@
 parameters:
     env(REDIS_URL_1): redis://localhost:7000
+    env(REDIS_URL_2): redis://localhost:7001
 
 snc_redis:
     clients:
         phprediscluster:
             type: phpredis
             alias: phprediscluster
-            dsn: "%env(REDIS_URL_1)%"
-            options:
-                cluster: true
+            dsn:
+                - "%env(REDIS_URL_1)%"
+                - "%env(REDIS_URL_2)%"

@@ -261,11 +261,11 @@ class SncRedisExtension extends Extension
         $hasClusterOption = null !== $client['options']['cluster'];
 
         if ($connectionCount > 1 && !$hasClusterOption) {
-            throw new \RuntimeException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
+            throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
         }
 
         $phpRedisVersion = phpversion('redis');
-        if (version_compare($phpRedisVersion, '4.0.0') >= 0 && $client['logging']) {
+        if (version_compare($phpRedisVersion, '4.0.0', '>=') && $client['logging']) {
             $client['logging'] = false;
             @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
         }

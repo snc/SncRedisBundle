@@ -6,7 +6,7 @@ use RedisCluster;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
- * PHP RedisCluster client with logger.
+ * @internal
  *
  * @author Igor Scabini <furester@gmail.com>
  */

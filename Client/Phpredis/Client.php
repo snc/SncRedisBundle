@@ -17,6 +17,8 @@ use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
 
 /**
+ * @internal
+ *
  * PHP Redis client with logger.
  *
  * @author Henrik Westphal <henrik.westphal@gmail.com>

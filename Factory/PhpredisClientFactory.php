@@ -87,7 +87,7 @@ class PhpredisClientFactory
         $args[] = $seeds;
         $args[] = $options['connection_timeout'] ?? null;
         $args[] = $options['read_write_timeout'] ?? null;
-        $args[] = (bool) $options['connection_persistent'];
+        $args[] = (bool) ($options['connection_persistent'] ?? null);
 
         $password = $options['parameters']['password'] ?? null;
         if (version_compare(phpversion('redis'), '4.0.0', '>=')) {

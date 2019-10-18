@@ -4,19 +4,12 @@ services:
   - redis-server
 
 matrix:
+  fast_finish: true
   include:
     - php: 7.1
     - php: 7.1
       env: COMPOSER_FLAGS="--prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak"
     - php: 7.2
-    - php: 7.3
-      env: SYMFONY_VERSION="3.4.*"
-    - php: 7.3
-      env: SYMFONY_VERSION="4.0.*"
-    - php: 7.3
-      env: SYMFONY_VERSION="4.1.*"
-    - php: 7.3
-      env: SYMFONY_VERSION="4.2.*"
     - php: 7.3
       env: SYMFONY_VERSION="4.3.*""
     - php: 7.3
@@ -50,10 +43,9 @@ before_install:
   - echo yes | redis-cli --cluster create $(seq -f 127.0.0.1:%g 7000 7008) --cluster-replicas 2
 
 install:
-  - composer update --no-interaction --no-progress ${COMPOSER_FLAGS}
-
-before_script:
-  - mkdir Snc && ln -s ../ Snc/RedisBundle
+  - composer global require --no-progress --no-scripts --no-plugins symfony/flex
+  - composer install --no-interaction --no-progress ${COMPOSER_FLAGS}
 
 script:
+  - composer validate --strict --no-check-lock
   - bin/phpunit
