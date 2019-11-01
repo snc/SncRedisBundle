@@ -59,7 +59,7 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $commandTester->execute(array('command' => $command->getName(), '-n' => true)));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 

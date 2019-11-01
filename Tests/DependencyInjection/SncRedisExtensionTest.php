@@ -121,6 +121,8 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * @group legacy
+     *
      * Test loading of full config
      */
     public function testFullConfigLoad()
@@ -238,6 +240,8 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * @group legacy
+     *
      * Test valid parsing of the client profile option
      */
     public function testClientProfileOption()

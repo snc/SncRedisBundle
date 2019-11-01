@@ -8,6 +8,7 @@ framework:
 
 twig:
     strict_variables: true
+    exception_controller: null
 
 web_profiler:
     toolbar: false
