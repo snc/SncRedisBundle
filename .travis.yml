@@ -7,7 +7,6 @@ matrix:
   fast_finish: true
   include:
     - php: 7.1
-    - php: 7.1
       env: COMPOSER_FLAGS="--prefer-lowest"
     - php: 7.2
     - php: 7.3
@@ -20,7 +19,8 @@ matrix:
       env: SYMFONY_VERSION="5.0.*" STABILITY="dev"
 
   allow_failures:
-    - env: SYMFONY_VERSION="5.0.*" STABILITY="dev"
+    - php: 7.4snapshot
+      env: SYMFONY_VERSION="5.0.*" STABILITY="dev"
 
 dist: xenial
 sudo: false
@@ -47,7 +47,7 @@ before_install:
 
 install:
   - composer global require --no-progress --no-scripts --no-plugins symfony/flex
-  - composer update --no-interaction --no-progress ${COMPOSER_FLAGS}
+  - composer update --prefer-dist --no-interaction --no-progress ${COMPOSER_FLAGS}
 
 script:
   - composer validate --strict --no-check-lock
