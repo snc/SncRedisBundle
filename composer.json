@@ -36,7 +36,6 @@
         "symfony/console": "^3.4 || ^4.2 || ^5.0",
         "symfony/phpunit-bridge": "^4.3.5",
         "symfony/dom-crawler": "^3.4 || ^4.2 || ^5.0",
-        "symfony/debug": "^3.4 || ^4.2 || ^5.0",
         "symfony/filesystem": "^3.4 || ^4.2 || ^5.0",
         "symfony/profiler-pack": "^1.0",
         "symfony/swiftmailer-bundle": "^2.0 || ^3.0",
