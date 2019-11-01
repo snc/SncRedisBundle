@@ -8,6 +8,8 @@ matrix:
   include:
     - php: 7.1
       env: COMPOSER_FLAGS="--prefer-lowest"
+      install:
+        - composer require --dev symfony/debug:3.4 # Prevents a class loading bug with Doctrine entities
     - php: 7.2
     - php: 7.3
       env: SYMFONY_VERSION="4.3.*""
