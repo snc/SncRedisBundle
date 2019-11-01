@@ -3,6 +3,7 @@
 ## Next release
 
 - Deprecate support for redis profiler storage
+- Drop support for Symfony 4.0 and 4.1
 
 ## [3.1.1](https://github.com/snc/SncRedisBundle/tree/3.1.1) (2019-10-09)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.1.0...3.1.1)
