@@ -1,10 +1,10 @@
 # RedisBundle #
-[![Latest Stable Version](https://poser.pugx.org/snc/redis-bundle/v/stable)](https://packagist.org/packages/snc/redis-bundle)
-[![Total Downloads](https://poser.pugx.org/snc/redis-bundle/downloads)](https://packagist.org/packages/snc/redis-bundle)
-[![Latest Unstable Version](https://poser.pugx.org/snc/redis-bundle/v/unstable)](https://packagist.org/packages/snc/redis-bundle)
-[![License](https://poser.pugx.org/snc/redis-bundle/license)](https://packagist.org/packages/snc/redis-bundle)
-[![Monthly Downloads](https://poser.pugx.org/snc/redis-bundle/d/monthly)](https://packagist.org/packages/snc/redis-bundle)
-[![Daily Downloads](https://poser.pugx.org/snc/redis-bundle/d/daily)](https://packagist.org/packages/snc/redis-bundle)
+[![Latest Stable Version](https://poser.pugx.org/snc/redis-bundle/v/stable?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
+[![Total Downloads](https://poser.pugx.org/snc/redis-bundle/downloads?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
+[![Latest Unstable Version](https://poser.pugx.org/snc/redis-bundle/v/unstable?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
+[![License](https://poser.pugx.org/snc/redis-bundle/license?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
+[![Monthly Downloads](https://poser.pugx.org/snc/redis-bundle/d/monthly?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
+[![Daily Downloads](https://poser.pugx.org/snc/redis-bundle/d/daily?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 
 ## About ##
 
@@ -12,9 +12,9 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 
 ## Branches ##
 
-Version `3.*` supports Symfony 3.4 and 4.x. ![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
+Version `3.*` supports Symfony 3.4 and 4.x. [![build Status](https://img.shields.io/travis/snc/SncRedisBundle/master.svg?style=flat-square)](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
 
-Version `2.*` supports Symfony 2.7+, 3.x and 4.x. ![build status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=2.1)
+**(Unmaintained)** Version `2.*` supports Symfony 2.7+, 3.x and 4.x. [![build Status](https://img.shields.io/travis/snc/SncRedisBundle/2.1.svg?style=flat-square)](https://travis-ci.org/snc/SncRedisBundle.svg?branch=2.1)
 
 This bundle is also available via [composer](https://github.com/composer/composer), find it on [packagist](https://packagist.org/packages/snc/redis-bundle).
 

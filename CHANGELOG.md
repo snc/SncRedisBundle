@@ -1,20 +1,32 @@
 # Change Log
 
-## Next release
+## [3.2.0](https://github.com/snc/SncRedisBundle/tree/3.2.0) (2019-11-14)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.1.1...3.2.0)
 
-- Deprecate support for redis profiler storage
-- Drop support for Symfony 4.0 and 4.1
+- Add PhpRedis \RedisCluster support (#454) - [@furester](https://github.com/furester) ([af2f8f](https://github.com/snc/SncRedisBundle/commit/af2f8f068c4f9db04ce1e418ee51e4d7376b7e04))
+- Add many DSN support for phpredis cluster (#542) - [@B-Galati](https://github.com/B-Galati) ([e48635](https://github.com/snc/SncRedisBundle/commit/e48635a01888b7d6150f2f72c766fdc4a658cf9b))
+- Ensure compatibility with Symfony 4.4 (fix #461) (#543) - [@B-Galati](https://github.com/B-Galati) ([7f4249](https://github.com/snc/SncRedisBundle/commit/7f4249e88c7503fe85c593f43a6edc6bfe4cc08c))
+- Deprecate support for redis profiler storage starting from Sf 4.4 (#543) - [@B-Galati](https://github.com/B-Galati) ([7f4249](https://github.com/snc/SncRedisBundle/commit/7f4249e88c7503fe85c593f43a6edc6bfe4cc08c))
+  
+  As per Symfony:
+  >This interface exists for historical reasons. The only supported
+  >implementation is FileProfilerStorage.
+  >As the profiler must only be used on non-production servers, the file storage
+  >is more than enough and no other implementations will ever be supported.
+- Symfony 5 / Doctrine Bundle 2 compat (#544) - [@B-Galati](https://github.com/B-Galati) ([6a7751](https://github.com/snc/SncRedisBundle/commit/6a7751be7ff6c6efd25bc8de633e3e993be12031))
+- Drop support for Sf 4.0/4.1 as they are unmaintained (#544) - [@B-Galati](https://github.com/B-Galati) ([6a7751](https://github.com/snc/SncRedisBundle/commit/6a7751be7ff6c6efd25bc8de633e3e993be12031))
 
 ## [3.1.1](https://github.com/snc/SncRedisBundle/tree/3.1.1) (2019-10-09)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.1.0...3.1.1)
 
-- Autoconfigure RedisBaseCommand to add snc_redis.command tag (#528) - Maxime Helias
-- Simplify injection of client locator using ServiceLocatorTagPass (#535) - Remon van de Kamp
-- Fix check for connection_persistent with phpredis factory (#538) - Gijs van Lammeren
-- Added simple condition to get rid of Warning: Invalid argument supplied for foreach() (#534) - Adrian Szuszkiewicz
-- No longer use curly brackets for substring (#532) - Remon van de Kamp
-- Fix a non-existent service "snc_redis.phpredis.monolog" (#531) - Bonn
-- Fix C&P error in Phpredis Client Proxy Class - (#526) Jan Ole Behrens
+- Autoconfigure RedisBaseCommand to add snc_redis.command tag (#528) - [@maxhelias](https://github.com/maxhelias) ([24ddb3](https://github.com/snc/SncRedisBundle/commit/24ddb36a2d9c992a612c63fd04c12d018bc03ac1))
+- Simplify injection of client locator using ServiceLocatorTagPass (#535) - [@rpkamp](https://github.com/rpkamp) ([97b1ec](https://github.com/snc/SncRedisBundle/commit/97b1ece1f7ed65f55f83b7c22dbcbae1424e6641))
+- Fix check for connection_persistent with phpredis factory (#538) - [@starred-gijs](https://github.com/starred-gijs) ([8e692b](https://github.com/snc/SncRedisBundle/commit/8e692be15f7bdf9e9ca0b2f3bb6a8e27f164e05b))
+- Added simple condition to get rid of Warning: Invalid argument supplied for foreach() (#534) - [@imper86](https://github.com/imper86) ([663ac6](https://github.com/snc/SncRedisBundle/commit/663ac63cf340ab426dcec087f575cb6c25f35bd0))
+- No longer use curly brackets for substring (#532) - [@rpkamp](https://github.com/rpkamp) ([c5b6b1](https://github.com/snc/SncRedisBundle/commit/c5b6b13723eb81130cdcef1d895bee7b2f0e4a22))
+- Fix a non-existent service "snc_redis.phpredis.monolog" (#531) - [@phakpoom](https://github.com/phakpoom) ([58fd82](https://github.com/snc/SncRedisBundle/commit/58fd82a250a21a2afb327177607e89eadafdc504))
+- Fix C&P error in Phpredis Client Proxy Class (#526) - [@deegital](https://github.com/deegital) ([fef7a3](https://github.com/snc/SncRedisBundle/commit/fef7a336235968a536a9f40f689a74ce164fc3e9))
+- Add tests for #538 and #534 - [@B-Galati](https://github.com/B-Galati) ([a713f0](https://github.com/snc/SncRedisBundle/commit/a713f08cfd3da4d3e724e6a7f85bb1c270a08487))
 
 ## [3.1.0](https://github.com/snc/SncRedisBundle/tree/3.1.0) (2019-08-01)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.0.0...3.1.0)
