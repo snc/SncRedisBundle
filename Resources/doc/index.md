@@ -1,4 +1,4 @@
-# RedisBundle ![project status](https://img.shields.io/maintenance/yes/2018.svg) [![Build Status](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)](https://travis-ci.org/snc/SncRedisBundle) #
+# RedisBundle
 
 ## About ##
 
