@@ -1,5 +1,10 @@
 # Change Log
 
+## [3.2.1](https://github.com/snc/SncRedisBundle/tree/3.2.1) (2019-11-18)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.0...3.2.1)
+
+- Fix SF5 compat with DataCollector (#547) - [@B-Galati](https://github.com/B-Galati) ([d1c4d4](https://github.com/snc/SncRedisBundle/commit/d1c4d452bd8a0d87e71a906b45bc66f9182728ef))
+
 ## [3.2.0](https://github.com/snc/SncRedisBundle/tree/3.2.0) (2019-11-14)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.1.1...3.2.0)
 
