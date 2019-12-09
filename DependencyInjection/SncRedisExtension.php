@@ -150,9 +150,7 @@ class SncRedisExtension extends Extension
      */
     protected function loadPredisClient(array $client, ContainerBuilder $container)
     {
-        if (null === $client['options']['cluster']) {
-            unset($client['options']['cluster']);
-        } else {
+        if (true === $client['options']['cluster']) {
             unset($client['options']['replication']);
         }
 
@@ -211,7 +209,7 @@ class SncRedisExtension extends Extension
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
         $clientDef->setPublic(false);
         $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
-        if (1 === $connectionCount && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
+        if (1 === $connectionCount && false === $client['options']['cluster'] && !isset($client['options']['replication'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = array();
@@ -259,7 +257,7 @@ class SncRedisExtension extends Extension
     protected function loadPhpredisClient(array $client, ContainerBuilder $container)
     {
         $connectionCount = count($client['dsns']);
-        $hasClusterOption = null !== $client['options']['cluster'];
+        $hasClusterOption = $client['options']['cluster'];
 
         if ($connectionCount > 1 && !$hasClusterOption) {
             throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
