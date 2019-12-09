@@ -190,7 +190,7 @@ class RedisDsn
         if (preg_match('#^([^:]+)(:(\d+|%[^%]+%))?$#', $dsn, $matches)) {
             if (!empty($matches[1])) {
                 // parse host/ip or socket
-                if ('/' === $matches[1]{0}) {
+                if ('/' === $matches[1][0]) {
                     $this->socket = $matches[1];
                 } else {
                     $this->host = $matches[1];
