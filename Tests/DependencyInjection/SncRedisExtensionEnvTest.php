@@ -55,7 +55,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'throw_errors' => true,
                 'serialization' => 'default',
                 'profile' => 'default',
-                'cluster' => null,
+                'cluster' => false,
                 'prefix' => null,
                 'service' => null,
             ),
@@ -90,7 +90,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
                 'profile' => 'default',
-                'cluster' => null,
+                'cluster' => false,
                 'service' => null,
             ),
             $clientDefinition->getArgument(2)
