@@ -11,7 +11,7 @@
 - Add PhpRedis \RedisCluster support (#454) - [@furester](https://github.com/furester) ([af2f8f](https://github.com/snc/SncRedisBundle/commit/af2f8f068c4f9db04ce1e418ee51e4d7376b7e04))
 - Add many DSN support for phpredis cluster (#542) - [@B-Galati](https://github.com/B-Galati) ([e48635](https://github.com/snc/SncRedisBundle/commit/e48635a01888b7d6150f2f72c766fdc4a658cf9b))
 - Ensure compatibility with Symfony 4.4 (fix #461) (#543) - [@B-Galati](https://github.com/B-Galati) ([7f4249](https://github.com/snc/SncRedisBundle/commit/7f4249e88c7503fe85c593f43a6edc6bfe4cc08c))
-- Deprecate support for redis profiler storage starting from Sf 4.4 (#543) - [@B-Galati](https://github.com/B-Galati) ([7f4249](https://github.com/snc/SncRedisBundle/commit/7f4249e88c7503fe85c593f43a6edc6bfe4cc08c))
+- [BC BREAK] Deprecate support for redis profiler storage starting from Sf 4.4 (#543) - [@B-Galati](https://github.com/B-Galati) ([7f4249](https://github.com/snc/SncRedisBundle/commit/7f4249e88c7503fe85c593f43a6edc6bfe4cc08c))
   
   As per Symfony:
   >This interface exists for historical reasons. The only supported
