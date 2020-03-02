@@ -160,6 +160,9 @@ class SncRedisExtension extends Extension
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
         unset($client['options']['throw_errors']);
+        
+        // It seems like a change in newer predis versions. Parameters have to be in the options layer
+        $client['options'] = array_merge($client['options'], $client['options']['parameters']);
 
         $connectionAliases = array();
         $connectionCount = count($client['dsns']);
