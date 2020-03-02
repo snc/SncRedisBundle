@@ -162,7 +162,9 @@ class SncRedisExtension extends Extension
         unset($client['options']['throw_errors']);
         
         // It seems like a change in newer predis versions. Parameters have to be in the options layer
-        $client['options'] = array_merge($client['options'], $client['options']['parameters']);
+        if(isset($client['options']['parameters'])) {
+            $client['options'] = array_merge($client['options'], $client['options']['parameters']);
+        }
 
         $connectionAliases = array();
         $connectionCount = count($client['dsns']);
