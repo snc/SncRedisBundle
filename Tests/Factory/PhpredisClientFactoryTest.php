@@ -36,16 +36,6 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertNull($client->getPersistentID());
     }
 
-    public function testTlsConfig()
-    {
-        $factory = new PhpredisClientFactory();
-
-        $client = $factory->create(\Redis::class, ['rediss://pw@localhost:6380'], array(), 'default');
-
-        $this->assertInstanceOf(\Redis::class, $client);
-        $this->assertSame('pw', $client->getAuth());
-    }
-
     public function testCreateMinimalClusterConfig()
     {
         $factory = new PhpredisClientFactory();
