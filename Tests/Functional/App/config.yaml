@@ -99,5 +99,4 @@ services:
 
     Snc\RedisBundle\Tests\Functional\App\Controller\:
         resource: './Controller'
-        public: true
         tags: ['controller.service_arguments']

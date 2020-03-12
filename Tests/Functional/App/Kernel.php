@@ -51,9 +51,9 @@ class Kernel extends BaseKernel
     {
         $controller = Controller::class;
 
-        $routes->add('/', "{$controller}:home");
-        $routes->add('/user/create', "{$controller}:createUser");
-        $routes->add('/user/view', "{$controller}:viewUser");
+        $routes->add('/', "{$controller}::home");
+        $routes->add('/user/create', "{$controller}::createUser");
+        $routes->add('/user/view', "{$controller}::viewUser");
     }
 
     public function getProjectDir()
