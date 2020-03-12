@@ -83,7 +83,7 @@ class PhpredisClientFactory
 
         $seeds = [];
         foreach ($dsns as $dsn) {
-            $seeds[] = $dsn->getHost() . ':' . $dsn->getPort();
+            $seeds[] = ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort();
         }
 
         $args[] = $seeds;
@@ -135,7 +135,7 @@ class PhpredisClientFactory
             $connectParameters[] = $dsn->getSocket();
             $connectParameters[] = null;
         } else {
-            $connectParameters[] = $dsn->getHost();
+            $connectParameters[] = ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost();
             $connectParameters[] = $dsn->getPort();
         }
 
