@@ -10,6 +10,8 @@
 
 This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](https://github.com/nicolasff/phpredis) into your Symfony application.
 
+As Predis has not been maintained since 2016 it is highly recommended to use the faster and native phpredis extension instead.
+
 ## Branches ##
 
 Version `3.*` supports Symfony 3.4, 4.x and 5.x [![build Status](https://img.shields.io/travis/snc/SncRedisBundle/master.svg?style=flat-square)](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
