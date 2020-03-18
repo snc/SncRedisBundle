@@ -107,6 +107,17 @@ class PredisParametersFactoryTest extends TestCase
                     'timeout' => null,
                 )
             ),
+            [
+                'redis://localhost/0',
+                'Predis\Connection\Parameters',
+                [
+                    'persistent' => true
+                ],
+                [
+                    'persistent' => true,
+                    'database' => 0
+                ]
+            ]
         );
     }
 
