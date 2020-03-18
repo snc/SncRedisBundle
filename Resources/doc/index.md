@@ -314,6 +314,23 @@ swiftmailer:
         type: redis
 ```
 
+### Symfony Cache Pools ###
+
+If you want to use one of the client connections for the Symfony App Cache or a Symfony Cache Pool, just use its service name as a cache pool provider:
+
+```yaml
+framework:
+    cache:
+        app: cache.adapter.redis
+        # app cache from client config as default adapter/provider
+        default_redis_provider: snc_redis.default
+    pools:
+        some-pool.cache:
+            adapter: cache.adapter.redis
+            # a specific provider, e.g. if you have a snc_redis.clients.cache
+            provider: snc_redis.cache
+```
+
 ### Profiler storage ###
 
 :warning: this feature is not supported anymore since Symfony 4.4 and will be automatically disabled if you are using Symfony 4.4.
