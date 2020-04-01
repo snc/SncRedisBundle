@@ -40,10 +40,18 @@
 
 - The session keys changed from `$prefix:$key` to simply `$prefix$key`, no more
   `:` added in the middle, so add it to your prefix if you want one.
+  
+- If you are using Redis sessions make sure to activate the `snc_redis.session.handler` service at `framework.session.handler_id`:
+``` yaml
+framework:
+    ...
+    session:
+        handler_id: snc_redis.session.handler
+```
 
 - The argument truncation limit in the logs was increased from 32 bytes to
   10KB.
-
+  
 ## 1.0.11 and 1.1.6 ##
 
 The monolog handler was renamed from `monolog.handler.redis` to
