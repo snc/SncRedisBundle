@@ -893,9 +893,9 @@ class ClientCluster extends RedisCluster
     /**
      * {@inheritdoc}
      */
-    public function flushAll(...$args)
+    public function flushAll($key_or_address, $async = NULL)
     {
-        return $this->call('flushAll', $args);
+        return $this->call('flushAll', func_get_args());
     }
 
     /**
