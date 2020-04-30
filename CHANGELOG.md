@@ -1,5 +1,21 @@
 # Change Log
 
+## [3.2.2](https://github.com/snc/SncRedisBundle/tree/3.2.2) (2020-04-30)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.1...3.2.2)
+
+- Add 5.0.x to list of supported versions (#551) - [@codysnider](https://github.com/codysnider) ([66c127](https://github.com/snc/SncRedisBundle/commit/66c127bd78c55e825d839972609104a35477c131))
+- Fix deprecation notice about naming strategy - [@B-Galati](https://github.com/B-Galati) ([368e6c](https://github.com/snc/SncRedisBundle/commit/368e6cbf5628e6e6c852395fbf1462eb28b9de04))
+- Add Symfony 5.1 to CI allowed failures - [@B-Galati](https://github.com/B-Galati) ([d956c9](https://github.com/snc/SncRedisBundle/commit/d956c93b347db61e44f5cac85193fd5926f34c72))
+- Fix integration tests with Symfony 5.X - [@B-Galati](https://github.com/B-Galati) ([bf8a42](https://github.com/snc/SncRedisBundle/commit/bf8a42ee3adbf201b00fb29950a5549183b26dee))
+- Add note about Predis to README - [@curry684](https://github.com/curry684) ([9b1072](https://github.com/snc/SncRedisBundle/commit/9b1072bcfedb46779c7982e92ce8595673b5e4ac))
+- Support encrypted connection via phpredis - [@benburleson](https://github.com/benburleson) ([80a568](https://github.com/snc/SncRedisBundle/commit/80a5688cf62e28f41b6b4b878d92b63dd9a02f70))
+- Travis redis service doesn't easily support tls on the server - [@benburleson](https://github.com/benburleson) ([c65848](https://github.com/snc/SncRedisBundle/commit/c6584854cf1b439801f9b175e7f89c2f43ce0073))
+- Added example for use with Symfony Cache Pools. - [@Basster](https://github.com/Basster) ([bba456](https://github.com/snc/SncRedisBundle/commit/bba4561d5122a377573267a7bf5edcd2f48d5079))
+- Handle default database for persistent connection - [@asilelik](https://github.com/asilelik) ([a5ff0e](https://github.com/snc/SncRedisBundle/commit/a5ff0e61408486b13b39ded2a0556d8e6435f84d))
+- Update 2.0.0 upgrade notes - [@gigo6000](https://github.com/gigo6000) ([da9ad3](https://github.com/snc/SncRedisBundle/commit/da9ad344b279b8a3b62be2754a2fd0fdc856b7f0))
+  Mention that is required to use a `handler_id` if you are using Redis sessions.
+- fix: ClientCluster::flushall compatibility with redis extension - [@firnas](https://github.com/firnas) ([988b90](https://github.com/snc/SncRedisBundle/commit/988b90c8d3b026a7e45aa07064a9fb69676be781))
+
 ## [3.2.1](https://github.com/snc/SncRedisBundle/tree/3.2.1) (2019-11-18)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.0...3.2.1)
 
