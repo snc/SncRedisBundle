@@ -27,7 +27,7 @@ use Snc\RedisBundle\Logger\RedisLogger;
  * @author Yassine Khial <yassine.khial@blablacar.com>
  * @author Pierre Boudelle <pierre.boudelle@gmail.com>
  */
-class Client extends Redis
+class Client
 {
     /**
      * @var RedisLogger
@@ -39,6 +39,8 @@ class Client extends Redis
      */
     protected $alias;
 
+    protected $redisClient;
+
     /**
      * Constructor.
      *
@@ -49,6 +51,7 @@ class Client extends Redis
     {
         $this->logger = $logger;
         $this->alias = $parameters['alias'] ?? '';
+        $this->redisClient = new Redis();
     }
 
     /**
@@ -64,7 +67,8 @@ class Client extends Redis
     private function call($name, array $arguments = array())
     {
         $startTime = microtime(true);
-        $result = call_user_func_array("parent::$name", $arguments);
+        //$result = call_user_func_array("parent::$name", $arguments);
+        $result = call_user_func_array([$this->redisClient, $name], $arguments);
         $duration = (microtime(true) - $startTime) * 1000;
 
         if (null !== $this->logger) {
@@ -87,7 +91,8 @@ class Client extends Redis
     private function __call($name, array $arguments = array())
     {
         $startTime = microtime(true);
-        $result = call_user_func_array("parent::$name", $arguments);
+        //$result = call_user_func_array("parent::$name", $arguments);
+        $result = call_user_func_array([$this->redisClient, $name], $arguments);
         $duration = (microtime(true) - $startTime) * 1000;
 
         if (null !== $this->logger) {
