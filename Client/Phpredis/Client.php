@@ -21,6 +21,8 @@ use Snc\RedisBundle\Logger\RedisLogger;
  *
  * PHP Redis client with logger.
  *
+ * @method zAdd($key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null)
+ *
  * @author Henrik Westphal <henrik.westphal@gmail.com>
  * @author Yassine Khial <yassine.khial@blablacar.com>
  * @author Pierre Boudelle <pierre.boudelle@gmail.com>
@@ -71,6 +73,30 @@ class Client extends Redis
 
         return $result;
     }
+
+    /**
+     * Better proxy function.
+     *
+     * @param string $name      A command name
+     * @param array  $arguments Lit of command arguments
+     *
+     * @throws \RuntimeException If no Redis instance is defined
+     *
+     * @return mixed
+     */
+    private function __call($name, array $arguments = array())
+    {
+        $startTime = microtime(true);
+        $result = call_user_func_array("parent::$name", $arguments);
+        $duration = (microtime(true) - $startTime) * 1000;
+
+        if (null !== $this->logger) {
+            $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
+        }
+
+        return $result;
+    }
+
 
     /**
      * Returns a string representation of the given command including arguments.
@@ -1071,13 +1097,6 @@ class Client extends Redis
         return $this->call('brpoplpush', func_get_args());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function zAdd($key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null)
-    {
-        return $this->call('zAdd', func_get_args());
-    }
 
     /**
      * {@inheritdoc}
