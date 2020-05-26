@@ -13,13 +13,19 @@ namespace Snc\RedisBundle\Client\Phpredis;
 final class Phpredis
 {
     /**
-     * Older version of phpredis extension do not support lazy loading
+     * @var string
+     * Older version of phpredis extension do not support lazy loading.
      */
     private const MINIMUM_LAZY_VERSION = '4.1.1';
 
-    /** @var string|null redis extension version */
+    /**
+     * @var string|null redis extension version.
+     */
     private $version;
 
+    /**
+     * @var bool|null whether the installed phpredis version supports lazy services or not.
+     */
     private $supportsLazy;
 
     public function supportsLazyServices(): bool
