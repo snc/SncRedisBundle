@@ -205,6 +205,40 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * @dataProvider provideSncDoctrineCacheDefinitionIds
+     */
+    public function testDoctrineCacheIsLazy(string $sncDoctrineCacheDefinitionId): void
+    {
+        if (!extension_loaded('redis')) {
+            $this->markTestSkipped('This test needs the PHP Redis extension to work');
+        }
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getPhpRedisYamlConfigWithDoctrine());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $supportsLazy        = version_compare(phpversion('redis'), '4.1.1',
+          '>=');
+        $sncDoctrineCacheDef = $container->getDefinition($sncDoctrineCacheDefinitionId);
+
+        $this->assertSame($supportsLazy, $sncDoctrineCacheDef->isLazy());
+    }
+
+    public function provideSncDoctrineCacheDefinitionIds(): iterable
+    {
+        yield 'metadata' => ['doctrine.orm.default_metadata_cache'];
+        yield 'result' => ['doctrine.orm.default_result_cache'];
+        yield 'query' => ['doctrine.orm.default_query_cache'];
+        yield 'second_level' => ['doctrine.orm.default_second_level_cache.region_cache_driver'];
+        yield 'read_result' => ['doctrine.orm.read_result_cache'];
+        yield 'metadata_mongodb' => ['doctrine_mongodb.odm.default_metadata_cache'];
+        yield 'result_mongodb' => ['doctrine_mongodb.odm.default_result_cache'];
+        yield 'query_mongodb' => ['doctrine_mongodb.odm.default_query_cache'];
+        yield 'second_level_mongodb' => ['doctrine_mongodb.odm.slave1_result_cache'];
+        yield 'read_result_mongodb' => ['doctrine_mongodb.odm.slave2_result_cache'];
+    }
+
+    /**
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      * @expectedExceptionMessage You have to disable logging for the client
      */
@@ -792,6 +826,34 @@ clients:
             cluster: true
 EOF;
     }
+
+  private function getPhpRedisYamlConfigWithDoctrine()
+  {
+    return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        dsn: redis://localhost
+doctrine:
+    metadata_cache:
+        client: default
+        entity_manager: default
+        document_manager: default
+    result_cache:
+        client: default
+        entity_manager: [default, read]
+        document_manager: [default, slave1, slave2]
+        namespace: "dcrc:"
+    query_cache:
+        client: default
+        entity_manager: default
+        document_manager: default
+    second_level_cache:
+        client: default
+        entity_manager: default
+        document_manager: default
+EOF;
+  }
     
     private function getContainer()
     {

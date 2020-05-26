@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\DependencyInjection;
 
+use Snc\RedisBundle\Client\Phpredis\Phpredis;
 use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
@@ -29,7 +30,10 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class SncRedisExtension extends Extension
 {
-    /**
+  /** @var Phpredis */
+  private $phpredis;
+
+  /**
      * Loads the configuration.
      *
      * @param array            $configs   An array of configurations
@@ -44,6 +48,10 @@ class SncRedisExtension extends Extension
 
         $mainConfig = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($mainConfig, $configs);
+
+        // Utility must be loaded even if Predis is used, but is without function then.
+        // Used in loadClient and loadDoctrine.
+        $this->phpredis = new Phpredis();
 
         foreach ($config['class'] as $name => $class) {
             $container->setParameter(sprintf('snc_redis.%s.class', $name), $class);
@@ -265,8 +273,7 @@ class SncRedisExtension extends Extension
             throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
         }
 
-        $phpRedisVersion = phpversion('redis');
-        if (version_compare($phpRedisVersion, '4.0.0', '>=') && $client['logging']) {
+        if ($this->phpredis->versionIsGreaterOrEqual('4.0.0.') && $client['logging']) {
             $client['logging'] = false;
             @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
         }
@@ -294,17 +301,7 @@ class SncRedisExtension extends Extension
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         $phpredisDef->setPublic(false);
-
-        // Older version of phpredis extension do not support lazy loading
-        $minimumVersionForLazyLoading = '4.1.1';
-        $supportsLazyServices = version_compare($phpRedisVersion, $minimumVersionForLazyLoading, '>=');
-        $phpredisDef->setLazy($supportsLazyServices);
-        if (!$supportsLazyServices) {
-            @trigger_error(
-                sprintf('Lazy loading Redis is not supported on PhpRedis %s. Please update to PhpRedis %s or higher.', $phpRedisVersion, $minimumVersionForLazyLoading),
-                E_USER_WARNING
-            );
-        }
+        $phpredisDef->setLazy($this->phpredis->supportsLazyServices());
 
         $phpredisId = sprintf('snc_redis.%s', $client['alias']);
         $container->setDefinition($phpredisId, $phpredisDef);
@@ -374,6 +371,7 @@ class SncRedisExtension extends Extension
                         if ($cache['namespace']) {
                             $def->addMethodCall('setNamespace', array($cache['namespace']));
                         }
+                        $def->setLazy($this->phpredis->supportsLazyServices());
 
                         return $def;
                     };
