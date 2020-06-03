@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Symfony\Component\Config\Definition\BaseNode;
 use function method_exists;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -267,7 +268,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('profiler_storage')
-                    ->setDeprecated('Redis profiler storage is not available anymore since Symfony 4.4')
+                    ->setDeprecated(...$this->getProfilerStorageDeprecationMessage())
                     ->canBeUnset()
                     ->children()
                         ->scalarNode('client')->isRequired()->end()
@@ -275,5 +276,24 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+    }
+
+    /**
+     * Keep compatibility with symfony/config < 5.1
+     * 
+     * The signature of method NodeDefinition::setDeprecated() has been updated to 
+     * NodeDefinition::setDeprecation(string $package, string $version, string $message).
+     * 
+     * @return array
+     */
+    private function getProfilerStorageDeprecationMessage(): array
+    {
+        $message = 'Redis profiler storage is not available anymore since Symfony 4.4';
+
+        if (method_exists(BaseNode::class, 'getDeprecation')) {
+            return ['snc/redis-bundle', '3.2.0', $message];
+        }
+        
+        return [$message];
     }
 }

@@ -29,7 +29,7 @@ class Controller extends AbstractController
     {
         $redis->set('foo', 'bar');
 
-        return JsonResponse::create([
+        return new JsonResponse([
             'result' => $redis->get('foo'),
         ]);
     }
@@ -45,7 +45,7 @@ class Controller extends AbstractController
         $em->persist($user);
         $em->flush();
 
-        return JsonResponse::create(['result' => 'ok']);
+        return new JsonResponse(['result' => 'ok']);
     }
 
     public function viewUser()
@@ -55,7 +55,7 @@ class Controller extends AbstractController
         /** @var User $user */
         $user = $repository->findOneBy(['username' => 'foo']);
 
-        return JsonResponse::create([
+        return new JsonResponse([
             'id' => $user->getId(),
             'username' => $user->getUsername(),
             'email' => $user->getEmail(),

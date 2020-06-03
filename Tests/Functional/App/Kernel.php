@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
 /**
@@ -25,7 +26,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class Kernel extends BaseKernel
+abstract class AbstractKernel extends BaseKernel
 {
     use MicroKernelTrait;
 
@@ -45,15 +46,16 @@ class Kernel extends BaseKernel
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
     {
         $loader->load(__DIR__ . '/config.yaml');
-    }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes)
-    {
-        $controller = Controller::class;
-
-        $routes->add('/', "{$controller}::home");
-        $routes->add('/user/create', "{$controller}::createUser");
-        $routes->add('/user/view', "{$controller}::viewUser");
+        // Since symfony/framework-bundle 5.1: Not setting the "framework.router.utf8" configuration option
+        // is deprecated, it will default to "true" in version 6.0.
+        if (self::VERSION_ID >= 50100) {
+            $container->loadFromExtension('framework', [
+                'router' => [
+                    'utf8' => false,
+                ]
+            ]);
+        }
     }
 
     public function getProjectDir()
@@ -66,3 +68,29 @@ class Kernel extends BaseKernel
         return __DIR__ . '/var';
     }
 }
+
+// RouteCollectionBuilder is deprecated since symfony/routing 5.1
+if (AbstractKernel::VERSION_ID >= 50100) {
+    class Kernel extends AbstractKernel {
+        protected function configureRoutes(RoutingConfigurator $routes): void
+        {
+            $controller = Controller::class;
+
+            $routes->add('home', '/')->controller("{$controller}::home");
+            $routes->add('create_user', '/user/create')->controller("{$controller}::createUser");
+            $routes->add('view_user', '/user/view')->controller("{$controller}::viewUser");
+        }
+    }
+} else {
+    class Kernel extends AbstractKernel {
+        protected function configureRoutes(RouteCollectionBuilder $routes)
+        {
+            $controller = Controller::class;
+
+            $routes->add('/', "{$controller}::home");
+            $routes->add('/user/create', "{$controller}::createUser");
+            $routes->add('/user/view', "{$controller}::viewUser");
+        }
+    }
+}
+
