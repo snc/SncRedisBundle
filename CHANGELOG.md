@@ -1,5 +1,14 @@
 # Change Log
 
+## [3.2.3](https://github.com/snc/SncRedisBundle/tree/3.2.3) (2020-06-05)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.2...3.2.3)
+
+- Deprecation since Symfony 5.1 (#580) - [@StudioMaX](https://github.com/StudioMaX) ([e0de16](https://github.com/snc/SncRedisBundle/commit/e0de164aff7fced22d928e124f490408bceded9f))
+  - NodeDefinition::setDeprecated() requires 3 arguments
+  - Add Symfony 5.2 to CI allowed failures
+  - Fix deprecations in tests
+  - Test Symfony 5.1 on PHP 7.2
+
 ## [3.2.2](https://github.com/snc/SncRedisBundle/tree/3.2.2) (2020-04-30)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.1...3.2.2)
 
