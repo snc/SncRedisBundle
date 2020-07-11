@@ -144,7 +144,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'profile' => 'default',
                 'prefix' => null,
                 'service' => null,
-                'slave_failover' => null,
             ),
             $clientDefinition->getArgument(2)
         );
@@ -175,7 +174,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'profile' => 'default',
                 'prefix' => null,
                 'service' => null,
-                'slave_failover' => null,
             ],
             $clientDefinition->getArgument(2)
         );

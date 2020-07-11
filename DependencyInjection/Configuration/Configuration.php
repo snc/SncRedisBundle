@@ -138,7 +138,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('prefix')->defaultNull()->end()
                                     ->enumNode('replication')->values(array(true, false, 'sentinel'))->end()
                                     ->scalarNode('service')->defaultNull()->end()
-                                    ->scalarNode('slave_failover')->defaultNull()->end()
+                                    ->enumNode('slave_failover')->values(array('none', 'error', 'distribute', 'distribute_slaves'))->end()
                                     ->arrayNode('parameters')
                                         ->canBeUnset()
                                         ->children()
