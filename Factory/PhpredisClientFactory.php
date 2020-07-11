@@ -108,6 +108,10 @@ class PhpredisClientFactory
             $client->setOption(\RedisCluster::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
         }
 
+        if (isset($options['slave_failover'])) {
+            $client->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, $this->loadSlaveFailoverType($options['slave_failover']));
+        }
+
         return $client;
     }
 
@@ -205,5 +209,29 @@ class PhpredisClientFactory
         }
 
         throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $type, implode(', ', array_keys($types))));
+    }
+
+    /**
+     * Load the correct slave failover for RedisCluster
+     *
+     * @param string $type
+     *
+     * @return string
+     * @throws InvalidConfigurationException
+     */
+    private function loadSlaveFailoverType($type)
+    {
+        $types = [
+            'none' => \RedisCluster::FAILOVER_NONE,
+            'error' => \RedisCluster::FAILOVER_ERROR,
+            'distribute' => \RedisCluster::FAILOVER_DISTRIBUTE,
+            'distribute_slaves' => \RedisCluster::FAILOVER_DISTRIBUTE_SLAVES
+        ];
+
+        if (array_key_exists($type, $types)) {
+            return $types[$type];
+        }
+
+        throw new InvalidConfigurationException(sprintf('%s in not a valid slave failover. Valid failovers: %s', $type, implode(', ', array_keys($types))));
     }
 }

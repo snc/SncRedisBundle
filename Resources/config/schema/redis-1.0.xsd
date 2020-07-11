@@ -61,6 +61,7 @@
         <xsd:attribute name="cluster" type="xsd:string" />
         <xsd:attribute name="prefix" type="xsd:string" />
         <xsd:attribute name="replication" type="xsd:boolean" />
+        <xsd:attribute name="slave-failover" type="phpredis-slave-failover-type" />
     </xsd:complexType>
 
     <xsd:simpleType name="phpredis-serialization-type">
@@ -69,6 +70,15 @@
             <xsd:enumeration value="none" />
             <xsd:enumeration value="php" />
             <xsd:enumeration value="igbinary" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="phpredis-slave-failover-type">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="none" />
+            <xsd:enumeration value="error" />
+            <xsd:enumeration value="distribute" />
+            <xsd:enumeration value="distribute_slaves" />
         </xsd:restriction>
     </xsd:simpleType>
 
