@@ -324,11 +324,11 @@ framework:
         app: cache.adapter.redis
         # app cache from client config as default adapter/provider
         default_redis_provider: snc_redis.default
-    pools:
-        some-pool.cache:
-            adapter: cache.adapter.redis
-            # a specific provider, e.g. if you have a snc_redis.clients.cache
-            provider: snc_redis.cache
+        pools:
+            some-pool.cache:
+                adapter: cache.adapter.redis
+                # a specific provider, e.g. if you have a snc_redis.clients.cache
+                provider: snc_redis.cache
 ```
 
 ### Profiler storage ###
