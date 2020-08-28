@@ -5,21 +5,22 @@
 [![License](https://poser.pugx.org/snc/redis-bundle/license?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 [![Monthly Downloads](https://poser.pugx.org/snc/redis-bundle/d/monthly?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 [![Daily Downloads](https://poser.pugx.org/snc/redis-bundle/d/daily?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
+[![Build Status](https://img.shields.io/travis/snc/SncRedisBundle/master.svg?style=flat-square)](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
 
 ## About ##
 
-This bundle integrates [Predis](https://github.com/nrk/predis) and [PhpRedis](https://github.com/nicolasff/phpredis) into your Symfony application.
+This bundle integrates [Predis](https://github.com/nrk/predis) and [PhpRedis](https://github.com/nicolasff/phpredis) into your Symfony 3.4+ application,
+providing a fast and convenient interface to [Redis](https://redis.io/).
 
 Using the native PhpRedis extension is recommended as it is faster and our main development platform. If the extension is not available and cannot
 be installed in your environment Predis is considered a safe and portable alternative, and our integration should be functionally identical.
 
-## Branches ##
+## Installation ##
 
-Version `3.*` supports Symfony 3.4, 4.x and 5.x [![build Status](https://img.shields.io/travis/snc/SncRedisBundle/master.svg?style=flat-square)](https://travis-ci.org/snc/SncRedisBundle.svg?branch=master)
-
-**(Unmaintained)** Version `2.*` supports Symfony 2.7+, 3.x and 4.x. [![build Status](https://img.shields.io/travis/snc/SncRedisBundle/2.1.svg?style=flat-square)](https://travis-ci.org/snc/SncRedisBundle.svg?branch=2.1)
-
-This bundle is also available via [composer](https://github.com/composer/composer), find it on [packagist](https://packagist.org/packages/snc/redis-bundle).
+Use [Composer](https://github.com/composer/composer):
+```sh
+composer require snc/redis-bundle
+```
 
 ## Documentation ##
 
