@@ -2,6 +2,7 @@
 
 namespace Snc\RedisBundle\Factory;
 
+use InvalidArgumentException;
 use Predis\Connection\ParametersInterface;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
@@ -17,18 +18,35 @@ class PredisParametersFactory
     public static function create($options, $class, $dsn)
     {
         if (!is_a($class, '\Predis\Connection\ParametersInterface', true)) {
-            throw new \InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', __CLASS__, __METHOD__, '\Predis\Connection\ParametersInterface'));
+            throw new InvalidArgumentException(
+                sprintf(
+                    '%s::%s requires $class argument to implement %s',
+                    __CLASS__,
+                    __METHOD__,
+                    '\Predis\Connection\ParametersInterface'
+                )
+            );
         }
 
-        $defaultOptions = array('timeout' => null); // Allow to be consistent with old version of Predis where default timeout was 5
-        $dsnOptions = static::parseDsn(new RedisDsn($dsn));
-        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
+        $finalOptions = array_merge(
+            // Allow to be consistent with old version of Predis where default timeout was 5
+            array('timeout' => null),
+            $options,
+            static::parseDsn(new RedisDsn($dsn))
+        );
 
-        if (isset($dsnOptions['persistent'], $dsnOptions['database']) && true === $dsnOptions['persistent']) {
-            $dsnOptions['persistent'] = (int)$dsnOptions['database'];
+        if (isset($finalOptions['persistent'], $finalOptions['database']) && true === $finalOptions['persistent']) {
+            $finalOptions['persistent'] = (int)$finalOptions['database'];
         }
 
-        return new $class($dsnOptions);
+        if (
+            !isset($finalOptions['replication'])
+            && isset($finalOptions['parameters']['password'])
+        ) {
+            $finalOptions['password'] = $finalOptions['parameters']['password'];
+        }
+
+        return new $class($finalOptions);
     }
 
     /**
