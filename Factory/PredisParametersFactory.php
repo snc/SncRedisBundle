@@ -40,7 +40,8 @@ class PredisParametersFactory
         }
 
         if (
-            !isset($finalOptions['replication'])
+            !isset($finalOptions['password'])
+            && !isset($finalOptions['replication'])
             && isset($finalOptions['parameters']['password'])
         ) {
             $finalOptions['password'] = $finalOptions['parameters']['password'];
