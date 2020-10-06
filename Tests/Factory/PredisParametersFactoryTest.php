@@ -207,9 +207,11 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertObjectNotHasAttribute('user', $parameters);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testCreateException()
     {
-        $this->expectException(new InvalidArgumentException());
         PredisParametersFactory::create(array(), '\stdClass', 'redis://localhost');
     }
 }
