@@ -164,7 +164,7 @@ class PredisParametersFactoryTest extends TestCase
                 )
             ),
 
-            // If replication is disabled the password should be in parameters->parameters->password
+            // If replication is enabled the password should be in parameters->parameters->password
             array(
                 'redis://localhost',
                 'Predis\Connection\Parameters',
