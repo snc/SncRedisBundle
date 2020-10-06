@@ -2,6 +2,7 @@
 
 namespace Snc\RedisBundle\Tests\Factory;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 
@@ -106,6 +107,81 @@ class PredisParametersFactoryTest extends TestCase
                     'timeout' => null,
                 )
             ),
+
+            // If replication is disabled, I should be able to specify the password via parameters as well as DSN.
+            array(
+                'redis://localhost',
+                'Predis\Connection\Parameters',
+                array(
+                    'replication' => false,
+                    'parameters' => array(
+                        'password' => 'passwordInParameters'
+                    ),
+                ),
+                array(
+                    'replication' => false,
+                    'password' => 'passwordInParameters',
+                )
+            ),
+            array(
+                'redis://localhost',
+                'Predis\Connection\Parameters',
+                array(
+                    'parameters' => array(
+                        'password' => 'passwordInParameters'
+                    ),
+                ),
+                array(
+                    'password' => 'passwordInParameters',
+                )
+            ),
+
+            // DSN password should take priority
+            array(
+                'redis://passwordInDSN@localhost',
+                'Predis\Connection\Parameters',
+                array(
+                    'replication' => false,
+                    'parameters' => array(
+                        'password' => 'passwordInParameters'
+                    ),
+                ),
+                array(
+                    'replication' => false,
+                    'password' => 'passwordInDSN',
+                )
+            ),
+            array(
+                'redis://passwordInDSN@localhost',
+                'Predis\Connection\Parameters',
+                array(
+                    'parameters' => array(
+                        'password' => 'passwordInParameters'
+                    ),
+                ),
+                array(
+                    'password' => 'passwordInDSN',
+                )
+            ),
+
+            // If replication is disabled the password should be in parameters->parameters->password
+            array(
+                'redis://localhost',
+                'Predis\Connection\Parameters',
+                array(
+                    'replication' => true,
+                    'parameters' => array(
+                        'password' => 'passwordInParameters'
+                    ),
+                ),
+                array(
+                    'replication' => true,
+                    'password' => null,
+                    'parameters' => array(
+                        'password' => 'passwordInParameters'
+                    ),
+                )
+            ),
         );
     }
 
@@ -131,11 +207,9 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertObjectNotHasAttribute('user', $parameters);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateException()
     {
+        $this->expectException(new InvalidArgumentException());
         PredisParametersFactory::create(array(), '\stdClass', 'redis://localhost');
     }
 }
