@@ -1074,7 +1074,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function zAdd($key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null)
+    public function zAdd($key, $score, $value, ...$extra_args)
     {
         return $this->call('zAdd', func_get_args());
     }
