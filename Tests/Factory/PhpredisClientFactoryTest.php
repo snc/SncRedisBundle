@@ -110,4 +110,26 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame('pass', $client->getAuth());
         $this->assertNull($client->getPersistentID());
     }
+
+    public function testNestedDsnConfig()
+    {
+        $factory = new PhpredisClientFactory();
+
+        $client = $factory->create(
+            \Redis::class,
+            [['redis://redis:pass@localhost:6379/2']],
+            array(
+                'parameters' => [
+                    'database' => 3,
+                    'password' => 'secret',
+                ],
+            ),
+            'alias_test'
+        );
+
+        $this->assertInstanceOf(\Redis::class, $client);
+        $this->assertSame(2, $client->getDBNum());
+        $this->assertSame('pass', $client->getAuth());
+        $this->assertNull($client->getPersistentID());
+    }
 }

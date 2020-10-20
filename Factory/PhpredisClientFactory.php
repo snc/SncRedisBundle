@@ -44,6 +44,9 @@ class PhpredisClientFactory
             throw new \LogicException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
         }
 
+        // Normalize the DSNs, because using processed environment variables could lead to nested values.
+        $dsns = count($dsns) === 1 && is_array($dsns[0]) ? $dsns[0] : $dsns;
+
         $parsedDsns = array_map(static function (string $dsn) {
             return new RedisDsn($dsn);
         }, $dsns);
