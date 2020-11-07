@@ -1,5 +1,15 @@
 # Change Log
 
+## [3.2.4](https://github.com/snc/SncRedisBundle/tree/3.2.4) (2020-11-07)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.3...3.2.4)
+
+- Fix Symfony cache pool example (#588) - [@derrabus](https://github.com/derrabus) ([d16381](https://github.com/snc/SncRedisBundle/commit/d16381c4b8c4cb4a8493f35048a6583a16814524))
+- Adapt README to Predis revival (#589) - [@curry684](https://github.com/curry684) ([78b6d6](https://github.com/snc/SncRedisBundle/commit/78b6d68701f97e1eb4d33a928936a3e4d95e791f))
+- Clean up Readme - [@curry684](https://github.com/curry684) ([491166](https://github.com/snc/SncRedisBundle/commit/491166f10d5ef2568cbb7d12a201540faf8f4656))
+- 🐛 Fix declaration of zAdd() for phpredis 5.2.1 (#587) - [@nesk](https://github.com/nesk) ([58162e](https://github.com/snc/SncRedisBundle/commit/58162ee0dd893ea3abb3720c6ca24f386239ee56))
+- 🐛 Fix declaration of zAdd() for phpredis 5.2.1 of ClientCluster - [@B-Galati](https://github.com/B-Galati) ([6c3195](https://github.com/snc/SncRedisBundle/commit/6c31954031784d3a9a57e5887fd0df5dcc5ece9a))
+- 🔧 Fix CI by forcing redis ext version to a prior version - [@B-Galati](https://github.com/B-Galati) ([580a82](https://github.com/snc/SncRedisBundle/commit/580a82bde708f24d5884d285b96a15e0ff975e8c))
+
 ## [3.2.3](https://github.com/snc/SncRedisBundle/tree/3.2.3) (2020-06-05)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.2...3.2.3)
 
