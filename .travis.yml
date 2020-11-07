@@ -27,7 +27,7 @@ matrix:
     - php: 7.4
       env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
 
-dist: xenial
+dist: bionic
 sudo: false
 
 cache:

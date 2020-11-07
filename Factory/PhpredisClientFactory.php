@@ -160,7 +160,7 @@ class PhpredisClientFactory
             $client->auth($password);
         }
 
-            $db = $dsn->getDatabase() ?? $options['parameters']['database'] ?? null;
+        $db = $dsn->getDatabase() ?? $options['parameters']['database'] ?? null;
         if (null !== $db && $db !== '') {
             $client->select($db);
         }
