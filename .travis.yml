@@ -12,15 +12,25 @@ matrix:
       env: SYMFONY_VERSION="4.4.*"
     - php: 7.4
       env: SYMFONY_VERSION="4.4.*"
+    - php: 8.0
+      env: SYMFONY_VERSION="4.4.*"
     - php: 7.4
+      env: SYMFONY_VERSION="5.0.*"
+    - php: 8.0
       env: SYMFONY_VERSION="5.0.*"
     - php: 7.4
       env: SYMFONY_VERSION="5.1.*"
+    - php: 8.0
+      env: SYMFONY_VERSION="5.1.*"
     - php: 7.4
+      env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
+    - php: 8.0
       env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
 
   allow_failures:
     - php: 7.4
+      env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
+    - php: 8.0
       env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
 
 dist: bionic
