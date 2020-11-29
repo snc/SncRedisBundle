@@ -28,7 +28,7 @@ class RateLimitTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $config = 'tcp://127.0.0.1:6379';
 
@@ -56,7 +56,7 @@ class RateLimitTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->_redis);
     }

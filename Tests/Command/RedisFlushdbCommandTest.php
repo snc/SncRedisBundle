@@ -20,7 +20,7 @@ use Snc\RedisBundle\Command\RedisFlushdbCommand;
 class RedisFlushdbCommandTest extends CommandTestCase
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -64,7 +64,7 @@ class RedisFlushdbCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
 
-        $this->assertRegExp('/redis database flushed/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/redis database flushed/', $commandTester->getDisplay());
     }
 
     public function testClientOption()
@@ -104,7 +104,7 @@ class RedisFlushdbCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'special', '--no-interaction' => true));
 
-        $this->assertRegExp('/redis database flushed/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/redis database flushed/', $commandTester->getDisplay());
     }
 
     public function testClientOptionWithNotExistingClient()
@@ -123,7 +123,7 @@ class RedisFlushdbCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'notExisting', '--no-interaction' => true));
 
-        $this->assertRegExp('/The client "notExisting" is not defined/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/The client "notExisting" is not defined/', $commandTester->getDisplay());
     }
 
     public function testBugFixInPredis()
@@ -150,7 +150,7 @@ class RedisFlushdbCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
 
-        $this->assertRegExp('/redis database flushed/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/redis database flushed/', $commandTester->getDisplay());
     }
 
     protected function getCommand()

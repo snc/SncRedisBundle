@@ -48,7 +48,7 @@ abstract class CommandTestCase extends TestCase
     /**
      * SetUp called before each tests, setting up the environment (application, globally used mocks)
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = $this->getMockBuilder('\\Symfony\\Component\\DependencyInjection\\ContainerInterface')->getMock();
 

@@ -7,7 +7,7 @@ use Snc\RedisBundle\Client\Phpredis\ClientCluster;
 
 class ClientClusterTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('This test needs the PHP Redis extension to work');

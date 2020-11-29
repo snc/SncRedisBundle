@@ -15,7 +15,7 @@ class SncRedisExtensionEnvTest extends TestCase
     /**
      * @see http://symfony.com/blog/new-in-symfony-3-2-runtime-environment-variables
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (version_compare(Kernel::VERSION, '3.2.0', '<')) {
             $this->markTestSkipped(
@@ -42,7 +42,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame('Redis', $clientDefinition->getClass());
         $this->assertSame('Redis', $clientDefinition->getArgument(0));
-        $this->assertContains('REDIS_URL', $clientDefinition->getArgument(1)[0]);
+        $this->assertStringContainsString('REDIS_URL', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('default', $clientDefinition->getArgument(3));
 
         $this->assertSame(
@@ -77,7 +77,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame($clientClass, $clientDefinition->getClass());
         $this->assertSame($clientClass, $clientDefinition->getArgument(0));
-        $this->assertContains('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
+        $this->assertStringContainsString('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
         $this->assertSame(
             array(
@@ -117,7 +117,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertEquals('snc_redis.connection.default1_parameters.default', (string) $parameters[0]);
         $this->assertEquals('snc_redis.connection.default2_parameters.default', (string) $parameters[1]);
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
@@ -128,7 +128,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame('RedisCluster', $clientDefinition->getClass());
         $this->assertSame('RedisCluster', $clientDefinition->getArgument(0));
-        $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
+        $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
 
         $this->assertSame(
@@ -156,9 +156,9 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame('RedisCluster', $clientDefinition->getClass());
         $this->assertSame('RedisCluster', $clientDefinition->getArgument(0));
-        $this->assertContains('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
-        $this->assertContains('REDIS_URL_2', $clientDefinition->getArgument(1)[1]);
-        $this->assertContains('REDIS_URL_3', $clientDefinition->getArgument(1)[2]);
+        $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
+        $this->assertStringContainsString('REDIS_URL_2', $clientDefinition->getArgument(1)[1]);
+        $this->assertStringContainsString('REDIS_URL_3', $clientDefinition->getArgument(1)[2]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
 
         $this->assertSame(

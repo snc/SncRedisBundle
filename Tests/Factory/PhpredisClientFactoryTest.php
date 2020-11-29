@@ -10,7 +10,7 @@ use Snc\RedisBundle\Client\Phpredis\Client;
 
 class PhpredisClientFactoryTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists(\Redis::class)) {
             $this->markTestSkipped(sprintf('The %s requires phpredis extension.', __CLASS__));

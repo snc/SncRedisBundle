@@ -36,7 +36,7 @@ class IntegrationTest extends WebTestCase
     /** @var EntityManagerInterface */
     private $em;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $fs = new Filesystem();
         $fs->remove(__DIR__ .'/App/var');

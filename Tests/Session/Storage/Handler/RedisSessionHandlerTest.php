@@ -21,7 +21,7 @@ class RedisSessionHandlerTest extends TestCase
 {
     private $redis;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->redis = $this
             ->getMockBuilder('Predis\Client')
@@ -29,7 +29,7 @@ class RedisSessionHandlerTest extends TestCase
             ->getMock();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->redis);
     }

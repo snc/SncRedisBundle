@@ -20,18 +20,19 @@
         </testsuite>
     </testsuites>
 
-    <logging>
-        <log type="coverage-text"/>
-        <log type="coverage-clover" target="./build/coverage/log/coverage.xml"/>
-    </logging>
+    <logging/>
 
-    <filter>
-        <whitelist>
+    <coverage>
+        <include>
             <directory>./</directory>
-            <exclude>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+        </include>
+        <exclude>
+            <directory>./Tests</directory>
+            <directory>./vendor</directory>
+        </exclude>
+        <report>
+            <clover outputFile="./build/coverage/log/coverage.xml"/>
+            <text outputFile=""/>
+        </report>
+    </coverage>
 </phpunit>
