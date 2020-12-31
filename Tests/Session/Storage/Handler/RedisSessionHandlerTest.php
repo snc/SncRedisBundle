@@ -25,7 +25,7 @@ class RedisSessionHandlerTest extends TestCase
     {
         $this->redis = $this
             ->getMockBuilder('Predis\Client')
-            ->setMethods(array('get', 'set', 'setex', 'del'))
+            ->setMethods(array('get', 'set', 'setex', 'del', 'sncFreeSessionLock'))
             ->getMock();
     }
 
