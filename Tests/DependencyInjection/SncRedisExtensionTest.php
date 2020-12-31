@@ -431,12 +431,12 @@ class SncRedisExtensionTest extends TestCase
         $defaultParameters = $container->getDefinition('snc_redis.default');
 
         $this->assertSame(1, $defaultParameters->getArgument(2)['parameters']['database']);
-        $this->assertSame('pass', $defaultParameters->getArgument(2)['parameters']['password']);
+        $this->assertSame('sncredis', $defaultParameters->getArgument(2)['parameters']['password']);
 
         $redis = $container->get('snc_redis.default');
 
         $this->assertSame(1, $redis->getDBNum());
-        $this->assertSame('pass', $redis->getAuth());
+        $this->assertSame('sncredis', $redis->getAuth());
     }
 
     /**
@@ -451,12 +451,12 @@ class SncRedisExtensionTest extends TestCase
         $defaultParameters = $container->getDefinition('snc_redis.default');
 
         $this->assertSame(2, $defaultParameters->getArgument(2)['parameters']['database']);
-        $this->assertSame('word', $defaultParameters->getArgument(2)['parameters']['password']);
+        $this->assertSame('otherpassword', $defaultParameters->getArgument(2)['parameters']['password']);
 
         $redis = $container->get('snc_redis.default');
 
         $this->assertSame(1, $redis->getDBNum());
-        $this->assertSame('pass', $redis->getAuth());
+        $this->assertSame('sncredis', $redis->getAuth());
     }
 
     /**
@@ -759,7 +759,7 @@ clients:
         options:
             parameters:
                 database: 1
-                password: pass
+                password: sncredis
 EOF;
     }
 
@@ -770,11 +770,11 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: redis://redis:pass@localhost/1
+        dsn: redis://redis:sncredis@localhost/1
         options:
             parameters:
                 database: 2
-                password: word
+                password: otherpassword
 EOF;
     }
 
@@ -790,7 +790,7 @@ clients:
             cluster: true
 EOF;
     }
-    
+
     private function getContainer()
     {
         return new ContainerBuilder(new ParameterBag(array(

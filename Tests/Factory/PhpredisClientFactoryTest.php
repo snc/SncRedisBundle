@@ -95,7 +95,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             \Redis::class,
-            ['redis://redis:pass@localhost:6379/2'],
+            ['redis://redis:sncredis@localhost:6379/2'],
             array(
                 'parameters' => [
                     'database' => 3,
@@ -107,7 +107,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $this->assertInstanceOf(\Redis::class, $client);
         $this->assertSame(2, $client->getDBNum());
-        $this->assertSame('pass', $client->getAuth());
+        $this->assertSame('sncredis', $client->getAuth());
         $this->assertNull($client->getPersistentID());
     }
 
@@ -117,7 +117,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             \Redis::class,
-            [['redis://redis:pass@localhost:6379/2']],
+            [['redis://redis:sncredis@localhost:6379/2']],
             array(
                 'parameters' => [
                     'database' => 3,
@@ -129,7 +129,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $this->assertInstanceOf(\Redis::class, $client);
         $this->assertSame(2, $client->getDBNum());
-        $this->assertSame('pass', $client->getAuth());
+        $this->assertSame('sncredis', $client->getAuth());
         $this->assertNull($client->getPersistentID());
     }
 }
