@@ -14,6 +14,7 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -96,7 +97,7 @@ class SncRedisExtensionTest extends TestCase
         $config = $this->parseYaml($this->getMinimalYamlConfig());
         $extension->load(array($config), $container = $this->getContainer());
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertCount(1, $container->findTaggedServiceIds('snc_redis.client'), 'Minimal Yaml should have tagged 1 client');
     }
 
@@ -116,7 +117,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertFalse($container->hasAlias('snc_redis.default_client'));
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
@@ -181,7 +182,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
         $this->assertTrue($container->hasAlias('swiftmailer.spool.redis'));
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertGreaterThanOrEqual(4, count($container->findTaggedServiceIds('snc_redis.client')), 'expected at least 4 tagged clients');
 
         $tags = $container->findTaggedServiceIds('snc_redis.client');
@@ -189,27 +190,25 @@ class SncRedisExtensionTest extends TestCase
         $this->assertArrayHasKey('snc_redis.cache', $tags);
         $this->assertArrayHasKey('snc_redis.monolog', $tags);
         $this->assertArrayHasKey('snc_redis.cluster', $tags);
-        $this->assertArraySubset(array('snc_redis.cache' => array(array('alias' => 'cache'))), $tags);
-        $this->assertArraySubset(array('snc_redis.cluster' => array(array('alias' => 'cluster'))), $tags);
+        $this->assertEquals([['alias' => 'cache']], $tags['snc_redis.cache']);
+        $this->assertEquals([['alias' => 'cluster']], $tags['snc_redis.cluster']);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage requires it to reference either an entity manager or document manager
-     */
     public function testInvalidDoctrineCacheConfigLoad()
     {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('requires it to reference either an entity manager or document manager');
+
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getInvalidDoctrineCacheConfig());
         $extension->load(array($config), $this->getContainer());
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage You have to disable logging for the client
-     */
     public function testInvalidMonologConfigLoad()
     {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You have to disable logging for the client');
+
         $extension = new SncRedisExtension();
         $config = $this->parseYaml($this->getInvalidMonologYamlConfig());
         $extension->load(array($config), $this->getContainer());
@@ -292,11 +291,10 @@ class SncRedisExtensionTest extends TestCase
         $loader->load('valid.xml');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidXmlConfig()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config/xml'));
@@ -332,7 +330,7 @@ class SncRedisExtensionTest extends TestCase
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertTrue($masterParameters['replication']);
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
@@ -367,11 +365,11 @@ class SncRedisExtensionTest extends TestCase
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertEquals('sentinel', $masterParameters['replication']);
         $this->assertEquals('mymaster', $masterParameters['service']);
-        $this->assertInternalType('array', $masterParameters['parameters']);
+        $this->assertIsArray($masterParameters['parameters']);
         $this->assertEquals('1', $masterParameters['parameters']['database']);
         $this->assertEquals('pass', $masterParameters['parameters']['password']);
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
@@ -392,11 +390,11 @@ class SncRedisExtensionTest extends TestCase
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
         $this->assertEquals('sentinel', $masterParameters['replication']);
         $this->assertEquals('mymaster', $masterParameters['service']);
-        $this->assertInternalType('array', $masterParameters['parameters']);
+        $this->assertIsArray($masterParameters['parameters']);
         $this->assertEquals('1', $masterParameters['parameters']['database']);
         $this->assertEquals('pass', $masterParameters['parameters']['password']);
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
@@ -417,7 +415,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals('snc_redis.connection.default1_parameters.default', (string) $parameters[0]);
         $this->assertEquals('snc_redis.connection.default2_parameters.default', (string) $parameters[1]);
 
-        $this->assertInternalType('array', $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
     }
 
@@ -433,12 +431,12 @@ class SncRedisExtensionTest extends TestCase
         $defaultParameters = $container->getDefinition('snc_redis.default');
 
         $this->assertSame(1, $defaultParameters->getArgument(2)['parameters']['database']);
-        $this->assertSame('pass', $defaultParameters->getArgument(2)['parameters']['password']);
+        $this->assertSame('sncredis', $defaultParameters->getArgument(2)['parameters']['password']);
 
         $redis = $container->get('snc_redis.default');
 
         $this->assertSame(1, $redis->getDBNum());
-        $this->assertSame('pass', $redis->getAuth());
+        $this->assertSame('sncredis', $redis->getAuth());
     }
 
     /**
@@ -453,12 +451,12 @@ class SncRedisExtensionTest extends TestCase
         $defaultParameters = $container->getDefinition('snc_redis.default');
 
         $this->assertSame(2, $defaultParameters->getArgument(2)['parameters']['database']);
-        $this->assertSame('word', $defaultParameters->getArgument(2)['parameters']['password']);
+        $this->assertSame('otherpassword', $defaultParameters->getArgument(2)['parameters']['password']);
 
         $redis = $container->get('snc_redis.default');
 
         $this->assertSame(1, $redis->getDBNum());
-        $this->assertSame('pass', $redis->getAuth());
+        $this->assertSame('sncredis', $redis->getAuth());
     }
 
     /**
@@ -761,7 +759,7 @@ clients:
         options:
             parameters:
                 database: 1
-                password: pass
+                password: sncredis
 EOF;
     }
 
@@ -772,11 +770,11 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: redis://redis:pass@localhost/1
+        dsn: redis://redis:sncredis@localhost/1
         options:
             parameters:
                 database: 2
-                password: word
+                password: otherpassword
 EOF;
     }
 
@@ -792,7 +790,7 @@ clients:
             cluster: true
 EOF;
     }
-    
+
     private function getContainer()
     {
         return new ContainerBuilder(new ParameterBag(array(

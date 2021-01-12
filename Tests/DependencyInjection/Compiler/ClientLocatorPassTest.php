@@ -14,12 +14,11 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class ClientLocatorPassTest extends TestCase
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage no redis clients found (tag name: snc_redis.client)
-     */
     public function testThrowRuntimeExceptionWhenNoRedisClientsExist()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('no redis clients found (tag name: snc_redis.client)');
+
         (new ClientLocatorPass())->process(new ContainerBuilder());
     }
 

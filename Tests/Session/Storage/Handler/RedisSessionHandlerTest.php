@@ -21,15 +21,15 @@ class RedisSessionHandlerTest extends TestCase
 {
     private $redis;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->redis = $this
             ->getMockBuilder('Predis\Client')
-            ->setMethods(array('get', 'set', 'setex', 'del'))
+            ->setMethods(array('get', 'set', 'setex', 'del', 'sncFreeSessionLock'))
             ->getMock();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->redis);
     }

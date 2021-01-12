@@ -1,12 +1,9 @@
 language: php
 
-services:
-  - redis-server
-
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
+    - php: 7.2
       env: SYMFONY_VERSION="3.4.*" COMPOSER_FLAGS="--prefer-lowest"
     - php: 7.2
       env: SYMFONY_VERSION="4.4.*"
@@ -14,18 +11,22 @@ matrix:
       env: SYMFONY_VERSION="4.4.*"
     - php: 7.4
       env: SYMFONY_VERSION="4.4.*"
+    - php: 8.0
+      env: SYMFONY_VERSION="4.4.*"
     - php: 7.4
+      env: SYMFONY_VERSION="5.0.*"
+    - php: 8.0
       env: SYMFONY_VERSION="5.0.*"
     - php: 7.2
       env: SYMFONY_VERSION="5.1.*"
     - php: 7.4
       env: SYMFONY_VERSION="5.1.*"
+    - php: 8.0
+      env: SYMFONY_VERSION="5.1.*"
     - php: 7.4
-      env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
-
-  allow_failures:
-    - php: 7.4
-      env: SYMFONY_VERSION="5.2.*" STABILITY="dev"
+      env: SYMFONY_VERSION="5.2.*"
+    - php: 8.0
+      env: SYMFONY_VERSION="5.2.*"
 
 dist: bionic
 sudo: false
@@ -48,6 +49,7 @@ before_install:
   - composer global require --no-progress --no-scripts --no-plugins symfony/flex
   - if ! [ -z "${STABILITY}" ]; then composer config minimum-stability ${STABILITY}; fi;
   - if [ "${SYMFONY_VERSION}" != "" ]; then composer config extra.symfony.require ${SYMFONY_VERSION}; fi;
+  - sudo redis-server --requirepass sncredis --daemonize yes
   - for PORT in {7000..7008}; do sudo redis-server --port ${PORT} --cluster-enabled yes --cluster-config-file ${PORT}.conf --daemonize yes; echo 127.0.0.1:${PORT}; done
   - echo yes | redis-cli --cluster create $(seq -f 127.0.0.1:%g 7000 7008) --cluster-replicas 2
 install:

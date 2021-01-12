@@ -24,7 +24,7 @@ class RedisProfilerStorageTest extends TestCase
 {
     protected static $storage;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (Kernel::VERSION_ID >= 40400) {
             $this->markTestSkipped('Redis profiler storage is not supported since Symfony 4.4');
@@ -41,7 +41,7 @@ class RedisProfilerStorageTest extends TestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if (self::$storage) {
             self::$storage->purge();
@@ -304,7 +304,7 @@ class RedisProfilerStorageTest extends TestCase
 
         $tokens = $this->getStorage()->find('', '', 10, '');
         $this->assertCount(2, $tokens);
-        $this->assertContains($tokens[0]['status_code'], array(200, 404));
-        $this->assertContains($tokens[1]['status_code'], array(200, 404));
+        $this->assertContains($tokens[0]['status_code'], ['200', '404']);
+        $this->assertContains($tokens[1]['status_code'], ['200', '404']);
     }
 }

@@ -20,7 +20,7 @@ use Snc\RedisBundle\Command\RedisFlushallCommand;
 class RedisFlushallCommandTest extends CommandTestCase
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
