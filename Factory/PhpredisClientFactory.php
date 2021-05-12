@@ -203,6 +203,10 @@ class PhpredisClientFactory
             $types['igbinary'] = \Redis::SERIALIZER_IGBINARY;
         }
 
+        if (defined('Redis::SERIALIZER_JSON')) {
+            $types['json'] = \Redis::SERIALIZER_JSON;
+        }
+
         if (array_key_exists($type, $types)) {
             return $types[$type];
         }
