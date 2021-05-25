@@ -1,5 +1,10 @@
 # Change Log
 
+## [3.4.0](https://github.com/snc/SncRedisBundle/tree/3.4.0) (2021-05-25)
+[Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.3.0...3.4.0)
+
+- Add json serialization type for phpredis (#609) - [@xElysioN](https://github.com/xElysioN) ([813194](https://github.com/snc/SncRedisBundle/commit/81319407ee8be9185f7f4b679c745cbc9df113a1))
+
 ## [3.3.0](https://github.com/snc/SncRedisBundle/tree/3.3.0) (2020-01-12)
 [Full Changelog](https://github.com/snc/SncRedisBundle/compare/3.2.4...3.3.0)
 
