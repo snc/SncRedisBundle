@@ -7,6 +7,7 @@ use Psr\Log\LoggerInterface;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Client\Phpredis\Client;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class PhpredisClientFactoryTest extends TestCase
 {
@@ -131,5 +132,49 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(2, $client->getDBNum());
         $this->assertSame('sncredis', $client->getAuth());
         $this->assertNull($client->getPersistentID());
+    }
+
+    /**
+     * @dataProvider serializationTypes
+     */
+    public function testLoadSerializationType(string $serializationType, int $serializer): void
+    {
+        $factory = new PhpredisClientFactory();
+
+        $client = $factory->create(
+            \Redis::class,
+            ['redis://localhost:6379'],
+            [
+                'serialization' => $serializationType
+            ],
+            'default'
+        );
+
+        self::assertSame($serializer, $client->getOption(\Redis::OPT_SERIALIZER));
+    }
+
+    public function testLoadSerializationTypeFail(): void
+    {
+        $factory = new PhpredisClientFactory();
+        $this->expectException(InvalidConfigurationException::class);
+
+        $factory->create(
+            \Redis::class,
+            ['redis://localhost:6379'],
+            [
+                'serialization' => 'unknown'
+            ],
+            'default'
+        );
+    }
+
+    public function serializationTypes(): array
+    {
+        return [
+            ['default', \Redis::SERIALIZER_NONE],
+            ['none', \Redis::SERIALIZER_NONE],
+            ['php', \Redis::SERIALIZER_PHP],
+            ['json', \Redis::SERIALIZER_JSON],
+        ];
     }
 }
