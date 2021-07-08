@@ -12,6 +12,8 @@
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
+use Snc\RedisBundle\Cache\PredisCache;
+use Snc\RedisBundle\Cache\RedisCache;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -35,6 +37,16 @@ class SncRedisExtensionTest extends TestCase
      */
     public static function parameterValues()
     {
+        $phpRedisCache = RedisCache::class;
+        $predisCache = PredisCache::class;
+        // BC for doctrine/cache < 2 should those ported implementations change at some point in time
+        if (class_exists('Doctrine\Common\Cache\RedisCache')) {
+            $phpRedisCache = 'Doctrine\Common\Cache\RedisCache';
+        }
+        if (class_exists('Doctrine\Common\Cache\PredisCache')) {
+            $predisCache = 'Doctrine\Common\Cache\PredisCache';
+        }
+
         return array(
             array('snc_redis.client.class', 'Predis\Client'),
             array('snc_redis.client_options.class', 'Predis\Configuration\Options'),
@@ -43,8 +55,8 @@ class SncRedisExtensionTest extends TestCase
             array('snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'),
             array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
             array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
-            array('snc_redis.doctrine_cache_phpredis.class','Doctrine\Common\Cache\RedisCache'),
-            array('snc_redis.doctrine_cache_predis.class','Doctrine\Common\Cache\PredisCache'),
+            array('snc_redis.doctrine_cache_phpredis.class',$phpRedisCache),
+            array('snc_redis.doctrine_cache_predis.class',$predisCache),
             array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
             array('snc_redis.swiftmailer_spool.class', 'Snc\RedisBundle\SwiftMailer\RedisSpool'),
         );
