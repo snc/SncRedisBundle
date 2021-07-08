@@ -11,6 +11,8 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Snc\RedisBundle\Cache\PredisCache;
+use Snc\RedisBundle\Cache\RedisCache;
 use Symfony\Component\Config\Definition\BaseNode;
 use function method_exists;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -45,6 +47,16 @@ class Configuration implements ConfigurationInterface
             $rootNode = $treeBuilder->root('snc_redis');
         }
 
+        $phpRedisCache = RedisCache::class;
+        $predisCache = PredisCache::class;
+        // BC for doctrine/cache < 2 should those ported implementations change at some point in time
+        if (class_exists('Doctrine\Common\Cache\RedisCache')) {
+            $phpRedisCache = 'Doctrine\Common\Cache\RedisCache';
+        }
+        if (class_exists('Doctrine\Common\Cache\PredisCache')) {
+            $predisCache = 'Doctrine\Common\Cache\PredisCache';
+        }
+
         $rootNode
             ->children()
                 ->arrayNode('class')
@@ -61,8 +73,8 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('phpredis_clusterclient_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\ClientCluster')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                        ->scalarNode('doctrine_cache_phpredis')->defaultValue('Doctrine\Common\Cache\RedisCache')->end()
-                        ->scalarNode('doctrine_cache_predis')->defaultValue('Doctrine\Common\Cache\PredisCache')->end()
+                        ->scalarNode('doctrine_cache_phpredis')->defaultValue($phpRedisCache)->end()
+                        ->scalarNode('doctrine_cache_predis')->defaultValue($predisCache)->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
                         ->scalarNode('swiftmailer_spool')->defaultValue('Snc\RedisBundle\SwiftMailer\RedisSpool')->end()
                     ->end()
@@ -280,10 +292,10 @@ class Configuration implements ConfigurationInterface
 
     /**
      * Keep compatibility with symfony/config < 5.1
-     * 
-     * The signature of method NodeDefinition::setDeprecated() has been updated to 
+     *
+     * The signature of method NodeDefinition::setDeprecated() has been updated to
      * NodeDefinition::setDeprecation(string $package, string $version, string $message).
-     * 
+     *
      * @return array
      */
     private function getProfilerStorageDeprecationMessage(): array
@@ -293,7 +305,7 @@ class Configuration implements ConfigurationInterface
         if (method_exists(BaseNode::class, 'getDeprecation')) {
             return ['snc/redis-bundle', '3.2.0', $message];
         }
-        
+
         return [$message];
     }
 }
