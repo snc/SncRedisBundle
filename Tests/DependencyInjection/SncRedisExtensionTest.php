@@ -173,18 +173,19 @@ class SncRedisExtensionTest extends TestCase
 
         $this->assertTrue($container->hasDefinition('snc_redis.session.handler'));
 
-        $this->assertTrue($container->hasDefinition('doctrine.orm.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.orm.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.orm.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine.orm.default_second_level_cache.region_cache_driver'));
-        $this->assertTrue($container->hasDefinition('doctrine.orm.read_result_cache'));
+        if (class_exists('Doctrine\Common\Cache\RedisCache')) {
+            $this->assertTrue($container->hasDefinition('doctrine.orm.default_metadata_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine.orm.default_result_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine.orm.default_query_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine.orm.default_second_level_cache.region_cache_driver'));
+            $this->assertTrue($container->hasDefinition('doctrine.orm.read_result_cache'));
 
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave1_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave2_result_cache'));
-
+            $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_metadata_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_result_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_query_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave1_result_cache'));
+            $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave2_result_cache'));
+        }
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog.handler'));
