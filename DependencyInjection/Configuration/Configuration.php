@@ -47,9 +47,9 @@ class Configuration implements ConfigurationInterface
             $rootNode = $treeBuilder->root('snc_redis');
         }
 
-        $phpRedisCache = RedisCache::class;
-        $predisCache = PredisCache::class;
-        // BC for doctrine/cache < 2 should those ported implementations change at some point in time
+        $phpRedisCache = 'snc_redis.cache.redis';
+        $predisCache = $phpRedisCache;
+        // BC for doctrine/cache < 2
         if (class_exists('Doctrine\Common\Cache\RedisCache')) {
             $phpRedisCache = 'Doctrine\Common\Cache\RedisCache';
         }
