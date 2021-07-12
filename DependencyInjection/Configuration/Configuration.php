@@ -11,8 +11,6 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
-use Snc\RedisBundle\Cache\PredisCache;
-use Snc\RedisBundle\Cache\RedisCache;
 use Symfony\Component\Config\Definition\BaseNode;
 use function method_exists;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;

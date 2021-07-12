@@ -12,8 +12,6 @@
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
-use Snc\RedisBundle\Cache\PredisCache;
-use Snc\RedisBundle\Cache\RedisCache;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
