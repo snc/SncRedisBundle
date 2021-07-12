@@ -194,7 +194,14 @@ class Configuration implements ConfigurationInterface
      */
     private function addDoctrineSection(ArrayNodeDefinition $rootNode)
     {
-        $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset();
+        if (!class_exists('Doctrine\Common\Cache\RedisCache')) {
+            // Looks like they did remove some service aliases related to at least second level caching
+            $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset()->setDeprecated(
+                'This option is deprecated and stopped working starting doctrine 2.9, please use symfony cache pools'
+            );
+        } else {
+            $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset();
+        }
         foreach (array('metadata_cache', 'result_cache', 'query_cache', 'second_level_cache') as $type) {
             $doctrineNode
                 ->children()
