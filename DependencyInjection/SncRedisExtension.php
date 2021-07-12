@@ -16,6 +16,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -358,10 +359,18 @@ class SncRedisExtension extends Extension
             switch ($config['clients'][$cache['client']]['type']) {
                 case 'predis':
                     $definitionFunction = function ($client, $cache) use ($container) {
-                        $def = new Definition($container->getParameter('snc_redis.doctrine_cache_predis.class'));
-                        $def->addArgument($client);
-                        if ($cache['namespace']) {
-                            $def->addMethodCall('setNamespace', array($cache['namespace']));
+                        if (RedisAdapter::class === $container->getParameter('snc_redis.doctrine_cache_predis.class')) {
+                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
+                            $def->addArgument($client);
+                            if ($cache['namespace']) {
+                                $def->addArgument($cache['namespace']);
+                            }
+                        } else {
+                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_predis.class'));
+                            $def->addArgument($client);
+                            if ($cache['namespace']) {
+                                $def->addMethodCall('setNamespace', array($cache['namespace']));
+                            }
                         }
 
                         return $def;
@@ -369,12 +378,19 @@ class SncRedisExtension extends Extension
                     break;
                 case 'phpredis':
                     $definitionFunction = function ($client, $cache) use ($container) {
-                        $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
-                        $def->addMethodCall('setRedis', array($client));
-                        if ($cache['namespace']) {
-                            $def->addMethodCall('setNamespace', array($cache['namespace']));
+                        if (RedisAdapter::class === $container->getParameter('snc_redis.doctrine_cache_predis.class')) {
+                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
+                            $def->addArgument($client);
+                            if ($cache['namespace']) {
+                                $def->addArgument($cache['namespace']);
+                            }
+                        } else {
+                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
+                            $def->addMethodCall('setRedis', array($client));
+                            if ($cache['namespace']) {
+                                $def->addMethodCall('setNamespace', array($cache['namespace']));
+                            }
                         }
-
                         return $def;
                     };
                     break;
