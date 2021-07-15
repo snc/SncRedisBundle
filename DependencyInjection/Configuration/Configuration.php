@@ -198,7 +198,8 @@ class Configuration implements ConfigurationInterface
         if (!class_exists('Doctrine\Common\Cache\RedisCache')) {
             // Looks like they did remove some service aliases related to at least second level caching
             $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset()->setDeprecated(
-                'This option is deprecated and stopped working starting doctrine 2.9, please use symfony cache pools'
+                'Configuring Doctrine Cache has been deprecated, sicne as of Doctrine >= 2.9 the cache aliases were removed. 
+                 Please configure using Symfony Cache: https://symfony.com/doc/current/cache.html '
             );
         } else {
             $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset();
