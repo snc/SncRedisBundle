@@ -14,6 +14,7 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -35,7 +36,7 @@ class SncRedisExtensionTest extends TestCase
      */
     public static function parameterValues()
     {
-        $phpRedisCache = 'snc_redis.cache.redis';
+        $phpRedisCache = RedisAdapter::class;
         $predisCache = $phpRedisCache;
         // BC for doctrine/cache < 2
         if (class_exists('Doctrine\Common\Cache\RedisCache')) {

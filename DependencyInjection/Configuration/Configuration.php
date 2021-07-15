@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\BaseNode;
 use function method_exists;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -45,7 +46,7 @@ class Configuration implements ConfigurationInterface
             $rootNode = $treeBuilder->root('snc_redis');
         }
 
-        $phpRedisCache = 'snc_redis.cache.redis';
+        $phpRedisCache = RedisAdapter::class;
         $predisCache = $phpRedisCache;
         // BC for doctrine/cache < 2
         if (class_exists('Doctrine\Common\Cache\RedisCache')) {
