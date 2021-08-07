@@ -69,14 +69,8 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.alias_test');
 
-        $clientClass = Client::class;
-        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
-            // Logging is not supported for this version >=4.0.0 of phpredis
-            $clientClass = 'Redis';
-        }
-
-        $this->assertSame($clientClass, $clientDefinition->getClass());
-        $this->assertSame($clientClass, $clientDefinition->getArgument(0));
+        $this->assertSame(Client::class, $clientDefinition->getClass());
+        $this->assertSame(Client::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
         $this->assertSame(

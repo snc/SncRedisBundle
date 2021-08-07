@@ -53,12 +53,6 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testCreateFullConfig()
     {
-        // @todo: Remove this condition when the inheritance from `\Redis` is fixed
-        // see https://github.com/snc/SncRedisBundle/issues/399
-        if (version_compare(phpversion('redis'), '4.0.0', '>=')) {
-            $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
-        }
-
         $logger = $this->getMockBuilder(RedisLogger::class)->getMock();
         $factory = new PhpredisClientFactory($logger);
 
@@ -73,7 +67,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'read_write_timeout' => 4,
                 'parameters' => [
                     'database' => 3,
-                    'password' => 'secret',
+                    'password' => 'sncredis',
                 ],
             ),
             'alias_test'
@@ -84,7 +78,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(1, $client->getOption(\Redis::OPT_SERIALIZER));
         $this->assertSame(4., $client->getOption(\Redis::OPT_READ_TIMEOUT));
         $this->assertSame(3, $client->getDBNum());
-        $this->assertSame('secret', $client->getAuth());
+        $this->assertSame('sncredis', $client->getAuth());
         $this->assertAttributeSame($logger, 'logger', $client);
         $this->assertNotNull($client->getPersistentID());
         $this->assertNotFalse($client->getPersistentID());
