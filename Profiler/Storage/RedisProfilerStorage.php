@@ -74,7 +74,7 @@ class RedisProfilerStorage implements ProfilerStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function find($ip, $url, $limit, $method, $start = null, $end = null)
+    public function find($ip, $url, $limit, $method, $start = null, $end = null): array
     {
         $indexName = $this->getIndexName();
 
@@ -163,7 +163,7 @@ class RedisProfilerStorage implements ProfilerStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function read($token)
+    public function read($token): ?Profile
     {
         if (empty($token)) {
             return false;
@@ -181,7 +181,7 @@ class RedisProfilerStorage implements ProfilerStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function write(Profile $profile)
+    public function write(Profile $profile): bool
     {
         $data = array(
             'token' => $profile->getToken(),
