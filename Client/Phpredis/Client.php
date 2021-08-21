@@ -394,7 +394,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function lPush($key, $value1, $value2 = null, $valueN = null)
+    public function lPush($key, $value1, ...$values)
     {
         return $this->call('lPush', func_get_args());
     }
@@ -402,7 +402,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function rPush($key, $value1, $value2 = null, $valueN = null)
+    public function rPush($key, $value1, ...$values)
     {
         return $this->call('rPush', func_get_args());
     }
@@ -554,7 +554,7 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function sAdd($key, $value1, $value2 = null, $valueN = null)
+    public function sAdd($key, $value1, ...$values)
     {
         return $this->call('sAdd', func_get_args());
     }
