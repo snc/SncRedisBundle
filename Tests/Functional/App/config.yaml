@@ -1,4 +1,5 @@
 framework:
+    annotations: true
     secret: test
     test: ~
     default_locale: en
