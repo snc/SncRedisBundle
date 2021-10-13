@@ -21,19 +21,21 @@ class RedisLogger
     protected $logger;
     protected $nbCommands = 0;
     protected $commands = array();
+    private $bufferSize = 200;
 
     /**
      * Constructor.
      *
      * @param PsrLoggerInterface $logger A LoggerInterface instance
      */
-    public function __construct($logger = null)
+    public function __construct($logger = null, int $bufferSize = 200)
     {
         if (!$logger instanceof PsrLoggerInterface && null !== $logger) {
             throw new \InvalidArgumentException(sprintf('RedisLogger needs a PSR-3 LoggerInterface, "%s" was injected instead.', is_object($logger) ? get_class($logger) : gettype($logger)));
         }
 
         $this->logger = $logger;
+        $this->bufferSize = $bufferSize;
     }
 
     /**
@@ -48,16 +50,23 @@ class RedisLogger
     {
         ++$this->nbCommands;
 
-        if (null !== $this->logger) {
-            $this->commands[] = array('cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error);
-            if ($error) {
-                $message = 'Command "' . $command . '" failed (' . $error . ')';
-
-                $this->logger->error($message);
-            } else {
-                $this->logger->debug('Executing command "' . $command . '"');
-            }
+        if (!$this->logger) {
+            return;
         }
+
+        if (count($this->commands) > $this->bufferSize) {
+            // Prevents memory leak
+            array_shift($this->commands);
+        }
+
+        $this->commands[] = ['cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error];
+
+        if ($error) {
+            $this->logger->error('Command "' . $command . '" failed (' . $error . ')');
+            return;
+        }
+
+        $this->logger->debug('Executing command "' . $command . '"');
     }
 
     /**
