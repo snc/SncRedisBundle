@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": "^7.2 || ^8.0",
-        "symfony/cache": "^5.0",
+        "symfony/cache": "^3.4 || ^4.2 || ^5.0 || ^6.0",
         "symfony/framework-bundle": "^3.4.23 || ^4.2.4 || ^5.0 || ^6.0",
         "symfony/http-foundation": "^3.4 || ^4.2 || ^5.0 || ^6.0",
         "symfony/yaml": "^3.4 || ^4.2 || ^5.0 || ^6.0"
