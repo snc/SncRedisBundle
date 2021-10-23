@@ -11,6 +11,8 @@
 
 namespace Snc\RedisBundle\DependencyInjection;
 
+
+use Doctrine\Common\Cache\RedisCache;
 use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
@@ -358,13 +360,13 @@ class SncRedisExtension extends Extension
                             $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
                             $def->addArgument($client);
                             if ($cache['namespace']) {
-                                $def->addArgument($cache['namespace']);
+                                $def->addArgument($this->cleanNamespace($cache['namespace']));
                             }
                         } else {
                             $def = new Definition($container->getParameter('snc_redis.doctrine_cache_predis.class'));
                             $def->addArgument($client);
                             if ($cache['namespace']) {
-                                $def->addMethodCall('setNamespace', array($cache['namespace']));
+                                $def->addMethodCall('setNamespace', array($this->cleanNamespace($cache['namespace'])));
                             }
                         }
 
@@ -377,13 +379,13 @@ class SncRedisExtension extends Extension
                             $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
                             $def->addArgument($client);
                             if ($cache['namespace']) {
-                                $def->addArgument($cache['namespace']);
+                                $def->addArgument($this->cleanNamespace($cache['namespace']));
                             }
                         } else {
                             $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
                             $def->addMethodCall('setRedis', array($client));
                             if ($cache['namespace']) {
-                                $def->addMethodCall('setNamespace', array($cache['namespace']));
+                                $def->addMethodCall('setNamespace', array($this->cleanNamespace($cache['namespace'])));
                             }
                         }
 
@@ -473,5 +475,14 @@ class SncRedisExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($container->getParameter('kernel.debug'));
+    }
+
+    private function cleanNamespace($namespace)
+    {
+        if (class_exists(RedisCache::class)) {
+            return $namespace;
+        }
+
+        return str_replace(['{','}','(',')','/','\\','@',':'], '', $namespace);
     }
 }
