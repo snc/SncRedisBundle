@@ -22,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -38,6 +39,11 @@ class IntegrationTest extends WebTestCase
 
     protected function setUp(): void
     {
+        // TODO: Drop when we drop symfony 3.4/doctrine-bundle 1.x support
+        if (class_exists(DebugClassLoader::class)) {
+            DebugClassLoader::disable();
+        }
+
         $fs = new Filesystem();
         $fs->remove(__DIR__ .'/App/var');
 

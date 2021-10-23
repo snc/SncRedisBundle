@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\Tests\Extra;
 
+use Predis\Client;
 use Snc\RedisBundle\Extra\RateLimit;
 use PHPUnit\Framework\TestCase;
 
@@ -30,23 +31,11 @@ class RateLimitTest extends TestCase
      */
     protected function setUp(): void
     {
-        $config = 'tcp://127.0.0.1:6379';
-
-        if (class_exists('\Predis\Client')) {
-            $this->_redis = new \Predis\Client($config);
+        if (class_exists(Client::class)) {
+            $this->_redis = new \Predis\Client('tcp://127.0.0.1:6379', ['parameters' => ['password' => 'sncredis']]);
+            $this->_redis->ping();
         } else {
             $this->markTestSkipped(sprintf('The %s requires the predis library.', __CLASS__));
-        }
-
-        if (null !== $this->_redis) {
-            try {
-                $ok = $this->_redis->ping();
-            } catch (\Exception $e) {
-                $ok = false;
-            }
-            if (!$ok) {
-                $this->markTestSkipped(sprintf('The %s requires a redis instance listening on %s.', __CLASS__, $config));
-            }
         }
 
         // Use a unique namespace

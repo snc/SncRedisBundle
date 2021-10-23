@@ -29,7 +29,7 @@
         "ext-pdo_sqlite": "*",
         "doctrine/cache": "^1",
         "doctrine/doctrine-bundle": "^1.11.2 || ^2.0",
-        "doctrine/orm": "^2.6.4",
+        "doctrine/orm": "^2.7.5",
         "phpunit/phpunit": "^8.5",
         "predis/predis": "^1.1",
         "swiftmailer/swiftmailer": "^6.0",
