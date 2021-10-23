@@ -82,11 +82,7 @@ class IntegrationTest extends WebTestCase
         /** @var RedisDataCollector $collector */
         $collector = $this->client->getProfile()->getCollector('redis');
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
-
-        if (version_compare(phpversion('redis'), '4.0.0', '<')) {
-            // Logging is currently disabled on PHPRedis 4+
-            $this->assertCount(5, $collector->getCommands());
-        }
+        $this->assertCount(6, $collector->getCommands());
     }
 
     public function testCreateUser()
