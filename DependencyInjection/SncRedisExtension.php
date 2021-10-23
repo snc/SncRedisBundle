@@ -352,47 +352,20 @@ class SncRedisExtension extends Extension
             if ('second_level_cache' === $name) {
                 $name = 'second_level_cache.region_cache_driver';
             }
-            $definitionFunction = null;
-            switch ($config['clients'][$cache['client']]['type']) {
-                case 'predis':
-                    $definitionFunction = function ($client, $cache) use ($container) {
-                        if (RedisAdapter::class === $container->getParameter('snc_redis.doctrine_cache_predis.class')) {
-                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
-                            $def->addArgument($client);
-                            if ($cache['namespace']) {
-                                $def->addArgument($this->cleanNamespace($cache['namespace']));
-                            }
-                        } else {
-                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_predis.class'));
-                            $def->addArgument($client);
-                            if ($cache['namespace']) {
-                                $def->addMethodCall('setNamespace', array($this->cleanNamespace($cache['namespace'])));
-                            }
-                        }
 
-                        return $def;
-                    };
-                    break;
-                case 'phpredis':
-                    $definitionFunction = function ($client, $cache) use ($container) {
-                        if (RedisAdapter::class === $container->getParameter('snc_redis.doctrine_cache_predis.class')) {
-                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
-                            $def->addArgument($client);
-                            if ($cache['namespace']) {
-                                $def->addArgument($this->cleanNamespace($cache['namespace']));
-                            }
-                        } else {
-                            $def = new Definition($container->getParameter('snc_redis.doctrine_cache_phpredis.class'));
-                            $def->addMethodCall('setRedis', array($client));
-                            if ($cache['namespace']) {
-                                $def->addMethodCall('setNamespace', array($this->cleanNamespace($cache['namespace'])));
-                            }
-                        }
+            $definitionFunction = function ($client, $cache) use ($container, $config): Definition {
+                $cacheClassParam = 'snc_redis.doctrine_cache_' . $config['clients'][$cache['client']]['type'] . '.class';
+                if (RedisAdapter::class === $container->getParameter($cacheClassParam)) {
+                    return new Definition(RedisAdapter::class, [$client, $cache['namespace'] ?? '']);
+                }
 
-                        return $def;
-                    };
-                    break;
-            }
+                $def = new Definition($container->getParameter($cacheClassParam), [$client]);
+                if ($cache['namespace']) {
+                    $def->addMethodCall('setNamespace', [$cache['namespace']]);
+                }
+
+                return $def;
+            };
 
             $client = new Reference(sprintf('snc_redis.%s', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
@@ -475,14 +448,5 @@ class SncRedisExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($container->getParameter('kernel.debug'));
-    }
-
-    private function cleanNamespace($namespace)
-    {
-        if (class_exists(RedisCache::class)) {
-            return $namespace;
-        }
-
-        return str_replace(['{','}','(',')','/','\\','@',':'], '', $namespace);
     }
 }

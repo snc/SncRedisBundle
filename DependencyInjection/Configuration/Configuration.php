@@ -48,16 +48,6 @@ class Configuration implements ConfigurationInterface
             $rootNode = $treeBuilder->root('snc_redis');
         }
 
-        $phpRedisCache = RedisAdapter::class;
-        $predisCache = $phpRedisCache;
-        // BC for doctrine/cache < 2
-        if (class_exists(RedisCache::class)) {
-            $phpRedisCache = RedisCache::class;
-        }
-        if (class_exists(PredisCache::class)) {
-            $predisCache = PredisCache::class;
-        }
-
         $rootNode
             ->children()
                 ->arrayNode('class')
@@ -74,8 +64,9 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('phpredis_clusterclient_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\ClientCluster')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                        ->scalarNode('doctrine_cache_phpredis')->defaultValue($phpRedisCache)->end()
-                        ->scalarNode('doctrine_cache_predis')->defaultValue($predisCache)->end()
+                        // class_exists are here for BC with doctrine/cache < 2
+                        ->scalarNode('doctrine_cache_phpredis')->defaultValue(class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class)->end()
+                        ->scalarNode('doctrine_cache_predis')->defaultValue(class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class)->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
                         ->scalarNode('swiftmailer_spool')->defaultValue('Snc\RedisBundle\SwiftMailer\RedisSpool')->end()
                     ->end()

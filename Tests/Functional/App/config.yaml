@@ -69,7 +69,7 @@ snc_redis:
             client: cache
             entity_manager: [default, read]
             document_manager: [default, slave1, slave2]
-            namespace: "dcrc:"
+            namespace: "dcrc_"
         query_cache:
             client: cache
             entity_manager: default
