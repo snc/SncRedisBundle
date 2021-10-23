@@ -11,7 +11,8 @@
     </parameters>
 
     <services>
-        <service id="snc_redis.session.handler" class="%snc_redis.session.handler.class%" public="true">
+        <service id="snc_redis.session.handler" class="%snc_redis.session.handler.class%">
+            <tag name="kernel.reset" method="close"/>
             <argument type="service" id="snc_redis.session.client" />
             <argument>%session.storage.options%</argument>
             <argument>%snc_redis.session.prefix%</argument>
