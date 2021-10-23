@@ -402,10 +402,10 @@ class SncRedisExtension extends Extension
                 $container->setAlias(sprintf('doctrine.orm.%s_%s', $em, $name), $id);
             }
             foreach ($cache['document_managers'] as $dm) {
+                $id = sprintf('snc_redis.doctrine_mongodb.odm.%s_%s', $dm, $name);
                 $def = call_user_func_array($definitionFunction, array($client, $cache));
-                if ($container->hasAlias(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name))) {
-                    $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $def);
-                }
+                $container->setDefinition($id, $def);
+                $container->setAlias(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $id);
             }
         }
     }
