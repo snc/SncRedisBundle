@@ -11,6 +11,8 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Doctrine\Common\Cache\PredisCache;
+use Doctrine\Common\Cache\RedisCache;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\BaseNode;
 use function method_exists;
@@ -49,11 +51,11 @@ class Configuration implements ConfigurationInterface
         $phpRedisCache = RedisAdapter::class;
         $predisCache = $phpRedisCache;
         // BC for doctrine/cache < 2
-        if (class_exists('Doctrine\Common\Cache\RedisCache')) {
-            $phpRedisCache = 'Doctrine\Common\Cache\RedisCache';
+        if (class_exists(RedisCache::class)) {
+            $phpRedisCache = RedisCache::class;
         }
-        if (class_exists('Doctrine\Common\Cache\PredisCache')) {
-            $predisCache = 'Doctrine\Common\Cache\PredisCache';
+        if (class_exists(PredisCache::class)) {
+            $predisCache = PredisCache::class;
         }
 
         $rootNode
@@ -193,7 +195,7 @@ class Configuration implements ConfigurationInterface
      */
     private function addDoctrineSection(ArrayNodeDefinition $rootNode)
     {
-        if (!class_exists('Doctrine\Common\Cache\RedisCache')) {
+        if (!class_exists(RedisCache::class)) {
             // Looks like they did remove some service aliases related to at least second level caching
             $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset()->setDeprecated(
                 'Configuring Doctrine Cache has been deprecated, sicne as of Doctrine >= 2.9 the cache aliases were removed. 
