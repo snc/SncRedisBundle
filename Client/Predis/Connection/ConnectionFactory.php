@@ -61,12 +61,10 @@ class ConnectionFactory extends Factory
         /** @var ConnectionWrapper $connection */
         $connection = parent::create($parameters);
 
-        if ($connection->getParameters()->logging) {
-            if (null !== $this->wrapper) {
-                $wrapper = $this->wrapper;
-                $connection = new $wrapper($connection);
-                $connection->setLogger($this->logger);
-            }
+        if (null !== $this->wrapper && null !== $this->logger) {
+            $wrapper = $this->wrapper;
+            $connection = new $wrapper($connection);
+            $connection->setLogger($this->logger);
         }
 
         return $connection;

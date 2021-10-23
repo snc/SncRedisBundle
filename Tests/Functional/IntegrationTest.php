@@ -22,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -38,6 +39,11 @@ class IntegrationTest extends WebTestCase
 
     protected function setUp(): void
     {
+        // TODO: Drop when we drop symfony 3.4/doctrine-bundle 1.x support
+        if (class_exists(DebugClassLoader::class)) {
+            DebugClassLoader::disable();
+        }
+
         $fs = new Filesystem();
         $fs->remove(__DIR__ .'/App/var');
 
@@ -76,11 +82,7 @@ class IntegrationTest extends WebTestCase
         /** @var RedisDataCollector $collector */
         $collector = $this->client->getProfile()->getCollector('redis');
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
-
-        if (version_compare(phpversion('redis'), '4.0.0', '<')) {
-            // Logging is currently disabled on PHPRedis 4+
-            $this->assertCount(5, $collector->getCommands());
-        }
+        $this->assertCount(6, $collector->getCommands());
     }
 
     public function testCreateUser()

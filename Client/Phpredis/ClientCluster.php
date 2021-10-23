@@ -173,22 +173,6 @@ class ClientCluster extends RedisCluster
     /**
      * {@inheritdoc}
      */
-    public function delete($key, ...$other_keys)
-    {
-        return $this->call('delete', array_merge([$key], $other_keys));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function unlink($key, ...$other_keys)
-    {
-        return $this->call('unlink', array_merge([$key], $other_keys));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function multi($mode = RedisCluster::MULTI)
     {
         return $this->call('multi', func_get_args());
@@ -461,25 +445,9 @@ class ClientCluster extends RedisCluster
     /**
      * {@inheritdoc}
      */
-    public function listTrim($key, $start, $stop)
-    {
-        return $this->call('listTrim', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function lRem($key, $value)
     {
         return $this->call('lRem', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function lRemove($key, $value, $count)
-    {
-        return $this->call('lRemove', func_get_args());
     }
 
     /**
@@ -509,14 +477,6 @@ class ClientCluster extends RedisCluster
     /**
      * {@inheritdoc}
      */
-    public function sRemove($key, $member, ...$other_members)
-    {
-        return $this->call('sRemove', array_merge([$key, $member], $other_members));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function sMove($srcKey, $dstKey, $member)
     {
         return $this->call('sMove', func_get_args());
@@ -528,14 +488,6 @@ class ClientCluster extends RedisCluster
     public function sIsMember($key, $value)
     {
         return $this->call('sIsMember', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function sContains($key, $value)
-    {
-        return $this->call('sContains', func_get_args());
     }
 
     /**
@@ -616,14 +568,6 @@ class ClientCluster extends RedisCluster
     public function sMembers($key)
     {
         return $this->call('sMembers', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function sGetMembers($key)
-    {
-        return $this->call('sGetMembers', func_get_args());
     }
 
     /**
@@ -912,14 +856,6 @@ class ClientCluster extends RedisCluster
     public function info($key_or_address, $option = null)
     {
         return $this->call('info', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resetStat()
-    {
-        return $this->call('resetStat', func_get_args());
     }
 
     /**
@@ -1424,30 +1360,6 @@ class ClientCluster extends RedisCluster
     public function getMode()
     {
         return $this->call('getMode', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function xAck($stream, $group, $arr_messages)
-    {
-        return $this->call('xAck', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function xAdd($str_key, $str_id, array $arr_fields, $i_maxlen = null, $boo_approximate = null)
-    {
-        return $this->call('xAdd', func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function xClaim($str_key, $str_group, $str_consumer, $min_idle_time, $arr_ids, $arr_options = [])
-    {
-        return $this->call('xClaim', func_get_args());
     }
 
     /**

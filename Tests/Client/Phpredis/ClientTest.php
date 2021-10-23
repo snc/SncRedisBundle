@@ -17,8 +17,6 @@ class ClientTest extends TestCase
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('This test needs the PHP Redis extension to work');
-        } elseif (version_compare(phpversion('redis'), '4.0.0', '>=')) {
-            $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
         }
 
         $method = new \ReflectionMethod(

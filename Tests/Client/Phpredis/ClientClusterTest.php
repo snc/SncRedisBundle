@@ -11,8 +11,6 @@ class ClientClusterTest extends TestCase
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('This test needs the PHP Redis extension to work');
-        } elseif (version_compare(phpversion('redis'), '4.0.0', '>=')) {
-            $this->markTestSkipped('This test cannot be executed on Redis extension version ' . phpversion('redis'));
         } elseif (!@fsockopen('127.0.0.1', 7000)) {
             $this->markTestSkipped(sprintf('The %s requires a redis instance listening on 127.0.0.1:7000.', __CLASS__));
         }

@@ -1,0 +1,68 @@
+name: "CI"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  phpunit:
+    name: "PHPUnit"
+    runs-on: "ubuntu-latest"
+    env:
+      SYMFONY_REQUIRE: "${{matrix.symfony-require}}"
+      SYMFONY_DEPRECATIONS_HELPER: "max[self]=0"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dependency-versions: "lowest"
+            php-version: "7.2"
+            php-extensions: "redis"
+          - symfony-require: "4.4.*"
+            php-extensions: "redis-4.3.0"
+            php-version: "7.4"
+          - symfony-require: "4.4.*"
+            php-version: "8.0"
+            php-extensions: "redis"
+          - symfony-require: "5.3.*"
+            php-version: "7.4"
+            php-extensions: "redis"
+          - symfony-require: "5.3.*"
+            php-version: "8.0"
+            php-extensions: "redis"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Set up redis single node"
+        uses: "getong/redis-action@v1"
+        with:
+          redis password: "sncredis"
+      - name: "Set up redis cluster"
+        uses: "vishnudxb/redis-cluster@1.0.5"
+        with:
+          master1-port: 7000
+          master2-port: 7001
+          master3-port: 7002
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "${{ matrix.php-extensions }}"
+          ini-values: "zend.assertions=1, max_execution_time=30"
+
+      - name: "Install symfony/flex"
+        run: "composer require --no-progress --no-scripts --no-plugins symfony/flex"
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "${{ matrix.dependency-versions }}"
+
+      - run: "composer validate --strict --no-check-lock"
+      - name: "Run PHPUnit"
+        run: "bin/phpunit -v"

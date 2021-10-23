@@ -36,7 +36,9 @@ class SwiftMailerPass implements CompilerPassInterface
                 // default class, lets check for Swift Mailer version and set correct class
                 $class = new \ReflectionClass('\\Swift_Spool');
                 $parameters = $class->getMethod('queueMessage')->getParameters();
-                switch ($parameters[0]->getType()) {
+                $reflectionType = $parameters[0]->getType();
+
+                switch ($reflectionType instanceof \ReflectionType ? $reflectionType->getName() : $reflectionType) {
                     case 'Swift_Mime_Message':
                         // Swift Mailer 5.x
                         $handlerDefinition->setClass($handlerDefinition->getClass().'5');

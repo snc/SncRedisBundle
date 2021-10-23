@@ -266,12 +266,6 @@ class SncRedisExtension extends Extension
             throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
         }
 
-        $phpRedisVersion = phpversion('redis');
-        if (version_compare($phpRedisVersion, '4.0.0', '>=') && $client['logging']) {
-            $client['logging'] = false;
-            @trigger_error(sprintf('Redis logging is not supported on PhpRedis %s and has been automatically disabled, disable logging in config to suppress this warning', $phpRedisVersion), E_USER_WARNING);
-        }
-
         if ($hasClusterOption) {
             $phpredisClientClass =
                 $client['logging']
@@ -298,6 +292,7 @@ class SncRedisExtension extends Extension
 
         // Older version of phpredis extension do not support lazy loading
         $minimumVersionForLazyLoading = '4.1.1';
+        $phpRedisVersion = phpversion('redis');
         $supportsLazyServices = version_compare($phpRedisVersion, $minimumVersionForLazyLoading, '>=');
         $phpredisDef->setLazy($supportsLazyServices);
         if (!$supportsLazyServices) {
@@ -391,6 +386,7 @@ class SncRedisExtension extends Extension
                                 $def->addMethodCall('setNamespace', array($cache['namespace']));
                             }
                         }
+
                         return $def;
                     };
                     break;
@@ -398,10 +394,10 @@ class SncRedisExtension extends Extension
 
             $client = new Reference(sprintf('snc_redis.%s', $cache['client']));
             foreach ($cache['entity_managers'] as $em) {
+                $id = sprintf('snc_redis.doctrine.orm.%s_%s', $em, $name);
                 $def = call_user_func_array($definitionFunction, array($client, $cache));
-                if ($container->hasAlias(sprintf('doctrine.orm.%s_%s', $em, $name))) {
-                    $container->setDefinition(sprintf('doctrine.orm.%s_%s', $em, $name), $def);
-                }
+                $container->setDefinition($id, $def);
+                $container->setAlias(sprintf('doctrine.orm.%s_%s', $em, $name), $id);
             }
             foreach ($cache['document_managers'] as $dm) {
                 $def = call_user_func_array($definitionFunction, array($client, $cache));
