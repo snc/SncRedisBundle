@@ -234,14 +234,6 @@ class Client extends Redis
     /**
      * {@inheritdoc}
      */
-    public function delete($key, ...$other_keys)
-    {
-        return $this->call('delete', array_merge([$key], $other_keys));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function unlink($key, ...$other_keys)
     {
         return $this->call('unlink', array_merge([$key], $other_keys));
