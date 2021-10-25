@@ -11,6 +11,9 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Doctrine\Common\Cache\PredisCache;
+use Doctrine\Common\Cache\RedisCache;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\BaseNode;
 use function method_exists;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -61,8 +64,9 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('phpredis_clusterclient_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\ClientCluster')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                        ->scalarNode('doctrine_cache_phpredis')->defaultValue('Doctrine\Common\Cache\RedisCache')->end()
-                        ->scalarNode('doctrine_cache_predis')->defaultValue('Doctrine\Common\Cache\PredisCache')->end()
+                        // class_exists are here for BC with doctrine/cache < 2
+                        ->scalarNode('doctrine_cache_phpredis')->defaultValue(class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class)->end()
+                        ->scalarNode('doctrine_cache_predis')->defaultValue(class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class)->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
                         ->scalarNode('swiftmailer_spool')->defaultValue('Snc\RedisBundle\SwiftMailer\RedisSpool')->end()
                     ->end()
@@ -278,10 +282,10 @@ class Configuration implements ConfigurationInterface
 
     /**
      * Keep compatibility with symfony/config < 5.1
-     * 
-     * The signature of method NodeDefinition::setDeprecated() has been updated to 
+     *
+     * The signature of method NodeDefinition::setDeprecated() has been updated to
      * NodeDefinition::setDeprecation(string $package, string $version, string $message).
-     * 
+     *
      * @return array
      */
     private function getProfilerStorageDeprecationMessage(): array
@@ -291,7 +295,7 @@ class Configuration implements ConfigurationInterface
         if (method_exists(BaseNode::class, 'getDeprecation')) {
             return ['snc/redis-bundle', '3.2.0', $message];
         }
-        
+
         return [$message];
     }
 }

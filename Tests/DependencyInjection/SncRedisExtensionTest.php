@@ -11,9 +11,12 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
+use Doctrine\Common\Cache\PredisCache;
+use Doctrine\Common\Cache\RedisCache;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -43,8 +46,9 @@ class SncRedisExtensionTest extends TestCase
             array('snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'),
             array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
             array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
-            array('snc_redis.doctrine_cache_phpredis.class','Doctrine\Common\Cache\RedisCache'),
-            array('snc_redis.doctrine_cache_predis.class','Doctrine\Common\Cache\PredisCache'),
+            // class_exists are here for BC with doctrine/cache < 2
+            array('snc_redis.doctrine_cache_phpredis.class', class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class),
+            array('snc_redis.doctrine_cache_predis.class', class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class),
             array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
             array('snc_redis.swiftmailer_spool.class', 'Snc\RedisBundle\SwiftMailer\RedisSpool'),
         );
@@ -169,11 +173,11 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_second_level_cache.region_cache_driver'));
         $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.read_result_cache'));
 
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave1_result_cache'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.slave2_result_cache'));
+        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.default_metadata_cache'));
+        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.default_result_cache'));
+        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.default_query_cache'));
+        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.slave1_result_cache'));
+        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.slave2_result_cache'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
