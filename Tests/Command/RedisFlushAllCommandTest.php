@@ -64,7 +64,7 @@ class RedisFlushallCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
 
-        $this->assertRegExp('/All redis databases flushed/', $commandTester->getDisplay());
+        $this->assertStringContainsString('All redis databases flushed', $commandTester->getDisplay());
     }
 
     public function testClientOption()
@@ -104,7 +104,7 @@ class RedisFlushallCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'special', '--no-interaction' => true));
 
-        $this->assertRegExp('/All redis databases flushed/', $commandTester->getDisplay());
+        $this->assertStringContainsString('All redis databases flushed', $commandTester->getDisplay());
     }
 
     public function testClientOptionWithNotExistingClient()
@@ -123,7 +123,7 @@ class RedisFlushallCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--client' => 'notExisting', '--no-interaction' => true));
 
-        $this->assertRegExp('/The client "notExisting" is not defined/', $commandTester->getDisplay());
+        $this->assertStringContainsString('The client "notExisting" is not defined', $commandTester->getDisplay());
     }
 
     public function testBugFixInPredis()
@@ -150,7 +150,7 @@ class RedisFlushallCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName(), '--no-interaction' => true));
 
-        $this->assertRegExp('/All redis databases flushed/', $commandTester->getDisplay());
+        $this->assertStringContainsString('All redis databases flushed', $commandTester->getDisplay());
     }
 
     protected function getCommand()
