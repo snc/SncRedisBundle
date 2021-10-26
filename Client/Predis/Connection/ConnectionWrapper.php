@@ -13,6 +13,7 @@ namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\Response\Error;
 use Snc\RedisBundle\Logger\RedisLogger;
 
@@ -83,7 +84,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
     public function isConnected()
     {
@@ -108,7 +109,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function readResponse(CommandInterface $command)
     {
@@ -124,7 +125,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getResource()
     {
@@ -132,7 +133,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return ParametersInterface
      */
     public function getParameters()
     {
@@ -156,7 +157,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function read()
     {
@@ -164,7 +165,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function executeCommand(CommandInterface $command)
     {

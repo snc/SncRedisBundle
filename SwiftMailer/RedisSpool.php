@@ -57,7 +57,7 @@ abstract class RedisSpool extends \Swift_ConfigurableSpool
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
     public function isStarted()
     {
@@ -66,6 +66,8 @@ abstract class RedisSpool extends \Swift_ConfigurableSpool
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function flushQueue(\Swift_Transport $transport, &$failedRecipients = null)
     {

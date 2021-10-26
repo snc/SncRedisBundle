@@ -18,6 +18,8 @@ class RedisSpool6 extends RedisSpool
 {
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function queueMessage(\Swift_Mime_SimpleMessage $message)
     {
