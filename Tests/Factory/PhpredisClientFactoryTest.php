@@ -79,9 +79,13 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(4., $client->getOption(\Redis::OPT_READ_TIMEOUT));
         $this->assertSame(3, $client->getDBNum());
         $this->assertSame('sncredis', $client->getAuth());
-        $this->assertAttributeSame($logger, 'logger', $client);
         $this->assertNotNull($client->getPersistentID());
         $this->assertNotFalse($client->getPersistentID());
+
+        $refObject = new \ReflectionObject($client);
+        $refProperty = $refObject->getProperty('logger');
+        $refProperty->setAccessible(true);
+        $this->assertSame($logger, $refProperty->getValue($client));
     }
 
     public function testDsnConfig()
@@ -164,11 +168,17 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function serializationTypes(): array
     {
-        return [
+        $serializationTypes = [
             ['default', \Redis::SERIALIZER_NONE],
             ['none', \Redis::SERIALIZER_NONE],
             ['php', \Redis::SERIALIZER_PHP],
-            ['json', \Redis::SERIALIZER_JSON],
         ];
+
+        // \Redis::SERIALIZER_JSON is only available since phpredis 5
+        if (defined('Redis::SERIALIZER_JSON')) {
+            $serializationTypes[] = ['json', \Redis::SERIALIZER_JSON];
+        }
+
+        return $serializationTypes;
     }
 }
