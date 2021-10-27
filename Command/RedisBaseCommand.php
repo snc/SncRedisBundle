@@ -67,7 +67,7 @@ abstract class RedisBaseCommand extends Command
     }
 
     /**
-     * {@inheritDoc}
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -116,7 +116,7 @@ class RedisSessionHandler extends AbstractSessionHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
     public function close()
     {
@@ -129,6 +129,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function updateTimestamp($sessionId, $data)
     {
@@ -141,6 +143,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @return int|false
      */
     public function gc($maxlifetime)
     {
@@ -150,6 +154,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     protected function doRead($sessionId)
     {
@@ -162,6 +168,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     protected function doWrite($sessionId, $data)
     {
@@ -176,6 +184,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     protected function doDestroy($sessionId)
     {

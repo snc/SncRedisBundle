@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Factory;
 use Snc\RedisBundle\Logger\RedisLogger;
 
@@ -52,6 +53,8 @@ class ConnectionFactory extends Factory
 
     /**
      * {@inheritdoc}
+     *
+     * @return NodeConnectionInterface
      */
     public function create($parameters)
     {

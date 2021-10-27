@@ -117,7 +117,7 @@ class IntegrationTest extends WebTestCase
         return $client->getResponse();
     }
 
-    protected static function getKernelClass()
+    protected static function getKernelClass(): string
     {
         require_once __DIR__ . '/App/Kernel.php';
 

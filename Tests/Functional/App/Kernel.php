@@ -32,7 +32,7 @@ abstract class AbstractKernel extends BaseKernel
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -43,7 +43,7 @@ abstract class AbstractKernel extends BaseKernel
         ];
     }
 
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
+    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/config.yaml');
 
@@ -58,12 +58,12 @@ abstract class AbstractKernel extends BaseKernel
         }
     }
 
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return __DIR__;
     }
 
-    public function getRootDir()
+    public function getRootDir(): string
     {
         return __DIR__ . '/var';
     }

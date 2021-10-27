@@ -92,7 +92,7 @@ class RedisDataCollector extends DataCollector
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getName()
     {

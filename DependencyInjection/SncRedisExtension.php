@@ -21,6 +21,7 @@ use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -84,7 +85,7 @@ class SncRedisExtension extends Extension
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getNamespace()
     {
@@ -92,7 +93,7 @@ class SncRedisExtension extends Extension
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getXsdValidationBasePath()
     {
@@ -445,6 +446,9 @@ class SncRedisExtension extends Extension
         $container->setAlias('snc_redis.profiler_storage.client', $client);
     }
 
+    /**
+     * @return ConfigurationInterface
+     */
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
         return new Configuration($container->getParameter('kernel.debug'));
