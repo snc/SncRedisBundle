@@ -56,6 +56,22 @@ abstract class AbstractKernel extends BaseKernel
                 ]
             ]);
         }
+
+        // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option
+        // is deprecated, it will replace the "framework.session.storage_id" configuration option in version 6.0.
+        if (self::VERSION_ID >= 50300) {
+            $container->loadFromExtension('framework', [
+                'session' => [
+                    'storage_factory_id' => 'session.storage.factory.mock_file',
+                ]
+            ]);
+        } else {
+            $container->loadFromExtension('framework', [
+                'session' => [
+                    'storage_id' => 'session.storage.mock_file',
+                ]
+            ]);
+        }
     }
 
     public function getProjectDir(): string

@@ -154,10 +154,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
-     *
-     * @return string
      */
-    protected function doRead($sessionId)
+    protected function doRead($sessionId): string
     {
         if ($this->locking && !$this->locked && !$this->lockSession($sessionId)) {
             return false;
@@ -168,10 +166,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
-     *
-     * @return bool
      */
-    protected function doWrite($sessionId, $data)
+    protected function doWrite($sessionId, $data): bool
     {
         if (0 < $this->ttl) {
             $this->redis->setex($this->getRedisKey($sessionId), $this->ttl, $data);
@@ -184,10 +180,8 @@ class RedisSessionHandler extends AbstractSessionHandler
 
     /**
      * {@inheritdoc}
-     *
-     * @return bool
      */
-    protected function doDestroy($sessionId)
+    protected function doDestroy($sessionId): bool
     {
         $this->redis->del($this->getRedisKey($sessionId));
         $this->close();
