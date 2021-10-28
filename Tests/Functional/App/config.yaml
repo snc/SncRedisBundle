@@ -4,8 +4,6 @@ framework:
     test: ~
     default_locale: en
     profiler: { collect: true }
-    session:
-        storage_id:     session.storage.mock_file
 
 twig:
     strict_variables: true

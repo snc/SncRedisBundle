@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Snc\RedisBundle\Tests\Functional\App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +26,13 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class Controller extends AbstractController
 {
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function home(Request $request, \Redis $redis)
     {
         $redis->set('foo', 'bar');
@@ -41,16 +49,15 @@ class Controller extends AbstractController
             ->setEmail('bar@example.org')
         ;
 
-        $em = $this->getDoctrine()->getManagerForClass(User::class);
-        $em->persist($user);
-        $em->flush();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         return new JsonResponse(['result' => 'ok']);
     }
 
     public function viewUser()
     {
-        $repository = $this->getDoctrine()->getRepository(User::class);
+        $repository = $this->entityManager->getRepository(User::class);
 
         /** @var User $user */
         $user = $repository->findOneBy(['username' => 'foo']);
