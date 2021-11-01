@@ -4,6 +4,7 @@ namespace Snc\RedisBundle\Client\Phpredis;
 
 use RedisCluster;
 use Snc\RedisBundle\Logger\RedisLogger;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * @internal
@@ -23,6 +24,11 @@ class ClientCluster extends RedisCluster
     protected $alias;
 
     /**
+     * @var Stopwatch|null;
+     */
+    protected $stopwatch;
+
+    /**
      * @param array            $parameters  List of parameters (only `alias` key is handled)
      * @param RedisLogger|null $logger      A RedisLogger instance
      * @param array            $seeds       https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#readme
@@ -40,7 +46,8 @@ class ClientCluster extends RedisCluster
         ?float $timeout,
         ?float $readTimeout,
         ?bool $persistent,
-        string $password = null
+        string $password = null,
+        ?Stopwatch $stopwatch = null
     ) {
         $this->logger = $logger;
         $this->alias = $parameters['alias'] ?? '';
@@ -50,6 +57,7 @@ class ClientCluster extends RedisCluster
         } else {
             parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false);
         }
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -64,12 +72,21 @@ class ClientCluster extends RedisCluster
      */
     private function call($name, array $arguments = array())
     {
+        $commandName = $this->getCommandString($name, $arguments);
+
+        if ($this->stopwatch) {
+            $event = $this->stopwatch->start($commandName, 'redis');
+        }
+
         $startTime = microtime(true);
         $result = call_user_func_array("parent::$name", $arguments);
-        $duration = (microtime(true) - $startTime) * 1000;
+
+        if (isset($event)) {
+            $event->stop();
+        }
 
         if (null !== $this->logger) {
-            $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
+            $this->logger->logCommand($commandName, (microtime(true) - $startTime) * 1000, $this->alias, false);
         }
 
         return $result;

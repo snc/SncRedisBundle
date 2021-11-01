@@ -15,6 +15,7 @@ namespace Snc\RedisBundle\Client\Phpredis;
 
 use Redis;
 use Snc\RedisBundle\Logger\RedisLogger;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * @internal
@@ -36,6 +37,10 @@ class Client extends Redis
      * @var string
      */
     protected $alias;
+    /**
+     * @var Stopwatch|null
+     */
+    private $stopwatch;
 
     /**
      * Constructor.
@@ -43,10 +48,11 @@ class Client extends Redis
      * @param array       $parameters List of parameters (only `alias` key is handled)
      * @param RedisLogger $logger     A RedisLogger instance
      */
-    public function __construct(array $parameters = array(), RedisLogger $logger = null)
+    public function __construct(array $parameters = array(), RedisLogger $logger = null, ?Stopwatch $stopwatch = null)
     {
         $this->logger = $logger;
         $this->alias = $parameters['alias'] ?? '';
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -61,12 +67,21 @@ class Client extends Redis
      */
     private function call($name, array $arguments = array())
     {
+        $commandName = $this->getCommandString($name, $arguments);
+
+        if ($this->stopwatch) {
+            $event = $this->stopwatch->start($commandName, 'redis');
+        }
+
         $startTime = microtime(true);
         $result = call_user_func_array("parent::$name", $arguments);
-        $duration = (microtime(true) - $startTime) * 1000;
+
+        if (isset($event)) {
+            $event->stop();
+        }
 
         if (null !== $this->logger) {
-            $this->logger->logCommand($this->getCommandString($name, $arguments), $duration, $this->alias, false);
+            $this->logger->logCommand($commandName, (microtime(true) - $startTime) * 1000, $this->alias, false);
         }
 
         return $result;
