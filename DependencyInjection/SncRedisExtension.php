@@ -19,6 +19,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -283,7 +284,12 @@ class SncRedisExtension extends Extension
 
         $phpredisDef = new Definition($phpredisClientClass);
         $phpredisDef->setFactory(array(
-            new Definition(PhpredisClientFactory::class, [new Reference('snc_redis.logger')]),
+            new Definition(
+                PhpredisClientFactory::class, [
+                    new Reference('snc_redis.logger'),
+                    new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                ]
+            ),
             'create'
         ));
         $phpredisDef->addArgument($phpredisClientClass);

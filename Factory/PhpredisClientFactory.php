@@ -7,6 +7,7 @@ use Snc\RedisBundle\Client\Phpredis\Client;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * @internal
@@ -17,13 +18,18 @@ class PhpredisClientFactory
      * @var RedisLogger|null
      */
     protected $logger;
+    /**
+     * @var Stopwatch|null
+     */
+    private $stopwatch;
 
     /**
      * @param RedisLogger $logger A RedisLogger instance
      */
-    public function __construct(RedisLogger $logger = null)
+    public function __construct(RedisLogger $logger = null, ?Stopwatch $stopwatch = null)
     {
         $this->logger = $logger;
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -93,12 +99,10 @@ class PhpredisClientFactory
         $args[] = $options['connection_timeout'] ?? null;
         $args[] = $options['read_write_timeout'] ?? null;
         $args[] = (bool) ($options['connection_persistent'] ?? null);
+        $args[] = $options['parameters']['password'] ?? null;
 
-        $password = $options['parameters']['password'] ?? null;
-        if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
-            $args[] = $password;
-        } elseif ($password) {
-            throw new \LogicException('Your phpredis version "'.phpversion('redis').'" does not support \RedisCluster password authentication, you need at least "4.3.0"');
+        if (is_a($class, ClientCluster::class, true)) {
+            $args[] = $this->stopwatch;
         }
 
         $client = new $class(...$args);
@@ -131,7 +135,7 @@ class PhpredisClientFactory
     {
         /** @var \Redis $client */
         if (is_a($class, Client::class, true)) {
-            $client = new $class(['alias' => $alias], $this->logger);
+            $client = new $class(['alias' => $alias], $this->logger, $this->stopwatch);
         } else {
             $client = new $class();
         }

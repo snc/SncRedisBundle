@@ -16,6 +16,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\Response\Error;
 use Snc\RedisBundle\Logger\RedisLogger;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * ConnectionWrapper
@@ -31,6 +32,11 @@ class ConnectionWrapper implements NodeConnectionInterface
      * @var RedisLogger
      */
     protected $logger;
+
+    /**
+     * @var Stopwatch|null
+     */
+    protected $stopwatch;
 
     /**
      * Constructor
@@ -67,6 +73,11 @@ class ConnectionWrapper implements NodeConnectionInterface
         $this->logger = $logger;
     }
 
+    public function setStopwatch(Stopwatch $stopwatch)
+    {
+        $this->stopwatch = $stopwatch;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -96,16 +107,9 @@ class ConnectionWrapper implements NodeConnectionInterface
      */
     public function writeRequest(CommandInterface $command)
     {
-        if (null === $this->logger) {
-            $this->connection->writeRequest($command);
-            return;
-        }
-
-        $startTime = microtime(true);
-        $this->connection->writeRequest($command);
-        $duration = (microtime(true) - $startTime) * 1000;
-
-        $this->logger->logCommand($this->commandToString($command), $duration, $this->getParameters()->alias);
+        return $this->execute($command, function (CommandInterface $command) {
+            return $this->connection->writeRequest($command);
+        });
     }
 
     /**
@@ -169,18 +173,9 @@ class ConnectionWrapper implements NodeConnectionInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        if (null === $this->logger) {
+        return $this->execute($command, function (CommandInterface $command) {
             return $this->connection->executeCommand($command);
-        }
-
-        $startTime = microtime(true);
-        $result = $this->connection->executeCommand($command);
-        $duration = (microtime(true) - $startTime) * 1000;
-
-        $error = $this->isResultTrulyAnError($result) ? (string) $result : false;
-        $this->logger->logCommand($this->commandToString($command), $duration, $this->getParameters()->alias, $error);
-
-        return $result;
+        });
     }
 
     private function commandToString(CommandInterface $command)
@@ -208,6 +203,39 @@ class ConnectionWrapper implements NodeConnectionInterface
         $accumulator .= " $argument";
 
         return $accumulator;
+    }
+
+    /**
+     * @return mixed
+     * @param \Closure(CommandInterface): mixed $execute
+     */
+    private function execute(CommandInterface $command, \Closure $execute)
+    {
+        if (!$this->logger) {
+            return $execute($command);
+        }
+
+        $commandName = $this->commandToString($command);
+
+        if ($this->stopwatch) {
+            $event = $this->stopwatch->start($commandName, 'redis');
+        }
+
+        $startTime = microtime(true);
+        $result = $execute($command);
+
+        if (isset($event)) {
+            $event->stop();
+        }
+
+        $this->logger->logCommand(
+            $this->commandToString($command),
+            (microtime(true) - $startTime) * 1000,
+            $this->getParameters()->alias,
+            $this->isResultTrulyAnError($result) ? (string) $result : false
+        );
+
+        return $result;
     }
 
     /**
