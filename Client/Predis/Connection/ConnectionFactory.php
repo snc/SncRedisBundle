@@ -32,7 +32,7 @@ class ConnectionFactory extends Factory
     protected $logger;
 
     /**
-     * @var Stopwatch
+     * @var Stopwatch|null
      */
     protected $stopwatch;
 
@@ -46,7 +46,7 @@ class ConnectionFactory extends Factory
         $this->logger = $logger;
     }
 
-    public function setStopwatch(Stopwatch $stopwatch)
+    public function setStopwatch(?Stopwatch $stopwatch)
     {
         $this->stopwatch = $stopwatch;
     }
