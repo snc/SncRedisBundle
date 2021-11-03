@@ -283,15 +283,17 @@ class SncRedisExtension extends Extension
         }
 
         $phpredisDef = new Definition($phpredisClientClass);
-        $phpredisDef->setFactory(array(
-            new Definition(
-                PhpredisClientFactory::class, [
-                    new Reference('snc_redis.logger'),
-                    new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE),
-                ]
-            ),
-            'create'
-        ));
+        $factoryDefinition = new Definition(
+            PhpredisClientFactory::class, [
+                new Reference('snc_redis.logger'),
+            ]
+        );
+
+        if ($container->getParameter('kernel.debug')) {
+            $factoryDefinition->addArgument(new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE));
+        }
+
+        $phpredisDef->setFactory([$factoryDefinition, 'create']);
         $phpredisDef->addArgument($phpredisClientClass);
         $phpredisDef->addArgument(array_map('strval', $client['dsns']));
         $phpredisDef->addArgument($client['options']);
