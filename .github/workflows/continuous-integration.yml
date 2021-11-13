@@ -39,6 +39,17 @@ jobs:
             php-version: "8.0"
             php-extensions: "redis"
             stability: "dev"
+          - symfony-require: "5.3.*"
+            php-version: "8.1"
+            php-extensions: "redis-phpredis/phpredis@develop"
+          - symfony-require: "5.4.*"
+            php-version: "8.1"
+            php-extensions: "redis-phpredis/phpredis@develop"
+            stability: "dev"
+          - symfony-require: "6.0.*"
+            php-version: "8.1"
+            php-extensions: "redis-phpredis/phpredis@develop"
+            stability: "dev"
 
     steps:
       - name: "Checkout"
