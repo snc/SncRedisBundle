@@ -118,6 +118,7 @@ class RedisSessionHandler extends AbstractSessionHandler
     /**
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function close()
     {
         if ($this->locking && $this->locked) {
@@ -132,6 +133,7 @@ class RedisSessionHandler extends AbstractSessionHandler
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function updateTimestamp($sessionId, $data)
     {
         if (0 < $this->ttl) {
@@ -146,6 +148,7 @@ class RedisSessionHandler extends AbstractSessionHandler
      *
      * @return int|false
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         // not required here because redis will auto expire the keys as long as ttl is set
