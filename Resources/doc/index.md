@@ -177,28 +177,6 @@ services:
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments: ['@snc_redis.session']
 ```
-### Doctrine caching ###
-
-Use Redis caching for Doctrine by adding this to your config:
-
-``` yaml
-snc_redis:
-    ...
-    doctrine:
-        metadata_cache:
-            client: cache
-            entity_manager: default          # the name of your entity_manager connection
-            document_manager: default        # the name of your document_manager connection
-        result_cache:
-            client: cache
-            entity_manager: [default, read]  # you may specify multiple entity_managers
-        query_cache:
-            client: cache
-            entity_manager: default
-        second_level_cache:
-            client: cache
-            entity_manager: default
-```
 
 ### Monolog logging ###
 
@@ -299,22 +277,6 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: predis
-    doctrine:
-        metadata_cache:
-            client: cache
-            entity_manager: default
-            document_manager: default
-        result_cache:
-            client: cache
-            entity_manager: [default, read]
-            document_manager: [default, slave1, slave2]
-            namespace: "dcrc:"
-        query_cache:
-            client: cache
-            entity_manager: default
-        second_level_cache:
-            client: cache
-            entity_manager: default
     monolog:
         client: cache
         key: monolog

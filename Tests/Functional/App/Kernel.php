@@ -38,7 +38,6 @@ abstract class AbstractKernel extends BaseKernel
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Snc\RedisBundle\SncRedisBundle(),
         ];
     }
@@ -86,8 +85,6 @@ if (AbstractKernel::VERSION_ID >= 50100) {
             $controller = Controller::class;
 
             $routes->add('home', '/')->controller("{$controller}::home");
-            $routes->add('create_user', '/user/create')->controller("{$controller}::createUser");
-            $routes->add('view_user', '/user/view')->controller("{$controller}::viewUser");
         }
     }
 } else {
@@ -97,8 +94,6 @@ if (AbstractKernel::VERSION_ID >= 50100) {
             $controller = Controller::class;
 
             $routes->add('/', "{$controller}::home");
-            $routes->add('/user/create', "{$controller}::createUser");
-            $routes->add('/user/view', "{$controller}::viewUser");
         }
     }
 }

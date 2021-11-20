@@ -27,9 +27,7 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
-        "doctrine/cache": "^1.4|^2.0",
-        "doctrine/doctrine-bundle": "^1.11.2 || ^2.0",
-        "doctrine/orm": "^2.7.5",
+        "doctrine/annotations": "^1.13",
         "phpunit/phpunit": "^8.5 || ^9.5",
         "predis/predis": "^1.1",
         "symfony/browser-kit": "^4.4 || ^5.3 || ^6.0",
@@ -51,9 +49,6 @@
     "config": {
         "bin-dir": "bin/",
         "sort-packages": true
-    },
-    "conflict": {
-        "doctrine/doctrine-cache-bundle": "<1.3.1"
     },
     "extra": {
         "branch-alias": {

@@ -12,7 +12,6 @@
 namespace Snc\RedisBundle\DependencyInjection;
 
 
-use Doctrine\Common\Cache\RedisCache;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -20,7 +19,6 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
@@ -55,10 +53,6 @@ class SncRedisExtension extends Extension
 
         foreach ($config['clients'] as $client) {
             $this->loadClient($client, $container);
-        }
-
-        if (isset($config['doctrine']) && count($config['doctrine'])) {
-            $this->loadDoctrine($config, $container);
         }
 
         if (isset($config['monolog'])) {
@@ -295,53 +289,6 @@ class SncRedisExtension extends Extension
 
         $phpredisId = sprintf('snc_redis.%s', $client['alias']);
         $container->setDefinition($phpredisId, $phpredisDef);
-    }
-
-    /**
-     * Loads the Doctrine configuration.
-     *
-     * @param array            $config    A configuration array
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     */
-    protected function loadDoctrine(array $config, ContainerBuilder $container)
-    {
-        foreach ($config['doctrine'] as $name => $cache) {
-            if (empty($cache['entity_managers']) && empty($cache['document_managers'])) {
-                throw new InvalidConfigurationException(sprintf('Enabling the doctrine %s section requires it to reference either an entity manager or document manager', $name));
-            }
-
-            if ('second_level_cache' === $name) {
-                $name = 'second_level_cache.region_cache_driver';
-            }
-
-            $definitionFunction = function ($client, $cache) use ($container, $config): Definition {
-                $cacheClassParam = 'snc_redis.doctrine_cache_' . $config['clients'][$cache['client']]['type'] . '.class';
-                if (RedisAdapter::class === $container->getParameter($cacheClassParam)) {
-                    return new Definition(RedisAdapter::class, [$client, $cache['namespace'] ?? '']);
-                }
-
-                $def = new Definition($container->getParameter($cacheClassParam), [$client]);
-                if ($cache['namespace']) {
-                    $def->addMethodCall('setNamespace', [$cache['namespace']]);
-                }
-
-                return $def;
-            };
-
-            $client = new Reference(sprintf('snc_redis.%s', $cache['client']));
-            foreach ($cache['entity_managers'] as $em) {
-                $id = sprintf('snc_redis.doctrine.orm.%s_%s', $em, $name);
-                $def = call_user_func_array($definitionFunction, array($client, $cache));
-                $container->setDefinition($id, $def);
-                $container->setAlias(sprintf('doctrine.orm.%s_%s', $em, $name), $id);
-            }
-            foreach ($cache['document_managers'] as $dm) {
-                $id = sprintf('snc_redis.doctrine_mongodb.odm.%s_%s', $dm, $name);
-                $def = call_user_func_array($definitionFunction, array($client, $cache));
-                $container->setDefinition($id, $def);
-                $container->setAlias(sprintf('doctrine_mongodb.odm.%s_%s', $dm, $name), $id);
-            }
-        }
     }
 
     /**

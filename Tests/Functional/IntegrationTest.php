@@ -13,16 +13,12 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
-use Snc\RedisBundle\Tests\Functional\App\Entity\User;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\ErrorHandler\DebugClassLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,14 +30,8 @@ class IntegrationTest extends WebTestCase
     /** @var KernelBrowser */
     private $client;
 
-    /** @var EntityManagerInterface */
-    private $em;
-
     protected function setUp(): void
     {
-        // TODO: Drop when we drop doctrine-bundle 1.x support
-        DebugClassLoader::disable();
-
         $fs = new Filesystem();
         $fs->remove(__DIR__ .'/App/var');
 
@@ -50,11 +40,6 @@ class IntegrationTest extends WebTestCase
         $this->client = static::createClient();
 
         $kernel = $this->client->getKernel();
-
-        $this->em = $kernel->getContainer()->get('public_doctrine')->getManager();
-        $schemaTool = new SchemaTool($this->em);
-        $metadata = $this->em->getMetadataFactory()->getAllMetadata();
-        $schemaTool->createSchema($metadata);
 
         // Clear Redis databases
         $application = new Application($kernel);
@@ -81,29 +66,6 @@ class IntegrationTest extends WebTestCase
         $collector = $this->client->getProfile()->getCollector('redis');
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
         $this->assertCount(6, $collector->getCommands());
-    }
-
-    public function testCreateUser()
-    {
-        $response = $this->profileRequest('GET', '/user/create');
-
-        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
-    }
-
-    public function testViewUser()
-    {
-        $user = (new User())
-            ->setUsername('foo')
-            ->setEmail('bar@example.org')
-        ;
-
-        $this->em->persist($user);
-        $this->em->flush();
-        $this->em->clear();
-
-        $response = $this->profileRequest('GET', '/user/view');
-
-        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
     }
 
     private function profileRequest(string $method, string $uri): Response

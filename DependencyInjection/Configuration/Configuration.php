@@ -11,9 +11,6 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
-use Doctrine\Common\Cache\PredisCache;
-use Doctrine\Common\Cache\RedisCache;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -55,16 +52,12 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('phpredis_clusterclient_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\ClientCluster')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                        // class_exists are here for BC with doctrine/cache < 2
-                        ->scalarNode('doctrine_cache_phpredis')->defaultValue(class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class)->end()
-                        ->scalarNode('doctrine_cache_predis')->defaultValue(class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class)->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
                     ->end()
                 ->end()
             ->end();
 
         $this->addClientsSection($rootNode);
-        $this->addDoctrineSection($rootNode);
         $this->addMonologSection($rootNode);
 
         return $treeBuilder;
@@ -142,52 +135,6 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
-    }
-
-    /**
-     * Adds the snc_redis.doctrine configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
-     */
-    private function addDoctrineSection(ArrayNodeDefinition $rootNode)
-    {
-        $doctrineNode = $rootNode->children()
-            ->arrayNode('doctrine')
-            ->setDeprecated('snc/redis-bundle', '3.6', 'Set up your cache pools via framework.yaml and follow doctrine-bundle documentation to configure Doctrine to use them.')
-            ->canBeUnset()
-        ;
-        foreach (array('metadata_cache', 'result_cache', 'query_cache', 'second_level_cache') as $type) {
-            $doctrineNode
-                ->children()
-                    ->arrayNode($type)
-                        ->canBeUnset()
-                        ->children()
-                            ->scalarNode('client')->isRequired()->end()
-                            ->scalarNode('namespace')->defaultNull()->end()
-                        ->end()
-                        ->fixXmlConfig('entity_manager')
-                        ->children()
-                            ->arrayNode('entity_managers')
-                                ->defaultValue(array())
-                                ->beforeNormalization()->ifString()->then(function ($v) {
-                                    return (array) $v;
-                                })->end()
-                                ->prototype('scalar')->end()
-                            ->end()
-                        ->end()
-                        ->fixXmlConfig('document_manager')
-                        ->children()
-                            ->arrayNode('document_managers')
-                                ->defaultValue(array())
-                                ->beforeNormalization()->ifString()->then(function ($v) {
-                                    return (array) $v;
-                                })->end()
-                                ->prototype('scalar')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end();
-        }
     }
 
     /**

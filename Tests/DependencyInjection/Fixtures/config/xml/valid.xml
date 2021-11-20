@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redis="http://symfony.com/schema/dic/redis" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/redis http://symfony.com/schema/dic/redis/redis-1.0.xsd">
     <redis:config>
-        <redis:class doctrine-cache="Snc\RedisBundle\Doctrine\Cache\RedisSetCache" />
         <redis:client alias="default" logging="true" type="predis">
             <redis:dsn>redis://localhost</redis:dsn>
             <redis:options connection-async="true" connection-persistent="true" connection-timeout="66" read-write-timeout="123" cluster="Snc\RedisBundle\Client\Predis\Connection\PredisCluster" iterable-multibulk="true" profile="2.6" throw-errors="true" prefix="true" />
@@ -11,18 +10,6 @@
             <redis:dsn>redis://pw@/var/run/redis/redis-1.sock/10</redis:dsn>
             <redis:dsn>redis://pw@127.0.0.1:63790/10</redis:dsn>
         </redis:client>
-        <redis:doctrine>
-            <redis:metadata-cache client="cache" namespace="myNameSpace:">
-                <redis:entity-manager>default</redis:entity-manager>
-            </redis:metadata-cache>
-            <redis:result-cache client="resultcache">
-                <redis:entity-manager>write</redis:entity-manager>
-                <redis:entity-manager>read</redis:entity-manager>
-            </redis:result-cache>
-            <redis:query-cache client="cache">
-                <redis:entity-manager>default</redis:entity-manager>
-            </redis:query-cache>
-        </redis:doctrine>
         <redis:monolog client="monolog" key="monolog" />
     </redis:config>
 </container>

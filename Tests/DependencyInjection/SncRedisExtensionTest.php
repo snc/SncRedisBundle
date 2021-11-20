@@ -11,8 +11,6 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
-use Doctrine\Common\Cache\PredisCache;
-use Doctrine\Common\Cache\RedisCache;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
@@ -46,9 +44,6 @@ class SncRedisExtensionTest extends TestCase
             array('snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'),
             array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
             array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
-            // class_exists are here for BC with doctrine/cache < 2
-            array('snc_redis.doctrine_cache_phpredis.class', class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class),
-            array('snc_redis.doctrine_cache_predis.class', class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class),
             array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
         );
     }
@@ -164,18 +159,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
         $this->assertFalse($container->hasAlias('snc_redis.cluster_client'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_second_level_cache.region_cache_driver'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.read_result_cache'));
-
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.default_metadata_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.default_result_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.default_query_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.slave1_result_cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.doctrine_mongodb.odm.slave2_result_cache'));
-
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog.handler'));
@@ -190,16 +173,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertArrayHasKey('snc_redis.cluster', $tags);
         $this->assertEquals([['alias' => 'cache']], $tags['snc_redis.cache']);
         $this->assertEquals([['alias' => 'cluster']], $tags['snc_redis.cluster']);
-    }
-
-    public function testInvalidDoctrineCacheConfigLoad()
-    {
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('requires it to reference either an entity manager or document manager');
-
-        $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getInvalidDoctrineCacheConfig());
-        $extension->load(array($config), $this->getContainer());
     }
 
     public function testInvalidMonologConfigLoad()
@@ -552,44 +525,9 @@ clients:
             parameters:
                 database: 1
                 password: pass
-doctrine:
-    metadata_cache:
-        client: cache
-        entity_manager: default
-        document_manager: default
-    result_cache:
-        client: cache
-        entity_manager: [default, read]
-        document_manager: [default, slave1, slave2]
-        namespace: "dcrc:"
-    query_cache:
-        client: cache
-        entity_manager: default
-        document_manager: default
-    second_level_cache:
-        client: cache
-        entity_manager: default
-        document_manager: default
 monolog:
     client: monolog
     key: monolog
-EOF;
-    }
-
-    private function getInvalidDoctrineCacheConfig()
-    {
-        return <<<'EOF'
-clients:
-    cache:
-        type: predis
-        dsn: redis://localhost
-doctrine:
-    metadata_cache:
-        client: cache
-    result_cache:
-        client: cache
-    query_cache:
-        client: cache
 EOF;
     }
 

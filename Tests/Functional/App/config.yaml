@@ -13,20 +13,6 @@ web_profiler:
     toolbar: false
     intercept_redirects: false
 
-doctrine:
-    dbal:
-        driver: 'pdo_sqlite'
-        path: '%kernel.project_dir%/var/test.db'
-    orm:
-        auto_generate_proxy_classes: '%kernel.debug%'
-        auto_mapping: true
-        mappings:
-            App:
-                is_bundle: false
-                type: annotation
-                dir: '%kernel.project_dir%/Entity'
-                prefix: 'Snc\RedisBundle\Tests\Functional\App\Entity'
-
 snc_redis:
     clients:
         default:
@@ -55,22 +41,6 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: Snc\RedisBundle\Client\Predis\Connection\PredisCluster
-    doctrine:
-        metadata_cache:
-            client: cache
-            entity_manager: default
-            document_manager: default
-        result_cache:
-            client: cache
-            entity_manager: [default, read]
-            document_manager: [default, slave1, slave2]
-            namespace: "dcrc_"
-        query_cache:
-            client: cache
-            entity_manager: default
-        second_level_cache:
-            client: cache
-            entity_manager: default
 
 services:
     _defaults:
@@ -79,10 +49,6 @@ services:
         public: false
 
     Redis: '@snc_redis.default'
-
-    public_doctrine:
-        alias: 'doctrine'
-        public: true
 
     logger:
         class: Psr\Log\NullLogger

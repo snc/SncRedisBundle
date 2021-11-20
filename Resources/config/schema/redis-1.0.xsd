@@ -11,7 +11,6 @@
         <xsd:sequence>
             <xsd:element name="class" type="class" minOccurs="0" maxOccurs="1" />
             <xsd:element name="client" type="client" minOccurs="1" maxOccurs="unbounded" />
-            <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
             <xsd:element name="monolog" type="monolog" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
     </xsd:complexType>
@@ -24,7 +23,6 @@
         <xsd:attribute name="connection-wrapper" type="xsd:string" />
         <xsd:attribute name="logger" type="xsd:string" />
         <xsd:attribute name="data-collector" type="xsd:string" />
-        <xsd:attribute name="doctrine-cache" type="xsd:string" />
         <xsd:attribute name="monolog-handler" type="xsd:string" />
     </xsd:complexType>
 
@@ -88,23 +86,6 @@
             <xsd:enumeration value="dev" />
         </xsd:restriction>
     </xsd:simpleType>
-
-    <xsd:complexType name="doctrine">
-        <xsd:sequence>
-            <xsd:element name="metadata-cache" type="doctrine-cache" minOccurs="0" maxOccurs="1" />
-            <xsd:element name="result-cache" type="doctrine-cache" minOccurs="0" maxOccurs="1" />
-            <xsd:element name="query-cache" type="doctrine-cache" minOccurs="0" maxOccurs="1" />
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="doctrine-cache">
-        <xsd:sequence>
-            <xsd:element name="entity-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-            <xsd:element name="document-manager" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-        </xsd:sequence>
-        <xsd:attribute name="client" type="xsd:string" use="required" />
-        <xsd:attribute name="namespace" type="xsd:string" />
-    </xsd:complexType>
 
     <xsd:complexType name="monolog">
         <xsd:attribute name="client" type="xsd:string" use="required" />
