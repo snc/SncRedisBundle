@@ -15,7 +15,7 @@ use Snc\RedisBundle\Session\Storage\Handler\RedisSessionHandler;
 use PHPUnit\Framework\TestCase;
 
 /**
- * RedisSessionHandlerTest
+ * @group legacy
  */
 class RedisSessionHandlerTest extends TestCase
 {

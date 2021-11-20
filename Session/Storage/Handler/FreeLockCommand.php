@@ -4,6 +4,9 @@ namespace Snc\RedisBundle\Session\Storage\Handler;
 
 use Predis\Command\ScriptCommand;
 
+/**
+ * @deprecated Since 3.6
+ */
 class FreeLockCommand extends ScriptCommand
 {
     public function getKeysCount()

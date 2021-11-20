@@ -167,6 +167,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('session')
+                    ->setDeprecated('snc/redis-bundle', '3.6', 'Use Symfony built-int RedisSessionHandler instead.')
                     ->canBeUnset()
                     ->children()
                         ->scalarNode('client')->isRequired()->end()

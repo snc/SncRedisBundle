@@ -14,6 +14,8 @@ namespace Snc\RedisBundle\Session\Storage\Handler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler;
 
 /**
+ * @deprecated Since 3.6. Use \Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler instead
+ *
  * Redis based session storage with session locking support.
  *
  * @author Justin Rainbow <justin.rainbow@gmail.com>
