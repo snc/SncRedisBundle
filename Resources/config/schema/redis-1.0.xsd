@@ -11,7 +11,6 @@
         <xsd:sequence>
             <xsd:element name="class" type="class" minOccurs="0" maxOccurs="1" />
             <xsd:element name="client" type="client" minOccurs="1" maxOccurs="unbounded" />
-            <xsd:element name="session" type="session" minOccurs="0" maxOccurs="1" />
             <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
             <xsd:element name="monolog" type="monolog" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
@@ -89,15 +88,6 @@
             <xsd:enumeration value="dev" />
         </xsd:restriction>
     </xsd:simpleType>
-
-    <xsd:complexType name="session">
-        <xsd:attribute name="client" type="xsd:string" use="required" />
-        <xsd:attribute name="prefix" type="xsd:string" />
-        <xsd:attribute name="ttl" type="xsd:int" />
-        <xsd:attribute name="use-as-default" type="xsd:boolean" />
-        <xsd:attribute name="locking" type="xsd:boolean" />
-        <xsd:attribute name="spin_lock_wait" type="xsd:int" />
-    </xsd:complexType>
 
     <xsd:complexType name="doctrine">
         <xsd:sequence>

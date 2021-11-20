@@ -76,10 +76,6 @@ snc_redis:
                 profile: 2.2
                 connection_timeout: 10
                 read_write_timeout: 30
-        session:
-            type: predis
-            alias: session
-            dsn: redis://localhost/2
         cluster:
             type: predis
             alias: cluster
@@ -160,53 +156,27 @@ snc_redis:
 
 ### Sessions ###
 
-Use Redis sessions by adding the following to your config:
+Use Redis sessions by utilizing Symfony built-in Redis session handler like so:
 
+First, define your redis clients:
 ``` yaml
 snc_redis:
-    ...
-    session:
-        client: session
+    clients:
+        session:
+            type: predis
+            alias: session
+            dsn: redis://localhost/1
 ```
-
-This bundle then provides the `snc_redis.session.handler` service which
-you have to activate at `framework.session.handler_id`:
-
+Then, reference it in your framework.yaml config:
 ``` yaml
 framework:
     ...
     session:
-        handler_id: snc_redis.session.handler
+        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
+services:
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments: ['@snc_redis.session']
 ```
-
-This will use the default prefix `session`.
-
-You may specify another `prefix`:
-
-``` yaml
-snc_redis:
-    ...
-    session:
-        client: session
-        prefix: foo
-```
-
-By default, a TTL is set using the `framework.session.cookie_lifetime` parameter. But
-you can override it using the `ttl` option:
-
-``` yaml
-snc_redis:
-    ...
-    session:
-        client: session
-        ttl: 1200
-```
-
-This will make session data expire after 20 minutes, on the **server side**.
-This is highly recommended if you don't set an expiration date to the session
-cookie. Note that using Redis for storing sessions is a good solution to avoid
-garbage collection of sessions by PHP.
-
 ### Doctrine caching ###
 
 Use Redis caching for Doctrine by adding this to your config:
@@ -329,9 +299,6 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: predis
-    session:
-        client: default
-        prefix: foo
     doctrine:
         metadata_cache:
             client: cache

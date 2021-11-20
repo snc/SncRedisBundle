@@ -64,7 +64,6 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         $this->addClientsSection($rootNode);
-        $this->addSessionSection($rootNode);
         $this->addDoctrineSection($rootNode);
         $this->addMonologSection($rootNode);
 
@@ -140,29 +139,6 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
-                    ->end()
-                ->end()
-            ->end();
-    }
-
-    /**
-     * Adds the snc_redis.session configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
-     */
-    private function addSessionSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode
-            ->children()
-                ->arrayNode('session')
-                    ->setDeprecated('snc/redis-bundle', '3.6', 'Use Symfony built-int RedisSessionHandler instead.')
-                    ->canBeUnset()
-                    ->children()
-                        ->scalarNode('client')->isRequired()->end()
-                        ->scalarNode('prefix')->defaultValue('session')->end()
-                        ->scalarNode('ttl')->end()
-                        ->booleanNode('locking')->defaultTrue()->end()
-                        ->scalarNode('spin_lock_wait')->defaultValue(150000)->end()
                     ->end()
                 ->end()
             ->end();

@@ -11,7 +11,6 @@
             <redis:dsn>redis://pw@/var/run/redis/redis-1.sock/10</redis:dsn>
             <redis:dsn>redis://pw@127.0.0.1:63790/10</redis:dsn>
         </redis:client>
-        <redis:session client="session" prefix="foo" ttl="1440" use-as-default="false" />
         <redis:doctrine>
             <redis:metadata-cache client="cache" namespace="myNameSpace:">
                 <redis:entity-manager>default</redis:entity-manager>

@@ -57,10 +57,6 @@ class SncRedisExtension extends Extension
             $this->loadClient($client, $container);
         }
 
-        if (isset($config['session'])) {
-            $this->loadSession($config, $container, $loader);
-        }
-
         if (isset($config['doctrine']) && count($config['doctrine'])) {
             $this->loadDoctrine($config, $container);
         }
@@ -299,34 +295,6 @@ class SncRedisExtension extends Extension
 
         $phpredisId = sprintf('snc_redis.%s', $client['alias']);
         $container->setDefinition($phpredisId, $phpredisDef);
-    }
-
-    /**
-     * Loads the session configuration.
-     *
-     * @param array            $config    A configuration array
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     * @param XmlFileLoader    $loader    A XmlFileLoader instance
-     */
-    protected function loadSession(array $config, ContainerBuilder $container, XmlFileLoader $loader)
-    {
-        $loader->load('session.xml');
-
-        $container->setParameter('snc_redis.session.client', $config['session']['client']);
-        $container->setParameter('snc_redis.session.prefix', $config['session']['prefix']);
-        $container->setParameter('snc_redis.session.locking', $config['session']['locking']);
-        $container->setParameter('snc_redis.session.spin_lock_wait', $config['session']['spin_lock_wait']);
-
-        $client = $container->getParameter('snc_redis.session.client');
-
-        $client = sprintf('snc_redis.%s', $client);
-
-        $container->setAlias('snc_redis.session.client', $client);
-
-        if (isset($config['session']['ttl'])) {
-            $definition = $container->getDefinition('snc_redis.session.handler');
-            $definition->addMethodCall('setTtl', array($config['session']['ttl']));
-        }
     }
 
     /**

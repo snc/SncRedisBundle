@@ -164,8 +164,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
         $this->assertFalse($container->hasAlias('snc_redis.cluster_client'));
 
-        $this->assertTrue($container->hasDefinition('snc_redis.session.handler'));
-
         $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_metadata_cache'));
         $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_result_cache'));
         $this->assertTrue($container->hasDefinition('snc_redis.doctrine.orm.default_query_cache'));
@@ -554,10 +552,6 @@ clients:
             parameters:
                 database: 1
                 password: pass
-session:
-    client: default
-    prefix: foo
-    ttl: 1440
 doctrine:
     metadata_cache:
         client: cache
