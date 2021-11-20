@@ -3,6 +3,7 @@
 ## 4.0.0 ##
 
 - Removed redis profiler storage feature `snc_redis.profiler_storage`
+- Removed SwiftMailer support
 
 ## 3.0.0 ##
 

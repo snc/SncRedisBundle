@@ -12,7 +12,7 @@
 namespace Snc\RedisBundle\SwiftMailer;
 
 /**
- * RedisSpool5 (Swift Mailer 5.x)
+ * @deprecated
  */
 class RedisSpool5 extends RedisSpool
 {
