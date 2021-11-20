@@ -74,12 +74,6 @@ snc_redis:
         second_level_cache:
             client: cache
             entity_manager: default
-#    monolog:
-#        client: cache
-#        key: monolog
-    swiftmailer:
-        client: default
-        key: swiftmailer
 
 services:
     _defaults:

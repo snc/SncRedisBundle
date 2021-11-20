@@ -25,6 +25,5 @@
             </redis:query-cache>
         </redis:doctrine>
         <redis:monolog client="monolog" key="monolog" />
-        <redis:swiftmailer client="swiftmailer" key="swiftmailer" />
     </redis:config>
 </container>

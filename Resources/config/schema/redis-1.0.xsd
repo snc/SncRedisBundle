@@ -14,7 +14,6 @@
             <xsd:element name="session" type="session" minOccurs="0" maxOccurs="1" />
             <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
             <xsd:element name="monolog" type="monolog" minOccurs="0" maxOccurs="1" />
-            <xsd:element name="swiftmailer" type="swiftmailer" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
     </xsd:complexType>
 
@@ -28,7 +27,6 @@
         <xsd:attribute name="data-collector" type="xsd:string" />
         <xsd:attribute name="doctrine-cache" type="xsd:string" />
         <xsd:attribute name="monolog-handler" type="xsd:string" />
-        <xsd:attribute name="swiftmailer-spool" type="xsd:string" />
     </xsd:complexType>
 
     <xsd:complexType name="client">
@@ -122,11 +120,6 @@
         <xsd:attribute name="client" type="xsd:string" use="required" />
         <xsd:attribute name="key" type="xsd:string" use="required" />
         <xsd:attribute name="formatter" type="xsd:string" />
-    </xsd:complexType>
-
-    <xsd:complexType name="swiftmailer">
-        <xsd:attribute name="client" type="xsd:string" use="required" />
-        <xsd:attribute name="key" type="xsd:string" use="required" />
     </xsd:complexType>
 
 </xsd:schema>

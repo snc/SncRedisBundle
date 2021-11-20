@@ -59,7 +59,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('doctrine_cache_phpredis')->defaultValue(class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class)->end()
                         ->scalarNode('doctrine_cache_predis')->defaultValue(class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class)->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
-                        ->scalarNode('swiftmailer_spool')->defaultValue('Snc\RedisBundle\SwiftMailer\RedisSpool')->end()
                     ->end()
                 ->end()
             ->end();
@@ -68,7 +67,6 @@ class Configuration implements ConfigurationInterface
         $this->addSessionSection($rootNode);
         $this->addDoctrineSection($rootNode);
         $this->addMonologSection($rootNode);
-        $this->addSwiftMailerSection($rootNode);
 
         return $treeBuilder;
     }
@@ -231,26 +229,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('client')->isRequired()->end()
                         ->scalarNode('key')->isRequired()->end()
                         ->scalarNode('formatter')->end()
-                    ->end()
-                ->end()
-            ->end();
-    }
-
-    /**
-     * Adds the snc_redis.swiftmailer configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
-     */
-    private function addSwiftMailerSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode
-            ->children()
-                ->arrayNode('swiftmailer')
-                    ->setDeprecated('snc/redis-bundle', '3.6')
-                    ->canBeUnset()
-                    ->children()
-                        ->scalarNode('client')->isRequired()->end()
-                        ->scalarNode('key')->isRequired()->end()
                     ->end()
                 ->end()
             ->end();

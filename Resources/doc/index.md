@@ -274,46 +274,6 @@ snc_redis:
         formatter: my_custom_formatter
 ```
 
-### SwiftMailer spooling ###
-
-You can spool your mails in a redis `LIST` by adding this to your config:
-
-``` yaml
-snc_redis:
-    clients:
-        default:
-            type: predis
-            alias: default
-            dsn: redis://localhost
-            logging: false
-    swiftmailer:
-        client: default
-        key: swiftmailer
-```
-
-Additionally you have to configure the swiftmailer spool:
-
-Since version 2.2.6 and 2.3.4 of the SwiftmailerBundle you can configure
-custom spool implementations using the `service` type:
-
-``` yaml
-swiftmailer:
-    ...
-    spool:
-        type: service
-        id: snc_redis.swiftmailer.spool
-```
-
-If you are using an older version of the SwiftmailerBundle the following configuration
-should work, but this was kind of a hack:
-
-``` yaml
-swiftmailer:
-    ...
-    spool:
-        type: redis
-```
-
 ### Symfony Cache Pools ###
 
 If you want to use one of the client connections for the Symfony App Cache or a Symfony Cache Pool, just use its service name as a cache pool provider:
@@ -391,9 +351,6 @@ snc_redis:
     monolog:
         client: cache
         key: monolog
-    swiftmailer:
-        client: default
-        key: swiftmailer
 ```
 
 ## Usage with `symfony/web-profiler-bundle`

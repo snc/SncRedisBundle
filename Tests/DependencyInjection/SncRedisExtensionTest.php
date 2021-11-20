@@ -50,7 +50,6 @@ class SncRedisExtensionTest extends TestCase
             array('snc_redis.doctrine_cache_phpredis.class', class_exists(RedisCache::class) ? RedisCache::class : RedisAdapter::class),
             array('snc_redis.doctrine_cache_predis.class', class_exists(PredisCache::class) ? PredisCache::class : RedisAdapter::class),
             array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
-            array('snc_redis.swiftmailer_spool.class', 'Snc\RedisBundle\SwiftMailer\RedisSpool'),
         );
     }
 
@@ -182,9 +181,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog.handler'));
-
-        $this->assertTrue($container->hasDefinition('snc_redis.swiftmailer.spool'));
-        $this->assertTrue($container->hasAlias('swiftmailer.spool.redis'));
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertGreaterThanOrEqual(4, count($container->findTaggedServiceIds('snc_redis.client')), 'expected at least 4 tagged clients');
@@ -583,9 +579,6 @@ doctrine:
 monolog:
     client: monolog
     key: monolog
-swiftmailer:
-    client: default
-    key: swiftmailer
 EOF;
     }
 
