@@ -13,24 +13,23 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 
 use Doctrine\Common\Cache\RedisCache;
+use Predis\Command\Processor\KeyPrefixProcessor;
 use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
+use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Snc\RedisBundle\Factory\PhpredisClientFactory;
-use Predis\Command\Processor\KeyPrefixProcessor;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class SncRedisExtension extends Extension
 {
@@ -77,10 +76,6 @@ class SncRedisExtension extends Extension
             $this->loadSwiftMailer($config, $container);
         }
 
-        if (isset($config['profiler_storage'])) {
-            $this->loadProfilerStorage($config, $container, $loader);
-        }
-
         $container->registerForAutoconfiguration(RedisBaseCommand::class)
             ->addTag('snc_redis.command');
     }
@@ -111,9 +106,7 @@ class SncRedisExtension extends Extension
     {
         $dsnResolver = function ($dsn) use ($container) {
             $usedEnvs = null;
-            if (method_exists($container, 'resolveEnvPlaceholders')) {
-                $container->resolveEnvPlaceholders($dsn, null, $usedEnvs);
-            }
+            $container->resolveEnvPlaceholders($dsn, null, $usedEnvs);
 
             if ($usedEnvs) {
                 return new RedisEnvDsn($dsn);
@@ -129,10 +122,7 @@ class SncRedisExtension extends Extension
         };
 
         $client['dsns'] = array_map($dsnResolver, $client['dsns']);
-
-        if (method_exists($container, 'resolveEnvPlaceholders')) {
-            $client['type'] = $container->resolveEnvPlaceholders($client['type'], true);
-        }
+        $client['type'] = $container->resolveEnvPlaceholders($client['type'], true);
 
         switch ($client['type']) {
             case 'predis':
@@ -191,9 +181,7 @@ class SncRedisExtension extends Extension
 
         $profile = $client['options']['profile'];
         // TODO can be shared between clients?!
-        if (method_exists($container, 'resolveEnvPlaceholders')) {
-            $profile = $container->resolveEnvPlaceholders($profile, true);
-        }
+        $profile = $container->resolveEnvPlaceholders($profile, true);
         $profile = !is_string($profile) ? sprintf('%.1F', $profile) : $profile;
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
         $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($profile))); // TODO get_class alternative?
@@ -428,30 +416,6 @@ class SncRedisExtension extends Extension
         $def->addMethodCall('setKey', array($config['swiftmailer']['key']));
         $container->setDefinition('snc_redis.swiftmailer.spool', $def);
         $container->setAlias('swiftmailer.spool.redis', 'snc_redis.swiftmailer.spool');
-    }
-
-     /* Loads the profiler storage configuration.
-     *
-     * @param array            $config    A configuration array
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     * @param XmlFileLoader    $loader    A XmlFileLoader instance
-     */
-    protected function loadProfilerStorage(array $config, ContainerBuilder $container, XmlFileLoader $loader)
-    {
-        if (Kernel::VERSION_ID >= 40400) {
-            @trigger_error('Redis profiler storage is not available anymore since Symfony 4.4. The option has been disabled automatically.', E_USER_WARNING);
-
-            return;
-        }
-
-        $loader->load('profiler_storage.xml');
-
-        $container->setParameter('snc_redis.profiler_storage.client', $config['profiler_storage']['client']);
-        $container->setParameter('snc_redis.profiler_storage.ttl', $config['profiler_storage']['ttl']);
-
-        $client = $container->getParameter('snc_redis.profiler_storage.client');
-        $client = sprintf('snc_redis.%s', $client);
-        $container->setAlias('snc_redis.profiler_storage.client', $client);
     }
 
     /**

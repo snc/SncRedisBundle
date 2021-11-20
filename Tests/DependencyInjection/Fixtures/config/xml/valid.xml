@@ -26,6 +26,5 @@
         </redis:doctrine>
         <redis:monolog client="monolog" key="monolog" />
         <redis:swiftmailer client="swiftmailer" key="swiftmailer" />
-        <redis:profiler_storage client="profiler_storage" ttl="3600" />
     </redis:config>
 </container>

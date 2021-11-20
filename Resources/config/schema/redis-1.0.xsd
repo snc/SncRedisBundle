@@ -15,7 +15,6 @@
             <xsd:element name="doctrine" type="doctrine" minOccurs="0" maxOccurs="1" />
             <xsd:element name="monolog" type="monolog" minOccurs="0" maxOccurs="1" />
             <xsd:element name="swiftmailer" type="swiftmailer" minOccurs="0" maxOccurs="1" />
-            <xsd:element name="profiler_storage" type="profiler_storage" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
     </xsd:complexType>
 
@@ -130,8 +129,4 @@
         <xsd:attribute name="key" type="xsd:string" use="required" />
     </xsd:complexType>
 
-    <xsd:complexType name="profiler_storage">
-        <xsd:attribute name="client" type="xsd:string" use="required" />
-        <xsd:attribute name="ttl" type="xsd:int" use="required" />
-    </xsd:complexType>
 </xsd:schema>

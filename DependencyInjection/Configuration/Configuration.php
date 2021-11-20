@@ -14,8 +14,6 @@ namespace Snc\RedisBundle\DependencyInjection\Configuration;
 use Doctrine\Common\Cache\PredisCache;
 use Doctrine\Common\Cache\RedisCache;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
-use Symfony\Component\Config\Definition\BaseNode;
-use function method_exists;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -41,14 +39,7 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('snc_redis');
 
-        if (method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            // BC layer for symfony/config 4.1 and older
-            $rootNode = $treeBuilder->root('snc_redis');
-        }
-
-        $rootNode
+        $rootNode = $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('class')
                     ->addDefaultsIfNotSet()
@@ -78,7 +69,6 @@ class Configuration implements ConfigurationInterface
         $this->addDoctrineSection($rootNode);
         $this->addMonologSection($rootNode);
         $this->addSwiftMailerSection($rootNode);
-        $this->addProfilerStorageSection($rootNode);
 
         return $treeBuilder;
     }
@@ -264,44 +254,5 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
-    }
-
-    /**
-     * Adds the snc_redis.profiler_storage configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
-     */
-    private function addProfilerStorageSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode
-            ->children()
-                ->arrayNode('profiler_storage')
-                    ->setDeprecated(...$this->getProfilerStorageDeprecationMessage())
-                    ->canBeUnset()
-                    ->children()
-                        ->scalarNode('client')->isRequired()->end()
-                        ->scalarNode('ttl')->isRequired()->end()
-                    ->end()
-                ->end()
-            ->end();
-    }
-
-    /**
-     * Keep compatibility with symfony/config < 5.1
-     *
-     * The signature of method NodeDefinition::setDeprecated() has been updated to
-     * NodeDefinition::setDeprecation(string $package, string $version, string $message).
-     *
-     * @return array
-     */
-    private function getProfilerStorageDeprecationMessage(): array
-    {
-        $message = 'Redis profiler storage is not available anymore since Symfony 4.4';
-
-        if (method_exists(BaseNode::class, 'getDeprecation')) {
-            return ['snc/redis-bundle', '3.2.0', $message];
-        }
-
-        return [$message];
     }
 }

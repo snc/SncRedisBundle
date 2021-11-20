@@ -12,6 +12,8 @@
 namespace Snc\RedisBundle\DataCollector;
 
 use Snc\RedisBundle\Logger\RedisLogger;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
@@ -19,8 +21,6 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
  */
 class RedisDataCollector extends DataCollector
 {
-    use DataCollectorSymfonyCompatibilityTrait;
-
     /**
      * @var RedisLogger
      */
@@ -89,6 +89,16 @@ class RedisDataCollector extends DataCollector
         }
 
         return $time;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
+    {
+        $this->data = array(
+            'commands' => $this->logger->getCommands(),
+        );
     }
 
     /**

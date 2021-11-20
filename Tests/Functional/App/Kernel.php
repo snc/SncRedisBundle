@@ -47,23 +47,16 @@ abstract class AbstractKernel extends BaseKernel
     {
         $loader->load(__DIR__ . '/config.yaml');
 
-        // Since symfony/framework-bundle 5.1: Not setting the "framework.router.utf8" configuration option
-        // is deprecated, it will default to "true" in version 6.0.
-        if (self::VERSION_ID >= 50100) {
-            $container->loadFromExtension('framework', [
-                'router' => [
-                    'utf8' => false,
-                ]
-            ]);
-        }
-
         // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option
         // is deprecated, it will replace the "framework.session.storage_id" configuration option in version 6.0.
         if (self::VERSION_ID >= 50300) {
             $container->loadFromExtension('framework', [
                 'session' => [
                     'storage_factory_id' => 'session.storage.factory.mock_file',
-                ]
+                ],
+                'router' => [
+                    'utf8' => false,
+                ],
             ]);
         } else {
             $container->loadFromExtension('framework', [

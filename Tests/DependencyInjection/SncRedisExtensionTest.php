@@ -586,9 +586,6 @@ monolog:
 swiftmailer:
     client: default
     key: swiftmailer
-profiler_storage:
-    client: default
-    ttl: 3600
 EOF;
     }
 

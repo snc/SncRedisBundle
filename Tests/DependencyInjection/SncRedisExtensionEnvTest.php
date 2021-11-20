@@ -3,27 +3,14 @@
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
+use Snc\RedisBundle\Client\Phpredis\Client;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\HttpKernel\Kernel;
-use Snc\RedisBundle\Client\Phpredis\Client;
 
 class SncRedisExtensionEnvTest extends TestCase
 {
-    /**
-     * @see http://symfony.com/blog/new-in-symfony-3-2-runtime-environment-variables
-     */
-    protected function setUp(): void
-    {
-        if (version_compare(Kernel::VERSION, '3.2.0', '<')) {
-            $this->markTestSkipped(
-                'env() style parameters are supported from Symfony 3.2.0 onwards.'
-            );
-        }
-    }
-
     public function testPredisDefaultParameterConfigLoad()
     {
         $container = $this->getConfiguredContainer('env_predis_minimal');
