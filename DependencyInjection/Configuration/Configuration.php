@@ -251,6 +251,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('swiftmailer')
+                    ->setDeprecated('snc/redis-bundle', '3.6')
                     ->canBeUnset()
                     ->children()
                         ->scalarNode('client')->isRequired()->end()

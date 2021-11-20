@@ -16,6 +16,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 
+/**
+ * @deprecated
+ */
 class SwiftMailerPass implements CompilerPassInterface
 {
     const SERVICE_ID = 'snc_redis.swiftmailer.spool';
