@@ -19,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  * RateLimitTest.
  *
  * @author Pierre Boudelle <pierre.boudelle@gmail.com>
+ * @group legacy
  */
 class RateLimitTest extends TestCase
 {

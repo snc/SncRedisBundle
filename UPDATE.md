@@ -4,6 +4,7 @@
 
 - Removed redis profiler storage feature `snc_redis.profiler_storage`
 - Removed SwiftMailer support
+- Removed RateLimit class. Use symfony/rate-limiter instead
 
 ## 3.0.0 ##
 

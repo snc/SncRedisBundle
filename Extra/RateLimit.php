@@ -31,6 +31,7 @@ use Predis\Transaction\MultiExec;
  *     }
  *
  * @author Henrik Westphal <henrik.westphal@gmail.com>
+ * @deprecated Since 3.6. Use symfony/rate-limiter instead.
  */
 class RateLimit
 {
