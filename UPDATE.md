@@ -3,8 +3,9 @@
 ## 4.0.0 ##
 
 - Removed redis profiler storage feature `snc_redis.profiler_storage`
-- Removed SwiftMailer support
+- Removed SwiftMailer integration
 - Removed RateLimit class. Use symfony/rate-limiter instead
+- Removed doctrine integration. Set up your cache pools via framework.yaml and follow doctrine-bundle documentation to configure Doctrine to use them.
 
 ## 3.0.0 ##
 

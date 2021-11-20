@@ -187,7 +187,11 @@ class Configuration implements ConfigurationInterface
      */
     private function addDoctrineSection(ArrayNodeDefinition $rootNode)
     {
-        $doctrineNode = $rootNode->children()->arrayNode('doctrine')->canBeUnset();
+        $doctrineNode = $rootNode->children()
+            ->arrayNode('doctrine')
+            ->setDeprecated('snc/redis-bundle', '3.6', 'Set up your cache pools via framework.yaml and follow doctrine-bundle documentation to configure Doctrine to use them.')
+            ->canBeUnset()
+        ;
         foreach (array('metadata_cache', 'result_cache', 'query_cache', 'second_level_cache') as $type) {
             $doctrineNode
                 ->children()
