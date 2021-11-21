@@ -263,12 +263,13 @@ class PhpredisClientFactory
             $prefixInterceptors[$name] = function (
                 AccessInterceptorInterface $proxy,
                 object $instance,
-                string $method
+                string $method,
+                array $args
             ) use (&$time, &$event): void {
                 $time = microtime(true);
 
                 if ($this->stopwatch) {
-                    $event = $this->stopwatch->start($method, 'redis');
+                    $event = $this->stopwatch->start($this->getCommandString($method, array_values($args)), 'redis');
                 }
             };
             $suffixInterceptors[$name] = function (
