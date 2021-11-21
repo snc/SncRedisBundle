@@ -102,9 +102,9 @@ class PhpredisClientFactory
         }
 
         $args[] = $seeds;
-        $args[] = $options['connection_timeout'] ?? null;
-        $args[] = $options['read_write_timeout'] ?? null;
-        $args[] = (bool) ($options['connection_persistent'] ?? null);
+        $args[] = $options['connection_timeout'];
+        $args[] = $options['read_write_timeout'] ?? 0;
+        $args[] = (bool)$options['connection_persistent'];
         $args[] = $options['parameters']['password'] ?? null;
 
         $client = new $class(...$args);
@@ -150,15 +150,11 @@ class PhpredisClientFactory
             $connectParameters[] = $dsn->getPort();
         }
 
-        if (isset($options['connection_timeout'])) {
-            $connectParameters[] = $options['connection_timeout'];
-        } else {
-            $connectParameters[] = null;
-        }
-
-        if (!empty($options['connection_persistent'])) {
-            $connectParameters[] = $dsn->getPersistentId();
-        }
+        $connectParameters[] = $options['connection_timeout'];
+        $connectParameters[] = empty($options['connection_persistent']) ? null : $dsn->getPersistentId();
+        $connectParameters[] = 5; // retry interval
+        $connectParameters[] = 5; // read timeout
+        $connectParameters[] = []; // $context
 
         if (!empty($options['connection_persistent'])) {
             $client->pconnect(...$connectParameters);

@@ -18,10 +18,7 @@ jobs:
         include:
           - dependency-versions: "lowest"
             php-version: "7.2"
-            php-extensions: "redis"
-          - symfony-require: "4.4.*"
-            php-extensions: "redis-4.3.0"
-            php-version: "7.4"
+            php-extensions: "redis-5.3.0"
           - symfony-require: "4.4.*"
             php-version: "8.0"
             php-extensions: "redis"
