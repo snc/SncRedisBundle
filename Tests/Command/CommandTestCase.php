@@ -12,9 +12,11 @@
 namespace Snc\RedisBundle\Tests\Command;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Snc\RedisBundle\Client\Phpredis\Client as PhpredisClient;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
@@ -50,10 +52,10 @@ abstract class CommandTestCase extends TestCase
      */
     public function setUp(): void
     {
-        $this->container = $this->getMockBuilder('\\Symfony\\Component\\DependencyInjection\\ContainerInterface')->getMock();
+        $this->container = $this->getMockBuilder(ContainerInterface::class)->getMock();
 
         /** @var Kernel|MockObject $kernel */
-        $kernel = $this->getMockBuilder('\\Symfony\\Component\\HttpKernel\\Kernel')
+        $kernel = $this->getMockBuilder(Kernel::class)
             ->disableOriginalConstructor()
             ->getMock();
         $kernel->expects($this->once())
@@ -64,9 +66,9 @@ abstract class CommandTestCase extends TestCase
             ->will($this->returnValue($this->container));
         $this->application = new Application($kernel);
 
-        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
+        $this->predisClient = $this->getMockBuilder(Client::class)->getMock();
 
-        $this->phpredisClient = $this->getMockBuilder('PhpredisClient')
+        $this->phpredisClient = $this->getMockBuilder(PhpredisClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -77,7 +79,7 @@ abstract class CommandTestCase extends TestCase
 
     protected function registerPredisClient()
     {
-        $this->predisClient = $this->getMockBuilder('\\Predis\\Client')->getMock();
+        $this->predisClient = $this->getMockBuilder(Client::class)->getMock();
 
         $this->container->expects($this->once())
             ->method('get')
@@ -86,7 +88,7 @@ abstract class CommandTestCase extends TestCase
 
     protected function registerPhpredisClient()
     {
-        $this->phpredisClient = $this->getMockBuilder('\\Snc\\RedisBundle\\Client\\Phpredis\\Client')
+        $this->phpredisClient = $this->getMockBuilder(PhpredisClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 

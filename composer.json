@@ -50,6 +50,9 @@
         "bin-dir": "bin/",
         "sort-packages": true
     },
+    "conflict": {
+        "predis/predis": "<1.1"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "3.x-dev"

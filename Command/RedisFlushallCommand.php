@@ -53,16 +53,9 @@ class RedisFlushallCommand extends RedisBaseCommand
             throw new \RuntimeException('\RedisCluster support is not yet implemented for this command');
         }
 
-        if (!($this->redisClient instanceof \IteratorAggregate) || // BC for Predis 1.0
-            // bug fix https://github.com/nrk/predis/issues/552
-            !($this->redisClient->getConnection() instanceof \Traversable)
-        ) {
-            $this->redisClient->flushall();
-        } else {
-            // flushall in all nodes of cluster
-            foreach ($this->redisClient as $nodeClient) {
-                $nodeClient->flushall();
-            }
+        // flushall in all nodes of cluster
+        foreach (is_iterable($this->redisClient) ? $this->redisClient : [$this->redisClient] as $nodeClient) {
+            $nodeClient->flushall();
         }
 
         $this->output->writeln('<info>All redis databases flushed</info>');
