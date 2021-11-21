@@ -65,7 +65,7 @@ class IntegrationTest extends WebTestCase
         /** @var RedisDataCollector $collector */
         $collector = $this->client->getProfile()->getCollector('redis');
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
-        $this->assertCount(6, $collector->getCommands());
+        $this->assertCount(5, $collector->getCommands());
     }
 
     private function profileRequest(string $method, string $uri): Response

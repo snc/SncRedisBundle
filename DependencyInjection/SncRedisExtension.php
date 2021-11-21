@@ -17,13 +17,11 @@ use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
-use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -46,6 +44,16 @@ class SncRedisExtension extends Extension
 
         $mainConfig = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($mainConfig, $configs);
+
+        $phpredisFactoryDefinition = $container->getDefinition('snc_redis.phpredis_factory');
+
+        if (!$container->getParameter('kernel.debug')) {
+            $phpredisFactoryDefinition->replaceArgument('$stopwatch', null);
+        }
+
+        if (!class_exists(\ProxyManager\Configuration::class)) {
+            $phpredisFactoryDefinition->replaceArgument('$proxyConfiguration', null);
+        }
 
         foreach ($config['class'] as $name => $class) {
             $container->setParameter(sprintf('snc_redis.%s.class', $name), $class);
@@ -240,34 +248,15 @@ class SncRedisExtension extends Extension
             throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
         }
 
-        if ($hasClusterOption) {
-            $phpredisClientClass =
-                $client['logging']
-                    ? $container->getParameter('snc_redis.phpredis_clusterclient_connection_wrapper.class')
-                    : $container->getParameter('snc_redis.phpredis_clusterclient.class');
-        } else {
-            $phpredisClientClass =
-                $client['logging']
-                ? $container->getParameter('snc_redis.phpredis_connection_wrapper.class')
-                : $container->getParameter('snc_redis.phpredis_client.class');
-        }
-
-        $phpredisDef = new Definition($phpredisClientClass);
-        $factoryDefinition = new Definition(
-            PhpredisClientFactory::class, [
-                new Reference('snc_redis.logger'),
-            ]
-        );
-
-        if ($container->getParameter('kernel.debug')) {
-            $factoryDefinition->addArgument(new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE));
-        }
-
-        $phpredisDef->setFactory([$factoryDefinition, 'create']);
-        $phpredisDef->addArgument($phpredisClientClass);
-        $phpredisDef->addArgument(array_map('strval', $client['dsns']));
-        $phpredisDef->addArgument($client['options']);
-        $phpredisDef->addArgument($client['alias']);
+        $phpredisClientClass = $container->getParameter('snc_redis.phpredis_'.($hasClusterOption ? 'cluster' : '').'client.class');
+        $phpredisDef = new Definition($phpredisClientClass, [
+            $phpredisClientClass,
+            array_map('strval', $client['dsns']),
+            $client['options'],
+            $client['alias'],
+            $client['logging'],
+        ]);
+        $phpredisDef->setFactory([new Reference('snc_redis.phpredis_factory'), 'create']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         $phpredisDef->setLazy(true);
 

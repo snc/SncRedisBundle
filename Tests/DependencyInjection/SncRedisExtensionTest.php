@@ -439,8 +439,6 @@ class SncRedisExtensionTest extends TestCase
         $config = $this->parseYaml($this->getPhpRedisClusterYamlMinimalConfig());
         $extension->load(array($config), $container = $this->getContainer());
 
-        $defaultParameters = $container->getDefinition('snc_redis.default');
-
         $redis = $container->get('snc_redis.default');
 
         $this->assertInstanceOf('\RedisCluster', $redis);
