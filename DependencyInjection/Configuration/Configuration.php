@@ -47,9 +47,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('connection_factory')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory')->end()
                         ->scalarNode('connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper')->end()
                         ->scalarNode('phpredis_client')->defaultValue('Redis')->end()
-                        ->scalarNode('phpredis_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\Client')->end()
                         ->scalarNode('phpredis_clusterclient')->defaultValue('RedisCluster')->end()
-                        ->scalarNode('phpredis_clusterclient_connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Phpredis\ClientCluster')->end()
                         ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
                         ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
                         ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
@@ -91,6 +89,12 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->prototype('array')
                         ->fixXmlConfig('dsn')
+                        ->validate()
+                            ->ifTrue(function(array $clientConfig): bool {
+                                return $clientConfig['logging'] && $clientConfig['type'] === 'phpredis' && !class_exists(\ProxyManager\Configuration::class);
+                            })
+                            ->thenInvalid('You must install "ocramius/proxy-manager" or "friendsofphp/proxy-manager-lts" in order to enable logging for phpredis client')
+                        ->end()
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('alias')->isRequired()->end()

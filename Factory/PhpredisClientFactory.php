@@ -2,8 +2,9 @@
 
 namespace Snc\RedisBundle\Factory;
 
-use Snc\RedisBundle\Client\Phpredis\ClientCluster;
-use Snc\RedisBundle\Client\Phpredis\Client;
+use ProxyManager\Configuration;
+use ProxyManager\Factory\AccessInterceptorScopeLocalizerFactory;
+use ProxyManager\Proxy\AccessInterceptorInterface;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -15,21 +16,37 @@ use Symfony\Component\Stopwatch\Stopwatch;
 class PhpredisClientFactory
 {
     /**
-     * @var RedisLogger|null
+     * These shouldn't be logged, because they don't actually contact redis server
      */
-    protected $logger;
+    private const CLIENT_ONLY_COMMANDS = [
+        'getOption',
+        'setOption',
+        'getDbNum',
+        'getPersistentID',
+    ];
+    /**
+     * @var RedisLogger
+     */
+    private $logger;
     /**
      * @var Stopwatch|null
      */
     private $stopwatch;
+    /**
+     * @var Configuration|null
+     */
+    private $proxyConfiguration;
 
     /**
      * @param RedisLogger $logger A RedisLogger instance
      */
-    public function __construct(RedisLogger $logger = null, ?Stopwatch $stopwatch = null)
-    {
+    public function __construct(RedisLogger $logger, ?Configuration $proxyConfiguration = null, ?Stopwatch $stopwatch = null) {
         $this->logger = $logger;
         $this->stopwatch = $stopwatch;
+
+        if ($this->proxyConfiguration = $proxyConfiguration) {
+            spl_autoload_register($this->proxyConfiguration->getProxyAutoloader());
+        }
     }
 
     /**
@@ -38,15 +55,13 @@ class PhpredisClientFactory
      * @param array  $options Options provided in bundle client config
      * @param string $alias   Connection alias provided in bundle client config
      *
-     * @return \Redis|Client|\RedisCluster|ClientCluster
+     * @return \Redis|\RedisCluster
      * @throws InvalidConfigurationException
      * @throws \LogicException
      */
-    public function create($class, array $dsns, $options, $alias)
+    public function create(string $class, array $dsns, array $options, string $alias, bool $loggingEnabled)
     {
-        if (!is_a($class, \Redis::class, true)
-            && !is_a($class, \RedisCluster::class, true)
-        ) {
+        if (!is_a($class, \Redis::class, true) && !is_a($class, \RedisCluster::class, true)) {
             throw new \LogicException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
         }
 
@@ -62,10 +77,10 @@ class PhpredisClientFactory
                 throw new \LogicException('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
             }
 
-            return $this->createClient($parsedDsns[0], $class, $alias, $options);
+            return $this->createClient($parsedDsns[0], $class, $alias, $options, $loggingEnabled);
         }
 
-        return $this->createClusterClient($parsedDsns, $class, $alias, $options);
+        return $this->createClusterClient($parsedDsns, $class, $alias, $options, $loggingEnabled);
     }
 
     /**
@@ -74,21 +89,12 @@ class PhpredisClientFactory
      * @param string     $alias Connection alias provided in bundle client config
      * @param array      $options
      *
-     * @return \RedisCluster|ClientCluster
-     *
      * @throws InvalidConfigurationException
      * @throws \LogicException
      */
-    private function createClusterClient(array $dsns, $class, $alias, array $options): \RedisCluster
+    private function createClusterClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): \RedisCluster
     {
-        $args = [];
-
-        if (is_a($class, ClientCluster::class, true)) {
-            $args[] = ['alias' => $alias];
-            $args[] = $this->logger;
-        } else {
-            $args[] = null;
-        }
+        $args = [null];
 
         $seeds = [];
         foreach ($dsns as $dsn) {
@@ -100,10 +106,6 @@ class PhpredisClientFactory
         $args[] = $options['read_write_timeout'] ?? null;
         $args[] = (bool) ($options['connection_persistent'] ?? null);
         $args[] = $options['parameters']['password'] ?? null;
-
-        if (is_a($class, ClientCluster::class, true)) {
-            $args[] = $this->stopwatch;
-        }
 
         $client = new $class(...$args);
 
@@ -119,7 +121,7 @@ class PhpredisClientFactory
             $client->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, $this->loadSlaveFailoverType($options['slave_failover']));
         }
 
-        return $client;
+        return $loggingEnabled ? $this->createLoggingProxy($client, $alias) : $client;
     }
 
     /**
@@ -128,16 +130,14 @@ class PhpredisClientFactory
      * @param string   $alias   Connection alias provided in bundle client config
      * @param array    $options
      *
-     * @return \Redis|Client
      * @throws InvalidConfigurationException
      */
-    private function createClient(RedisDsn $dsn, $class, $alias, array $options): \Redis
+    private function createClient(RedisDsn $dsn, string $class, string $alias, array $options, bool $loggingEnabled): \Redis
     {
-        /** @var \Redis $client */
-        if (is_a($class, Client::class, true)) {
-            $client = new $class(['alias' => $alias], $this->logger, $this->stopwatch);
-        } else {
-            $client = new $class();
+        $client = new $class();
+
+        if ($loggingEnabled) {
+            $client = $this->createLoggingProxy($client, $alias);
         }
 
         $connectParameters = array();
@@ -244,5 +244,93 @@ class PhpredisClientFactory
         }
 
         throw new InvalidConfigurationException(sprintf('%s in not a valid slave failover. Valid failovers: %s', $type, implode(', ', array_keys($types))));
+    }
+
+    /**
+     * @template T of \Redis|\RedisCluster
+     * @param T $client
+     * @return T
+     */
+    private function createLoggingProxy(object $client, string $alias): object
+    {
+        $prefixInterceptors = [];
+        $suffixInterceptors = [];
+        $classToCopyMethodsFrom = $client instanceof \Redis ? \Redis::class : \RedisCluster::class;
+
+        foreach ((new \ReflectionClass($classToCopyMethodsFrom))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $name = $method->getName();
+
+            if ($name[0] === '_' || in_array($name, self::CLIENT_ONLY_COMMANDS, true)) {
+                continue;
+            }
+
+            $prefixInterceptors[$name] = function (
+                AccessInterceptorInterface $proxy,
+                object $instance,
+                string $method,
+                array $args
+            ) use (&$time, &$event): void {
+                $time = microtime(true);
+
+                if ($this->stopwatch) {
+                    $event = $this->stopwatch->start($this->getCommandString($method, array_values($args)), 'redis');
+                }
+            };
+            $suffixInterceptors[$name] = function (
+                AccessInterceptorInterface $proxy,
+                object $instance,
+                string $method,
+                array $args
+            ) use ($alias, &$time, &$event): void {
+                $this->logger->logCommand($this->getCommandString($method, array_values($args)), microtime(true) - $time, $alias);
+
+                if ($event) {
+                    $event->stop();
+                }
+            };
+        }
+
+        return (new AccessInterceptorScopeLocalizerFactory($this->proxyConfiguration))
+            ->createProxy($client, $prefixInterceptors, $suffixInterceptors)
+        ;
+    }
+
+    /**
+     * Returns a string representation of the given command including arguments.
+     *
+     * @param string $command   A command name
+     * @param array  $arguments List of command arguments
+     *
+     * @return string
+     */
+    private function getCommandString(string $command, array $arguments)
+    {
+        $list = [];
+        $this->flatten($arguments, $list);
+
+        return trim(strtoupper($command).' '.implode(' ', $list));
+    }
+
+    /**
+     * Flatten arguments to single dimension array.
+     *
+     * @param array $arguments An array of command arguments
+     * @param array $list      Holder of results
+     */
+    private function flatten(array $arguments, array &$list)
+    {
+        foreach ($arguments as $key => $item) {
+            if (!is_numeric($key)) {
+                $list[] = $key;
+            }
+
+            if (is_scalar($item)) {
+                $list[] = strval($item);
+            } elseif (null === $item) {
+                $list[] = '<null>';
+            } else {
+                $this->flatten($item, $list);
+            }
+        }
     }
 }

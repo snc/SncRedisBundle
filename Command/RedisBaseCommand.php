@@ -11,6 +11,7 @@
 
 namespace Snc\RedisBundle\Command;
 
+use Predis\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -48,7 +49,7 @@ abstract class RedisBaseCommand extends Command
     protected $output;
 
     /**
-     * @var mixed (Either \Predis\Client or \Snc\RedisBundle\Client\Phpredis\Client)
+     * @var Client|\Redis
      */
     protected $redisClient;
 

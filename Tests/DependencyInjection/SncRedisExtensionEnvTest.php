@@ -3,7 +3,6 @@
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
-use Snc\RedisBundle\Client\Phpredis\Client;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -56,8 +55,8 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.alias_test');
 
-        $this->assertSame(Client::class, $clientDefinition->getClass());
-        $this->assertSame(Client::class, $clientDefinition->getArgument(0));
+        $this->assertSame(\Redis::class, $clientDefinition->getClass());
+        $this->assertSame(\Redis::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
         $this->assertSame(
@@ -76,6 +75,7 @@ class SncRedisExtensionEnvTest extends TestCase
             ),
             $clientDefinition->getArgument(2)
         );
+        $this->assertTrue($clientDefinition->getArgument(4));
     }
 
     public function testProfileOption()
@@ -111,6 +111,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame('RedisCluster', $clientDefinition->getArgument(0));
         $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
+        $this->assertFalse($clientDefinition->getArgument(4));
 
         $this->assertSame(
             array(

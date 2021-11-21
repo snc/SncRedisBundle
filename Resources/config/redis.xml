@@ -24,6 +24,29 @@
             <tag name="console.command" command="redis:flushdb" />
             <tag name="snc_redis.command" />
         </service>
+
+        <service id="snc_redis.phpredis_factory" class="Snc\RedisBundle\Factory\PhpredisClientFactory">
+            <argument type="service" id="snc_redis.logger" />
+            <argument type="service" key="$proxyConfiguration">
+                <service class="ProxyManager\Configuration">
+                    <call method="setGeneratorStrategy">
+                        <argument type="service">
+                            <service class="ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy">
+                                <argument type="service">
+                                    <service class="ProxyManager\FileLocator\FileLocator">
+                                        <argument type="string">%kernel.cache_dir%</argument>
+                                    </service>
+                                </argument>
+                            </service>
+                        </argument>
+                    </call>
+                    <call method="setProxiesTargetDir">
+                        <argument type="string">%kernel.cache_dir%</argument>
+                    </call>
+                </service>
+            </argument>
+            <argument type="service" key="$stopwatch" id="debug.stopwatch" on-invalid="null"/>
+        </service>
     </services>
 
 </container>
