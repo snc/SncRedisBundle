@@ -27,6 +27,7 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
+        "ext-redis": "*",
         "doctrine/annotations": "^1.13",
         "phpunit/phpunit": "^8.5 || ^9.5",
         "predis/predis": "^1.1",
@@ -51,6 +52,7 @@
         "sort-packages": true
     },
     "conflict": {
+        "ext-redis": "<4.3",
         "predis/predis": "<1.1"
     },
     "extra": {

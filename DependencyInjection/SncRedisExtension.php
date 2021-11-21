@@ -274,21 +274,9 @@ class SncRedisExtension extends Extension
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         $phpredisDef->setPublic(false);
+        $phpredisDef->setLazy(true);
 
-        // Older version of phpredis extension do not support lazy loading
-        $minimumVersionForLazyLoading = '4.1.1';
-        $phpRedisVersion = phpversion('redis');
-        $supportsLazyServices = version_compare($phpRedisVersion, $minimumVersionForLazyLoading, '>=');
-        $phpredisDef->setLazy($supportsLazyServices);
-        if (!$supportsLazyServices) {
-            @trigger_error(
-                sprintf('Lazy loading Redis is not supported on PhpRedis %s. Please update to PhpRedis %s or higher.', $phpRedisVersion, $minimumVersionForLazyLoading),
-                E_USER_WARNING
-            );
-        }
-
-        $phpredisId = sprintf('snc_redis.%s', $client['alias']);
-        $container->setDefinition($phpredisId, $phpredisDef);
+        $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $phpredisDef);
     }
 
     /**

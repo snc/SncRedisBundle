@@ -34,28 +34,28 @@ class ClientClusterTest extends TestCase
 
         $this->assertEquals(
             'FOO chuck norris',
-            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, false), $name, $arguments)
         );
 
         $arguments = array('chuck:norris');
 
         $this->assertEquals(
             'FOO chuck:norris',
-            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, false), $name, $arguments)
         );
 
         $arguments = array('chuck:norris fab:pot');
 
         $this->assertEquals(
             'FOO chuck:norris fab:pot',
-            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, false), $name, $arguments)
         );
 
         $arguments = array('foo' => 'bar', 'baz' => null);
 
         $this->assertEquals(
             'FOO foo bar baz <null>',
-            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, null), $name, $arguments)
+            $method->invoke(new ClientCluster(['alias' => 'bar'], null, $seeds, 1.5, 1.5, false), $name, $arguments)
         );
     }
 }

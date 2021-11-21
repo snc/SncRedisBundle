@@ -45,18 +45,14 @@ class ClientCluster extends RedisCluster
         array $seeds,
         ?float $timeout,
         ?float $readTimeout,
-        ?bool $persistent,
-        string $password = null,
+        bool $persistent,
+        ?string $password = null,
         ?Stopwatch $stopwatch = null
     ) {
+        parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent, $password);
+
         $this->logger = $logger;
         $this->alias = $parameters['alias'] ?? '';
-
-        if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
-            parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false, $password);
-        } else {
-            parent::__construct(null, $seeds, $timeout, $readTimeout, $persistent ?? false);
-        }
         $this->stopwatch = $stopwatch;
     }
 
