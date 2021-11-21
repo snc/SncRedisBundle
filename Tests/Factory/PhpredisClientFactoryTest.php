@@ -32,7 +32,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->logger->expects($this->never())->method('debug');
         $factory = new PhpredisClientFactory($this->redisLogger);
 
-        $client = $factory->create(\Redis::class, ['redis://localhost:6379'], array(), 'default', false);
+        $client = $factory->create(\Redis::class, ['redis://localhost:6379'], ['connection_timeout' => 5], 'default', false);
 
         $this->assertInstanceOf(\Redis::class, $client);
         $this->assertNull($client->getOption(\Redis::OPT_PREFIX));
@@ -47,7 +47,13 @@ class PhpredisClientFactoryTest extends TestCase
         $this->logger->expects($this->never())->method('debug');
         $factory = new PhpredisClientFactory($this->redisLogger);
 
-        $client = $factory->create(\RedisCluster::class, ['redis://localhost:7000'], [], 'phprediscluster', false);
+        $client = $factory->create(
+            \RedisCluster::class,
+            ['redis://localhost:7000'],
+            ['connection_timeout' => 5, 'connection_persistent' => false],
+            'phprediscluster',
+            false
+        );
 
         $this->assertInstanceOf(\RedisCluster::class, $client);
         $this->assertNull($client->getOption(\RedisCluster::OPT_PREFIX));
@@ -93,7 +99,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testDsnConfig()
     {
         $this->logger->method('debug')->withConsecutive(
-            ['Executing command "CONNECT localhost 6379 <null> <null>"'],
+            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"']
         );
@@ -108,6 +114,7 @@ class PhpredisClientFactoryTest extends TestCase
                     'database' => 3,
                     'password' => 'secret',
                 ],
+                'connection_timeout' => 5,
             ),
             'alias_test',
             true
@@ -131,6 +138,7 @@ class PhpredisClientFactoryTest extends TestCase
                     'database' => 3,
                     'password' => 'secret',
                 ],
+                'connection_timeout' => 5,
             ),
             'alias_test',
             false
@@ -153,7 +161,8 @@ class PhpredisClientFactoryTest extends TestCase
             \Redis::class,
             ['redis://localhost:6379'],
             [
-                'serialization' => $serializationType
+                'serialization' => $serializationType,
+                'connection_timeout' => 5,
             ],
             'default',
             false
@@ -171,7 +180,8 @@ class PhpredisClientFactoryTest extends TestCase
             \Redis::class,
             ['redis://localhost:6379'],
             [
-                'serialization' => 'unknown'
+                'serialization' => 'unknown',
+                'connection_timeout' => 5,
             ],
             'default',
             false
