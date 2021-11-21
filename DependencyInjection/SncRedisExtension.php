@@ -171,7 +171,6 @@ class SncRedisExtension extends Extension
         $profile = !is_string($profile) ? sprintf('%.1F', $profile) : $profile;
         $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
         $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($profile))); // TODO get_class alternative?
-        $profileDef->setPublic(false);
         if (null !== $client['options']['prefix']) {
             $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
             $processorDef = new Definition(KeyPrefixProcessor::class);
@@ -184,11 +183,9 @@ class SncRedisExtension extends Extension
 
         $optionId = sprintf('snc_redis.client.%s_options', $client['alias']);
         $optionDef = new Definition($container->getParameter('snc_redis.client_options.class'));
-        $optionDef->setPublic(false);
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
-        $clientDef->setPublic(false);
         $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
         if (1 === $connectionCount && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
@@ -218,7 +215,6 @@ class SncRedisExtension extends Extension
         $parameterId = sprintf('snc_redis.connection.%s_parameters.%s', $connection['alias'], $clientAlias);
 
         $parameterDef = new Definition($parametersClass);
-        $parameterDef->setPublic(false);
         $parameterDef->setFactory(array(PredisParametersFactory::class, 'create'));
         $parameterDef->addArgument($connection);
         $parameterDef->addArgument($parametersClass);
@@ -273,7 +269,6 @@ class SncRedisExtension extends Extension
         $phpredisDef->addArgument($client['options']);
         $phpredisDef->addArgument($client['alias']);
         $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
-        $phpredisDef->setPublic(false);
         $phpredisDef->setLazy(true);
 
         $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $phpredisDef);
@@ -294,7 +289,6 @@ class SncRedisExtension extends Extension
             $config['monolog']['key']
         ));
 
-        $def->setPublic(false);
         if (!empty($config['monolog']['formatter'])) {
             $def->addMethodCall('setFormatter', array(new Reference($config['monolog']['formatter'])));
         }

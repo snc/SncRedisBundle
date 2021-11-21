@@ -7,20 +7,20 @@
     http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="snc_redis.logger" class="%snc_redis.logger.class%" public="false">
+        <service id="snc_redis.logger" class="%snc_redis.logger.class%">
             <tag name="monolog.logger" channel="snc_redis" />
             <argument type="service" id="logger" on-invalid="null" />
         </service>
 
-        <service id="snc_redis.data_collector" class="%snc_redis.data_collector.class%" public="false">
+        <service id="snc_redis.data_collector" class="%snc_redis.data_collector.class%">
             <tag name="data_collector" template="@SncRedis/Collector/redis.html.twig" id="redis" />
             <argument type="service" id="snc_redis.logger" />
         </service>
-        <service id="snc_redis.command.flush_all" class="Snc\RedisBundle\Command\RedisFlushallCommand" public="false">
+        <service id="snc_redis.command.flush_all" class="Snc\RedisBundle\Command\RedisFlushallCommand">
             <tag name="console.command" command="redis:flushall" />
             <tag name="snc_redis.command" />
         </service>
-        <service id="snc_redis.command.flush_db" class="Snc\RedisBundle\Command\RedisFlushdbCommand" public="false">
+        <service id="snc_redis.command.flush_db" class="Snc\RedisBundle\Command\RedisFlushdbCommand">
             <tag name="console.command" command="redis:flushdb" />
             <tag name="snc_redis.command" />
         </service>
