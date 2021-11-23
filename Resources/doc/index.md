@@ -4,10 +4,6 @@
 
 This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](https://github.com/nicolasff/phpredis) into your Symfony application.
 
-## Prerequisite ##
-
-Session handler requires `Redis >= 2.6.12` for LUA scripts and SET with options.
-
 ## Installation ##
 
 Add the `snc/redis-bundle` package to your `require` section in the `composer.json` file.
@@ -19,7 +15,7 @@ $ composer require snc/redis-bundle 2.x-dev
 If you want to use the `predis` client library, you have to add the `predis/predis` package, too.
 
 ``` bash
-$ composer require predis/predis ^1.0
+$ composer require predis/predis
 ```
 
 Add the RedisBundle to your application's kernel:
@@ -28,11 +24,11 @@ Add the RedisBundle to your application's kernel:
 <?php
 public function registerBundles()
 {
-    $bundles = array(
+    $bundles = [
         // ...
         new Snc\RedisBundle\SncRedisBundle(),
         // ...
-    );
+    ];
     ...
 }
 ```
