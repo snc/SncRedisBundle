@@ -18,6 +18,8 @@ namespace Snc\RedisBundle\Command;
  */
 class RedisFlushallCommand extends RedisBaseCommand
 {
+    protected static $defaultName = 'redis:flushall';
+
     /**
      * {@inheritDoc}
      */
@@ -25,8 +27,7 @@ class RedisFlushallCommand extends RedisBaseCommand
     {
         parent::configure();
 
-        $this->setName('redis:flushall')
-            ->setDescription('Flushes the redis database using the redis flushall command');
+        $this->setDescription('Flushes the redis database using the redis flushall command');
     }
 
     /**
@@ -38,6 +39,7 @@ class RedisFlushallCommand extends RedisBaseCommand
             $this->flushAll();
         } else {
             $this->output->writeln('<error>Flushing cancelled</error>');
+
             return 1;
         }
 
