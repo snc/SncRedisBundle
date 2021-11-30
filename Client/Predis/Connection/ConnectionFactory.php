@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,42 +13,36 @@
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
-use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Factory;
+use Predis\Connection\NodeConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Stopwatch\Stopwatch;
+
+use function assert;
 
 /**
  * ConnectionFactory
  */
 class ConnectionFactory extends Factory
 {
-    /**
-     * @var ConnectionWrapper
-     */
-    protected $wrapper;
+    /** @var class-string<NodeConnectionInterface> */
+    protected ?string $wrapper = null;
 
-    /**
-     * @var RedisLogger
-     */
-    protected $logger;
+    protected RedisLogger $logger;
 
-    /**
-     * @var Stopwatch|null
-     */
-    protected $stopwatch;
+    protected ?Stopwatch $stopwatch = null;
 
     /**
      * Sets the logger
      *
      * @param RedisLogger $logger A RedisLogger instance
      */
-    public function setLogger(RedisLogger $logger = null)
+    public function setLogger(?RedisLogger $logger = null): void
     {
         $this->logger = $logger;
     }
 
-    public function setStopwatch(?Stopwatch $stopwatch)
+    public function setStopwatch(?Stopwatch $stopwatch): void
     {
         $this->stopwatch = $stopwatch;
     }
@@ -57,29 +53,28 @@ class ConnectionFactory extends Factory
      *
      * @param string $class Fully qualified name of the connection wrapper class.
      */
-    public function setConnectionWrapperClass($class)
+    public function setConnectionWrapperClass(string $class): void
     {
         $this->wrapper = $class;
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @return NodeConnectionInterface
      */
-    public function create($parameters)
+    public function create($parameters): NodeConnectionInterface
     {
         if (isset($parameters->parameters)) {
             $this->setDefaultParameters($parameters->parameters);
         }
-        /** @var ConnectionWrapper $connection */
-        $connection = parent::create($parameters);
 
-        if (null === $this->wrapper) {
+        $connection = parent::create($parameters);
+        assert($connection instanceof ConnectionWrapper);
+
+        if ($this->wrapper === null) {
             return $connection;
         }
 
-        $wrapper = $this->wrapper;
+        $wrapper    = $this->wrapper;
         $connection = new $wrapper($connection);
         $connection->setLogger($this->logger);
 

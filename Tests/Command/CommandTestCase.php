@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -12,38 +14,26 @@
 namespace Snc\RedisBundle\Tests\Command;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Client;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use PHPUnit\Framework\TestCase;
+use Predis\Client;
+use Redis;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-/**
- * Base Class for command tests
- *
- * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
- */
+use function assert;
+
 abstract class CommandTestCase extends TestCase
 {
+    protected Application $application;
 
-    /**
-     * @var \Symfony\Bundle\FrameworkBundle\Console\Application
-     */
-    protected $application;
-
-    /**
-     * @var \Predis\Client|MockObject
-     */
+    /** @var Client|MockObject */
     protected $predisClient;
 
-    /**
-     * @var \Redis|MockObject
-     */
+    /** @var Redis|MockObject */
     protected $phpredisClient;
 
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface|MockObject
-     */
+    /** @var ContainerInterface|MockObject */
     protected $container;
 
     /**
@@ -53,13 +43,13 @@ abstract class CommandTestCase extends TestCase
     {
         $this->container = $this->getMockBuilder(ContainerInterface::class)->getMock();
 
-        /** @var Kernel|MockObject $kernel */
         $kernel = $this->getMockBuilder(Kernel::class)
             ->disableOriginalConstructor()
             ->getMock();
+        assert($kernel instanceof Kernel || $kernel instanceof MockObject);
         $kernel->expects($this->once())
             ->method('getBundles')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue([]));
         $kernel->expects($this->any())
             ->method('getContainer')
             ->will($this->returnValue($this->container));
@@ -67,7 +57,7 @@ abstract class CommandTestCase extends TestCase
 
         $this->predisClient = $this->getMockBuilder(Client::class)->getMock();
 
-        $this->phpredisClient = $this->getMockBuilder(\Redis::class)
+        $this->phpredisClient = $this->getMockBuilder(Redis::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -76,7 +66,7 @@ abstract class CommandTestCase extends TestCase
         $command->setClientLocator($this->container);
     }
 
-    protected function registerPredisClient()
+    protected function registerPredisClient(): void
     {
         $this->predisClient = $this->getMockBuilder(Client::class)->getMock();
 
@@ -85,9 +75,9 @@ abstract class CommandTestCase extends TestCase
             ->will($this->returnValue($this->predisClient));
     }
 
-    protected function registerPhpredisClient()
+    protected function registerPhpredisClient(): void
     {
-        $this->phpredisClient = $this->getMockBuilder(\Redis::class)
+        $this->phpredisClient = $this->getMockBuilder(Redis::class)
             ->disableOriginalConstructor()
             ->getMock();
 

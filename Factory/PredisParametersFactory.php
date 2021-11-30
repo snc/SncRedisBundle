@@ -1,9 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Snc\RedisBundle\Factory;
 
+use InvalidArgumentException;
 use Predis\Connection\ParametersInterface;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
+
+use function array_merge;
+use function is_a;
+use function sprintf;
 
 /**
  * @internal
@@ -11,59 +18,55 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 class PredisParametersFactory
 {
     /**
-     * @param array $options
-     * @param string $class
-     * @param string $dsn
-     *
-     * @return ParametersInterface
+     * @param array<string, mixed> $options
      */
-    public static function create($options, $class, $dsn)
+    public static function create(array $options, string $class, string $dsn): ParametersInterface
     {
         if (!is_a($class, ParametersInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', __CLASS__, __METHOD__, ParametersInterface::class));
+            throw new InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', self::class, __METHOD__, ParametersInterface::class));
         }
 
         $defaultOptions = ['timeout' => null]; // Allow to be consistent will old version of Predis where default timeout was 5
-        $dsnOptions = static::parseDsn(new RedisDsn($dsn));
-        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
+        $dsnOptions     = static::parseDsn(new RedisDsn($dsn));
+        $dsnOptions     = array_merge($defaultOptions, $options, $dsnOptions);
 
-        if (isset($dsnOptions['persistent'], $dsnOptions['database'])
-            && true === $dsnOptions['persistent']
-            && (int)$dsnOptions['database'] !== 0
+        if (
+            isset($dsnOptions['persistent'], $dsnOptions['database'])
+            && $dsnOptions['persistent'] === true
+            && (int) $dsnOptions['database'] !== 0
         ) {
-            $dsnOptions['persistent'] = (int)$dsnOptions['database'];
+            $dsnOptions['persistent'] = (int) $dsnOptions['database'];
         }
 
         return new $class($dsnOptions);
     }
 
     /**
-     * @param RedisDsn $dsn
-     *
-     * @return array
+     * @return mixed[]
      */
-    private static function parseDsn(RedisDsn $dsn)
+    private static function parseDsn(RedisDsn $dsn): array
     {
-        if (null !== $dsn->getSocket()) {
+        $options = [];
+        if ($dsn->getSocket() !== null) {
             $options['scheme'] = 'unix';
-            $options['path'] = $dsn->getSocket();
+            $options['path']   = $dsn->getSocket();
         } else {
             $options['scheme'] = $dsn->getTls() ? 'tls' : 'tcp';
-            $options['host'] = $dsn->getHost();
-            $options['port'] = $dsn->getPort();
-            if (null !== $dsn->getDatabase()) {
+            $options['host']   = $dsn->getHost();
+            $options['port']   = $dsn->getPort();
+            if ($dsn->getDatabase() !== null) {
                 $options['path'] = $dsn->getDatabase();
             }
         }
 
-        if (null !== $dsn->getDatabase()) {
+        if ($dsn->getDatabase() !== null) {
             $options['database'] = $dsn->getDatabase();
         }
 
         $options['password'] = $dsn->getPassword();
-        $options['weight'] = $dsn->getWeight();
+        $options['weight']   = $dsn->getWeight();
 
-        if (null !== $dsn->getAlias()) {
+        if ($dsn->getAlias() !== null) {
             $options['alias'] = $dsn->getAlias();
         }
 

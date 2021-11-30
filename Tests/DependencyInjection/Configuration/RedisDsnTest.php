@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,59 +13,59 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection\Configuration;
 
-use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use PHPUnit\Framework\TestCase;
+use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 class RedisDsnTest extends TestCase
 {
     /**
-     * @return array
+     * @return array<array<string, string>>
      */
-    public function hostValues()
+    public function hostValues(): array
     {
-        return array(
-            array('redis://localhost', 'localhost'),
-            array('redis://localhost/1', 'localhost'),
-            array('redis://localhost:63790', 'localhost'),
-            array('redis://localhost:63790/10', 'localhost'),
-            array('redis://pw@localhost:63790/10', 'localhost'),
-            array('redis://127.0.0.1', '127.0.0.1'),
-            array('redis://127.0.0.1/1', '127.0.0.1'),
-            array('redis://127.0.0.1:63790', '127.0.0.1'),
-            array('redis://127.0.0.1:63790/10', '127.0.0.1'),
-            array('redis://pw@127.0.0.1:63790/10', '127.0.0.1'),
-            array('redis://[::1]', '::1'),
-            array('redis://[::1]/1', '::1'),
-            array('redis://[::1]:63790', '::1'),
-            array('redis://[::1]:63790/10', '::1'),
-            array('redis://pw@[::1]:63790/10', '::1'),
-            array('redis://[1050:0000:0000:0000:0005:0600:300c:326b]', '1050:0000:0000:0000:0005:0600:300c:326b'),
-            array('redis://[1050:0000:0000:0000:0005:0600:300c:326b]/1', '1050:0000:0000:0000:0005:0600:300c:326b'),
-            array('redis://[1050:0000:0000:0000:0005:0600:300c:326b]:63790', '1050:0000:0000:0000:0005:0600:300c:326b'),
-            array('redis://[1050:0000:0000:0000:0005:0600:300c:326b]:63790/10', '1050:0000:0000:0000:0005:0600:300c:326b'),
-            array('redis://pw@[1050:0000:0000:0000:0005:0600:300c:326b]:63790/10', '1050:0000:0000:0000:0005:0600:300c:326b'),
-            array('redis://[1050:0:0:0:5:600:300c:326b]', '1050:0:0:0:5:600:300c:326b'),
-            array('redis://[1050:0:0:0:5:600:300c:326b]/1', '1050:0:0:0:5:600:300c:326b'),
-            array('redis://[1050:0:0:0:5:600:300c:326b]:63790', '1050:0:0:0:5:600:300c:326b'),
-            array('redis://[1050:0:0:0:5:600:300c:326b]:63790/10', '1050:0:0:0:5:600:300c:326b'),
-            array('redis://pw@[1050:0:0:0:5:600:300c:326b]:63790/10', '1050:0:0:0:5:600:300c:326b'),
-            array('redis://[ff06:0:0:0:0:0:0:c3]', 'ff06:0:0:0:0:0:0:c3'),
-            array('redis://[ff06:0:0:0:0:0:0:c3]/1', 'ff06:0:0:0:0:0:0:c3'),
-            array('redis://[ff06:0:0:0:0:0:0:c3]:63790', 'ff06:0:0:0:0:0:0:c3'),
-            array('redis://[ff06:0:0:0:0:0:0:c3]:63790/10', 'ff06:0:0:0:0:0:0:c3'),
-            array('redis://pw@[ff06:0:0:0:0:0:0:c3]:63790/10', 'ff06:0:0:0:0:0:0:c3'),
-            array('redis://[ff06::c3]', 'ff06::c3'),
-            array('redis://[ff06::c3]/1', 'ff06::c3'),
-            array('redis://[ff06::c3]:63790', 'ff06::c3'),
-            array('redis://[ff06::c3]:63790/10', 'ff06::c3'),
-            array('redis://pw@[ff06::c3]:63790/10', 'ff06::c3'),
-            array('redis://%redis_host%', '%redis_host%'),
-            array('redis://%redis_host%/%redis_db%', '%redis_host%'),
-            array('redis://%redis_host%:%redis_port%', '%redis_host%'),
-            array('redis://%redis_host%:%redis_port%/%redis_db%', '%redis_host%'),
-            array('redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', '%redis_host%'),
-            array('rediss://localhost', 'localhost'),
-        );
+        return [
+            ['redis://localhost', 'localhost'],
+            ['redis://localhost/1', 'localhost'],
+            ['redis://localhost:63790', 'localhost'],
+            ['redis://localhost:63790/10', 'localhost'],
+            ['redis://pw@localhost:63790/10', 'localhost'],
+            ['redis://127.0.0.1', '127.0.0.1'],
+            ['redis://127.0.0.1/1', '127.0.0.1'],
+            ['redis://127.0.0.1:63790', '127.0.0.1'],
+            ['redis://127.0.0.1:63790/10', '127.0.0.1'],
+            ['redis://pw@127.0.0.1:63790/10', '127.0.0.1'],
+            ['redis://[::1]', '::1'],
+            ['redis://[::1]/1', '::1'],
+            ['redis://[::1]:63790', '::1'],
+            ['redis://[::1]:63790/10', '::1'],
+            ['redis://pw@[::1]:63790/10', '::1'],
+            ['redis://[1050:0000:0000:0000:0005:0600:300c:326b]', '1050:0000:0000:0000:0005:0600:300c:326b'],
+            ['redis://[1050:0000:0000:0000:0005:0600:300c:326b]/1', '1050:0000:0000:0000:0005:0600:300c:326b'],
+            ['redis://[1050:0000:0000:0000:0005:0600:300c:326b]:63790', '1050:0000:0000:0000:0005:0600:300c:326b'],
+            ['redis://[1050:0000:0000:0000:0005:0600:300c:326b]:63790/10', '1050:0000:0000:0000:0005:0600:300c:326b'],
+            ['redis://pw@[1050:0000:0000:0000:0005:0600:300c:326b]:63790/10', '1050:0000:0000:0000:0005:0600:300c:326b'],
+            ['redis://[1050:0:0:0:5:600:300c:326b]', '1050:0:0:0:5:600:300c:326b'],
+            ['redis://[1050:0:0:0:5:600:300c:326b]/1', '1050:0:0:0:5:600:300c:326b'],
+            ['redis://[1050:0:0:0:5:600:300c:326b]:63790', '1050:0:0:0:5:600:300c:326b'],
+            ['redis://[1050:0:0:0:5:600:300c:326b]:63790/10', '1050:0:0:0:5:600:300c:326b'],
+            ['redis://pw@[1050:0:0:0:5:600:300c:326b]:63790/10', '1050:0:0:0:5:600:300c:326b'],
+            ['redis://[ff06:0:0:0:0:0:0:c3]', 'ff06:0:0:0:0:0:0:c3'],
+            ['redis://[ff06:0:0:0:0:0:0:c3]/1', 'ff06:0:0:0:0:0:0:c3'],
+            ['redis://[ff06:0:0:0:0:0:0:c3]:63790', 'ff06:0:0:0:0:0:0:c3'],
+            ['redis://[ff06:0:0:0:0:0:0:c3]:63790/10', 'ff06:0:0:0:0:0:0:c3'],
+            ['redis://pw@[ff06:0:0:0:0:0:0:c3]:63790/10', 'ff06:0:0:0:0:0:0:c3'],
+            ['redis://[ff06::c3]', 'ff06::c3'],
+            ['redis://[ff06::c3]/1', 'ff06::c3'],
+            ['redis://[ff06::c3]:63790', 'ff06::c3'],
+            ['redis://[ff06::c3]:63790/10', 'ff06::c3'],
+            ['redis://pw@[ff06::c3]:63790/10', 'ff06::c3'],
+            ['redis://%redis_host%', '%redis_host%'],
+            ['redis://%redis_host%/%redis_db%', '%redis_host%'],
+            ['redis://%redis_host%:%redis_port%', '%redis_host%'],
+            ['redis://%redis_host%:%redis_port%/%redis_db%', '%redis_host%'],
+            ['redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', '%redis_host%'],
+            ['rediss://localhost', 'localhost'],
+        ];
     }
 
     /**
@@ -72,31 +74,29 @@ class RedisDsnTest extends TestCase
      *
      * @dataProvider hostValues
      */
-    public function testHost($dsn, $host)
+    public function testHost(string $dsn, string $host): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($host, $dsn->getHost());
     }
 
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, string>>
      */
-    public static function socketValues()
+    public static function socketValues(): array
     {
-        return array(
-            array('redis:///redis.sock', '/redis.sock'),
-            array('redis:///redis.sock/1', '/redis.sock'),
-            array('redis:///redis.sock:63790', '/redis.sock'),
-            array('redis:///redis.sock:63790/10', '/redis.sock'),
-            array('redis://pw@/redis.sock:63790/10', '/redis.sock'),
-            array('redis:///var/run/redis/redis-1.sock', '/var/run/redis/redis-1.sock'),
-            array('redis:///var/run/redis/redis-1.sock/1', '/var/run/redis/redis-1.sock'),
-            array('redis:///var/run/redis/redis-1.sock:63790', '/var/run/redis/redis-1.sock'),
-            array('redis:///var/run/redis/redis-1.sock:63790/10', '/var/run/redis/redis-1.sock'),
-            array('redis://pw@/var/run/redis/redis-1.sock:63790/10', '/var/run/redis/redis-1.sock'),
-        );
+        return [
+            ['redis:///redis.sock', '/redis.sock'],
+            ['redis:///redis.sock/1', '/redis.sock'],
+            ['redis:///redis.sock:63790', '/redis.sock'],
+            ['redis:///redis.sock:63790/10', '/redis.sock'],
+            ['redis://pw@/redis.sock:63790/10', '/redis.sock'],
+            ['redis:///var/run/redis/redis-1.sock', '/var/run/redis/redis-1.sock'],
+            ['redis:///var/run/redis/redis-1.sock/1', '/var/run/redis/redis-1.sock'],
+            ['redis:///var/run/redis/redis-1.sock:63790', '/var/run/redis/redis-1.sock'],
+            ['redis:///var/run/redis/redis-1.sock:63790/10', '/var/run/redis/redis-1.sock'],
+            ['redis://pw@/var/run/redis/redis-1.sock:63790/10', '/var/run/redis/redis-1.sock'],
+        ];
     }
 
     /**
@@ -105,192 +105,179 @@ class RedisDsnTest extends TestCase
      *
      * @dataProvider socketValues
      */
-    public function testSocket($dsn, $socket)
+    public function testSocket(string $dsn, string $socket): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($socket, $dsn->getSocket());
     }
 
-    public function tlsValues()
+    /**
+     * @return array<array<string, bool>>
+     */
+    public function tlsValues(): array
     {
-        return array(
-            array('redis://localhost', false),
-            array('rediss://localhost', true),
-        );
+        return [
+            ['redis://localhost', false],
+            ['rediss://localhost', true],
+        ];
     }
 
     /**
-     * @param string $dsn DSN
-     * @param string $tls TLS
-     *
      * @dataProvider tlsValues
      */
-    public function testTls($dsn, $tls)
+    public function testTls(string $dsn, bool $tls): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($tls, $dsn->getTls());
     }
 
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, int>>
      */
-    public static function portValues()
+    public static function portValues(): array
     {
-        return array(
-            array('redis://localhost', 6379),
-            array('redis://localhost/1', 6379),
-            array('rediss://localhost:6380', 6380),
-            array('redis://localhost:63790', 63790),
-            array('redis://localhost:63790/10', 63790),
-            array('redis://pw@localhost:63790/10', 63790),
-            array('redis://127.0.0.1', 6379),
-            array('redis://127.0.0.1/1', 6379),
-            array('redis://127.0.0.1:63790', 63790),
-            array('redis://127.0.0.1:63790/10', 63790),
-            array('redis://pw@127.0.0.1:63790/10', 63790),
-            array('redis://%redis_host%:%redis_port%', '%redis_port%'),
-            array('redis://%redis_host%:%redis_port%/%redis_db%', '%redis_port%'),
-            array('redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', '%redis_port%'),
-            array('redis:///redis.sock', null),
-            array('redis:///redis.sock/1', null),
-            array('redis:///redis.sock:63790', null),
-            array('redis:///redis.sock:63790/10', null),
-            array('redis://pw@/redis.sock:63790/10', null),
-        );
+        return [
+            ['redis://localhost', 6379],
+            ['redis://localhost/1', 6379],
+            ['rediss://localhost:6380', 6380],
+            ['redis://localhost:63790', 63790],
+            ['redis://localhost:63790/10', 63790],
+            ['redis://pw@localhost:63790/10', 63790],
+            ['redis://127.0.0.1', 6379],
+            ['redis://127.0.0.1/1', 6379],
+            ['redis://127.0.0.1:63790', 63790],
+            ['redis://127.0.0.1:63790/10', 63790],
+            ['redis://pw@127.0.0.1:63790/10', 63790],
+            ['redis://%redis_host%:%redis_port%', '%redis_port%'],
+            ['redis://%redis_host%:%redis_port%/%redis_db%', '%redis_port%'],
+            ['redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', '%redis_port%'],
+            ['redis:///redis.sock', null],
+            ['redis:///redis.sock/1', null],
+            ['redis:///redis.sock:63790', null],
+            ['redis:///redis.sock:63790/10', null],
+            ['redis://pw@/redis.sock:63790/10', null],
+        ];
     }
 
     /**
-     * @param string $dsn  DSN
-     * @param int    $port Port
+     * @param int|string $port Port
      *
      * @dataProvider portValues
      */
-    public function testPort($dsn, $port)
+    public function testPort(string $dsn, $port): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($port, $dsn->getPort());
     }
 
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, ?int>>
      */
-    public static function databaseValues()
+    public static function databaseValues(): array
     {
-        return array(
-            array('redis://localhost', null),
-            array('redis://localhost/0', 0),
-            array('redis://localhost/1', 1),
-            array('redis://localhost:63790', null),
-            array('redis://localhost:63790/10', 10),
-            array('redis://pw@localhost:63790/10', 10),
-            array('redis://127.0.0.1', null),
-            array('redis://127.0.0.1/0', 0),
-            array('redis://127.0.0.1/1', 1),
-            array('redis://127.0.0.1:63790', null),
-            array('redis://127.0.0.1:63790/10', 10),
-            array('redis://pw@127.0.0.1:63790/10', 10),
-            array('redis://%redis_host%', null),
-            array('redis://%redis_host%/%redis_db%', '%redis_db%'),
-            array('redis://%redis_host%:%redis_port%', null),
-            array('redis://%redis_host%:%redis_port%/%redis_db%', '%redis_db%'),
-            array('redis://pw@%redis_host%:%redis_port%/%redis_db%', '%redis_db%'),
-            array('redis:///redis.sock', null),
-            array('redis:///redis.sock/0', 0),
-            array('redis:///redis.sock/1', 1),
-            array('redis:///redis.sock:63790', null),
-            array('redis:///redis.sock:63790/10', 10),
-            array('redis://pw@/redis.sock:63790/10', 10),
-        );
+        return [
+            ['redis://localhost', null],
+            ['redis://localhost/0', 0],
+            ['redis://localhost/1', 1],
+            ['redis://localhost:63790', null],
+            ['redis://localhost:63790/10', 10],
+            ['redis://pw@localhost:63790/10', 10],
+            ['redis://127.0.0.1', null],
+            ['redis://127.0.0.1/0', 0],
+            ['redis://127.0.0.1/1', 1],
+            ['redis://127.0.0.1:63790', null],
+            ['redis://127.0.0.1:63790/10', 10],
+            ['redis://pw@127.0.0.1:63790/10', 10],
+            ['redis://%redis_host%', null],
+            ['redis://%redis_host%/%redis_db%', '%redis_db%'],
+            ['redis://%redis_host%:%redis_port%', null],
+            ['redis://%redis_host%:%redis_port%/%redis_db%', '%redis_db%'],
+            ['redis://pw@%redis_host%:%redis_port%/%redis_db%', '%redis_db%'],
+            ['redis:///redis.sock', null],
+            ['redis:///redis.sock/0', 0],
+            ['redis:///redis.sock/1', 1],
+            ['redis:///redis.sock:63790', null],
+            ['redis:///redis.sock:63790/10', 10],
+            ['redis://pw@/redis.sock:63790/10', 10],
+        ];
     }
 
     /**
-     * @param string $dsn      DSN
-     * @param int    $database Database
+     * @param int|string|null $database
      *
      * @dataProvider databaseValues
      */
-    public function testDatabase($dsn, $database)
+    public function testDatabase(string $dsn, $database): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($database, $dsn->getDatabase());
     }
 
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, ?string>>
      */
-    public static function passwordValues()
+    public static function passwordValues(): array
     {
-        return array(
-            array('redis://localhost', null),
-            array('redis://localhost/1', null),
-            array('redis://pw@localhost:63790/10', 'pw'),
-            array('redis://user:pw@localhost:63790/10', 'pw'),
-            array('redis://user:pw:withcolon@localhost:63790/10', 'pw:withcolon'),
-            array('redis://Pw%3AColon%25@localhost:63790/10', 'Pw:Colon%'),
-            array('redis://p%40w@localhost:63790/10', 'p@w'),
-            array('redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@localhost:63790/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'),
-            array('redis://127.0.0.1', null),
-            array('redis://127.0.0.1/1', null),
-            array('redis://pw@127.0.0.1:63790/10', 'pw'),
-            array('redis://p%40w@127.0.0.1:63790/10', 'p@w'),
-            array('redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@127.0.0.1:63790/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'),
-            array('redis://%redis_host%', null),
-            array('redis://%redis_host%/%redis_db%', null),
-            array('redis://%redis_pass%@%redis_host%:%redis_port%', '%redis_pass%'),
-            array('redis:///redis.sock', null),
-            array('redis:///redis.sock/1', null),
-            array('redis://pw@/redis.sock/10', 'pw'),
-            array('redis://p%40w@/redis.sock/10', 'p@w'),
-            array('redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@/redis.sock/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'),
-        );
+        return [
+            ['redis://localhost', null],
+            ['redis://localhost/1', null],
+            ['redis://pw@localhost:63790/10', 'pw'],
+            ['redis://user:pw@localhost:63790/10', 'pw'],
+            ['redis://user:pw:withcolon@localhost:63790/10', 'pw:withcolon'],
+            ['redis://Pw%3AColon%25@localhost:63790/10', 'Pw:Colon%'],
+            ['redis://p%40w@localhost:63790/10', 'p@w'],
+            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@localhost:63790/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
+            ['redis://127.0.0.1', null],
+            ['redis://127.0.0.1/1', null],
+            ['redis://pw@127.0.0.1:63790/10', 'pw'],
+            ['redis://p%40w@127.0.0.1:63790/10', 'p@w'],
+            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@127.0.0.1:63790/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
+            ['redis://%redis_host%', null],
+            ['redis://%redis_host%/%redis_db%', null],
+            ['redis://%redis_pass%@%redis_host%:%redis_port%', '%redis_pass%'],
+            ['redis:///redis.sock', null],
+            ['redis:///redis.sock/1', null],
+            ['redis://pw@/redis.sock/10', 'pw'],
+            ['redis://p%40w@/redis.sock/10', 'p@w'],
+            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@/redis.sock/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
+        ];
     }
 
     /**
-     * @param string $dsn      DSN
-     * @param string $password Password
-     *
      * @dataProvider passwordValues
      */
-    public function testPassword($dsn, $password)
+    public function testPassword(string $dsn, ?string $password): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($password, $dsn->getPassword());
     }
 
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, bool>>
      */
-    public static function isValidValues()
+    public static function isValidValues(): array
     {
-        return array(
-            array('redis://localhost', true),
-            array('rediss://localhost', true),
-            array('redis://localhost/1', true),
-            array('redis://pw@localhost:63790/10', true),
-            array('redis://127.0.0.1', true),
-            array('redis://127.0.0.1/1', true),
-            array('redis://pw@127.0.0.1:63790/10', true),
-            array('redis:///redis.sock', true),
-            array('redis:///redis.sock/1', true),
-            array('redis://pw@/redis.sock/10', true),
-            array('redis://pw@/redis.sock/10', true),
-            array('redis://%redis_host%', true),
-            array('redis://%redis_host%/%redis_db%', true),
-            array('redis://%redis_host%:%redis_port%', true),
-            array('redis://%redis_host%:%redis_port%/%redis_db%', true),
-            array('redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', true),
-            array('localhost', false),
-            array('localhost/1', false),
-            array('pw@localhost:63790/10', false),
-        );
+        return [
+            ['redis://localhost', true],
+            ['rediss://localhost', true],
+            ['redis://localhost/1', true],
+            ['redis://pw@localhost:63790/10', true],
+            ['redis://127.0.0.1', true],
+            ['redis://127.0.0.1/1', true],
+            ['redis://pw@127.0.0.1:63790/10', true],
+            ['redis:///redis.sock', true],
+            ['redis:///redis.sock/1', true],
+            ['redis://pw@/redis.sock/10', true],
+            ['redis://pw@/redis.sock/10', true],
+            ['redis://%redis_host%', true],
+            ['redis://%redis_host%/%redis_db%', true],
+            ['redis://%redis_host%:%redis_port%', true],
+            ['redis://%redis_host%:%redis_port%/%redis_db%', true],
+            ['redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', true],
+            ['localhost', false],
+            ['localhost/1', false],
+            ['pw@localhost:63790/10', false],
+        ];
     }
 
     /**
@@ -299,42 +286,36 @@ class RedisDsnTest extends TestCase
      *
      * @dataProvider isValidValues
      */
-    public function testIsValid($dsn, $valid)
+    public function testIsValid(string $dsn, bool $valid): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($valid, $dsn->isValid());
     }
 
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, ?int, ?string>>
      */
-    public static function parameterValues()
+    public static function parameterValues(): array
     {
-        return array(
-            array('redis://localhost', null, null),
-            array('redis://localhost/1?weight=1&alias=master', 1, 'master'),
-            array('redis://pw@localhost:63790/10?alias=master&weight=2', 2, 'master'),
-            array('redis://127.0.0.1?weight=3', 3, null),
-            array('redis://127.0.0.1/1?alias=master&weight=4', 4, 'master'),
-            array('redis://pw@127.0.0.1:63790/10?weight=5&alias=master', 5, 'master'),
-            array('redis:///redis.sock?weight=6&alias=master', 6, 'master'),
-            array('redis:///redis.sock/1?weight=7', 7, null),
-            array('redis://pw@/redis.sock/10?weight=8&alias=master', 8, 'master'),
-            array('redis://pw@/redis.sock/10?alias=master&weight=9', 9, 'master'),
-            array('redis://localhost?alias=master', null, 'master'),
-        );
+        return [
+            ['redis://localhost', null, null],
+            ['redis://localhost/1?weight=1&alias=master', 1, 'master'],
+            ['redis://pw@localhost:63790/10?alias=master&weight=2', 2, 'master'],
+            ['redis://127.0.0.1?weight=3', 3, null],
+            ['redis://127.0.0.1/1?alias=master&weight=4', 4, 'master'],
+            ['redis://pw@127.0.0.1:63790/10?weight=5&alias=master', 5, 'master'],
+            ['redis:///redis.sock?weight=6&alias=master', 6, 'master'],
+            ['redis:///redis.sock/1?weight=7', 7, null],
+            ['redis://pw@/redis.sock/10?weight=8&alias=master', 8, 'master'],
+            ['redis://pw@/redis.sock/10?alias=master&weight=9', 9, 'master'],
+            ['redis://localhost?alias=master', null, 'master'],
+        ];
     }
 
     /**
-     * @param string $dsn    DSN
-     * @param int    $weight Weight
-     * @param string $alias  Alias
-     *
      * @dataProvider parameterValues
      */
-    public function testParameterValues($dsn, $weight, $alias)
+    public function testParameterValues(string $dsn, ?int $weight, ?string $alias): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($weight, $dsn->getWeight());

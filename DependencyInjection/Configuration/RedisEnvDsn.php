@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -13,14 +15,14 @@ namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
 class RedisEnvDsn
 {
-    private $dsn;
+    private string $dsn;
 
-    public function __construct($dsn)
+    public function __construct(string $dsn)
     {
         $this->dsn = $dsn;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->dsn;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -12,6 +14,8 @@
 namespace Snc\RedisBundle\Command;
 
 use Predis\Client;
+use Psr\Container\ContainerInterface;
+use Redis;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,36 +25,21 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Base command for redis interaction through the command line
- *
- * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
  */
 abstract class RedisBaseCommand extends Command
 {
-    /** @var \Psr\Container\ContainerInterface */
-    protected $clientLocator;
+    protected ContainerInterface $clientLocator;
 
-    /**
-     * @param \Psr\Container\ContainerInterface $clientLocator
-     *
-     */
-    public function setClientLocator(\Psr\Container\ContainerInterface $clientLocator)
+    public function setClientLocator(ContainerInterface $clientLocator): void
     {
         $this->clientLocator = $clientLocator;
     }
 
-    /**
-     * @var \Symfony\Component\Console\Input\InputInterface
-     */
-    protected $input;
+    protected InputInterface $input;
 
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected $output;
+    protected OutputInterface $output;
 
-    /**
-     * @var Client|\Redis
-     */
+    /** @var Client|Redis */
     protected $redisClient;
 
     /**
@@ -67,12 +56,9 @@ abstract class RedisBaseCommand extends Command
         );
     }
 
-    /**
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->input = $input;
+        $this->input  = $input;
         $this->output = $output;
 
         $client = $this->input->getOption('client');
@@ -80,6 +66,7 @@ abstract class RedisBaseCommand extends Command
             $this->redisClient = $this->clientLocator->get('snc_redis.' . $client);
         } catch (ServiceNotFoundException $e) {
             $this->output->writeln('<error>The client "' . $client . '" is not defined</error>');
+
             return 0;
         }
 
@@ -89,12 +76,12 @@ abstract class RedisBaseCommand extends Command
     /**
      * Method which gets called by execute(). Used for code unique to the command
      */
-    abstract protected function executeRedisCommand();
+    abstract protected function executeRedisCommand(): int;
 
     /**
      * Checks if either the no-interaction option was chosen or asks the user to proceed
      *
-     * @return boolean true if either no-interaction was chosen or the user wants to proceed
+     * @return bool true if either no-interaction was chosen or the user wants to proceed
      */
     protected function proceedingAllowed(): bool
     {

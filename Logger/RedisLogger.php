@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,42 +13,37 @@
 
 namespace Snc\RedisBundle\Logger;
 
-use Psr\Log\LoggerInterface as PsrLoggerInterface;
+use Psr\Log\LoggerInterface;
+
+use function array_shift;
+use function count;
 
 /**
  * RedisLogger
  */
 class RedisLogger
 {
-    protected $logger;
-    protected $nbCommands = 0;
-    protected $commands = array();
-    private $bufferSize = 200;
+    protected ?LoggerInterface $logger;
+    protected int $nbCommands = 0;
+    /** @var array{cmd: string, executionMS: float, conn: string, error: string|false} */
+    protected array $commands = [];
+    private int $bufferSize   = 200;
 
-    /**
-     * Constructor.
-     *
-     * @param PsrLoggerInterface $logger A LoggerInterface instance
-     */
-    public function __construct($logger = null, int $bufferSize = 200)
+    public function __construct(?LoggerInterface $logger = null, int $bufferSize = 200)
     {
-        if (!$logger instanceof PsrLoggerInterface && null !== $logger) {
-            throw new \InvalidArgumentException(sprintf('RedisLogger needs a PSR-3 LoggerInterface, "%s" was injected instead.', is_object($logger) ? get_class($logger) : gettype($logger)));
-        }
-
-        $this->logger = $logger;
+        $this->logger     = $logger;
         $this->bufferSize = $bufferSize;
     }
 
     /**
      * Logs a command
      *
-     * @param string      $command    Redis command
-     * @param float       $duration   Duration in milliseconds
-     * @param string      $connection Connection alias
-     * @param bool|string $error      Error message or false if command was successful
+     * @param string       $command    Redis command
+     * @param float        $duration   Duration in milliseconds
+     * @param string       $connection Connection alias
+     * @param false|string $error      Error message or false if command was successful
      */
-    public function logCommand(string $command, float $duration, string $connection, $error = false)
+    public function logCommand(string $command, float $duration, string $connection, $error = false): void
     {
         ++$this->nbCommands;
 
@@ -63,6 +60,7 @@ class RedisLogger
 
         if ($error) {
             $this->logger->error('Command "' . $command . '" failed (' . $error . ')');
+
             return;
         }
 
@@ -71,10 +69,8 @@ class RedisLogger
 
     /**
      * Returns the number of logged commands.
-     *
-     * @return integer
      */
-    public function getNbCommands()
+    public function getNbCommands(): int
     {
         return $this->nbCommands;
     }
@@ -82,9 +78,9 @@ class RedisLogger
     /**
      * Returns an array of the logged commands.
      *
-     * @return array
+     * @return array{cmd: string, executionMS: float, conn: string, error: string|false}
      */
-    public function getCommands()
+    public function getCommands(): array
     {
         return $this->commands;
     }

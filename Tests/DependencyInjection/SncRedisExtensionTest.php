@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,10 +13,10 @@
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -24,35 +26,38 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Yaml\Parser;
 
+use function array_key_exists;
+use function count;
+use function current;
+use function sys_get_temp_dir;
+
 /**
  * SncRedisExtensionTest
  */
 class SncRedisExtensionTest extends TestCase
 {
     /**
-     * @static
-     *
-     * @return array
+     * @return array<array<string, string>>
      */
-    public static function parameterValues()
+    public static function parameterValues(): array
     {
-        return array(
-            array('snc_redis.client.class', 'Predis\Client'),
-            array('snc_redis.client_options.class', 'Predis\Configuration\Options'),
-            array('snc_redis.connection_parameters.class', 'Predis\Connection\Parameters'),
-            array('snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory'),
-            array('snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'),
-            array('snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'),
-            array('snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'),
-            array('snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'),
-        );
+        return [
+            ['snc_redis.client.class', 'Predis\Client'],
+            ['snc_redis.client_options.class', 'Predis\Configuration\Options'],
+            ['snc_redis.connection_parameters.class', 'Predis\Connection\Parameters'],
+            ['snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory'],
+            ['snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'],
+            ['snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'],
+            ['snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'],
+            ['snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'],
+        ];
     }
 
-    public function testEmptyConfigLoad()
+    public function testEmptyConfigLoad(): void
     {
         $extension = new SncRedisExtension();
-        $config = array();
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = [];
+        $extension->load([$config], $container = $this->getContainer());
         $this->assertArrayNotHasKey('snc_redis.client', $container->getDefinitions());
     }
 
@@ -62,11 +67,11 @@ class SncRedisExtensionTest extends TestCase
      *
      * @dataProvider parameterValues
      */
-    public function testDefaultParameterConfigLoad($name, $expected)
+    public function testDefaultParameterConfigLoad(string $name, string $expected): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getMinimalYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getMinimalYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $this->assertEquals($expected, $container->getParameter($name));
     }
@@ -77,11 +82,11 @@ class SncRedisExtensionTest extends TestCase
      *
      * @dataProvider parameterValues
      */
-    public function testNoClientsConfigLoad($name, $expected)
+    public function testNoClientsConfigLoad(string $name, string $expected): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getNoClientYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getNoClientYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $this->assertEquals($expected, $container->getParameter($name));
     }
@@ -89,11 +94,11 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test default config for resulting tagged services
      */
-    public function testDefaultClientTaggedServicesConfigLoad()
+    public function testDefaultClientTaggedServicesConfigLoad(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getMinimalYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getMinimalYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertCount(1, $container->findTaggedServiceIds('snc_redis.client'), 'Minimal Yaml should have tagged 1 client');
@@ -102,11 +107,11 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test loading of minimal config
      */
-    public function testMinimalConfigLoad()
+    public function testMinimalConfigLoad(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getMinimalYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getMinimalYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
 
@@ -116,7 +121,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertFalse($container->hasAlias('snc_redis.default_client'));
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
@@ -124,11 +129,11 @@ class SncRedisExtensionTest extends TestCase
      *
      * Test loading of full config
      */
-    public function testFullConfigLoad()
+    public function testFullConfigLoad(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getFullYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getFullYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $this->assertTrue($container->hasDefinition('snc_redis.logger'));
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
@@ -175,30 +180,30 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals([['alias' => 'cluster']], $tags['snc_redis.cluster']);
     }
 
-    public function testInvalidMonologConfigLoad()
+    public function testInvalidMonologConfigLoad(): void
     {
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('You have to disable logging for the client');
 
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getInvalidMonologYamlConfig());
-        $extension->load(array($config), $this->getContainer());
+        $config    = $this->parseYaml($this->getInvalidMonologYamlConfig());
+        $extension->load([$config], $this->getContainer());
     }
 
     /**
      * Test the monolog formatter option
      */
-    public function testMonologFormatterOption()
+    public function testMonologFormatterOption(): void
     {
         $container = $this->getContainer();
         //Create a fake formatter definition
-        $container->setDefinition('my_monolog_formatter', new Definition('Monolog\\Formatter\\LogstashFormatter', array('symfony')));
+        $container->setDefinition('my_monolog_formatter', new Definition('Monolog\\Formatter\\LogstashFormatter', ['symfony']));
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getMonologFormatterOptionYamlConfig());
-        $extension->load(array($config), $container);
+        $config    = $this->parseYaml($this->getMonologFormatterOptionYamlConfig());
+        $extension->load([$config], $container);
 
         $loggerDefinition = $container->getDefinition('snc_redis.monolog.handler');
-        $calls = $loggerDefinition->getMethodCalls();
+        $calls            = $loggerDefinition->getMethodCalls();
         $this->assertTrue($loggerDefinition->hasMethodCall('setFormatter'));
         $calls = $loggerDefinition->getMethodCalls();
         foreach ($calls as $call) {
@@ -214,14 +219,14 @@ class SncRedisExtensionTest extends TestCase
      *
      * Test valid parsing of the client profile option
      */
-    public function testClientProfileOption()
+    public function testClientProfileOption(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getFullYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getFullYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $profileDefinition = $container->getDefinition('snc_redis.client.default_profile');
-        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $options           = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
 
         $this->assertSame((float) 2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
         $this->assertSame('Predis\\Profile\\RedisVersion200', $profileDefinition->getClass(), 'Profile definition is instance of Predis\\Profile\\RedisVersion200');
@@ -232,11 +237,11 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test multiple clients both containing "master" dsn aliases
      */
-    public function testMultipleClientMaster()
+    public function testMultipleClientMaster(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getMultipleReplicationYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getMultipleReplicationYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $defaultParameters = $container->getDefinition('snc_redis.default')->getArgument(0);
         $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $defaultParameters[0]);
@@ -254,7 +259,7 @@ class SncRedisExtensionTest extends TestCase
      *
      * @doesNotPerformAssertions
      */
-    public function testValidXmlConfig()
+    public function testValidXmlConfig(): void
     {
         $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
@@ -262,9 +267,9 @@ class SncRedisExtensionTest extends TestCase
         $loader->load('valid.xml');
     }
 
-    public function testInvalidXmlConfig()
+    public function testInvalidXmlConfig(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $container = $this->getContainer();
         $container->registerExtension(new SncRedisExtension());
@@ -275,12 +280,12 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test config merging
      */
-    public function testConfigurationMerging()
+    public function testConfigurationMerging(): void
     {
         $configuration = new Configuration(true);
-        $configs = array($this->parseYaml($this->getMergeConfig1()), $this->parseYaml($this->getMergeConfig2()));
-        $processor = new Processor();
-        $config = $processor->processConfiguration($configuration, $configs);
+        $configs       = [$this->parseYaml($this->getMergeConfig1()), $this->parseYaml($this->getMergeConfig2())];
+        $processor     = new Processor();
+        $config        = $processor->processConfiguration($configuration, $configs);
         $this->assertCount(1, $config['clients']['default']['dsns']);
         $this->assertEquals('redis://test', current($config['clients']['default']['dsns']));
     }
@@ -288,11 +293,11 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test valid config of the replication option
      */
-    public function testClientReplicationOption()
+    public function testClientReplicationOption(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getReplicationYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getReplicationYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertTrue($options['replication']);
@@ -302,19 +307,19 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($masterParameters['replication']);
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
      * Test valid config of the serialization option
      */
-    public function testClientSerializationOption()
+    public function testClientSerializationOption(): void
     {
          $extension = new SncRedisExtension();
-         $config = $this->parseYaml($this->getSerializationYamlConfig());
-         $extension->load(array($config), $container = $this->getContainer());
-         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
-         $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+         $config    = $this->parseYaml($this->getSerializationYamlConfig());
+         $extension->load([$config], $container = $this->getContainer());
+         $options          = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+         $parameters       = $container->getDefinition('snc_redis.default')->getArgument(0);
          $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
          $this->assertSame($options['serialization'], $masterParameters['serialization']);
     }
@@ -322,11 +327,11 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test valid config of the single host sentinel replication option
      */
-    public function testSingleSentinelOption()
+    public function testSingleSentinelOption(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getSingleSentinelYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getSingleSentinelYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertEquals('sentinel', $options['replication']);
@@ -341,17 +346,17 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals('pass', $masterParameters['parameters']['password']);
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
      * Test valid config of the sentinel replication option
      */
-    public function testSentinelOption()
+    public function testSentinelOption(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getSentinelYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getSentinelYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertEquals('sentinel', $options['replication']);
@@ -366,17 +371,17 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals('pass', $masterParameters['parameters']['password']);
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
      * Test valid config of the cluster option
      */
-    public function testClusterOption()
+    public function testClusterOption(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getClusterYamlConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getClusterYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
         $this->assertEquals('redis', $options['cluster']);
@@ -387,17 +392,17 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals('snc_redis.connection.default2_parameters.default', (string) $parameters[1]);
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
-        $this->assertEquals(array('snc_redis.default' => array(array('alias' => 'default'))), $container->findTaggedServiceIds('snc_redis.client'));
+        $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
     /**
      * Test provided options are respected
      */
-    public function testPhpRedisParameters()
+    public function testPhpRedisParameters(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getPhpRedisYamlConfigWithParameters());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getPhpRedisYamlConfigWithParameters());
+        $extension->load([$config], $container = $this->getContainer());
 
         $defaultParameters = $container->getDefinition('snc_redis.default');
 
@@ -413,11 +418,11 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test parameters provided at DSN overrides the provided options
      */
-    public function testPhpRedisDuplicatedParameters()
+    public function testPhpRedisDuplicatedParameters(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getPhpRedisYamlConfigWithDuplicatedParameters());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getPhpRedisYamlConfigWithDuplicatedParameters());
+        $extension->load([$config], $container = $this->getContainer());
 
         $defaultParameters = $container->getDefinition('snc_redis.default');
 
@@ -433,25 +438,28 @@ class SncRedisExtensionTest extends TestCase
     /**
      * Test minimal RedisCluster configuration
      */
-    public function testPhpRedisClusterParameters()
+    public function testPhpRedisClusterParameters(): void
     {
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getPhpRedisClusterYamlMinimalConfig());
-        $extension->load(array($config), $container = $this->getContainer());
+        $config    = $this->parseYaml($this->getPhpRedisClusterYamlMinimalConfig());
+        $extension->load([$config], $container = $this->getContainer());
 
         $redis = $container->get('snc_redis.default');
 
         $this->assertInstanceOf('\RedisCluster', $redis);
     }
 
-    private function parseYaml($yaml)
+    /**
+     * @return mixed[]
+     */
+    private function parseYaml(string $yaml): array
     {
         $parser = new Parser();
 
         return $parser->parse($yaml);
     }
 
-    private function getSerializationYamlConfig()
+    private function getSerializationYamlConfig(): string
     {
          return <<<'EOF'
 clients:
@@ -466,14 +474,14 @@ clients:
 EOF;
     }
 
-    private function getNoClientYamlConfig()
+    private function getNoClientYamlConfig(): string
     {
         return <<<'EOF'
 clients:
 EOF;
     }
 
-    private function getMinimalYamlConfig()
+    private function getMinimalYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -483,7 +491,7 @@ clients:
 EOF;
     }
 
-    private function getFullYamlConfig()
+    private function getFullYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -529,7 +537,7 @@ monolog:
 EOF;
     }
 
-    private function getInvalidMonologYamlConfig()
+    private function getInvalidMonologYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -544,7 +552,7 @@ monolog:
 EOF;
     }
 
-    private function getMonologFormatterOptionYamlConfig()
+    private function getMonologFormatterOptionYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -560,7 +568,7 @@ monolog:
 EOF;
     }
 
-    private function getMergeConfig1()
+    private function getMergeConfig1(): string
     {
         return <<<'EOF'
 clients:
@@ -572,7 +580,7 @@ clients:
 EOF;
     }
 
-    private function getMergeConfig2()
+    private function getMergeConfig2(): string
     {
         return <<<'EOF'
 clients:
@@ -581,7 +589,7 @@ clients:
 EOF;
     }
 
-    private function getReplicationYamlConfig()
+    private function getReplicationYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -596,7 +604,7 @@ clients:
 EOF;
     }
 
-    private function getSingleSentinelYamlConfig()
+    private function getSingleSentinelYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -613,7 +621,7 @@ clients:
 EOF;
     }
 
-    private function getSentinelYamlConfig()
+    private function getSentinelYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -632,7 +640,7 @@ clients:
 EOF;
     }
 
-    private function getClusterYamlConfig()
+    private function getClusterYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -647,7 +655,7 @@ clients:
 EOF;
     }
 
-    private function getMultipleReplicationYamlConfig()
+    private function getMultipleReplicationYamlConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -672,7 +680,7 @@ clients:
 EOF;
     }
 
-    private function getPhpRedisYamlConfigWithParameters()
+    private function getPhpRedisYamlConfigWithParameters(): string
     {
         return <<<'EOF'
 clients:
@@ -687,7 +695,7 @@ clients:
 EOF;
     }
 
-    private function getPhpRedisYamlConfigWithDuplicatedParameters()
+    private function getPhpRedisYamlConfigWithDuplicatedParameters(): string
     {
         return <<<'EOF'
 clients:
@@ -702,7 +710,7 @@ clients:
 EOF;
     }
 
-    private function getPhpRedisClusterYamlMinimalConfig()
+    private function getPhpRedisClusterYamlMinimalConfig(): string
     {
         return <<<'EOF'
 clients:
@@ -715,14 +723,14 @@ clients:
 EOF;
     }
 
-    private function getContainer()
+    private function getContainer(): ContainerBuilder
     {
-        return new ContainerBuilder(new ParameterBag(array(
+        return new ContainerBuilder(new ParameterBag([
             'kernel.debug'       => false,
-            'kernel.bundles'     => array(),
+            'kernel.bundles'     => [],
             'kernel.cache_dir'   => sys_get_temp_dir(),
             'kernel.environment' => 'test',
-            'kernel.root_dir'    => __DIR__.'/../../' // src dir
-        )));
+            'kernel.root_dir'    => __DIR__ . '/../../', // src dir
+        ]));
     }
 }

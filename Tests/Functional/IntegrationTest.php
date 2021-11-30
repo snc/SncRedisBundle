@@ -22,18 +22,16 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @author Niels Keurentjes <niels.keurentjes@omines.com>
- */
+use function assert;
+
 class IntegrationTest extends WebTestCase
 {
-    /** @var KernelBrowser */
-    private $client;
+    private ?KernelBrowser $client = null;
 
     protected function setUp(): void
     {
         $fs = new Filesystem();
-        $fs->remove(__DIR__ .'/App/var');
+        $fs->remove(__DIR__ . '/App/var');
 
         parent::setUp();
 
@@ -42,10 +40,10 @@ class IntegrationTest extends WebTestCase
         $kernel = $this->client->getKernel();
 
         // Clear Redis databases
-        $application = new Application($kernel);
-        $command = $application->find('redis:flushall');
+        $application   = new Application($kernel);
+        $command       = $application->find('redis:flushall');
         $commandTester = new CommandTester($command);
-        $this->assertSame(0, $commandTester->execute(array('command' => $command->getName(), '-n' => true)));
+        $this->assertSame(0, $commandTester->execute(['command' => $command->getName(), '-n' => true]));
     }
 
     protected function tearDown(): void
@@ -53,17 +51,17 @@ class IntegrationTest extends WebTestCase
         parent::tearDown();
 
         $this->client = null;
-        $this->em = null;
+        $this->em     = null;
     }
 
-    public function testIntegration()
+    public function testIntegration(): void
     {
         $response = $this->profileRequest('GET', '/');
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
 
-        /** @var RedisDataCollector $collector */
         $collector = $this->client->getProfile()->getCollector('redis');
+        assert($collector instanceof RedisDataCollector);
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
         $this->assertCount(5, $collector->getCommands());
     }

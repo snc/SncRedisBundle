@@ -1,0 +1,30 @@
+name: "Coding Standards"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  coding-standards:
+    name: "Coding Standards"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "7.4"
+          tools: "cs2pr"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "highest"
+
+      # https://github.com/doctrine/.github/issues/3
+      - name: "Run PHP_CodeSniffer"
+        run: "bin/phpcs -q --no-colors --report=checkstyle | cs2pr"

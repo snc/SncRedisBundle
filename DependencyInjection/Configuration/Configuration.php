@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -15,16 +17,16 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-/**
- * @author Henrik Westphal <henrik.westphal@gmail.com>
- */
+use function class_exists;
+use function is_iterable;
+
 class Configuration implements ConfigurationInterface
 {
-    private $debug;
+    private bool $debug;
 
-    public function __construct($debug)
+    public function __construct(bool $debug)
     {
-        $this->debug = (Boolean) $debug;
+        $this->debug = $debug;
     }
 
     /**
@@ -32,7 +34,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('snc_redis');
 
@@ -63,10 +65,8 @@ class Configuration implements ConfigurationInterface
 
     /**
      * Adds the snc_redis.clients configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
      */
-    private function addClientsSection(ArrayNodeDefinition $rootNode)
+    private function addClientsSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('client')
@@ -75,12 +75,14 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('alias', false)
                     ->beforeNormalization()
                         ->always()
-                        ->then(function ($v) {
+                        ->then(static function ($v) {
                             if (is_iterable($v)) {
                                 foreach ($v as $name => &$client) {
-                                    if (!isset($client['alias'])) {
-                                        $client['alias'] = $name;
+                                    if (isset($client['alias'])) {
+                                        continue;
                                     }
+
+                                    $client['alias'] = $name;
                                 }
                             }
 
@@ -90,7 +92,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->fixXmlConfig('dsn')
                         ->validate()
-                            ->ifTrue(function(array $clientConfig): bool {
+                            ->ifTrue(static function (array $clientConfig): bool {
                                 return $clientConfig['logging'] && $clientConfig['type'] === 'phpredis' && !class_exists(\ProxyManager\Configuration::class);
                             })
                             ->thenInvalid('You must install "ocramius/proxy-manager" or "friendsofphp/proxy-manager-lts" in order to enable logging for phpredis client')
@@ -103,7 +105,7 @@ class Configuration implements ConfigurationInterface
                                 ->isRequired()
                                 ->performNoDeepMerging()
                                 ->beforeNormalization()
-                                    ->ifString()->then(function ($v) {
+                                    ->ifString()->then(static function ($v) {
                                         return (array) $v;
                                     })
                                 ->end()
@@ -122,9 +124,9 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('profile')->defaultValue('default')->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
-                                    ->enumNode('replication')->values(array(true, false, 'sentinel'))->end()
+                                    ->enumNode('replication')->values([true, false, 'sentinel'])->end()
                                     ->scalarNode('service')->defaultNull()->end()
-                                    ->enumNode('slave_failover')->values(array('none', 'error', 'distribute', 'distribute_slaves'))->end()
+                                    ->enumNode('slave_failover')->values(['none', 'error', 'distribute', 'distribute_slaves'])->end()
                                     ->arrayNode('parameters')
                                         ->canBeUnset()
                                         ->children()
@@ -143,10 +145,8 @@ class Configuration implements ConfigurationInterface
 
     /**
      * Adds the snc_redis.monolog configuration
-     *
-     * @param ArrayNodeDefinition $rootNode
      */
-    private function addMonologSection(ArrayNodeDefinition $rootNode)
+    private function addMonologSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->children()

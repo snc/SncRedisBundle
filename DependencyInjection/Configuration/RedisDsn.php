@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,192 +13,150 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use function explode;
+use function is_numeric;
+use function md5;
+use function parse_str;
+use function preg_match;
+use function preg_replace;
+use function preg_replace_callback;
+use function strpos;
+use function strrpos;
+use function strstr;
+use function substr;
+use function urldecode;
+
 class RedisDsn
 {
-    /**
-     * @var string
-     */
-    protected $dsn;
+    protected string $dsn;
 
-    /**
-     * @var string
-     */
-    protected $password;
+    protected ?string $password = null;
 
-    /**
-     * @var string
-     */
-    protected $host;
+    protected ?string $host = null;
 
-    /**
-     * @var int
-     */
-    protected $port;
+    /** @var int|string|null */
+    protected $port = null;
 
-    /**
-     * @var string
-     */
-    protected $socket;
+    protected ?string $socket = null;
 
-    /**
-     * @var bool
-     */
-    protected $tls;
+    protected bool $tls = false;
 
-    /**
-     * @var int
-     */
-    protected $database;
+    /** @var string|int|null */
+    protected $database = null;
 
-    /**
-     * @var int
-     */
-    protected $weight;
+    protected ?int $weight = null;
 
-    /**
-     * @var string
-     */
-    protected $alias;
+    protected ?string $alias = null;
 
-    /**
-     * @param string $dsn
-     */
-    public function __construct($dsn)
+    public function __construct(string $dsn)
     {
         $this->dsn = $dsn;
         $this->parseDsn($dsn);
     }
 
     /**
-     * @return int|null
+     * @return int|string|null
      */
     public function getDatabase()
     {
         return $this->database;
     }
 
-    /**
-     * @return int
-     */
-    public function getWeight()
+    public function getWeight(): ?int
     {
         return $this->weight;
     }
 
-    /**
-     * @return string
-     */
-    public function getHost()
+    public function getHost(): ?string
     {
         return $this->host;
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
     /**
-     * @return int
+     * @return string|int|null
      */
     public function getPort()
     {
-        if (null !== $this->socket) {
+        if ($this->socket !== null) {
             return null;
         }
 
         return $this->port ?: 6379;
     }
 
-    /**
-     * @return string
-     */
-    public function getSocket()
+    public function getSocket(): ?string
     {
         return $this->socket;
     }
 
-    /**
-     * @return bool
-     */
-    public function getTls()
+    public function getTls(): bool
     {
         return $this->tls;
     }
 
-    /**
-     * @return string
-     */
-    public function getAlias()
+    public function getAlias(): ?string
     {
         return $this->alias;
     }
 
-    /**
-     * @return string
-     */
-    public function getPersistentId()
+    public function getPersistentId(): string
     {
         return md5($this->dsn);
     }
 
-    /**
-     * @return bool
-     */
-    public function isValid()
+    public function isValid(): bool
     {
-        if (0 !== strpos($this->dsn, 'redis://') && 0 !== strpos($this->dsn, 'rediss://')) {
+        if (strpos($this->dsn, 'redis://') !== 0 && strpos($this->dsn, 'rediss://') !== 0) {
             return false;
         }
 
-        if (null !== $this->getHost() && null !== $this->getPort()) {
+        if ($this->getHost() !== null && $this->getPort() !== null) {
             return true;
         }
 
-        if (null !== $this->getSocket()) {
-            return true;
-        }
-
-        return false;
+        return $this->getSocket() !== null;
     }
 
-    /**
-     * @param string $dsn
-     */
-    protected function parseDsn($dsn)
+    protected function parseDsn(string $dsn): void
     {
         $dsn = preg_replace('#rediss?://#', '', $dsn); // remove "redis://" and "rediss://"
-        if (false !== $pos = strrpos($dsn, '@')) {
+        $pos = strrpos($dsn, '@');
+        if ($pos !== false) {
             // parse password
             $password = substr($dsn, 0, $pos);
 
             if (strstr($password, ':')) {
-                list(, $password) = explode(':', $password, 2);
+                [, $password] = explode(':', $password, 2);
             }
 
             $this->password = urldecode($password);
 
             $dsn = substr($dsn, $pos + 1);
         }
-        $dsn = preg_replace_callback('/\?(.*)$/', array($this, 'parseParameters'), $dsn); // parse parameters
+
+        $dsn = preg_replace_callback('/\?(.*)$/', [$this, 'parseParameters'], $dsn); // parse parameters
         if (preg_match('#^(.*)/(\d+|%[^%]+%)$#', $dsn, $matches)) {
             // parse database
             $this->database = is_numeric($matches[2]) ? (int) $matches[2] : $matches[2];
-            $dsn = $matches[1];
+            $dsn            = $matches[1];
         }
+
         if (preg_match('#^([^:]+)(:(\d+|%[^%]+%))?$#', $dsn, $matches)) {
             if (!empty($matches[1])) {
                 // parse host/ip or socket
-                if ('/' === $matches[1][0]) {
+                if ($matches[1][0] === '/') {
                     $this->socket = $matches[1];
                 } else {
                     $this->host = $matches[1];
                 }
             }
-            if (null === $this->socket && !empty($matches[3])) {
+
+            if ($this->socket === null && !empty($matches[3])) {
                 // parse port
                 $this->port = is_numeric($matches[3]) ? (int) $matches[3] : $matches[3];
             }
@@ -204,20 +164,19 @@ class RedisDsn
             if (!empty($matches[1])) {
                 $this->host = $matches[1];
             }
+
             if (!empty($matches[3])) {
                 $this->port = (int) $matches[3];
             }
         }
 
-        $this->tls = 0 === strpos($this->dsn, 'rediss://');
+        $this->tls = strpos($this->dsn, 'rediss://') === 0;
     }
 
     /**
-     * @param array $matches
-     *
-     * @return string
+     * @param mixed[] $matches
      */
-    protected function parseParameters($matches)
+    protected function parseParameters(array $matches): string
     {
         parse_str($matches[1], $params);
 
@@ -225,6 +184,7 @@ class RedisDsn
             if (!$val) {
                 continue;
             }
+
             switch ($key) {
                 case 'weight':
                     $this->weight = (int) $val;
@@ -238,7 +198,7 @@ class RedisDsn
         return '';
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->dsn;
     }

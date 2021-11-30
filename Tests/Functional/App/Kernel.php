@@ -13,57 +13,79 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App;
 
+use ReflectionObject;
+use Snc\RedisBundle\SncRedisBundle;
 use Snc\RedisBundle\Tests\Functional\App\Controller\Controller;
-use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
-use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\Routing\Loader\PhpFileLoader;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
-/**
- * Kernel
- *
- * @author Niels Keurentjes <niels.keurentjes@omines.com>
- */
-abstract class AbstractKernel extends BaseKernel
+use function assert;
+use function dirname;
+
+class Kernel extends BaseKernel
 {
-    use MicroKernelTrait;
+    public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    const CONFIG_EXTS = '.{php,xml,yaml,yml}';
-
+    /**
+     * @inheritdoc
+     */
     public function registerBundles(): iterable
     {
         return [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle(),
-            new \Symfony\Bundle\TwigBundle\TwigBundle(),
-            new \Snc\RedisBundle\SncRedisBundle(),
+            new FrameworkBundle(),
+            new WebProfilerBundle(),
+            new TwigBundle(),
+            new SncRedisBundle(),
         ];
     }
 
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/config.yaml');
 
-        // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option
-        // is deprecated, it will replace the "framework.session.storage_id" configuration option in version 6.0.
-        if (self::VERSION_ID >= 50300) {
+        $loader->load(static function (ContainerBuilder $container): void {
             $container->loadFromExtension('framework', [
-                'session' => [
-                    'storage_factory_id' => 'session.storage.factory.mock_file',
-                ],
                 'router' => [
-                    'utf8' => false,
+                    'resource' => 'kernel::loadRoutes',
+                    'type' => 'service',
+                    'utf8' => true,
                 ],
             ]);
-        } else {
-            $container->loadFromExtension('framework', [
-                'session' => [
-                    'storage_id' => 'session.storage.mock_file',
-                ]
-            ]);
-        }
+
+            // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option
+            // is deprecated, it will replace the "framework.session.storage_id" configuration option in version 6.0.
+            if (self::VERSION_ID >= 50300) {
+                $container->loadFromExtension('framework', [
+                    'session' => ['storage_factory_id' => 'session.storage.factory.mock_file'],
+                ]);
+            }
+
+            $container->register('kernel', static::class)
+                ->addTag('routing.route_loader')
+                ->setAutoconfigured(true)
+                ->setSynthetic(true)
+                ->setPublic(true);
+        });
+    }
+
+    public function loadRoutes(LoaderInterface $loader): RouteCollection
+    {
+        $file         = (new ReflectionObject($this))->getFileName();
+        $kernelLoader = $loader->getResolver()->resolve($file, 'php');
+        assert($kernelLoader instanceof PhpFileLoader);
+        $kernelLoader->setCurrentDir(dirname($file));
+
+        $collection = new RouteCollection();
+        $collection->add('home', new Route('/', ['_controller' => Controller::class]));
+
+        return $collection;
     }
 
     public function getProjectDir(): string
@@ -76,25 +98,3 @@ abstract class AbstractKernel extends BaseKernel
         return __DIR__ . '/var';
     }
 }
-
-// RouteCollectionBuilder is deprecated since symfony/routing 5.1
-if (AbstractKernel::VERSION_ID >= 50100) {
-    class Kernel extends AbstractKernel {
-        protected function configureRoutes(RoutingConfigurator $routes): void
-        {
-            $controller = Controller::class;
-
-            $routes->add('home', '/')->controller("{$controller}::home");
-        }
-    }
-} else {
-    class Kernel extends AbstractKernel {
-        protected function configureRoutes(RouteCollectionBuilder $routes)
-        {
-            $controller = Controller::class;
-
-            $routes->add('/', "{$controller}::home");
-        }
-    }
-}
-

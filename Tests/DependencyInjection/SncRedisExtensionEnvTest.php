@@ -1,26 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
+use LogicException;
 use PHPUnit\Framework\TestCase;
+use Redis;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+use function array_key_exists;
+use function sys_get_temp_dir;
+
 class SncRedisExtensionEnvTest extends TestCase
 {
-    public function testPredisDefaultParameterConfigLoad()
+    public function testPredisDefaultParameterConfigLoad(): void
     {
         $container = $this->getConfiguredContainer('env_predis_minimal');
 
         $this->assertSame(
-            array('Snc\RedisBundle\Factory\PredisParametersFactory', 'create'),
+            ['Snc\RedisBundle\Factory\PredisParametersFactory', 'create'],
             $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory()
         );
     }
 
-    public function testPhpredisDefaultParameterConfig()
+    public function testPhpredisDefaultParameterConfig(): void
     {
         $container = $this->getConfiguredContainer('env_phpredis_minimal');
 
@@ -32,7 +39,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame('default', $clientDefinition->getArgument(3));
 
         $this->assertSame(
-            array(
+            [
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -44,23 +51,23 @@ class SncRedisExtensionEnvTest extends TestCase
                 'cluster' => null,
                 'prefix' => null,
                 'service' => null,
-            ),
+            ],
             $clientDefinition->getArgument(2)
         );
     }
 
-    public function testPhpredisFullConfig()
+    public function testPhpredisFullConfig(): void
     {
         $container = $this->getConfiguredContainer('env_phpredis_full');
 
         $clientDefinition = $container->findDefinition('snc_redis.alias_test');
 
-        $this->assertSame(\Redis::class, $clientDefinition->getClass());
-        $this->assertSame(\Redis::class, $clientDefinition->getArgument(0));
+        $this->assertSame(Redis::class, $clientDefinition->getClass());
+        $this->assertSame(Redis::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('alias_test', $clientDefinition->getArgument(3));
         $this->assertSame(
-            array(
+            [
                 'connection_timeout' => 10,
                 'connection_persistent' => true,
                 'prefix' => 'totoprofix',
@@ -72,13 +79,13 @@ class SncRedisExtensionEnvTest extends TestCase
                 'profile' => 'default',
                 'cluster' => null,
                 'service' => null,
-            ),
+            ],
             $clientDefinition->getArgument(2)
         );
         $this->assertTrue($clientDefinition->getArgument(4));
     }
 
-    public function testProfileOption()
+    public function testProfileOption(): void
     {
         $container = $this->getConfiguredContainer('env_predis_profile');
 
@@ -86,7 +93,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame('Predis\Profile\RedisVersion260', $container->getDefinition('snc_redis.client.default_profile')->getClass());
     }
 
-    public function testClusterOption()
+    public function testClusterOption(): void
     {
         $container = $this->getConfiguredContainer('env_predis_cluster');
 
@@ -102,9 +109,9 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
-    public function testPhpRedisClusterOption()
+    public function testPhpRedisClusterOption(): void
     {
-        $container = $this->getConfiguredContainer('env_phpredis_cluster');
+        $container        = $this->getConfiguredContainer('env_phpredis_cluster');
         $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
 
         $this->assertSame('RedisCluster', $clientDefinition->getClass());
@@ -114,7 +121,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertFalse($clientDefinition->getArgument(4));
 
         $this->assertSame(
-            array(
+            [
                 'cluster' => true,
                 'connection_async' => false,
                 'connection_persistent' => false,
@@ -126,14 +133,14 @@ class SncRedisExtensionEnvTest extends TestCase
                 'profile' => 'default',
                 'prefix' => null,
                 'service' => null,
-            ),
+            ],
             $clientDefinition->getArgument(2)
         );
     }
 
     public function testPhpRedisClusterOptionMultipleDsn(): void
     {
-        $container = $this->getConfiguredContainer('env_phpredis_cluster_multiple_dsn');
+        $container        = $this->getConfiguredContainer('env_phpredis_cluster_multiple_dsn');
         $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
 
         $this->assertSame('RedisCluster', $clientDefinition->getClass());
@@ -163,29 +170,29 @@ class SncRedisExtensionEnvTest extends TestCase
 
     public function testPhpRedisArrayIsNotSupported(): void
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('RedisArray is not supported yet');
 
         $this->getConfiguredContainer('env_phpredis_array_not_supported');
     }
 
-    private function getConfiguredContainer($file)
+    private function getConfiguredContainer(string $file): ContainerBuilder
     {
         $container = new ContainerBuilder();
 
         $container->setParameter('kernel.debug', false);
-        $container->setParameter('kernel.bundles', array());
+        $container->setParameter('kernel.bundles', []);
         $container->setParameter('kernel.cache_dir', sys_get_temp_dir());
         $container->setParameter('kernel.environment', 'test');
         $container->setParameter('kernel.root_dir', __DIR__ . '/../../');
 
         $container->registerExtension(new SncRedisExtension());
 
-        $locator = new FileLocator(__DIR__.'/Fixtures/config/yaml');
-        $loader = new YamlFileLoader($container, $locator);
-        $loader->load($file.'.yaml');
+        $locator = new FileLocator(__DIR__ . '/Fixtures/config/yaml');
+        $loader  = new YamlFileLoader($container, $locator);
+        $loader->load($file . '.yaml');
 
-        $container->getCompilerPassConfig()->setRemovingPasses(array());
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
         return $container;

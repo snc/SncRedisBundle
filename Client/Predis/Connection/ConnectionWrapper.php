@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,6 +13,7 @@
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
+use Closure;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
@@ -18,36 +21,31 @@ use Predis\Response\Error;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Stopwatch\Stopwatch;
 
+use function array_reduce;
+use function assert;
+use function microtime;
+use function strlen;
+use function substr;
+
 /**
  * ConnectionWrapper
  */
 class ConnectionWrapper implements NodeConnectionInterface
 {
-    /**
-     * @var NodeConnectionInterface
-     */
-    protected $connection;
+    protected NodeConnectionInterface $connection;
 
-    /**
-     * @var RedisLogger
-     */
-    protected $logger;
+    protected ?RedisLogger $logger = null;
 
-    /**
-     * @var Stopwatch|null
-     */
-    protected $stopwatch;
+    protected ?Stopwatch $stopwatch = null;
 
     /**
      * Constructor
-     *
-     * @param NodeConnectionInterface $connection
      */
     public function __construct(NodeConnectionInterface $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
-            /** @var ConnectionWrapper $connection */
             $connection = $connection->getConnection();
+            assert($connection instanceof ConnectionWrapper);
         }
 
         $this->connection = $connection;
@@ -55,10 +53,8 @@ class ConnectionWrapper implements NodeConnectionInterface
 
     /**
      * Returns the underlying connection object
-     *
-     * @return NodeConnectionInterface
      */
-    public function getConnection()
+    public function getConnection(): NodeConnectionInterface
     {
         return $this->connection;
     }
@@ -68,12 +64,12 @@ class ConnectionWrapper implements NodeConnectionInterface
      *
      * @param RedisLogger $logger A RedisLogger instance
      */
-    public function setLogger(RedisLogger $logger = null)
+    public function setLogger(?RedisLogger $logger = null): void
     {
         $this->logger = $logger;
     }
 
-    public function setStopwatch(Stopwatch $stopwatch)
+    public function setStopwatch(Stopwatch $stopwatch): void
     {
         $this->stopwatch = $stopwatch;
     }
@@ -94,10 +90,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->disconnect();
     }
 
-    /**
-     * @return bool
-     */
-    public function isConnected()
+    public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
@@ -136,10 +129,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->getResource();
     }
 
-    /**
-     * @return ParametersInterface
-     */
-    public function getParameters()
+    public function getParameters(): ParametersInterface
     {
         return $this->connection->getParameters();
     }
@@ -178,38 +168,33 @@ class ConnectionWrapper implements NodeConnectionInterface
         });
     }
 
-    private function commandToString(CommandInterface $command)
+    private function commandToString(CommandInterface $command): string
     {
         return array_reduce(
             $command->getArguments(),
-            array($this, 'toStringArgumentReducer'),
+            fn (string $accumulator, string $argument) => $this->toStringArgumentReducer($accumulator, $argument),
             $command->getId()
         );
     }
 
     /**
      * Helper function used to reduce a list of arguments to a string.
-     *
-     * @param  string $accumulator Temporary string.
-     * @param  string $argument    Current argument.
-     * @return string
      */
-    private function toStringArgumentReducer($accumulator, $argument)
+    private function toStringArgumentReducer(string $accumulator, string $argument): string
     {
         if (strlen($argument) > 10240) {
-            $argument = substr($argument, 0, 10240) . ' (truncated, complete string is '.strlen($argument).' bytes)';
+            $argument = substr($argument, 0, 10240) . ' (truncated, complete string is ' . strlen($argument) . ' bytes)';
         }
 
-        $accumulator .= " $argument";
-
-        return $accumulator;
+        return $accumulator . ' ' . $argument;
     }
 
     /**
+     * @param Closure(CommandInterface ): mixed $execute
+     *
      * @return mixed
-     * @param \Closure(CommandInterface): mixed $execute
      */
-    private function execute(CommandInterface $command, \Closure $execute)
+    private function execute(CommandInterface $command, Closure $execute)
     {
         if (!$this->logger) {
             return $execute($command);
@@ -222,7 +207,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         }
 
         $startTime = microtime(true);
-        $result = $execute($command);
+        $result    = $execute($command);
 
         if (isset($event)) {
             $event->stop();
@@ -244,6 +229,8 @@ class ConnectionWrapper implements NodeConnectionInterface
      * For example, RedisCluster wraps ConnectionWrapper and not opposite, hence ConnectionWrapper must make assumption
      * here about handling of certain errors based on error type and connection parameters in order of not wrongly
      * classifying responses as errors that were already taken care of by client.
+     *
+     * @param mixed $result
      */
     private function isResultTrulyAnError($result): bool
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,13 +13,14 @@
 
 namespace Snc\RedisBundle\Command;
 
-/**
- * Symfony command to execute redis flushall
- *
- * @author Sebastian Göttschkes <sebastian.goettschkes@googlemail.com>
- */
-class RedisFlushallCommand extends RedisBaseCommand
+use RedisCluster;
+use RuntimeException;
+
+use function is_iterable;
+
+class RedisFlushAllCommand extends RedisBaseCommand
 {
+    /** @inheritdoc  */
     protected static $defaultName = 'redis:flushall';
 
     /**
@@ -30,18 +33,15 @@ class RedisFlushallCommand extends RedisBaseCommand
         $this->setDescription('Flushes the redis database using the redis flushall command');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function executeRedisCommand()
+    protected function executeRedisCommand(): int
     {
-        if ($this->proceedingAllowed()) {
-            $this->flushAll();
-        } else {
+        if (!$this->proceedingAllowed()) {
             $this->output->writeln('<error>Flushing cancelled</error>');
 
             return 1;
         }
+
+        $this->flushAll();
 
         return 0;
     }
@@ -49,10 +49,10 @@ class RedisFlushallCommand extends RedisBaseCommand
     /**
      * Flushing all redis databases
      */
-    private function flushAll()
+    private function flushAll(): void
     {
-        if ($this->redisClient instanceof \RedisCluster) {
-            throw new \RuntimeException('\RedisCluster support is not yet implemented for this command');
+        if ($this->redisClient instanceof RedisCluster) {
+            throw new RuntimeException('\RedisCluster support is not yet implemented for this command');
         }
 
         // flushall in all nodes of cluster

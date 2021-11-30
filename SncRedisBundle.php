@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -22,10 +24,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class SncRedisBundle extends Bundle
 {
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
         $container->addCompilerPass(new LoggingPass());

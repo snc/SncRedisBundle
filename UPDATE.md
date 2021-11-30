@@ -8,4 +8,6 @@
 - Removed RateLimit class. Use symfony/rate-limiter instead
 - Removed doctrine integration. Set up your cache pools via framework.yaml and follow doctrine-bundle documentation to configure Doctrine to use them.
 - `class.phpredis_connection_wrapper` and `class.phpredis_clusterclient_connection_wrapper` config options have been removed 
-- Added requirement for `ocramius/proxy-manager` or `friendsofphp/proxy-manager-lts` if logging is enabled for phpredis client 
+- Added requirement for `ocramius/proxy-manager` or `friendsofphp/proxy-manager-lts` if logging is enabled for phpredis client
+- Increased PHP requirement from 7.2 to 7.4
+- Added return and parameter type declarations to all functions

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,8 +13,10 @@
 
 namespace Snc\RedisBundle\DependencyInjection;
 
-
+use InvalidArgumentException;
+use LogicException;
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Profile\Factory;
 use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
@@ -27,23 +31,26 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
+use function array_map;
+use function assert;
+use function class_exists;
+use function count;
+use function get_class;
+use function is_string;
+use function sprintf;
+
 class SncRedisExtension extends Extension
 {
     /**
-     * Loads the configuration.
-     *
-     * @param array            $configs   An array of configurations
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @throws InvalidConfigurationException
+     * @inheritdoc
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.php');
 
         $mainConfig = $this->getConfiguration($configs, $container);
-        $config = $this->processConfiguration($mainConfig, $configs);
+        $config     = $this->processConfiguration($mainConfig, $configs);
 
         $phpredisFactoryDefinition = $container->getDefinition('snc_redis.phpredis_factory');
 
@@ -67,6 +74,7 @@ class SncRedisExtension extends Extension
             if (!empty($config['clients'][$config['monolog']['client']]['logging'])) {
                 throw new InvalidConfigurationException(sprintf('You have to disable logging for the client "%s" that you have configured under "snc_redis.monolog.client"', $config['monolog']['client']));
             }
+
             $this->loadMonolog($config, $container);
         }
 
@@ -74,31 +82,22 @@ class SncRedisExtension extends Extension
             ->addTag('snc_redis.command');
     }
 
-    /**
-     * @return string
-     */
-    public function getNamespace()
+    public function getNamespace(): string
     {
         return 'http://symfony.com/schema/dic/redis';
     }
 
-    /**
-     * @return string
-     */
-    public function getXsdValidationBasePath()
+    public function getXsdValidationBasePath(): string
     {
         return __DIR__ . '/../Resources/config/schema';
     }
 
     /**
-     * Loads a redis client.
-     *
-     * @param array            $client    A client configuration
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array{dsns: array<mixed>, type: string} $client
      */
-    protected function loadClient(array $client, ContainerBuilder $container)
+    private function loadClient(array $client, ContainerBuilder $container): void
     {
-        $dsnResolver = function ($dsn) use ($container) {
+        $dsnResolver = static function ($dsn) use ($container) {
             $usedEnvs = null;
             $container->resolveEnvPlaceholders($dsn, null, $usedEnvs);
 
@@ -112,7 +111,7 @@ class SncRedisExtension extends Extension
                 return $parsedDsn;
             }
 
-            throw new \InvalidArgumentException(sprintf('Given Redis DSN "%s" is invalid.', $dsn));
+            throw new InvalidArgumentException(sprintf('Given Redis DSN "%s" is invalid.', $dsn));
         };
 
         $client['dsns'] = array_map($dsnResolver, $client['dsns']);
@@ -126,20 +125,16 @@ class SncRedisExtension extends Extension
                 $this->loadPhpredisClient($client, $container);
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf('The redis client type %s is invalid.', $client['type']));
-                break;
+                throw new InvalidArgumentException(sprintf('The redis client type %s is invalid.', $client['type']));
         }
     }
 
     /**
-     * Loads a redis client using predis.
-     *
-     * @param array            $client    A client configuration
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param mixed[] $client
      */
-    protected function loadPredisClient(array $client, ContainerBuilder $container)
+    private function loadPredisClient(array $client, ContainerBuilder $container): void
     {
-        if (null === $client['options']['cluster']) {
+        if ($client['options']['cluster'] === null) {
             unset($client['options']['cluster']);
         } else {
             unset($client['options']['replication']);
@@ -147,61 +142,64 @@ class SncRedisExtension extends Extension
 
         // predis connection parameters have been renamed in v0.8
         $client['options']['async_connect'] = $client['options']['connection_async'];
-        $client['options']['timeout'] = $client['options']['connection_timeout'];
-        $client['options']['persistent'] = $client['options']['connection_persistent'];
-        $client['options']['exceptions'] = $client['options']['throw_errors'];
+        $client['options']['timeout']       = $client['options']['connection_timeout'];
+        $client['options']['persistent']    = $client['options']['connection_persistent'];
+        $client['options']['exceptions']    = $client['options']['throw_errors'];
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
         unset($client['options']['throw_errors']);
 
-        $connectionAliases = array();
-        $connectionCount = count($client['dsns']);
+        $connectionAliases = [];
+        $connectionCount   = count($client['dsns']);
 
-        /** @var RedisDsn $dsn */
         foreach ($client['dsns'] as $i => $dsn) {
+            assert($dsn instanceof RedisEnvDsn || $dsn instanceof RedisDsn);
             $connectionAlias = $dsn instanceof RedisDsn ? $dsn->getAlias() : null;
             if (!$connectionAlias) {
-                $connectionAlias = 1 === $connectionCount ? $client['alias'] : $client['alias'] . ($i + 1);
+                $connectionAlias = $connectionCount === 1 ? $client['alias'] : $client['alias'] . ($i + 1);
             }
+
             $connectionAliases[] = $connectionAlias;
 
-            $connection = $client['options'];
+            $connection            = $client['options'];
             $connection['logging'] = $client['logging'];
-            $connection['alias'] = $connectionAlias;
+            $connection['alias']   = $connectionAlias;
 
             $this->loadPredisConnectionParameters($client['alias'], $connection, $container, $dsn);
         }
 
         $profile = $client['options']['profile'];
         // TODO can be shared between clients?!
-        $profile = $container->resolveEnvPlaceholders($profile, true);
-        $profile = !is_string($profile) ? sprintf('%.1F', $profile) : $profile;
-        $profileId = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(\Predis\Profile\Factory::get($profile))); // TODO get_class alternative?
-        if (null !== $client['options']['prefix']) {
-            $processorId = sprintf('snc_redis.client.%s_processor', $client['alias']);
+        $profile    = $container->resolveEnvPlaceholders($profile, true);
+        $profile    = !is_string($profile) ? sprintf('%.1F', $profile) : $profile;
+        $profileId  = sprintf('snc_redis.client.%s_profile', $client['alias']);
+        $profileDef = new Definition(get_class(Factory::get($profile))); // TODO get_class alternative?
+        if ($client['options']['prefix'] !== null) {
+            $processorId  = sprintf('snc_redis.client.%s_processor', $client['alias']);
             $processorDef = new Definition(KeyPrefixProcessor::class);
-            $processorDef->setArguments(array($client['options']['prefix']));
+            $processorDef->setArguments([$client['options']['prefix']]);
             $container->setDefinition($processorId, $processorDef);
-            $profileDef->addMethodCall('setProcessor', array(new Reference($processorId)));
+            $profileDef->addMethodCall('setProcessor', [new Reference($processorId)]);
         }
+
         $container->setDefinition($profileId, $profileDef);
         $client['options']['profile'] = new Reference($profileId);
 
-        $optionId = sprintf('snc_redis.client.%s_options', $client['alias']);
+        $optionId  = sprintf('snc_redis.client.%s_options', $client['alias']);
         $optionDef = new Definition($container->getParameter('snc_redis.client_options.class'));
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($container->getParameter('snc_redis.client.class'));
-        $clientDef->addTag('snc_redis.client', array('alias' => $client['alias']));
-        if (1 === $connectionCount && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
+        $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
+        if ($connectionCount === 1 && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
-            $connections = array();
+            $connections = [];
             foreach ($connectionAliases as $alias) {
                 $connections[] = new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $alias, $client['alias']));
             }
+
             $clientDef->addArgument($connections);
         }
 
@@ -210,84 +208,73 @@ class SncRedisExtension extends Extension
     }
 
     /**
-     * Loads a connection.
-     *
-     * @param string               $clientAlias The client alias
-     * @param array                $connection  A connection configuration
-     * @param ContainerBuilder     $container   A ContainerBuilder instance
-     * @param RedisEnvDsn|RedisDsn $dsn         DSN object
+     * @param mixed[]              $options
+     * @param RedisEnvDsn|RedisDsn $dsn
      */
-    protected function loadPredisConnectionParameters($clientAlias, array $connection, ContainerBuilder $container, $dsn)
+    private function loadPredisConnectionParameters(string $clientAlias, array $options, ContainerBuilder $container, object $dsn): void
     {
         $parametersClass = $container->getParameter('snc_redis.connection_parameters.class');
-        $parameterId = sprintf('snc_redis.connection.%s_parameters.%s', $connection['alias'], $clientAlias);
+        $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
 
         $parameterDef = new Definition($parametersClass);
-        $parameterDef->setFactory(array(PredisParametersFactory::class, 'create'));
-        $parameterDef->addArgument($connection);
+        $parameterDef->setFactory([PredisParametersFactory::class, 'create']);
+        $parameterDef->addArgument($options);
         $parameterDef->addArgument($parametersClass);
         $parameterDef->addArgument((string) $dsn);
-        $parameterDef->addTag('snc_redis.connection_parameters', array('clientAlias' => $clientAlias));
+        $parameterDef->addTag('snc_redis.connection_parameters', ['clientAlias' => $clientAlias]);
         $container->setDefinition($parameterId, $parameterDef);
     }
 
     /**
-     * Loads a redis client using phpredis.
-     *
-     * @param array            $client    A client configuration
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @throws \RuntimeException
+     * @param mixed[] $options A client configuration
      */
-    protected function loadPhpredisClient(array $client, ContainerBuilder $container)
+    private function loadPhpredisClient(array $options, ContainerBuilder $container): void
     {
-        $connectionCount = count($client['dsns']);
-        $hasClusterOption = null !== $client['options']['cluster'];
+        $connectionCount  = count($options['dsns']);
+        $hasClusterOption = $options['options']['cluster'] !== null;
 
         if ($connectionCount > 1 && !$hasClusterOption) {
-            throw new \LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
+            throw new LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
         }
 
-        $phpredisClientClass = $container->getParameter('snc_redis.phpredis_'.($hasClusterOption ? 'cluster' : '').'client.class');
-        $phpredisDef = new Definition($phpredisClientClass, [
+        $phpredisClientClass = $container->getParameter('snc_redis.phpredis_' . ($hasClusterOption ? 'cluster' : '') . 'client.class');
+        $phpredisDef         = new Definition($phpredisClientClass, [
             $phpredisClientClass,
-            array_map('strval', $client['dsns']),
-            $client['options'],
-            $client['alias'],
-            $client['logging'],
+            array_map('strval', $options['dsns']),
+            $options['options'],
+            $options['alias'],
+            $options['logging'],
         ]);
         $phpredisDef->setFactory([new Reference('snc_redis.phpredis_factory'), 'create']);
-        $phpredisDef->addTag('snc_redis.client', array('alias' => $client['alias']));
+        $phpredisDef->addTag('snc_redis.client', ['alias' => $options['alias']]);
         $phpredisDef->setLazy(true);
 
-        $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $phpredisDef);
+        $container->setDefinition(sprintf('snc_redis.%s', $options['alias']), $phpredisDef);
     }
 
     /**
-     * Loads the Monolog configuration.
-     *
-     * @param array            $config    A configuration array
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param mixed[] $config
      */
-    protected function loadMonolog(array $config, ContainerBuilder $container)
+    private function loadMonolog(array $config, ContainerBuilder $container): void
     {
         $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
 
-        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), array(
+        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), [
             $ref,
-            $config['monolog']['key']
-        ));
+            $config['monolog']['key'],
+        ]);
 
         if (!empty($config['monolog']['formatter'])) {
-            $def->addMethodCall('setFormatter', array(new Reference($config['monolog']['formatter'])));
+            $def->addMethodCall('setFormatter', [new Reference($config['monolog']['formatter'])]);
         }
+
         $container->setDefinition('snc_redis.monolog.handler', $def);
     }
 
     /**
-     * @return ConfigurationInterface
+     * @inheritdoc
      */
-    public function getConfiguration(array $config, ContainerBuilder $container)
+    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($container->getParameter('kernel.debug'));
     }

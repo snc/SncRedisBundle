@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -11,17 +13,15 @@
 
 namespace Snc\RedisBundle\DependencyInjection\Compiler;
 
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-/**
- * Class ClientLocatorPass
- *
- * @package Snc\RedisBundle\DependencyInjection\Compiler
- */
+use function array_keys;
+
 class ClientLocatorPass implements CompilerPassInterface
 {
     /**
@@ -42,25 +42,19 @@ class ClientLocatorPass implements CompilerPassInterface
     }
 
     /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     *
      * @return array<string, Definition>
      */
     private function getRedisClientDefinitions(ContainerBuilder $container): array
     {
         $clientDefinitions = $container->findTaggedServiceIds('snc_redis.client');
         if (!$clientDefinitions) {
-            throw new \RuntimeException('no redis clients found (tag name: snc_redis.client)');
+            throw new RuntimeException('no redis clients found (tag name: snc_redis.client)');
         }
 
         return $clientDefinitions;
     }
 
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param \Symfony\Component\DependencyInjection\Reference        $clientLocator
-     */
-    private function passClientLocatorToSncRedisCommands(ContainerBuilder $container, Reference $clientLocator)
+    private function passClientLocatorToSncRedisCommands(ContainerBuilder $container, Reference $clientLocator): void
     {
         $commandDefinitions = $container->findTaggedServiceIds('snc_redis.command');
         foreach (array_keys($commandDefinitions) as $key) {

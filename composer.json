@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "symfony/framework-bundle": "^4.4 || ^5.3 || ^6.0",
         "symfony/http-foundation": "^4.4 || ^5.3 || ^6.0",
         "symfony/yaml": "^4.4 || ^5.3 || ^6.0"
@@ -29,6 +29,7 @@
         "ext-pdo_sqlite": "*",
         "ext-redis": "*",
         "doctrine/annotations": "^1.13",
+        "doctrine/coding-standard": "^9.0",
         "friendsofphp/proxy-manager-lts": "^1.0",
         "phpunit/phpunit": "^8.5 || ^9.5",
         "predis/predis": "^1.1",

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the SncRedisBundle package.
  *
@@ -16,37 +18,46 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 
+use function constant;
+use function is_int;
+use function strtoupper;
+
 class MonologPass implements CompilerPassInterface
 {
-    const SERVICE_ID = 'snc_redis.monolog.handler';
+    public const SERVICE_ID = 'snc_redis.monolog.handler';
 
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if ($container->hasDefinition(self::SERVICE_ID)) {
-            if (!$container->hasExtension('monolog')) {
-                throw new LogicException('SncRedisBundle Monolog integration needs the MonologBundle to be installed');
+        if (!$container->hasDefinition(self::SERVICE_ID)) {
+            return;
+        }
+
+        if (!$container->hasExtension('monolog')) {
+            throw new LogicException('SncRedisBundle Monolog integration needs the MonologBundle to be installed');
+        }
+
+        $handlerDefinition = $container->getDefinition(self::SERVICE_ID);
+        $configuration     = $container->getExtension('monolog')->getConfiguration([], $container);
+        $processor         = new Processor();
+        $config            = $processor->processConfiguration($configuration, $container->getExtensionConfig('monolog'));
+        foreach ($config['handlers'] as $handler) {
+            if (!isset($handler['id']) || $handler['id'] !== self::SERVICE_ID) {
+                continue;
             }
 
-            $handlerDefinition = $container->getDefinition(self::SERVICE_ID);
-            $configuration = $container->getExtension('monolog')->getConfiguration(array(), $container);
-            $processor = new Processor();
-            $config = $processor->processConfiguration($configuration, $container->getExtensionConfig('monolog'));
-            foreach ($config['handlers'] as $handler) {
-                if (isset($handler['id']) && self::SERVICE_ID === $handler['id']) {
-                    if (isset($handler['level'])) {
-                        $level = $handler['level'] = is_int($handler['level']) ? $handler['level'] : constant('Monolog\Logger::'.strtoupper($handler['level']));
-                        $handlerDefinition->addArgument($level);
-                    }
-                    if (isset($handler['bubble'])) {
-                        $handlerDefinition->addArgument($handler['bubble']);
-                    }
-
-                    return;
-                }
+            if (isset($handler['level'])) {
+                $level = $handler['level'] = is_int($handler['level']) ? $handler['level'] : constant('Monolog\Logger::' . strtoupper($handler['level']));
+                $handlerDefinition->addArgument($level);
             }
+
+            if (isset($handler['bubble'])) {
+                $handlerDefinition->addArgument($handler['bubble']);
+            }
+
+            return;
         }
     }
 }

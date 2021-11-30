@@ -13,18 +13,13 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
+use Redis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Controller
- *
- * @author Niels Keurentjes <niels.keurentjes@omines.com>
- */
 class Controller extends AbstractController
 {
-    public function home(Request $request, \Redis $redis)
+    public function __invoke(Redis $redis): JsonResponse
     {
         $redis->set('foo', 'bar');
 
