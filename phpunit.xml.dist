@@ -16,22 +16,7 @@
 
     <testsuites>
         <testsuite name="RedisBundle Test Suite">
-            <directory>./Tests</directory>
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
-
-    <logging>
-        <log type="coverage-text"/>
-        <log type="coverage-clover" target="./build/coverage/log/coverage.xml"/>
-    </logging>
-
-    <filter>
-        <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>

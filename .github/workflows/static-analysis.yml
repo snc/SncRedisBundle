@@ -1,16 +1,17 @@
-name: "CS"
+
+name: "SA"
 
 on:
-  push:
   pull_request:
+  push:
 
 jobs:
-  coding-standards:
-    name: "Coding Standards"
+  static-analysis-psalm:
+    name: "Static Analysis with Psalm"
     runs-on: "ubuntu-latest"
 
     steps:
-      - name: "Checkout"
+      - name: "Checkout code"
         uses: "actions/checkout@v2"
 
       - name: "Install PHP"
@@ -18,13 +19,9 @@ jobs:
         with:
           coverage: "none"
           php-version: "7.4"
-          tools: "cs2pr"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "highest"
 
-      # https://github.com/doctrine/.github/issues/3
-      - name: "Run PHP_CodeSniffer"
-        run: "vendor/bin/phpcs -q --no-colors --report=checkstyle | cs2pr"
+      - name: "Run a static analysis with vimeo/psalm"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"

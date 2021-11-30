@@ -41,7 +41,8 @@
         "symfony/phpunit-bridge": "^5.3",
         "symfony/profiler-pack": "^1.0",
         "symfony/stopwatch": "^4.4 || ^5.3 || ^6.0",
-        "symfony/twig-bundle": "^4.4 || ^5.3 || ^6.0"
+        "symfony/twig-bundle": "^4.4 || ^5.3 || ^6.0",
+        "vimeo/psalm": "^4.13"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
@@ -50,7 +51,6 @@
         "symfony/proxy-manager-bridge": "If you want to lazy-load some services"
     },
     "config": {
-        "bin-dir": "bin/",
         "sort-packages": true
     },
     "conflict": {
@@ -64,10 +64,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Snc\\RedisBundle\\": ""
-        },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
+            "Snc\\RedisBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Snc\\RedisBundle\\Tests\\": "tests/"
+        }
     }
 }

@@ -81,4 +81,4 @@ jobs:
         if: "${{ matrix.stability != 'dev' }}"
 
       - name: "Run PHPUnit"
-        run: "bin/phpunit -v"
+        run: "vendor/bin/phpunit -v"
