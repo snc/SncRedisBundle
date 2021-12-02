@@ -1,7 +1,6 @@
 # RedisBundle #
 [![Latest Stable Version](https://poser.pugx.org/snc/redis-bundle/v/stable?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 [![Total Downloads](https://poser.pugx.org/snc/redis-bundle/downloads?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
-[![Latest Stable Version](https://poser.pugx.org/snc/redis-bundle/v?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 [![License](https://poser.pugx.org/snc/redis-bundle/license?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 [![Monthly Downloads](https://poser.pugx.org/snc/redis-bundle/d/monthly?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
 [![Daily Downloads](https://poser.pugx.org/snc/redis-bundle/d/daily?format=flat-square)](https://packagist.org/packages/snc/redis-bundle)
