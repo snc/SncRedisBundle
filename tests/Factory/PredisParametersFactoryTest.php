@@ -14,9 +14,7 @@ use function sprintf;
 
 class PredisParametersFactoryTest extends TestCase
 {
-    /**
-     * @return array<array{0: string, 1: class-string, 2: array<string, mixed>, 3: array<string, mixed>}>
-     */
+    /** @return array<array{0: string, 1: class-string, 2: array<string, mixed>, 3: array<string, mixed>}> */
     public function createDp(): array
     {
         return [

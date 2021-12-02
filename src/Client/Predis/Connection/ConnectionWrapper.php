@@ -105,9 +105,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         });
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function readResponse(CommandInterface $command)
     {
         return $this->connection->readResponse($command);
@@ -121,9 +119,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return (string) $this->connection;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getResource()
     {
         return $this->connection->getResource();
@@ -142,17 +138,13 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->addConnectCommand($command);
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function read()
     {
         return $this->connection->read();
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function executeCommand(CommandInterface $command)
     {
         return $this->execute($command, function (CommandInterface $command) {

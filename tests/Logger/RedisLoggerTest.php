@@ -91,9 +91,7 @@ class RedisLoggerTest extends TestCase
         ], $this->redisLogger->getCommands());
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testLogSuccessfulCommandWithoutLogger(): void
     {
         $redisLogger = new RedisLogger();
@@ -101,9 +99,7 @@ class RedisLoggerTest extends TestCase
         $redisLogger->logCommand('foo', 10, 'connection');
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testLogFailedCommandWithoutLogger(): void
     {
         $redisLogger = new RedisLogger();

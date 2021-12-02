@@ -157,9 +157,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertNull($client->getPersistentID());
     }
 
-    /**
-     * @dataProvider serializationTypes
-     */
+    /** @dataProvider serializationTypes */
     public function testLoadSerializationType(string $serializationType, int $serializer): void
     {
         $factory = new PhpredisClientFactory($this->redisLogger);
@@ -195,9 +193,7 @@ class PhpredisClientFactoryTest extends TestCase
         );
     }
 
-    /**
-     * @return list<array{0: string, 1: Redis::SERIALIZER_*}>
-     */
+    /** @return list<array{0: string, 1: Redis::SERIALIZER_*}> */
     public function serializationTypes(): array
     {
         $serializationTypes = [

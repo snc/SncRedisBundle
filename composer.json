@@ -9,6 +9,7 @@
     ],
     "homepage": "https://github.com/snc/SncRedisBundle",
     "license": "MIT",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Henrik Westphal",

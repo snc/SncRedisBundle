@@ -54,9 +54,7 @@ class RedisDsn
         $this->parseDsn($dsn);
     }
 
-    /**
-     * @return int|string|null
-     */
+    /** @return int|string|null */
     public function getDatabase()
     {
         return $this->database;
@@ -77,9 +75,7 @@ class RedisDsn
         return $this->password;
     }
 
-    /**
-     * @return string|int|null
-     */
+    /** @return string|int|null */
     public function getPort()
     {
         if ($this->socket !== null) {
@@ -173,9 +169,7 @@ class RedisDsn
         $this->tls = strpos($this->dsn, 'rediss://') === 0;
     }
 
-    /**
-     * @param mixed[] $matches
-     */
+    /** @param mixed[] $matches */
     protected function parseParameters(array $matches): string
     {
         parse_str($matches[1], $params);

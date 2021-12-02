@@ -12,14 +12,10 @@ use function array_merge;
 use function is_a;
 use function sprintf;
 
-/**
- * @internal
- */
+/** @internal */
 class PredisParametersFactory
 {
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     public static function create(array $options, string $class, string $dsn): ParametersInterface
     {
         if (!is_a($class, ParametersInterface::class, true)) {
@@ -41,9 +37,7 @@ class PredisParametersFactory
         return new $class($dsnOptions);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private static function parseDsn(RedisDsn $dsn): array
     {
         $options = [];

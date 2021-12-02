@@ -41,9 +41,7 @@ use function sprintf;
 
 class SncRedisExtension extends Extension
 {
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -92,9 +90,7 @@ class SncRedisExtension extends Extension
         return __DIR__ . '/../Resources/config/schema';
     }
 
-    /**
-     * @param array{dsns: array<mixed>, type: string} $client
-     */
+    /** @param array{dsns: array<mixed>, type: string} $client */
     private function loadClient(array $client, ContainerBuilder $container): void
     {
         $dsnResolver = static function ($dsn) use ($container) {
@@ -129,9 +125,7 @@ class SncRedisExtension extends Extension
         }
     }
 
-    /**
-     * @param mixed[] $client
-     */
+    /** @param mixed[] $client */
     private function loadPredisClient(array $client, ContainerBuilder $container): void
     {
         if ($client['options']['cluster'] === null) {
@@ -225,9 +219,7 @@ class SncRedisExtension extends Extension
         $container->setDefinition($parameterId, $parameterDef);
     }
 
-    /**
-     * @param mixed[] $options A client configuration
-     */
+    /** @param mixed[] $options A client configuration */
     private function loadPhpredisClient(array $options, ContainerBuilder $container): void
     {
         $connectionCount  = count($options['dsns']);
@@ -252,9 +244,7 @@ class SncRedisExtension extends Extension
         $container->setDefinition(sprintf('snc_redis.%s', $options['alias']), $phpredisDef);
     }
 
-    /**
-     * @param mixed[] $config
-     */
+    /** @param mixed[] $config */
     private function loadMonolog(array $config, ContainerBuilder $container): void
     {
         $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
@@ -271,9 +261,7 @@ class SncRedisExtension extends Extension
         $container->setDefinition('snc_redis.monolog.handler', $def);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration((bool) $container->getParameter('kernel.debug'));

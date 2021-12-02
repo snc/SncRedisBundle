@@ -36,9 +36,7 @@ use function sys_get_temp_dir;
  */
 class SncRedisExtensionTest extends TestCase
 {
-    /**
-     * @return array<array{0: string, 1: string}>
-     */
+    /** @return array<array{0: string, 1: string}> */
     public static function parameterValues(): array
     {
         return [
@@ -449,9 +447,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertInstanceOf('\RedisCluster', $redis);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function parseYaml(string $yaml): array
     {
         $parser = new Parser();

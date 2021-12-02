@@ -40,9 +40,7 @@ class ClientLocatorPass implements CompilerPassInterface
         $this->passClientLocatorToSncRedisCommands($container, $clientLocator);
     }
 
-    /**
-     * @return array<string, array<mixed>>
-     */
+    /** @return array<string, array<mixed>> */
     private function getRedisClientDefinitions(ContainerBuilder $container): array
     {
         $clientDefinitions = $container->findTaggedServiceIds('snc_redis.client');

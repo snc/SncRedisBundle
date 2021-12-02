@@ -18,9 +18,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 class RedisDsnTest extends TestCase
 {
-    /**
-     * @return list<list<string>>
-     */
+    /** @return list<list<string>> */
     public function hostValues(): array
     {
         return [
@@ -80,9 +78,7 @@ class RedisDsnTest extends TestCase
         $this->assertSame($host, $dsn->getHost());
     }
 
-    /**
-     * @return list<array{0: string, 1: string}>
-     */
+    /** @return list<array{0: string, 1: string}> */
     public static function socketValues(): array
     {
         return [
@@ -111,9 +107,7 @@ class RedisDsnTest extends TestCase
         $this->assertSame($socket, $dsn->getSocket());
     }
 
-    /**
-     * @return list<array{0: string, 1:bool}>
-     */
+    /** @return list<array{0: string, 1:bool}> */
     public function tlsValues(): array
     {
         return [
@@ -122,18 +116,14 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider tlsValues
-     */
+    /** @dataProvider tlsValues */
     public function testTls(string $dsn, bool $tls): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($tls, $dsn->getTls());
     }
 
-    /**
-     * @return list<array{0: string, 1: int|string}>
-     */
+    /** @return list<array{0: string, 1: int|string}> */
     public static function portValues(): array
     {
         return [
@@ -170,9 +160,7 @@ class RedisDsnTest extends TestCase
         $this->assertSame($port, $dsn->getPort());
     }
 
-    /**
-     * @return array<array{0: string, 1: ?int}>
-     */
+    /** @return array<array{0: string, 1: ?int}> */
     public static function databaseValues(): array
     {
         return [
@@ -213,9 +201,7 @@ class RedisDsnTest extends TestCase
         $this->assertSame($database, $dsn->getDatabase());
     }
 
-    /**
-     * @return array<array{0: string, 1: ?string}>
-     */
+    /** @return array<array{0: string, 1: ?string}> */
     public static function passwordValues(): array
     {
         return [
@@ -243,18 +229,14 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider passwordValues
-     */
+    /** @dataProvider passwordValues */
     public function testPassword(string $dsn, ?string $password): void
     {
         $dsn = new RedisDsn($dsn);
         $this->assertSame($password, $dsn->getPassword());
     }
 
-    /**
-     * @return array<array{0: string, 1: bool}>
-     */
+    /** @return array<array{0: string, 1: bool}> */
     public static function isValidValues(): array
     {
         return [
@@ -292,9 +274,7 @@ class RedisDsnTest extends TestCase
         $this->assertSame($valid, $dsn->isValid());
     }
 
-    /**
-     * @return array<array{0: string, 1: ?int, 2: ?string}>
-     */
+    /** @return array<array{0: string, 1: ?int, 2: ?string}> */
     public static function parameterValues(): array
     {
         return [
@@ -312,9 +292,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parameterValues
-     */
+    /** @dataProvider parameterValues */
     public function testParameterValues(string $dsn, ?int $weight, ?string $alias): void
     {
         $dsn = new RedisDsn($dsn);

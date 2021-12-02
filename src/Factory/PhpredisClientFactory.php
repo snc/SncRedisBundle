@@ -36,9 +36,7 @@ use function strtoupper;
 use function strval;
 use function trim;
 
-/**
- * @internal
- */
+/** @internal */
 class PhpredisClientFactory
 {
     /**
@@ -54,9 +52,7 @@ class PhpredisClientFactory
     private ?Stopwatch $stopwatch              = null;
     private ?Configuration $proxyConfiguration = null;
 
-    /**
-     * @param RedisLogger $logger A RedisLogger instance
-     */
+    /** @param RedisLogger $logger A RedisLogger instance */
     public function __construct(RedisLogger $logger, ?Configuration $proxyConfiguration = null, ?Stopwatch $stopwatch = null)
     {
         $this->logger             = $logger;
@@ -142,9 +138,7 @@ class PhpredisClientFactory
         return $loggingEnabled ? $this->createLoggingProxy($client, $alias) : $client;
     }
 
-    /**
-     * @param mixed[] $options
-     */
+    /** @param mixed[] $options */
     private function createClient(RedisDsn $dsn, string $class, string $alias, array $options, bool $loggingEnabled): Redis
     {
         $client = new $class();
