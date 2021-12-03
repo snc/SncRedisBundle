@@ -18,9 +18,6 @@ use Psr\Log\LoggerInterface;
 use function array_shift;
 use function count;
 
-/**
- * RedisLogger
- */
 class RedisLogger
 {
     protected ?LoggerInterface $logger;
@@ -35,14 +32,7 @@ class RedisLogger
         $this->bufferSize = $bufferSize;
     }
 
-    /**
-     * Logs a command
-     *
-     * @param string       $command    Redis command
-     * @param float        $duration   Duration in milliseconds
-     * @param string       $connection Connection alias
-     * @param false|string $error      Error message or false if command was successful
-     */
+    /** @param false|string $error Error message or false if command was successful */
     public function logCommand(string $command, float $duration, string $connection, $error = false): void
     {
         ++$this->nbCommands;
@@ -67,19 +57,12 @@ class RedisLogger
         $this->logger->debug('Executing command "' . $command . '"');
     }
 
-    /**
-     * Returns the number of logged commands.
-     */
     public function getNbCommands(): int
     {
         return $this->nbCommands;
     }
 
-    /**
-     * Returns an array of the logged commands.
-     *
-     * @return list<array{cmd: string, executionMS: float, conn: string, error: string|false}>
-     */
+    /** @return list<array{cmd: string, executionMS: float, conn: string, error: string|false}> */
     public function getCommands(): array
     {
         return $this->commands;

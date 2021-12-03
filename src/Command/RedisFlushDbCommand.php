@@ -46,9 +46,6 @@ class RedisFlushDbCommand extends RedisBaseCommand
         return 0;
     }
 
-    /**
-     * Getting the client from cmd option and flush's the db
-     */
     private function flushDbForClient(): void
     {
         if ($this->redisClient instanceof RedisCluster) {

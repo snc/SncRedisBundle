@@ -20,9 +20,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 use function assert;
 
-/**
- * ConnectionFactory
- */
 class ConnectionFactory extends Factory
 {
     /** @var class-string<ConnectionWrapper> */
@@ -32,11 +29,6 @@ class ConnectionFactory extends Factory
 
     protected ?Stopwatch $stopwatch = null;
 
-    /**
-     * Sets the logger
-     *
-     * @param RedisLogger $logger A RedisLogger instance
-     */
     public function setLogger(?RedisLogger $logger = null): void
     {
         $this->logger = $logger;
@@ -51,7 +43,7 @@ class ConnectionFactory extends Factory
      * Sets the connection wrapper class used to wrap an actual
      * connection object and enable logging.
      *
-     * @param string $class Fully qualified name of the connection wrapper class.
+     * @param class-string<ConnectionWrapper> $class Fully qualified name of the connection wrapper class.
      */
     public function setConnectionWrapperClass(string $class): void
     {

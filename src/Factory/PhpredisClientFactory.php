@@ -195,8 +195,6 @@ class PhpredisClientFactory
     }
 
     /**
-     * Load the correct serializer for Redis
-     *
      * @return Redis::SERIALIZER_*
      *
      * @throws InvalidConfigurationException
@@ -224,11 +222,6 @@ class PhpredisClientFactory
         throw new InvalidConfigurationException(sprintf('%s in not a valid serializer. Valid serializers: %s', $type, implode(', ', array_keys($types))));
     }
 
-    /**
-     * Load the correct slave failover for RedisCluster
-     *
-     * @throws InvalidConfigurationException
-     */
     private function loadSlaveFailoverType(string $type): int
     {
         $types = [

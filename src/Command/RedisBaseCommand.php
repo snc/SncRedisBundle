@@ -23,9 +23,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
-/**
- * Base command for redis interaction through the command line
- */
 abstract class RedisBaseCommand extends Command
 {
     protected ContainerInterface $clientLocator;
@@ -73,16 +70,8 @@ abstract class RedisBaseCommand extends Command
         return $this->executeRedisCommand();
     }
 
-    /**
-     * Method which gets called by execute(). Used for code unique to the command
-     */
     abstract protected function executeRedisCommand(): int;
 
-    /**
-     * Checks if either the no-interaction option was chosen or asks the user to proceed
-     *
-     * @return bool true if either no-interaction was chosen or the user wants to proceed
-     */
     protected function proceedingAllowed(): bool
     {
         if ($this->input->getOption('no-interaction')) {

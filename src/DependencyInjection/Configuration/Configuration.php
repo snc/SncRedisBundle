@@ -29,11 +29,6 @@ class Configuration implements ConfigurationInterface
         $this->debug = $debug;
     }
 
-    /**
-     * Generates the configuration tree builder.
-     *
-     * @return TreeBuilder The tree builder
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('snc_redis');

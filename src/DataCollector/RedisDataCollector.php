@@ -22,9 +22,6 @@ use Throwable;
 use function array_filter;
 use function count;
 
-/**
- * RedisDataCollector
- */
 class RedisDataCollector extends DataCollector
 {
     protected RedisLogger $logger;
@@ -42,27 +39,17 @@ class RedisDataCollector extends DataCollector
         $this->data = [];
     }
 
-    /**
-     * Returns an array of collected commands.
-     *
-     * @return array{cmd: string, executionMS: float, conn: string, error: string|false}
-     */
+    /** @return array{cmd: string, executionMS: float, conn: string, error: string|false} */
     public function getCommands(): array
     {
         return $this->data['commands'];
     }
 
-    /**
-     * Returns the number of collected commands.
-     */
     public function getCommandCount(): int
     {
         return count($this->data['commands']);
     }
 
-    /**
-     * Returns the number of failed commands.
-     */
     public function getErroredCommandsCount(): int
     {
         return count(array_filter($this->data['commands'], static function ($command) {
@@ -70,9 +57,6 @@ class RedisDataCollector extends DataCollector
         }));
     }
 
-    /**
-     * Returns the execution time of all collected commands in seconds.
-     */
     public function getTime(): float
     {
         $time = 0;

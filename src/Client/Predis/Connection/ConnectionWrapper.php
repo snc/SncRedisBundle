@@ -27,9 +27,6 @@ use function microtime;
 use function strlen;
 use function substr;
 
-/**
- * ConnectionWrapper
- */
 class ConnectionWrapper implements NodeConnectionInterface
 {
     protected NodeConnectionInterface $connection;
@@ -38,9 +35,6 @@ class ConnectionWrapper implements NodeConnectionInterface
 
     protected ?Stopwatch $stopwatch = null;
 
-    /**
-     * Constructor
-     */
     public function __construct(NodeConnectionInterface $connection)
     {
         if ($connection instanceof ConnectionWrapper) {
@@ -51,19 +45,11 @@ class ConnectionWrapper implements NodeConnectionInterface
         $this->connection = $connection;
     }
 
-    /**
-     * Returns the underlying connection object
-     */
     public function getConnection(): NodeConnectionInterface
     {
         return $this->connection;
     }
 
-    /**
-     * Sets the logger
-     *
-     * @param RedisLogger $logger A RedisLogger instance
-     */
     public function setLogger(?RedisLogger $logger = null): void
     {
         $this->logger = $logger;
