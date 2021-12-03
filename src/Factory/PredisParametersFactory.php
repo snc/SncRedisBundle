@@ -22,15 +22,11 @@ class PredisParametersFactory
             throw new InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', self::class, __METHOD__, ParametersInterface::class));
         }
 
-        $defaultOptions = ['timeout' => null]; // Allow to be consistent will old version of Predis where default timeout was 5
+        $defaultOptions = ['timeout' => null]; // Allow to be consistent with old version of Predis where default timeout was 5
         $dsnOptions     = static::parseDsn(new RedisDsn($dsn));
         $dsnOptions     = array_merge($defaultOptions, $options, $dsnOptions);
 
-        if (
-            isset($dsnOptions['persistent'], $dsnOptions['database'])
-            && $dsnOptions['persistent'] === true
-            && (int) $dsnOptions['database'] !== 0
-        ) {
+        if (!empty($dsnOptions['persistent']) && !empty($dsnOptions['database'])) {
             $dsnOptions['persistent'] = (int) $dsnOptions['database'];
         }
 
@@ -40,10 +36,15 @@ class PredisParametersFactory
     /** @return mixed[] */
     private static function parseDsn(RedisDsn $dsn): array
     {
-        $options = [];
-        if ($dsn->getSocket() !== null) {
+        $socket  = $dsn->getSocket();
+        $options = [
+            'password' => $dsn->getPassword(),
+            'weight' => $dsn->getWeight(),
+        ];
+
+        if ($socket !== null) {
             $options['scheme'] = 'unix';
-            $options['path']   = $dsn->getSocket();
+            $options['path']   = $socket;
         } else {
             $options['scheme'] = $dsn->getTls() ? 'tls' : 'tcp';
             $options['host']   = $dsn->getHost();
@@ -56,9 +57,6 @@ class PredisParametersFactory
         if ($dsn->getDatabase() !== null) {
             $options['database'] = $dsn->getDatabase();
         }
-
-        $options['password'] = $dsn->getPassword();
-        $options['weight']   = $dsn->getWeight();
 
         if ($dsn->getAlias() !== null) {
             $options['alias'] = $dsn->getAlias();

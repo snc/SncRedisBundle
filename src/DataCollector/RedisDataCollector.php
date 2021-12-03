@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Throwable;
 
 use function array_filter;
+use function array_reduce;
 use function count;
 
 class RedisDataCollector extends DataCollector
@@ -52,19 +53,12 @@ class RedisDataCollector extends DataCollector
 
     public function getErroredCommandsCount(): int
     {
-        return count(array_filter($this->data['commands'], static function ($command) {
-            return $command['error'] !== false;
-        }));
+        return count(array_filter($this->data['commands'], static fn ($command) => $command['error'] !== false));
     }
 
     public function getTime(): float
     {
-        $time = 0;
-        foreach ($this->data['commands'] as $command) {
-            $time += $command['executionMS'];
-        }
-
-        return $time;
+        return array_reduce($this->data['commands'], static fn (float $carry, array $command) => $carry + $command['executionMS'], 0);
     }
 
     /**

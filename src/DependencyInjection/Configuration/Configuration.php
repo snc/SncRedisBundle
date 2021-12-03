@@ -13,6 +13,16 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
+use Monolog\Handler\RedisHandler;
+use Predis\Client;
+use Predis\Configuration\Options;
+use Predis\Connection\Parameters;
+use Redis;
+use RedisCluster;
+use Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory;
+use Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper;
+use Snc\RedisBundle\DataCollector\RedisDataCollector;
+use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -38,16 +48,16 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('class')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('client')->defaultValue('Predis\Client')->end()
-                        ->scalarNode('client_options')->defaultValue('Predis\Configuration\Options')->end()
-                        ->scalarNode('connection_parameters')->defaultValue('Predis\Connection\Parameters')->end()
-                        ->scalarNode('connection_factory')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory')->end()
-                        ->scalarNode('connection_wrapper')->defaultValue('Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper')->end()
-                        ->scalarNode('phpredis_client')->defaultValue('Redis')->end()
-                        ->scalarNode('phpredis_clusterclient')->defaultValue('RedisCluster')->end()
-                        ->scalarNode('logger')->defaultValue('Snc\RedisBundle\Logger\RedisLogger')->end()
-                        ->scalarNode('data_collector')->defaultValue('Snc\RedisBundle\DataCollector\RedisDataCollector')->end()
-                        ->scalarNode('monolog_handler')->defaultValue('Monolog\Handler\RedisHandler')->end()
+                        ->scalarNode('client')->defaultValue(Client::class)->end()
+                        ->scalarNode('client_options')->defaultValue(Options::class)->end()
+                        ->scalarNode('connection_parameters')->defaultValue(Parameters::class)->end()
+                        ->scalarNode('connection_factory')->defaultValue(ConnectionFactory::class)->end()
+                        ->scalarNode('connection_wrapper')->defaultValue(ConnectionWrapper::class)->end()
+                        ->scalarNode('phpredis_client')->defaultValue(Redis::class)->end()
+                        ->scalarNode('phpredis_clusterclient')->defaultValue(RedisCluster::class)->end()
+                        ->scalarNode('logger')->defaultValue(RedisLogger::class)->end()
+                        ->scalarNode('data_collector')->defaultValue(RedisDataCollector::class)->end()
+                        ->scalarNode('monolog_handler')->defaultValue(RedisHandler::class)->end()
                     ->end()
                 ->end()
             ->end();
@@ -100,10 +110,7 @@ class Configuration implements ConfigurationInterface
                                 ->isRequired()
                                 ->performNoDeepMerging()
                                 ->beforeNormalization()
-                                    ->ifString()->then(static function ($v) {
-                                        return (array) $v;
-                                    })
-                                ->end()
+                                    ->ifString()->then(static fn ($v) => (array) $v)->end()
                                 ->prototype('variable')->end()
                             ->end()
                             ->arrayNode('options')

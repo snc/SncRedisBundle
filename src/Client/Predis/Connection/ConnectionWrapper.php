@@ -86,9 +86,7 @@ class ConnectionWrapper implements NodeConnectionInterface
      */
     public function writeRequest(CommandInterface $command)
     {
-        return $this->execute($command, function (CommandInterface $command) {
-            return $this->connection->writeRequest($command);
-        });
+        return $this->execute($command, fn (CommandInterface $command) => $this->connection->writeRequest($command));
     }
 
     /** @return mixed */
@@ -133,9 +131,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     /** @return mixed */
     public function executeCommand(CommandInterface $command)
     {
-        return $this->execute($command, function (CommandInterface $command) {
-            return $this->connection->executeCommand($command);
-        });
+        return $this->execute($command, fn (CommandInterface $command) => $this->connection->executeCommand($command));
     }
 
     private function commandToString(CommandInterface $command): string
@@ -143,7 +139,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return array_reduce(
             $command->getArguments(),
             fn (string $accumulator, string $argument) => $this->toStringArgumentReducer($accumulator, $argument),
-            $command->getId()
+            $command->getId(),
         );
     }
 
@@ -188,7 +184,7 @@ class ConnectionWrapper implements NodeConnectionInterface
             $this->commandToString($command),
             (microtime(true) - $startTime) * 1000,
             $this->getParameters()->alias,
-            $this->isResultTrulyAnError($result) ? (string) $result : false
+            $this->isResultTrulyAnError($result) ? (string) $result : false,
         );
 
         return $result;

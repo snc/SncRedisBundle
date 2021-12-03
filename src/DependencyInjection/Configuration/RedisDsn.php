@@ -174,19 +174,12 @@ class RedisDsn
     {
         parse_str($matches[1], $params);
 
-        foreach ($params as $key => $val) {
-            if (!$val) {
-                continue;
-            }
+        if (!empty($params['weight'])) {
+            $this->weight = (int) $params['weight'];
+        }
 
-            switch ($key) {
-                case 'weight':
-                    $this->weight = (int) $val;
-                    break;
-                case 'alias':
-                    $this->alias = $val;
-                    break;
-            }
+        if (!empty($params['alias'])) {
+            $this->alias = $params['alias'];
         }
 
         return '';

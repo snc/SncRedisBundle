@@ -84,9 +84,7 @@ class PhpredisClientFactory
         // Normalize the DSNs, because using processed environment variables could lead to nested values.
         $dsns = count($dsns) === 1 && is_array($dsns[0]) ? $dsns[0] : $dsns;
 
-        $parsedDsns = array_map(static function (string $dsn) {
-            return new RedisDsn($dsn);
-        }, $dsns);
+        $parsedDsns = array_map(static fn (string $dsn) => new RedisDsn($dsn), $dsns);
 
         if (is_a($class, Redis::class, true)) {
             if (count($parsedDsns) > 1) {
@@ -108,20 +106,14 @@ class PhpredisClientFactory
      */
     private function createClusterClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisCluster
     {
-        $args = [null];
-
-        $seeds = [];
-        foreach ($dsns as $dsn) {
-            $seeds[] = ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort();
-        }
-
-        $args[] = $seeds;
-        $args[] = $options['connection_timeout'];
-        $args[] = $options['read_write_timeout'] ?? 0;
-        $args[] = (bool) $options['connection_persistent'];
-        $args[] = $options['parameters']['password'] ?? null;
-
-        $client = new $class(...$args);
+        $client = new $class(
+            null,
+            array_map(static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(), $dsns),
+            $options['connection_timeout'],
+            $options['read_write_timeout'] ?? 0,
+            (bool) $options['connection_persistent'],
+            $options['parameters']['password'] ?? null,
+        );
 
         if (isset($options['prefix'])) {
             $client->setOption(RedisCluster::OPT_PREFIX, $options['prefix']);
@@ -147,21 +139,16 @@ class PhpredisClientFactory
             $client = $this->createLoggingProxy($client, $alias);
         }
 
-        $connectParameters = [];
-
-        if ($dsn->getSocket() !== null) {
-            $connectParameters[] = $dsn->getSocket();
-            $connectParameters[] = null;
-        } else {
-            $connectParameters[] = ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost();
-            $connectParameters[] = $dsn->getPort();
-        }
-
-        $connectParameters[] = $options['connection_timeout'];
-        $connectParameters[] = empty($options['connection_persistent']) ? null : $dsn->getPersistentId();
-        $connectParameters[] = 5; // retry interval
-        $connectParameters[] = 5; // read timeout
-        $connectParameters[] = []; // $context
+        $socket            = $dsn->getSocket();
+        $connectParameters = [
+            $socket ?? ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost(),
+            $socket ? null : $dsn->getPort(),
+            $options['connection_timeout'],
+            empty($options['connection_persistent']) ? null : $dsn->getPersistentId(),
+            5, // retry interval
+            5, // read timeout
+            [], // $context
+        ];
 
         if (!empty($options['connection_persistent'])) {
             $client->pconnect(...$connectParameters);
@@ -203,16 +190,13 @@ class PhpredisClientFactory
     {
         $types = [
             'default' => Redis::SERIALIZER_NONE,
+            'json' => Redis::SERIALIZER_JSON,
             'none' => Redis::SERIALIZER_NONE,
             'php' => Redis::SERIALIZER_PHP,
         ];
 
         if (defined('Redis::SERIALIZER_IGBINARY')) {
             $types['igbinary'] = Redis::SERIALIZER_IGBINARY;
-        }
-
-        if (defined('Redis::SERIALIZER_JSON')) {
-            $types['json'] = Redis::SERIALIZER_JSON;
         }
 
         if (array_key_exists($type, $types)) {
