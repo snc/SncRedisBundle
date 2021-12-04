@@ -18,8 +18,6 @@ use Predis\Connection\NodeConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-use function assert;
-
 class ConnectionFactory extends Factory
 {
     /** @var class-string<ConnectionWrapper> */
@@ -60,7 +58,6 @@ class ConnectionFactory extends Factory
         }
 
         $connection = parent::create($parameters);
-        assert($connection instanceof ConnectionWrapper);
 
         if ($this->wrapper === null) {
             return $connection;
