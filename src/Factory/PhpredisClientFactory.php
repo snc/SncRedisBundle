@@ -52,7 +52,6 @@ class PhpredisClientFactory
     private ?Stopwatch $stopwatch              = null;
     private ?Configuration $proxyConfiguration = null;
 
-    /** @param RedisLogger $logger A RedisLogger instance */
     public function __construct(RedisLogger $logger, ?Configuration $proxyConfiguration = null, ?Stopwatch $stopwatch = null)
     {
         $this->logger             = $logger;

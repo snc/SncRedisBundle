@@ -48,9 +48,7 @@ class ConnectionFactory extends Factory
         $this->wrapper = $class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** @param mixed $parameters */
     public function create($parameters): NodeConnectionInterface
     {
         if (isset($parameters->parameters)) {

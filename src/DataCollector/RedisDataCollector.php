@@ -32,10 +32,7 @@ class RedisDataCollector extends DataCollector
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function reset()
+    public function reset(): void
     {
         $this->data = [];
     }
@@ -53,7 +50,7 @@ class RedisDataCollector extends DataCollector
 
     public function getErroredCommandsCount(): int
     {
-        return count(array_filter($this->data['commands'], static fn ($command) => $command['error'] !== false));
+        return count(array_filter($this->data['commands'], static fn (array $command) => $command['error'] !== false));
     }
 
     public function getTime(): float
@@ -61,10 +58,7 @@ class RedisDataCollector extends DataCollector
         return array_reduce($this->data['commands'], static fn (float $carry, array $command) => $carry + $command['executionMS'], 0);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function collect(Request $request, Response $response, ?Throwable $exception = null)
+    public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
         $this->data = ['commands' => $this->logger->getCommands()];
     }

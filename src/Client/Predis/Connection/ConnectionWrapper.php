@@ -68,12 +68,9 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->connect();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function disconnect()
+    public function disconnect(): void
     {
-        return $this->connection->disconnect();
+        $this->connection->disconnect();
     }
 
     public function isConnected(): bool
@@ -81,12 +78,9 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->isConnected();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function writeRequest(CommandInterface $command)
+    public function writeRequest(CommandInterface $command): void
     {
-        return $this->execute($command, fn (CommandInterface $command) => $this->connection->writeRequest($command));
+        $this->execute($command, fn (CommandInterface $command) => $this->connection->writeRequest($command));
     }
 
     /** @return mixed */
@@ -95,15 +89,12 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->readResponse($command);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->connection;
     }
 
-    /** @return mixed */
+    /** @return resource */
     public function getResource()
     {
         return $this->connection->getResource();
@@ -114,12 +105,9 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->getParameters();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addConnectCommand(CommandInterface $command)
+    public function addConnectCommand(CommandInterface $command): void
     {
-        return $this->connection->addConnectCommand($command);
+        $this->connection->addConnectCommand($command);
     }
 
     /** @return mixed */
@@ -156,7 +144,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * @param Closure(CommandInterface ): mixed $execute
+     * @param Closure(CommandInterface): mixed $execute
      *
      * @return mixed
      */

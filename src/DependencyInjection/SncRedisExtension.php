@@ -41,7 +41,7 @@ use function sprintf;
 
 class SncRedisExtension extends Extension
 {
-    /** @inheritdoc */
+    /** @param mixed[] $configs */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -261,7 +261,7 @@ class SncRedisExtension extends Extension
         $container->setDefinition('snc_redis.monolog.handler', $def);
     }
 
-    /** @inheritdoc */
+    /** @param mixed[] $config */
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration((bool) $container->getParameter('kernel.debug'));
