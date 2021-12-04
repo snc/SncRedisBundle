@@ -5,13 +5,14 @@ declare(strict_types=1);
 use ProxyManager\Configuration;
 use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
-use Snc\RedisBundle\Command\RedisFlushAllCommand;
-use Snc\RedisBundle\Command\RedisFlushDbCommand;
+use Snc\RedisBundle\Command\RedisQueryCommand;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\InlineServiceConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
+
+use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_locator;
 
 return static function (ContainerConfigurator $configurator): void {
     $container = $configurator->services();
@@ -24,13 +25,13 @@ return static function (ContainerConfigurator $configurator): void {
         ->tag('data_collector', ['id' => 'redis', 'template' => '@SncRedis/Collector/redis.html.twig'])
         ->args([new ReferenceConfigurator('snc_redis.logger')]);
 
-    $container->set('snc_redis.command.flush_all', RedisFlushAllCommand::class)
-        ->tag('console.command')
-        ->tag('snc_redis.command');
-
-    $container->set('snc_redis.command.flush_db', RedisFlushDbCommand::class)
-        ->tag('console.command')
-        ->tag('snc_redis.command');
+    $container->set(RedisQueryCommand::class)
+        ->tag('console.command', ['command' => RedisQueryCommand::COMMAND_NAME])
+        ->args([
+            tagged_locator('snc_redis.client', 'alias'),
+            (new ReferenceConfigurator('var_dumper.cli_dumper'))->nullOnInvalid(),
+            (new ReferenceConfigurator('var_dumper.cloner'))->nullOnInvalid(),
+        ]);
 
     $container->set('snc_redis.phpredis_factory', PhpredisClientFactory::class)
         ->arg('$logger', new ReferenceConfigurator('snc_redis.logger'))

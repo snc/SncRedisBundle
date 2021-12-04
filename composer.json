@@ -24,7 +24,7 @@
         "php": "^7.4 || ^8.0",
         "symfony/framework-bundle": "^4.4 || ^5.3 || ^6.0",
         "symfony/http-foundation": "^4.4 || ^5.3 || ^6.0",
-        "symfony/yaml": "^4.4 || ^5.3 || ^6.0"
+        "symfony/var-dumper": "^4.4 || ^5.3 || ^6.0"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
@@ -44,6 +44,7 @@
         "symfony/profiler-pack": "^1.0",
         "symfony/stopwatch": "^4.4 || ^5.3 || ^6.0",
         "symfony/twig-bundle": "^4.4 || ^5.3 || ^6.0",
+        "symfony/yaml": "^4.4 || ^5.3 || ^6.0",
         "vimeo/psalm": "^4.13"
     },
     "suggest": {

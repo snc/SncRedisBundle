@@ -1,4 +1,4 @@
-# Update notes #
+# Upgrade notes #
 
 ## 4.0.0 ##
 
@@ -11,3 +11,6 @@
 - Added requirement for `ocramius/proxy-manager` or `friendsofphp/proxy-manager-lts` if logging is enabled for phpredis client
 - Increased PHP requirement from 7.2 to 7.4
 - Added return and parameter type declarations to all functions
+- Removed `redis:flushdb` command. Use `redis:query flushdb` instead
+- Removed `redis:flushall` command. Use `redis:query flushall` instead
+- Removed `Snc\RedisBundle\Command\RedisBaseCommand` class and `snc_redis.command` DI tag

@@ -14,82 +14,95 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Command;
 
 use ArrayIterator;
+use Monolog\Test\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
-use Snc\RedisBundle\Command\RedisBaseCommand;
-use Snc\RedisBundle\Command\RedisFlushDbCommand;
+use Snc\RedisBundle\Command\RedisQueryCommand;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\VarDumper\Cloner\ClonerInterface;
+use Symfony\Component\VarDumper\Cloner\Data;
+use Symfony\Component\VarDumper\Dumper\DataDumperInterface;
 
-class RedisFlushDbCommandTest extends CommandTestCase
+class RedisQueryCommandTest extends TestCase
 {
+    /** @var Client&MockObject */
+    private $predisClient;
+
+    /** @var ContainerInterface&MockObject */
+    private $container;
+
+    private CommandTester $tester;
+
     public function setUp(): void
     {
-        parent::setUp();
+        $this->container    = $this->getMockBuilder(ContainerInterface::class)->getMock();
+        $this->predisClient = $this->getMockBuilder(Client::class)->getMock();
 
-        $this->registerPredisClient();
+        $cloner = $this->createMock(ClonerInterface::class);
+        $cloner->method('cloneVar')->willReturn(new Data([]));
+
+        $this->tester = new CommandTester(
+            new RedisQueryCommand($this->container, $this->createMock(DataDumperInterface::class), $cloner)
+        );
+
+        $this->container->expects($this->once())->method('get')->will($this->returnValue($this->predisClient));
     }
 
-    public function testDefaultClientAndNoInteraction(): void
+    public function testWithDefaultClientAndNoInteraction(): void
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('snc_redis.default'));
+            ->with($this->equalTo('default'));
 
         $node1 = $this->getMockBuilder(Client::class)->getMock();
         $node1->expects($this->once())
             ->method('__call')
-            ->with($this->equalTo('flushdb'))
+            ->with($this->equalTo('flushall'))
             ->will($this->returnValue(true));
         $node2 = $this->getMockBuilder(Client::class)->getMock();
         $node2->expects($this->once())
             ->method('__call')
-            ->with($this->equalTo('flushdb'))
+            ->with($this->equalTo('flushall'))
             ->will($this->returnValue(true));
 
         $this->predisClient->expects($this->once())
             ->method('getIterator')
             ->will($this->returnValue(new ArrayIterator([$node1, $node2])));
 
-        $command       = $this->application->find('redis:flushdb');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => $command->getName(), '--no-interaction' => true]);
-
-        $this->assertStringContainsString('redis database flushed', $commandTester->getDisplay());
+        $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]));
     }
 
     public function testClientOption(): void
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('snc_redis.special'));
+            ->with($this->equalTo('special'));
 
         $node1 = $this->getMockBuilder(Client::class)->getMock();
         $node1->expects($this->once())
             ->method('__call')
-            ->with($this->equalTo('flushdb'))
+            ->with($this->equalTo('flushall'))
             ->will($this->returnValue(true));
         $node2 = $this->getMockBuilder(Client::class)->getMock();
         $node2->expects($this->once())
             ->method('__call')
-            ->with($this->equalTo('flushdb'))
+            ->with($this->equalTo('flushall'))
             ->will($this->returnValue(true));
 
         $this->predisClient->expects($this->once())
             ->method('getIterator')
             ->will($this->returnValue(new ArrayIterator([$node1, $node2])));
 
-        $command       = $this->application->find('redis:flushdb');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => $command->getName(), '--client' => 'special', '--no-interaction' => true]);
-
-        $this->assertStringContainsString('redis database flushed', $commandTester->getDisplay());
+        $this->assertSame(0, $this->tester->execute(['query' => ['flushall'], '--client' => 'special']));
     }
 
     public function testClientOptionWithNotExistingClient(): void
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('snc_redis.notExisting'))
+            ->with($this->equalTo('notExisting'))
             ->will($this->throwException(new ServiceNotFoundException('')));
 
         $this->predisClient->expects($this->never())
@@ -97,34 +110,24 @@ class RedisFlushDbCommandTest extends CommandTestCase
         $this->predisClient->expects($this->never())
             ->method('getIterator');
 
-        $command       = $this->application->find('redis:flushdb');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => $command->getName(), '--client' => 'notExisting', '--no-interaction' => true]);
+        $this->assertSame(1, $this->tester->execute(['query' => ['flushall'], '--client' => 'notExisting']));
 
-        $this->assertStringContainsString('The client "notExisting" is not defined', $commandTester->getDisplay());
+        $this->assertStringContainsString('The client "notExisting" is not defined', $this->tester->getDisplay());
     }
 
     public function testBugFixInPredis(): void
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('snc_redis.default'));
+            ->with($this->equalTo('default'));
 
         $this->predisClient->expects($this->once())
             ->method('__call')
-            ->with($this->equalTo('flushdb'))
+            ->with($this->equalTo('flushall'))
             ->will($this->returnValue(true));
+
         $this->predisClient->method('getIterator')->willReturn(new ArrayIterator([$this->predisClient]));
 
-        $command       = $this->application->find('redis:flushdb');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => $command->getName(), '--no-interaction' => true]);
-
-        $this->assertStringContainsString('redis database flushed', $commandTester->getDisplay());
-    }
-
-    protected function getCommand(): RedisBaseCommand
-    {
-        return new RedisFlushDbCommand();
+        $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]));
     }
 }

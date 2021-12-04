@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle;
 
-use Snc\RedisBundle\DependencyInjection\Compiler\ClientLocatorPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,6 +25,5 @@ class SncRedisBundle extends Bundle
         parent::build($container);
         $container->addCompilerPass(new LoggingPass());
         $container->addCompilerPass(new MonologPass());
-        $container->addCompilerPass(new ClientLocatorPass());
     }
 }
