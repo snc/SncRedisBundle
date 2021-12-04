@@ -41,9 +41,9 @@ class IntegrationTest extends WebTestCase
 
         // Clear Redis databases
         $application   = new Application($kernel);
-        $command       = $application->find('redis:flushall');
+        $command       = $application->find('redis:query');
         $commandTester = new CommandTester($command);
-        $this->assertSame(0, $commandTester->execute(['command' => $command->getName(), '-n' => true]));
+        $this->assertSame(0, $commandTester->execute(['query' => ['flushall'], '-n' => true]));
     }
 
     protected function tearDown(): void

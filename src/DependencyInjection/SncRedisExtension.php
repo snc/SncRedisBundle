@@ -17,7 +17,6 @@ use InvalidArgumentException;
 use LogicException;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Profile\Factory;
-use Snc\RedisBundle\Command\RedisBaseCommand;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
@@ -68,16 +67,15 @@ class SncRedisExtension extends Extension
             $this->loadClient($client, $container);
         }
 
-        if (isset($config['monolog'])) {
-            if (!empty($config['clients'][$config['monolog']['client']]['logging'])) {
-                throw new InvalidConfigurationException(sprintf('You have to disable logging for the client "%s" that you have configured under "snc_redis.monolog.client"', $config['monolog']['client']));
-            }
-
-            $this->loadMonolog($config, $container);
+        if (!isset($config['monolog'])) {
+            return;
         }
 
-        $container->registerForAutoconfiguration(RedisBaseCommand::class)
-            ->addTag('snc_redis.command');
+        if (!empty($config['clients'][$config['monolog']['client']]['logging'])) {
+            throw new InvalidConfigurationException(sprintf('You have to disable logging for the client "%s" that you have configured under "snc_redis.monolog.client"', $config['monolog']['client']));
+        }
+
+        $this->loadMonolog($config, $container);
     }
 
     public function getNamespace(): string

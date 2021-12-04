@@ -21,7 +21,7 @@ composer require snc/redis-bundle
 
 ## Documentation ##
 
-[Read the documentation in docs/](docs/index.md)
+[Read the documentation in docs/](docs/)
 
 ## License ##
 
