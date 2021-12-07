@@ -16,6 +16,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Stopwatch\Stopwatch;
+
 use function array_key_exists;
 use function array_keys;
 use function array_map;
