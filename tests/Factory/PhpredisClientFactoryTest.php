@@ -14,7 +14,6 @@ use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 use function class_exists;
-use function defined;
 use function fsockopen;
 use function sprintf;
 
@@ -48,6 +47,19 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0, $client->getDBNum());
         $this->assertNull($client->getAuth());
         $this->assertNull($client->getPersistentID());
+    }
+
+    public function testUnixDsnConfig(): void
+    {
+        $this->expectExceptionMessage('php_network_getaddresses');
+        (new PhpredisClientFactory($this->redisLogger))
+            ->create(
+                Redis::class,
+                ['redis:///run/redis/redis.sock'],
+                ['connection_timeout' => 5],
+                'default',
+                false,
+            );
     }
 
     public function testCreateMinimalClusterConfig(): void
@@ -196,17 +208,11 @@ class PhpredisClientFactoryTest extends TestCase
     /** @return list<array{0: string, 1: Redis::SERIALIZER_*}> */
     public function serializationTypes(): array
     {
-        $serializationTypes = [
+        return [
             ['default', Redis::SERIALIZER_NONE],
             ['none', Redis::SERIALIZER_NONE],
             ['php', Redis::SERIALIZER_PHP],
+            ['json', Redis::SERIALIZER_JSON],
         ];
-
-        // \Redis::SERIALIZER_JSON is only available since phpredis 5
-        if (defined('Redis::SERIALIZER_JSON')) {
-            $serializationTypes[] = ['json', Redis::SERIALIZER_JSON];
-        }
-
-        return $serializationTypes;
     }
 }

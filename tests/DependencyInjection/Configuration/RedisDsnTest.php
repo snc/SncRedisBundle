@@ -141,11 +141,11 @@ class RedisDsnTest extends TestCase
             ['redis://%redis_host%:%redis_port%', '%redis_port%'],
             ['redis://%redis_host%:%redis_port%/%redis_db%', '%redis_port%'],
             ['redis://%redis_pass%@%redis_host%:%redis_port%/%redis_db%', '%redis_port%'],
-            ['redis:///redis.sock', null],
-            ['redis:///redis.sock/1', null],
-            ['redis:///redis.sock:63790', null],
-            ['redis:///redis.sock:63790/10', null],
-            ['redis://pw@/redis.sock:63790/10', null],
+            ['redis:///redis.sock', 6379],
+            ['redis:///redis.sock/1', 6379],
+            ['redis:///redis.sock:63790', 6379],
+            ['redis:///redis.sock:63790/10', 6379],
+            ['redis://pw@/redis.sock:63790/10', 6379],
         ];
     }
 
