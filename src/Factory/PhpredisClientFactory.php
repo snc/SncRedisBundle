@@ -141,7 +141,7 @@ class PhpredisClientFactory
         $socket            = $dsn->getSocket();
         $connectParameters = [
             $socket ?? ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost(),
-            $socket ? null : $dsn->getPort(),
+            $dsn->getPort(),
             $options['connection_timeout'],
             empty($options['connection_persistent']) ? null : $dsn->getPersistentId(),
             5, // retry interval

@@ -78,10 +78,6 @@ class RedisDsn
     /** @return string|int|null */
     public function getPort()
     {
-        if ($this->socket !== null) {
-            return null;
-        }
-
         return $this->port ?: 6379;
     }
 
