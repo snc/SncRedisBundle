@@ -34,8 +34,8 @@ class RedisDsn
 
     protected ?string $host = null;
 
-    /** @var int|string|null */
-    protected $port = null;
+    /** @var int|string */
+    protected $port = 6379;
 
     protected ?string $socket = null;
 
@@ -75,7 +75,7 @@ class RedisDsn
         return $this->password;
     }
 
-    /** @return string|int|null */
+    /** @return string|int */
     public function getPort()
     {
         return $this->port ?: 6379;
