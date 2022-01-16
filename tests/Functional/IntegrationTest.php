@@ -28,6 +28,11 @@ class IntegrationTest extends WebTestCase
 {
     private ?KernelBrowser $client = null;
 
+    /**
+     * Muted deprecation "Passing null to parameter #1 ($async) of type bool is deprecated" - would be fixed by next phpredis release with fixed reflection on its own
+     *
+     * @group legacy
+     */
     protected function setUp(): void
     {
         $fs = new Filesystem();

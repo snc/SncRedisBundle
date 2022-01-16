@@ -7,6 +7,7 @@ use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Snc\RedisBundle\Command\RedisQueryCommand;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
+use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\InlineServiceConfigurator;
@@ -33,10 +34,13 @@ return static function (ContainerConfigurator $configurator): void {
             (new ReferenceConfigurator('var_dumper.cloner'))->nullOnInvalid(),
         ]);
 
+    $container->set(RedisCallInterceptor::class)
+        ->class(RedisCallInterceptor::class)
+        ->args([new ReferenceConfigurator('snc_redis.logger'), new ReferenceConfigurator('debug.stopwatch')]);
+
     $container->set('snc_redis.phpredis_factory', PhpredisClientFactory::class)
-        ->arg('$logger', new ReferenceConfigurator('snc_redis.logger'))
-        ->arg(
-            '$proxyConfiguration',
+        ->args([
+            new ReferenceConfigurator(RedisCallInterceptor::class),
             new InlineServiceConfigurator(
                 (new Definition(Configuration::class))
                     ->addMethodCall('setGeneratorStrategy', [
@@ -46,7 +50,6 @@ return static function (ContainerConfigurator $configurator): void {
                         ),
                     ])
                     ->addMethodCall('setProxiesTargetDir', ['%kernel.cache_dir%'])
-            )
-        )
-        ->arg('$stopwatch', (new ReferenceConfigurator('debug.stopwatch'))->nullOnInvalid());
+            ),
+        ]);
 };
