@@ -13,28 +13,19 @@ use RedisCluster;
 use ReflectionClass;
 use ReflectionMethod;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
-use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function array_values;
 use function count;
 use function defined;
 use function implode;
 use function in_array;
 use function is_a;
 use function is_array;
-use function is_numeric;
-use function is_scalar;
-use function microtime;
 use function spl_autoload_register;
 use function sprintf;
-use function strtoupper;
-use function strval;
-use function trim;
 
 /** @internal */
 class PhpredisClientFactory
@@ -48,14 +39,14 @@ class PhpredisClientFactory
         'getDbNum',
         'getPersistentID',
     ];
-    private RedisLogger $logger;
-    private ?Stopwatch $stopwatch              = null;
-    private ?Configuration $proxyConfiguration = null;
+    private ?Configuration $proxyConfiguration;
+    /** @var callable(object, string, array, ?string): mixed */
+    private $interceptor;
 
-    public function __construct(RedisLogger $logger, ?Configuration $proxyConfiguration = null, ?Stopwatch $stopwatch = null)
+    /** @param callable(object, string, array, ?string): mixed $interceptor */
+    public function __construct(callable $interceptor, ?Configuration $proxyConfiguration = null)
     {
-        $this->logger             = $logger;
-        $this->stopwatch          = $stopwatch;
+        $this->interceptor        = $interceptor;
         $this->proxyConfiguration = $proxyConfiguration;
 
         if (!$this->proxyConfiguration) {
@@ -231,7 +222,6 @@ class PhpredisClientFactory
     private function createLoggingProxy(object $client, string $alias): object
     {
         $prefixInterceptors     = [];
-        $suffixInterceptors     = [];
         $classToCopyMethodsFrom = $client instanceof Redis ? Redis::class : RedisCluster::class;
 
         foreach ((new ReflectionClass($classToCopyMethodsFrom))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
@@ -245,76 +235,16 @@ class PhpredisClientFactory
                 AccessInterceptorInterface $proxy,
                 object $instance,
                 string $method,
-                array $args
-            ) use (
-                &$time,
-                &$event
-            ): void {
-                $time = microtime(true);
+                array $args,
+                bool &$returnEarly
+            ) use ($alias) {
+                $returnEarly = true;
 
-                if (!$this->stopwatch) {
-                    return;
-                }
-
-                $event = $this->stopwatch->start($this->getCommandString($method, array_values($args)), 'redis');
-            };
-            $suffixInterceptors[$name] = function (
-                AccessInterceptorInterface $proxy,
-                object $instance,
-                string $method,
-                array $args
-            ) use (
-                $alias,
-                &$time,
-                &$event
-            ): void {
-                $this->logger->logCommand($this->getCommandString($method, array_values($args)), microtime(true) - $time, $alias);
-
-                if (!$event) {
-                    return;
-                }
-
-                $event->stop();
+                return ($this->interceptor)($instance, $method, $args, $alias);
             };
         }
 
         return (new AccessInterceptorValueHolderFactory($this->proxyConfiguration))
-            ->createProxy($client, $prefixInterceptors, $suffixInterceptors);
-    }
-
-    /**
-     * Returns a string representation of the given command including arguments.
-     *
-     * @param mixed[] $arguments List of command arguments
-     */
-    private function getCommandString(string $command, array $arguments): string
-    {
-        $list = [];
-        $this->flatten($arguments, $list);
-
-        return trim(strtoupper($command) . ' ' . implode(' ', $list));
-    }
-
-    /**
-     * Flatten arguments to single dimension array.
-     *
-     * @param mixed[] $arguments An array of command arguments
-     * @param mixed[] $list      Holder of results
-     */
-    private function flatten(array $arguments, array &$list): void
-    {
-        foreach ($arguments as $key => $item) {
-            if (!is_numeric($key)) {
-                $list[] = $key;
-            }
-
-            if (is_scalar($item)) {
-                $list[] = strval($item);
-            } elseif ($item === null) {
-                $list[] = '<null>';
-            } else {
-                $this->flatten($item, $list);
-            }
-        }
+            ->createProxy($client, $prefixInterceptors);
     }
 }

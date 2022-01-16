@@ -21,6 +21,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
+use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
@@ -52,11 +53,11 @@ class SncRedisExtension extends Extension
         $phpredisFactoryDefinition = $container->getDefinition('snc_redis.phpredis_factory');
 
         if (!$container->getParameter('kernel.debug')) {
-            $phpredisFactoryDefinition->replaceArgument('$stopwatch', null);
+            $container->getDefinition(RedisCallInterceptor::class)->replaceArgument(1, null);
         }
 
         if (!class_exists(\ProxyManager\Configuration::class)) {
-            $phpredisFactoryDefinition->replaceArgument('$proxyConfiguration', null);
+            $phpredisFactoryDefinition->replaceArgument(1, null);
         }
 
         foreach ($config['class'] as $name => $class) {

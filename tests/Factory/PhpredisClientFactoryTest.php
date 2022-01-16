@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Redis;
 use RedisCluster;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
+use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
@@ -37,7 +38,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testCreateMinimalConfig(): void
     {
         $this->logger->expects($this->never())->method('debug');
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(Redis::class, ['redis://localhost:6379'], ['connection_timeout' => 5], 'default', false);
 
@@ -52,7 +53,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testUnixDsnConfig(): void
     {
         $this->expectExceptionMessage('php_network_getaddresses');
-        (new PhpredisClientFactory($this->redisLogger))
+        (new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger)))
             ->create(
                 Redis::class,
                 ['redis:///run/redis/redis.sock'],
@@ -65,7 +66,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testCreateMinimalClusterConfig(): void
     {
         $this->logger->expects($this->never())->method('debug');
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             RedisCluster::class,
@@ -85,7 +86,7 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testCreateFullConfig(): void
     {
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             Redis::class,
@@ -123,7 +124,7 @@ class PhpredisClientFactoryTest extends TestCase
             ['Executing command "SELECT 2"']
         );
 
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             Redis::class,
@@ -147,7 +148,7 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testNestedDsnConfig(): void
     {
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             Redis::class,
@@ -172,7 +173,7 @@ class PhpredisClientFactoryTest extends TestCase
     /** @dataProvider serializationTypes */
     public function testLoadSerializationType(string $serializationType, int $serializer): void
     {
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             Redis::class,
@@ -190,7 +191,7 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testLoadSerializationTypeFail(): void
     {
-        $factory = new PhpredisClientFactory($this->redisLogger);
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
         $this->expectException(InvalidConfigurationException::class);
 
         $factory->create(
