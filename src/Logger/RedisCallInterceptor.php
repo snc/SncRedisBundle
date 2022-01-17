@@ -4,7 +4,6 @@ namespace Snc\RedisBundle\Logger;
 
 use Symfony\Component\Stopwatch\Stopwatch;
 
-use function array_values;
 use function implode;
 use function is_numeric;
 use function is_scalar;
@@ -25,7 +24,7 @@ class RedisCallInterceptor
     }
 
     /**
-     * @param mixed[] $args
+     * @param list<mixed> $args
      *
      * @return mixed
      */
@@ -35,7 +34,6 @@ class RedisCallInterceptor
         array $args,
         ?string $connection
     ) {
-        $args    = array_values($args);
         $command = $this->getCommandString($method, $args);
         $time    = microtime(true);
 

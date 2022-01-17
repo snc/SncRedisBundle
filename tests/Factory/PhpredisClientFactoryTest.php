@@ -121,7 +121,8 @@ class PhpredisClientFactoryTest extends TestCase
         $this->logger->method('debug')->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
-            ['Executing command "SELECT 2"']
+            ['Executing command "SELECT 2"'],
+            ['Executing command "HDEL foo bar"'],
         );
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
@@ -140,6 +141,7 @@ class PhpredisClientFactoryTest extends TestCase
             true
         );
 
+        $client->hDel('foo', 'bar');
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertSame(2, $client->getDBNum());
         $this->assertSame('sncredis', $client->getAuth());

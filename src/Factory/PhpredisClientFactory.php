@@ -18,6 +18,7 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
+use function array_values;
 use function count;
 use function defined;
 use function implode;
@@ -239,6 +240,16 @@ class PhpredisClientFactory
                 bool &$returnEarly
             ) use ($alias) {
                 $returnEarly = true;
+
+                // Workaround for ProxyManager issue with definitions like public function hdel($key, $member, ... $other_members)
+                $otherMembers = $args['other_members'] ?? null;
+                if ($otherMembers !== null) {
+                    unset($args['other_members']);
+                    /** @psalm-suppress DuplicateArrayKey */
+                    $args = [...array_values($args), ...array_values($otherMembers)];
+                } else {
+                    $args = array_values($args);
+                }
 
                 return ($this->interceptor)($instance, $method, $args, $alias);
             };
