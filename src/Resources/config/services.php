@@ -36,7 +36,10 @@ return static function (ContainerConfigurator $configurator): void {
 
     $container->set(RedisCallInterceptor::class)
         ->class(RedisCallInterceptor::class)
-        ->args([new ReferenceConfigurator('snc_redis.logger'), new ReferenceConfigurator('debug.stopwatch')]);
+        ->args([
+            new ReferenceConfigurator('snc_redis.logger'),
+            (new ReferenceConfigurator('debug.stopwatch'))->nullOnInvalid(),
+        ]);
 
     $container->set('snc_redis.phpredis_factory', PhpredisClientFactory::class)
         ->args([
