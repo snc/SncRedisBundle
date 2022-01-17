@@ -123,6 +123,7 @@ class PhpredisClientFactoryTest extends TestCase
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "HDEL foo bar"'],
+            ['Executing command "UNLINK bar baz"'],
         );
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
@@ -142,6 +143,7 @@ class PhpredisClientFactoryTest extends TestCase
         );
 
         $client->hDel('foo', 'bar');
+        $client->unlink('bar', 'baz');
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertSame(2, $client->getDBNum());
         $this->assertSame('sncredis', $client->getAuth());
