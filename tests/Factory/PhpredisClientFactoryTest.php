@@ -220,4 +220,33 @@ class PhpredisClientFactoryTest extends TestCase
             ['json', Redis::SERIALIZER_JSON],
         ];
     }
+
+    public function testMethodsWithVariadicParameters(): void
+    {
+        $this->logger->method('debug')->withConsecutive(
+            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            ['Executing command "AUTH sncredis"'],
+            ['Executing command "SELECT 2"'],
+            ['Executing command "RAWCOMMAND scan fleet cursor 0 limit 10"'],
+        );
+
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://redis:sncredis@localhost:6379/2'],
+            [
+                'parameters' => [
+                    'database' => 3,
+                    'password' => 'secret',
+                ],
+                'connection_timeout' => 5,
+            ],
+            'alias_test',
+            true
+        );
+
+        /** @psalm-suppress TooManyArguments */
+        $this->assertFalse($client->rawCommand('scan', 'fleet', 'cursor', '0', 'limit', '10'));
+    }
 }

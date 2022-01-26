@@ -233,20 +233,33 @@ class PhpredisClientFactory
                 continue;
             }
 
+            $variadicParameters = [];
+            foreach ($method->getParameters() as $parameter) {
+                if ($parameter->isVariadic()) {
+                    $variadicParameters[] = $parameter->getName();
+                }
+            }
+
             $prefixInterceptors[$name] = function (
                 AccessInterceptorInterface $proxy,
                 object $instance,
                 string $method,
                 array $args,
                 bool &$returnEarly
-            ) use ($alias) {
+            ) use ($alias, $variadicParameters) {
                 $returnEarly = true;
 
-                // Workaround for ProxyManager issue with definitions like public function hdel($key, $member, ... $other_members)
-                $otherMembers = array_merge($args['other_members'] ?? [], $args['other_keys'] ?? []);
-                unset($args['other_members'], $args['other_keys']);
-                /** @psalm-suppress DuplicateArrayKey */
-                $args = [...array_values($args), ...array_values($otherMembers)];
+                $variadicArgs = [];
+                foreach ($variadicParameters as $variadicParameter) {
+                    if (isset($args[$variadicParameter]) && is_array($args[$variadicParameter])) {
+                        foreach ($args[$variadicParameter] as $variadicParameterValue) {
+                            $variadicArgs[] = $variadicParameterValue;
+                        }
+                        unset($args[$variadicParameter]);
+                    }
+                }
+
+                $args = [...array_values($args), ...$variadicArgs];
 
                 return ($this->interceptor)($instance, $method, $args, $alias);
             };
