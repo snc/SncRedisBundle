@@ -266,9 +266,7 @@ class PhpredisClientFactory
                     unset($args[$variadicParameter]);
                 }
 
-                $args = [...array_values($args), ...$variadicArgs];
-
-                return ($this->interceptor)($instance, $method, $args, $alias);
+                return ($this->interceptor)($instance, $method, [...array_values($args), ...$variadicArgs], $alias);
             };
         }
 

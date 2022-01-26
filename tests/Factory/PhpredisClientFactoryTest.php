@@ -122,8 +122,6 @@ class PhpredisClientFactoryTest extends TestCase
             [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
-            ['Executing command "HDEL foo bar"'],
-            ['Executing command "UNLINK bar baz"'],
         );
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
@@ -142,8 +140,6 @@ class PhpredisClientFactoryTest extends TestCase
             true
         );
 
-        $client->hDel('foo', 'bar');
-        $client->unlink('bar', 'baz');
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertSame(2, $client->getDBNum());
         $this->assertSame('sncredis', $client->getAuth());
@@ -228,6 +224,8 @@ class PhpredisClientFactoryTest extends TestCase
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "RAWCOMMAND scan fleet cursor 0 limit 10"'],
+            ['Executing command "HDEL foo bar"'],
+            ['Executing command "UNLINK bar baz"'],
         );
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
@@ -248,5 +246,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         /** @psalm-suppress TooManyArguments */
         $this->assertFalse($client->rawCommand('scan', 'fleet', 'cursor', '0', 'limit', '10'));
+        $client->hDel('foo', 'bar');
+        $client->unlink('bar', 'baz');
     }
 }
