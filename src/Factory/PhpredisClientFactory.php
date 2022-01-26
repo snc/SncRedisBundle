@@ -18,7 +18,6 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function array_merge;
 use function array_values;
 use function count;
 use function defined;
@@ -235,9 +234,11 @@ class PhpredisClientFactory
 
             $variadicParameters = [];
             foreach ($method->getParameters() as $parameter) {
-                if ($parameter->isVariadic()) {
-                    $variadicParameters[] = $parameter->getName();
+                if (!$parameter->isVariadic()) {
+                    continue;
                 }
+
+                $variadicParameters[] = $parameter->getName();
             }
 
             $prefixInterceptors[$name] = function (
@@ -246,17 +247,23 @@ class PhpredisClientFactory
                 string $method,
                 array $args,
                 bool &$returnEarly
-            ) use ($alias, $variadicParameters) {
+            ) use (
+                $alias,
+                $variadicParameters
+            ) {
                 $returnEarly = true;
 
                 $variadicArgs = [];
                 foreach ($variadicParameters as $variadicParameter) {
-                    if (isset($args[$variadicParameter]) && is_array($args[$variadicParameter])) {
-                        foreach ($args[$variadicParameter] as $variadicParameterValue) {
-                            $variadicArgs[] = $variadicParameterValue;
-                        }
-                        unset($args[$variadicParameter]);
+                    if (!isset($args[$variadicParameter]) || !is_array($args[$variadicParameter])) {
+                        continue;
                     }
+
+                    foreach ($args[$variadicParameter] as $variadicParameterValue) {
+                        $variadicArgs[] = $variadicParameterValue;
+                    }
+
+                    unset($args[$variadicParameter]);
                 }
 
                 $args = [...array_values($args), ...$variadicArgs];
