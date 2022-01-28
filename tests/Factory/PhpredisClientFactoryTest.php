@@ -52,15 +52,17 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testUnixDsnConfig(): void
     {
-        $this->expectExceptionMessage('php_network_getaddresses');
-        (new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger)))
-            ->create(
-                Redis::class,
-                ['redis:///run/redis/redis.sock'],
-                ['connection_timeout' => 5],
-                'default',
-                false,
-            );
+        $this->logger->expects($this->never())->method('debug');
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(Redis::class, ['redis:///tmp/redis.sock'], ['connection_timeout' => 5], 'default', false);
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertNull($client->getOption(Redis::OPT_PREFIX));
+        $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
+        $this->assertSame(0, $client->getDBNum());
+        $this->assertNull($client->getAuth());
+        $this->assertNull($client->getPersistentID());
     }
 
     public function testCreateMinimalClusterConfig(): void
