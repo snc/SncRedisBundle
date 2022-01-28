@@ -23,9 +23,11 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 use function array_reduce;
 use function assert;
+use function is_string;
 use function microtime;
 use function strlen;
 use function substr;
+use function var_export;
 
 class ConnectionWrapper implements NodeConnectionInterface
 {
@@ -126,21 +128,19 @@ class ConnectionWrapper implements NodeConnectionInterface
     {
         return array_reduce(
             $command->getArguments(),
-            fn (string $accumulator, string $argument) => $this->toStringArgumentReducer($accumulator, $argument),
+            fn (string $accumulator, $argument) => $this->toStringArgumentReducer($accumulator, $argument),
             $command->getId(),
         );
     }
 
-    /**
-     * Helper function used to reduce a list of arguments to a string.
-     */
-    private function toStringArgumentReducer(string $accumulator, string $argument): string
+    /** @param mixed $argument */
+    private function toStringArgumentReducer(string $accumulator, $argument): string
     {
-        if (strlen($argument) > 10240) {
+        if (is_string($argument) && strlen($argument) > 10240) {
             $argument = substr($argument, 0, 10240) . ' (truncated, complete string is ' . strlen($argument) . ' bytes)';
         }
 
-        return $accumulator . ' ' . $argument;
+        return $accumulator . ' ' . var_export($argument, true);
     }
 
     /**
