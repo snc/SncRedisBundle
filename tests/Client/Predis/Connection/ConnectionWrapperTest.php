@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Client\Predis\Connection;
+namespace Snc\RedisBundle\Tests\Client\Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
