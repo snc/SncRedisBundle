@@ -251,4 +251,34 @@ class PhpredisClientFactoryTest extends TestCase
         $client->hDel('foo', 'bar');
         $client->unlink('bar', 'baz');
     }
+
+    public function testMethodWithPassByRefArgument(): void
+    {
+        $this->logger->method('debug')->withConsecutive(
+            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            ['Executing command "SELECT 2"'],
+            ['Executing command "SSCAN fleet <null> <null> <null>"'],
+            ['Executing command "SSCAN fleet <null> <null> <null>"'],
+        );
+
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://localhost:6379/2'],
+            [
+                'parameters' => [
+                    'database' => 3,
+                ],
+                'connection_timeout' => 5,
+            ],
+            'alias_test',
+            true
+        );
+
+        /** @psalm-suppress TooManyArguments */
+        $iterator = null;
+        var_dump($client->sScan('fleet', $it));
+        var_dump($client->sScan('fleet', $it));
+    }
 }
