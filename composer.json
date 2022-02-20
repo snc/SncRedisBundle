@@ -54,7 +54,10 @@
         "symfony/proxy-manager-bridge": "If you want to lazy-load some services"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "conflict": {
         "ext-redis": "<5.3",
