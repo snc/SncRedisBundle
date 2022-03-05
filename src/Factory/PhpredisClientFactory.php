@@ -18,7 +18,6 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function array_values;
 use function count;
 use function defined;
 use function implode;
@@ -252,21 +251,20 @@ class PhpredisClientFactory
                 $variadicParameters
             ) {
                 $returnEarly = true;
+                $listArgs    = [];
 
-                $variadicArgs = [];
-                foreach ($variadicParameters as $variadicParameter) {
-                    if (!isset($args[$variadicParameter]) || !is_array($args[$variadicParameter])) {
+                foreach ($args as $argName => &$argValue) {
+                    if (!in_array($argName, $variadicParameters, true)) {
+                        $listArgs[] = &$argValue;
                         continue;
                     }
 
-                    foreach ($args[$variadicParameter] as $variadicParameterValue) {
-                        $variadicArgs[] = $variadicParameterValue;
+                    foreach ($argValue as $variadicParameterValue) {
+                        $listArgs[] = $variadicParameterValue;
                     }
-
-                    unset($args[$variadicParameter]);
                 }
 
-                return ($this->interceptor)($instance, $method, [...array_values($args), ...$variadicArgs], $alias);
+                return ($this->interceptor)($instance, $method, $listArgs, $alias);
             };
         }
 
