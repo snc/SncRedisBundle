@@ -105,6 +105,8 @@ class PhpredisClientFactory
             $options['parameters']['password'] ?? null,
         );
 
+        $client->setOption(\Redis::OPT_MAX_RETRIES, 1);
+
         if (isset($options['prefix'])) {
             $client->setOption(RedisCluster::OPT_PREFIX, $options['prefix']);
         }
