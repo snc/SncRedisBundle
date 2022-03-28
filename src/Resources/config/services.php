@@ -44,6 +44,7 @@ return static function (ContainerConfigurator $configurator): void {
     $container->set('snc_redis.phpredis_factory', PhpredisClientFactory::class)
         ->args([
             new ReferenceConfigurator(RedisCallInterceptor::class),
+            new ReferenceConfigurator('snc_redis.logger'),
             new InlineServiceConfigurator(
                 (new Definition(Configuration::class))
                     ->addMethodCall('setGeneratorStrategy', [

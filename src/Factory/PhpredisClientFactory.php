@@ -13,6 +13,7 @@ use RedisCluster;
 use ReflectionClass;
 use ReflectionMethod;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
+use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 use function array_key_exists;
@@ -42,11 +43,13 @@ class PhpredisClientFactory
     private ?Configuration $proxyConfiguration;
     /** @var callable(object, string, array, ?string): mixed */
     private $interceptor;
+    private RedisLogger $redisLogger;
 
     /** @param callable(object, string, array, ?string): mixed $interceptor */
-    public function __construct(callable $interceptor, ?Configuration $proxyConfiguration = null)
+    public function __construct(callable $interceptor, RedisLogger $redisLogger, ?Configuration $proxyConfiguration = null)
     {
         $this->interceptor        = $interceptor;
+        $this->redisLogger = $redisLogger;
         $this->proxyConfiguration = $proxyConfiguration;
 
         if (!$this->proxyConfiguration) {
@@ -96,6 +99,7 @@ class PhpredisClientFactory
      */
     private function createClusterClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisCluster
     {
+        $time = microtime(true);
         $client = new $class(
             null,
             array_map(static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(), $dsns),
@@ -104,6 +108,8 @@ class PhpredisClientFactory
             (bool) $options['connection_persistent'],
             $options['parameters']['password'] ?? null,
         );
+
+        $this->redisLogger->logCommand('instantiation', microtime(true) - $time, $alias);
 
         $client->setOption(\Redis::OPT_MAX_RETRIES, 1);
 
