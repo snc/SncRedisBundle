@@ -230,10 +230,6 @@ class PhpredisClientFactory
         foreach ((new ReflectionClass($classToCopyMethodsFrom))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $name = $method->getName();
 
-            if ($name[0] === '_' || in_array($name, self::CLIENT_ONLY_COMMANDS, true)) {
-                continue;
-            }
-
             $variadicParameters = [];
             foreach ($method->getParameters() as $parameter) {
                 if (!$parameter->isVariadic()) {
