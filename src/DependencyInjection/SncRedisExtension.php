@@ -198,6 +198,7 @@ class SncRedisExtension extends Extension
 
         $clientDef->addArgument(new Reference($optionId));
         $container->setDefinition(sprintf('snc_redis.%s', $client['alias']), $clientDef);
+        $container->registerAliasForArgument(sprintf('snc_redis.%s', $client['alias']), $clientDef->getClass(),  $client['alias']);
     }
 
     /**
@@ -241,6 +242,7 @@ class SncRedisExtension extends Extension
         $phpredisDef->setLazy(true);
 
         $container->setDefinition(sprintf('snc_redis.%s', $options['alias']), $phpredisDef);
+        $container->registerAliasForArgument(sprintf('snc_redis.%s', $options['alias']), $phpredisClientClass, $options['alias']);
     }
 
     /** @param mixed[] $config */
