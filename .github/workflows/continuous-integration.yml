@@ -54,6 +54,15 @@ jobs:
           master1-port: 7000
           master2-port: 7001
           master3-port: 7002
+      - name: "Setup redis with ACL"
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: "6.2"
+          redis-port: "8000"
+          auto-start: "true"
+          redis-conf: |
+            user default on -@all ~* >ARandomPassword
+            user snc_redis on +@all ~* >snc_password
       - name: "Install redis"
         run: |
           sudo apt-get update

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Command;
 
 use ArrayIterator;
-use Monolog\Test\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Snc\RedisBundle\Command\RedisQueryCommand;
 use Symfony\Component\Console\Tester\CommandTester;
