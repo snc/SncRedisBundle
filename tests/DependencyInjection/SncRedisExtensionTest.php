@@ -447,6 +447,38 @@ class SncRedisExtensionTest extends TestCase
         $this->assertInstanceOf('\RedisCluster', $redis);
     }
 
+    /**
+     * Test minimal Redis configuration with ACL
+     */
+    public function testPhpRedisWithACLParameters(): void
+    {
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getPhpRedisWithACLYamlMinimalConfig());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $redis = $container->get('snc_redis.default');
+
+        $this->assertInstanceOf('\Redis', $redis);
+
+        $redis->set('test_key', 'test_value');
+        $this->assertEquals('test_value', $redis->get('test_key'));
+    }
+
+    /**
+     * Test minimal Redis configuration with ACL and an invalid username/password
+     */
+    public function testPhpRedisWithInvalidACLParameters(): void
+    {
+        $this->expectException('\RedisException');
+        $this->expectExceptionMessageMatches('/WRONGPASS invalid username/');
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getPhpRedisWithInvalidACLYamlMinimalConfig());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $container->get('snc_redis.default');
+    }
+
     /** @return mixed[] */
     private function parseYaml(string $yaml): array
     {
@@ -717,6 +749,38 @@ clients:
         options:
             cluster: true
 EOF;
+    }
+
+    private function getPhpRedisWithACLYamlMinimalConfig(): string
+    {
+        return <<<YAML
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: ["redis://localhost:8000/0"]
+        options:
+            parameters:
+                username: snc_redis
+                password: snc_password
+            
+YAML;
+    }
+
+    private function getPhpRedisWithInvalidACLYamlMinimalConfig(): string
+    {
+        return <<<YAML
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: ["redis://localhost:8000/0"]
+        options:
+            parameters:
+                username: user
+                password: password
+            
+YAML;
     }
 
     private function getContainer(): ContainerBuilder

@@ -30,6 +30,8 @@ class RedisDsn
 {
     protected string $dsn;
 
+    protected ?string $username = null;
+
     protected ?string $password = null;
 
     protected ?string $host = null;
@@ -68,6 +70,11 @@ class RedisDsn
     public function getHost(): ?string
     {
         return $this->host;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
     }
 
     public function getPassword(): ?string
@@ -123,13 +130,15 @@ class RedisDsn
         $dsn = preg_replace('#rediss?://#', '', $dsn); // remove "redis://" and "rediss://"
         $pos = strrpos($dsn, '@');
         if ($pos !== false) {
-            // parse password
+            // parse username and password
+            $username = null;
             $password = substr($dsn, 0, $pos);
 
             if (strstr($password, ':')) {
-                [, $password] = explode(':', $password, 2);
+                [$username, $password] = explode(':', $password, 2);
             }
 
+            $this->username = $username !== null ? urldecode($username) : null;
             $this->password = urldecode($password);
 
             $dsn = substr($dsn, $pos + 1);

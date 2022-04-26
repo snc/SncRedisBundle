@@ -40,6 +40,15 @@ snc_redis:
                 read_write_timeout: 30
                 iterable_multibulk: false
                 throw_errors: true
+        with_acl:
+            type: predis
+            alias: with_acl
+            dsn: redis://localhost/1
+            logging: false
+            options:
+                parameters:
+                    username: my_user
+                    password: sncredis
 
 services:
     _defaults:

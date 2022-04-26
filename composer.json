@@ -77,5 +77,8 @@
         "psr-4": {
             "Snc\\RedisBundle\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "@php ./vendor/bin/phpunit"
     }
 }

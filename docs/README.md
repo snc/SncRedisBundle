@@ -149,6 +149,26 @@ snc_redis:
                 cluster: true
 ```
 
+#### Authentication using Redis ACL
+
+Starting with redis 6.0, it is possible to use an [ACL](https://redis.io/docs/manual/security/acl/) system that only allows users with valid username and password to log in.
+Using the `phpredis` driver, you can set up an authenticated connection like this:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsn: redis://localhost
+            # dsn: redis://my_username:my_password@localhost <- username and password can be also set here
+            options:
+                parameters:
+                    username: my_userame
+                    password: my_password
+                
+```
+
 
 ### Sessions ###
 
