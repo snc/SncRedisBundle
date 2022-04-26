@@ -85,6 +85,41 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertTrue($clientDefinition->getArgument(4));
     }
 
+    public function testPhpredisWithAclConfig(): void
+    {
+        $container = $this->getConfiguredContainer('env_phpredis_with_acl');
+
+        $clientDefinition = $container->findDefinition('snc_redis.acl_client');
+
+        $this->assertSame('Redis', $clientDefinition->getClass());
+        $this->assertSame('Redis', $clientDefinition->getArgument(0));
+        $this->assertStringContainsString('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
+        $this->assertSame('acl_client', $clientDefinition->getArgument(3));
+
+        $this->assertEquals(
+            [
+                'cluster' => null,
+                'connection_async' => false,
+                'connection_persistent' => true,
+                'connection_timeout' => 10,
+                'iterable_multibulk' => false,
+                'parameters' => [
+                    'username' => 'snc_user',
+                    'password' => 'snc_password',
+                    'database' => null,
+                    'logging' => false,
+                ],
+                'prefix' => null,
+                'profile' => 'default',
+                'read_write_timeout' => null,
+                'serialization' => 'php',
+                'service' => null,
+                'throw_errors' => true,
+            ],
+            $clientDefinition->getArgument(2)
+        );
+    }
+
     public function testProfileOption(): void
     {
         $container = $this->getConfiguredContainer('env_predis_profile');

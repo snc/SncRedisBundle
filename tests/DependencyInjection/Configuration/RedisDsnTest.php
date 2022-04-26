@@ -202,37 +202,38 @@ class RedisDsnTest extends TestCase
     }
 
     /** @return array<array{0: string, 1: ?string}> */
-    public static function passwordValues(): array
+    public static function authenticationParametersValues(): array
     {
         return [
-            ['redis://localhost', null],
-            ['redis://localhost/1', null],
-            ['redis://pw@localhost:63790/10', 'pw'],
-            ['redis://user:pw@localhost:63790/10', 'pw'],
-            ['redis://user:pw:withcolon@localhost:63790/10', 'pw:withcolon'],
-            ['redis://Pw%3AColon%25@localhost:63790/10', 'Pw:Colon%'],
-            ['redis://p%40w@localhost:63790/10', 'p@w'],
-            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@localhost:63790/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
-            ['redis://127.0.0.1', null],
-            ['redis://127.0.0.1/1', null],
-            ['redis://pw@127.0.0.1:63790/10', 'pw'],
-            ['redis://p%40w@127.0.0.1:63790/10', 'p@w'],
-            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@127.0.0.1:63790/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
-            ['redis://%redis_host%', null],
-            ['redis://%redis_host%/%redis_db%', null],
-            ['redis://%redis_pass%@%redis_host%:%redis_port%', '%redis_pass%'],
-            ['redis:///redis.sock', null],
-            ['redis:///redis.sock/1', null],
-            ['redis://pw@/redis.sock/10', 'pw'],
-            ['redis://p%40w@/redis.sock/10', 'p@w'],
-            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@/redis.sock/10', 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
+            ['redis://localhost', null, null],
+            ['redis://localhost/1', null, null],
+            ['redis://pw@localhost:63790/10', null, 'pw'],
+            ['redis://user:pw@localhost:63790/10', 'user', 'pw'],
+            ['redis://user:pw:withcolon@localhost:63790/10', 'user', 'pw:withcolon'],
+            ['redis://Pw%3AColon%25@localhost:63790/10', null, 'Pw:Colon%'],
+            ['redis://p%40w@localhost:63790/10', null, 'p@w'],
+            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@localhost:63790/10', null, 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
+            ['redis://127.0.0.1', null, null],
+            ['redis://127.0.0.1/1', null, null],
+            ['redis://pw@127.0.0.1:63790/10', null, 'pw'],
+            ['redis://p%40w@127.0.0.1:63790/10', null, 'p@w'],
+            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@127.0.0.1:63790/10', null, 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
+            ['redis://%redis_host%', null, null],
+            ['redis://%redis_host%/%redis_db%', null, null],
+            ['redis://%redis_pass%@%redis_host%:%redis_port%', null, '%redis_pass%'],
+            ['redis:///redis.sock', null, null],
+            ['redis:///redis.sock/1', null, null],
+            ['redis://pw@/redis.sock/10', null, 'pw'],
+            ['redis://p%40w@/redis.sock/10', null, 'p@w'],
+            ['redis://mB(.z9},6o?zl>v!LM76A]lCg77,;.@/redis.sock/10', null, 'mB(.z9},6o?zl>v!LM76A]lCg77,;.'],
         ];
     }
 
-    /** @dataProvider passwordValues */
-    public function testPassword(string $dsn, ?string $password): void
+    /** @dataProvider authenticationParametersValues */
+    public function testAuthenticationParameters(string $dsn, ?string $username, ?string $password): void
     {
         $dsn = new RedisDsn($dsn);
+        $this->assertSame($username, $dsn->getUsername());
         $this->assertSame($password, $dsn->getPassword());
     }
 

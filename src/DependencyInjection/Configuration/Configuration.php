@@ -133,6 +133,7 @@ class Configuration implements ConfigurationInterface
                                         ->canBeUnset()
                                         ->children()
                                             ->scalarNode('database')->defaultNull()->end()
+                                            ->scalarNode('username')->defaultNull()->end()
                                             ->scalarNode('password')->defaultNull()->end()
                                             ->booleanNode('logging')->defaultValue($this->debug)->end()
                                         ->end()

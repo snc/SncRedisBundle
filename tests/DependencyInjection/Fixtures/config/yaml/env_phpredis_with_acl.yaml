@@ -1,0 +1,16 @@
+parameters:
+    env(TEST_URL_2): redis://whatever-host
+
+snc_redis:
+    clients:
+        acl_client:
+            type: phpredis
+            dsn: '%env(TEST_URL_2)%'
+            logging: true
+            options:
+                connection_timeout: 10
+                connection_persistent: true
+                parameters:
+                    username: snc_user
+                    password: snc_password
+                serialization: php

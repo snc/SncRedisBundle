@@ -146,8 +146,11 @@ class PhpredisClientFactory
             $client->connect(...$connectParameters);
         }
 
+        $username = $options['parameters']['username'] ?? null;
         $password = $dsn->getPassword() ?? $options['parameters']['password'] ?? null;
-        if ($password) {
+        if ($username !== null && $password !== null) {
+            $client->auth([$username, $password]);
+        } elseif ($password !== null) {
             $client->auth($password);
         }
 
