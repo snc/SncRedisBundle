@@ -39,7 +39,7 @@ class RedisCallInterceptor
         $time    = microtime(true);
 
         if ($this->stopwatch) {
-            $event = $this->stopwatch->start($this->makePrintable($command), 'redis');
+            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $command), 'redis');
         }
 
         $return = $instance->$method(...$args);
@@ -87,20 +87,5 @@ class RedisCallInterceptor
                 $this->flatten($item, $list);
             }
         }
-    }
-
-    /**
-     * Removes all non printable characters from input, returns default string if the whole input was non printable
-     *
-     * @param string $command The command to check
-     */
-    public function makePrintable(string $command): string
-    {
-        $sanitized = preg_replace('/[^[:print:]]/', '', $command);
-        if ($sanitized !== '') {
-            return $sanitized;
-        }
-
-        return 'Invalid non UTF-8 input.';
     }
 }
