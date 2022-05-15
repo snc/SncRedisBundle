@@ -8,6 +8,7 @@ use function implode;
 use function is_numeric;
 use function is_scalar;
 use function microtime;
+use function preg_replace;
 use function strtoupper;
 use function strval;
 use function trim;
@@ -38,7 +39,7 @@ class RedisCallInterceptor
         $time    = microtime(true);
 
         if ($this->stopwatch) {
-            $event = $this->stopwatch->start($command, 'redis');
+            $event = $this->stopwatch->start($this->makePrintable($command), 'redis');
         }
 
         $return = $instance->$method(...$args);
@@ -86,5 +87,20 @@ class RedisCallInterceptor
                 $this->flatten($item, $list);
             }
         }
+    }
+
+    /**
+     * Removes all non printable characters from input, returns default string if the whole input was non printable
+     *
+     * @param string $command The command to check
+     */
+    public function makePrintable(string $command): string
+    {
+        $sanitized = preg_replace('/[^[:print:]]/', '', $command);
+        if ($sanitized !== '') {
+            return $sanitized;
+        }
+
+        return 'Invalid non UTF-8 input.';
     }
 }
