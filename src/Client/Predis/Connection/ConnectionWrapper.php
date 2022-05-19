@@ -25,6 +25,7 @@ use function array_reduce;
 use function assert;
 use function is_string;
 use function microtime;
+use function preg_replace;
 use function strlen;
 use function substr;
 use function var_export;
