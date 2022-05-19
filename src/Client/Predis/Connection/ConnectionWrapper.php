@@ -157,7 +157,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         $commandName = $this->commandToString($command);
 
         if ($this->stopwatch) {
-            $event = $this->stopwatch->start($commandName, 'redis');
+            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $commandName), 'redis');
         }
 
         $startTime = microtime(true);
