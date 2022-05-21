@@ -25,6 +25,7 @@ use function array_reduce;
 use function assert;
 use function is_string;
 use function microtime;
+use function preg_replace;
 use function strlen;
 use function substr;
 use function var_export;
@@ -157,7 +158,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         $commandName = $this->commandToString($command);
 
         if ($this->stopwatch) {
-            $event = $this->stopwatch->start($commandName, 'redis');
+            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $commandName), 'redis');
         }
 
         $startTime = microtime(true);
