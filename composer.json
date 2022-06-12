@@ -34,7 +34,7 @@
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
         "phpunit/phpunit": "^8.5 || ^9.5",
-        "predis/predis": "^1.1",
+        "predis/predis": ">=1.1",
         "symfony/browser-kit": "^4.4 || ^5.3 || ^6.0",
         "symfony/cache": "^4.4 || ^5.3 || ^6.0",
         "symfony/console": "^4.4 || ^5.3 || ^6.0",
@@ -61,7 +61,7 @@
     },
     "conflict": {
         "ext-redis": "<5.3",
-        "predis/predis": "<1.1"
+        "predis/predis": "<1.1,>=2.0"
     },
     "extra": {
         "branch-alias": {
