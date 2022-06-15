@@ -33,7 +33,7 @@ class RedisLogger
     }
 
     /** @param false|string $error Error message or false if command was successful */
-    public function logCommand(string $command, float $duration, string $connection, $error = false): void
+    public function logCommand(string $command, float $duration, ?string $connection, $error = false): void
     {
         ++$this->nbCommands;
 
