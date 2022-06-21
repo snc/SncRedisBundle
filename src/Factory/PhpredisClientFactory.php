@@ -111,8 +111,6 @@ class PhpredisClientFactory
 
         $this->redisLogger->logCommand('instantiation', microtime(true) - $time, $alias);
 
-        $client->setOption(\Redis::OPT_MAX_RETRIES, 1);
-
         if (isset($options['prefix'])) {
             $client->setOption(RedisCluster::OPT_PREFIX, $options['prefix']);
         }
