@@ -78,7 +78,7 @@ class SncRedisExtensionEnvTest extends TestCase
                         'verify_peer' => false,
                         'allow_self_signed' => true,
                         'verify_peer_name' => false,
-                    ]
+                    ],
                 ],
                 'connection_async' => false,
                 'read_write_timeout' => null,
