@@ -137,7 +137,7 @@ class PhpredisClientFactory
             empty($options['connection_persistent']) ? null : $dsn->getPersistentId(),
             5, // retry interval
             5, // read timeout
-            [], // $context
+            $options['context'] ?? [], // context
         ];
 
         if (!empty($options['connection_persistent'])) {

@@ -43,6 +43,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
+                'context' => null,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
@@ -72,6 +73,13 @@ class SncRedisExtensionEnvTest extends TestCase
                 'connection_persistent' => true,
                 'prefix' => 'totoprofix',
                 'serialization' => 'php',
+                'context' => [
+                    'stream' => [
+                        'verify_peer' => false,
+                        'allow_self_signed' => true,
+                        'verify_peer_name' => false,
+                    ]
+                ],
                 'connection_async' => false,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
@@ -102,6 +110,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'connection_async' => false,
                 'connection_persistent' => true,
                 'connection_timeout' => 10,
+                'context' => null,
                 'iterable_multibulk' => false,
                 'parameters' => [
                     'username' => 'snc_user',
@@ -161,6 +170,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
+                'context' => null,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
@@ -192,6 +202,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'connection_timeout' => 1.5,
                 'connection_persistent' => true,
                 'connection_async' => false,
+                'context' => null,
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
                 'serialization' => 'default',

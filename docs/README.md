@@ -293,6 +293,10 @@ snc_redis:
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: predis
+                # Here you can specify additional context data, see connect/pconnect documentation here
+                # https://github.com/phpredis/phpredis#connect-open
+                # Stream configuration options can be found here https://www.php.net/manual/en/context.ssl.php
+                context: {'stream': {'verify_peer': false, 'allow_self_signed': true, 'verify_peer_name': false}}
     monolog:
         client: cache
         key: monolog
