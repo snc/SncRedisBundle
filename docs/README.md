@@ -9,7 +9,7 @@ This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](ht
 Add the `snc/redis-bundle` package to your `require` section in the `composer.json` file.
 
 ``` bash
-$ composer require snc/redis-bundle 2.x-dev
+$ composer require snc/redis-bundle
 ```
 
 If you want to use the `predis` client library, you have to add the `predis/predis` package, too.
