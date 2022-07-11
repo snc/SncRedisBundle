@@ -73,7 +73,7 @@ jobs:
           ini-values: "zend.assertions=1, max_execution_time=30"
 
       - name: "Install symfony/flex"
-        run: "composer global require --no-progress --no-scripts --no-plugins symfony/flex"
+        run: "composer require --no-progress --no-scripts --no-plugins symfony/flex"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
