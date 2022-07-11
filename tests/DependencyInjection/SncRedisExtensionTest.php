@@ -16,6 +16,8 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Predis\Profile\RedisVersion200;
+use Redis;
+use RedisException;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -459,7 +461,7 @@ class SncRedisExtensionTest extends TestCase
 
         $redis = $container->get('snc_redis.default');
 
-        $this->assertInstanceOf(\Redis::class, $redis);
+        $this->assertInstanceOf(Redis::class, $redis);
 
         $redis->set('test_key', 'test_value');
         $this->assertEquals('test_value', $redis->get('test_key'));
@@ -470,7 +472,7 @@ class SncRedisExtensionTest extends TestCase
      */
     public function testPhpRedisWithInvalidACLParameters(): void
     {
-        $this->expectException(\RedisException::class);
+        $this->expectException(RedisException::class);
         $this->expectExceptionMessageMatches('/WRONGPASS invalid username/');
 
         $extension = new SncRedisExtension();

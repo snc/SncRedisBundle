@@ -8,6 +8,7 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use Predis\Profile\RedisVersion260;
 use Redis;
+use RedisCluster;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Config\FileLocator;
@@ -45,8 +46,8 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.default');
 
-        $this->assertSame(\Redis::class, $clientDefinition->getClass());
-        $this->assertSame(\Redis::class, $clientDefinition->getArgument(0));
+        $this->assertSame(Redis::class, $clientDefinition->getClass());
+        $this->assertSame(Redis::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('REDIS_URL', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('default', $clientDefinition->getArgument(3));
 
@@ -114,8 +115,8 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.acl_client');
 
-        $this->assertSame(\Redis::class, $clientDefinition->getClass());
-        $this->assertSame(\Redis::class, $clientDefinition->getArgument(0));
+        $this->assertSame(Redis::class, $clientDefinition->getClass());
+        $this->assertSame(Redis::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('TEST_URL_2', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('acl_client', $clientDefinition->getArgument(3));
 
@@ -173,8 +174,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $container        = $this->getConfiguredContainer('env_phpredis_cluster');
         $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
 
-        $this->assertSame(\RedisCluster::class, $clientDefinition->getClass());
-        $this->assertSame(\RedisCluster::class, $clientDefinition->getArgument(0));
+        $this->assertSame(RedisCluster::class, $clientDefinition->getClass());
+        $this->assertSame(RedisCluster::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
         $this->assertFalse($clientDefinition->getArgument(4));
@@ -202,8 +203,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $container        = $this->getConfiguredContainer('env_phpredis_cluster_multiple_dsn');
         $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
 
-        $this->assertSame(\RedisCluster::class, $clientDefinition->getClass());
-        $this->assertSame(\RedisCluster::class, $clientDefinition->getArgument(0));
+        $this->assertSame(RedisCluster::class, $clientDefinition->getClass());
+        $this->assertSame(RedisCluster::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertStringContainsString('REDIS_URL_2', $clientDefinition->getArgument(1)[1]);
         $this->assertStringContainsString('REDIS_URL_3', $clientDefinition->getArgument(1)[2]);

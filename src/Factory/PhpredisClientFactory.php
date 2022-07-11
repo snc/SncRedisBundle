@@ -129,8 +129,8 @@ class PhpredisClientFactory
             $client = $this->createLoggingProxy($client, $alias);
         }
 
-        $socket     = $dsn->getSocket();
-        $context    = [];
+        $socket  = $dsn->getSocket();
+        $context = [];
 
         if (isset($options['parameters']['ssl_context'])) {
             $context['stream'] = $options['parameters']['ssl_context'];
