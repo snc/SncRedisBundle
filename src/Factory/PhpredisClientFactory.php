@@ -131,10 +131,10 @@ class PhpredisClientFactory
 
         $socket     = $dsn->getSocket();
         $context    = [];
-        $sslContext = $options['ssl_context'] ?? null;
+        $sslContext = $options['parameters']['ssl_context'] ?? null;
 
         if (is_array($sslContext)) {
-            $context['stream'] = $options['ssl_context'];
+            $context['stream'] = $sslContext;
         }
 
         $connectParameters = [
