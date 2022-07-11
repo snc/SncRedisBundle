@@ -129,7 +129,13 @@ class PhpredisClientFactory
             $client = $this->createLoggingProxy($client, $alias);
         }
 
-        $socket            = $dsn->getSocket();
+        $socket  = $dsn->getSocket();
+        $context = [];
+
+        if (isset($options['parameters']['ssl_context'])) {
+            $context['stream'] = $options['parameters']['ssl_context'];
+        }
+
         $connectParameters = [
             $socket ?? ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost(),
             $dsn->getPort(),
@@ -137,7 +143,7 @@ class PhpredisClientFactory
             empty($options['connection_persistent']) ? null : $dsn->getPersistentId(),
             5, // retry interval
             5, // read timeout
-            [], // $context
+            $context,
         ];
 
         if (!empty($options['connection_persistent'])) {

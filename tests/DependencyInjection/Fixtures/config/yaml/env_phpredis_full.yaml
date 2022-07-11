@@ -1,5 +1,5 @@
 parameters:
-    env(TEST_URL_2): redis://whatever-host
+    env(TEST_URL_2): rediss://whatever-host
 
 snc_redis:
     clients:
@@ -13,3 +13,5 @@ snc_redis:
                 connection_persistent: true
                 prefix: totoprofix
                 serialization: php
+                parameters:
+                    ssl_context: {'verify_peer': false, 'allow_self_signed': true, 'verify_peer_name': false}

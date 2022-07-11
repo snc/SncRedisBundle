@@ -1,0 +1,12 @@
+parameters:
+    env(REDIS_URL): redis://localhost
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: "%env(REDIS_URL)%"
+            options:
+                parameters:
+                    ssl_context: {'verify_peer': false, 'allow_self_signed': true, 'verify_peer_name': false}

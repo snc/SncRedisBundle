@@ -136,6 +136,7 @@ class Configuration implements ConfigurationInterface
                                             ->scalarNode('username')->defaultNull()->end()
                                             ->scalarNode('password')->defaultNull()->end()
                                             ->booleanNode('logging')->defaultValue($this->debug)->end()
+                                            ->variableNode('ssl_context')->defaultNull()->end()
                                         ->end()
                                     ->end()
                                 ->end()
