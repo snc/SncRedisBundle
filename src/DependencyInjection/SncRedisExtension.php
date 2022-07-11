@@ -138,10 +138,13 @@ class SncRedisExtension extends Extension
         $client['options']['timeout']       = $client['options']['connection_timeout'];
         $client['options']['persistent']    = $client['options']['connection_persistent'];
         $client['options']['exceptions']    = $client['options']['throw_errors'];
+        // fix ssl configuration key name
+        $client['options']['ssl'] = $client['options']['ssl_context'] ?? [];
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
         unset($client['options']['throw_errors']);
+        unset($client['options']['ssl_context']);
 
         $connectionAliases = [];
         $connectionCount   = count($client['dsns']);

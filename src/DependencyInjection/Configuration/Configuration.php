@@ -119,7 +119,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('connection_async')->defaultFalse()->end()
                                     ->booleanNode('connection_persistent')->defaultFalse()->end()
                                     ->scalarNode('connection_timeout')->cannotBeEmpty()->defaultValue(5)->end()
-                                    ->variableNode('context')->defaultNull()->end()
+                                    ->variableNode('ssl_context')->defaultNull()->end()
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
