@@ -49,21 +49,21 @@ class Kernel extends BaseKernel
         $loader->load(__DIR__ . '/config.yaml');
 
         $loader->load(static function (ContainerBuilder $container): void {
-            $container->loadFromExtension('framework', [
-                'router' => [
-                    'resource' => 'kernel::loadRoutes',
-                    'type' => 'service',
-                    'utf8' => true,
-                ],
-            ]);
+            $framework = ['router' => ['resource' => 'kernel::loadRoutes', 'type' => 'service', 'utf8' => true]];
 
             // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option
             // is deprecated, it will replace the "framework.session.storage_id" configuration option in version 6.0.
             if (self::VERSION_ID >= 50300) {
-                $container->loadFromExtension('framework', [
-                    'session' => ['storage_factory_id' => 'session.storage.factory.mock_file'],
-                ]);
+                $framework['session'] = ['storage_factory_id' => 'session.storage.factory.mock_file'];
             }
+
+            // Since symfony/http-kernel 6.2: Starting from 7.0, "Symfony\Component\HttpKernel\HttpKernel::handle()" will catch
+            // \Throwable exceptions and convert them to HttpFoundation responses. Pass $catchThrowable=true to adapt to this behavior now.
+            if (self::VERSION_ID >= 60200) {
+                $framework['catch_all_throwables'] = true;
+            }
+
+            $container->loadFromExtension('framework', $framework);
 
             $container->register('kernel', static::class)
                 ->addTag('routing.route_loader')

@@ -1,5 +1,6 @@
 framework:
     annotations: true
+    http_method_override: false
     secret: test
     test: ~
     default_locale: en

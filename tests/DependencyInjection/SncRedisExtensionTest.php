@@ -479,7 +479,7 @@ class SncRedisExtensionTest extends TestCase
         $config    = $this->parseYaml($this->getPhpRedisWithInvalidACLYamlMinimalConfig());
         $extension->load([$config], $container = $this->getContainer());
 
-        $container->get('snc_redis.default');
+        $container->get('snc_redis.default')->isConnected();
     }
 
     /** @return mixed[] */
