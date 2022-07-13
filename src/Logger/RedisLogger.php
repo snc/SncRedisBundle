@@ -46,7 +46,7 @@ class RedisLogger
             array_shift($this->commands);
         }
 
-        $this->commands[] = ['cmd' => $command, 'executionMS' => $duration * 1000, 'conn' => $connection, 'error' => $error];
+        $this->commands[] = ['cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error];
 
         if ($error) {
             $this->logger->error('Command "' . $command . '" failed (' . $error . ')');

@@ -44,7 +44,7 @@ class RedisCallInterceptor
 
         $return = $instance->$method(...$args);
 
-        $this->logger->logCommand($command, microtime(true) - $time, $connection);
+        $this->logger->logCommand($command, (microtime(true) - $time) * 1000, $connection);
 
         if (isset($event)) {
             $event->stop();

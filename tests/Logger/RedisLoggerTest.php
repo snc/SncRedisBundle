@@ -85,9 +85,9 @@ class RedisLoggerTest extends TestCase
         }
 
         $this->assertEquals([
-            ['cmd' => 'foo0', 'executionMS' => 10000, 'conn' => 'connection', 'error' => false],
-            ['cmd' => 'foo1', 'executionMS' => 20000, 'conn' => 'connection', 'error' => 'error message'],
-            ['cmd' => 'foo2', 'executionMS' => 30000, 'conn' => 'connection', 'error' => false],
+            ['cmd' => 'foo0', 'executionMS' => 10, 'conn' => 'connection', 'error' => false],
+            ['cmd' => 'foo1', 'executionMS' => 20, 'conn' => 'connection', 'error' => 'error message'],
+            ['cmd' => 'foo2', 'executionMS' => 30, 'conn' => 'connection', 'error' => false],
         ], $this->redisLogger->getCommands());
     }
 
