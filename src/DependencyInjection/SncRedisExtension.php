@@ -22,6 +22,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
+use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
@@ -241,7 +242,7 @@ class SncRedisExtension extends Extension
         ]);
         $phpredisDef->setFactory([new Reference('snc_redis.phpredis_factory'), 'create']);
         $phpredisDef->addTag('snc_redis.client', ['alias' => $options['alias']]);
-        $phpredisDef->setLazy(true);
+        $phpredisDef->setLazy(class_exists(ProxyDumper::class));
 
         $container->setDefinition(sprintf('snc_redis.%s', $options['alias']), $phpredisDef);
     }
