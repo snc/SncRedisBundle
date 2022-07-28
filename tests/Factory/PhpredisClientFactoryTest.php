@@ -121,7 +121,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testDsnConfig(): void
     {
         $this->logger->method('debug')->withConsecutive(
-            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            [$this->stringContains('Executing command "CONNECT localhost 6380 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
         );
@@ -130,7 +130,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://redis:sncredis@localhost:6379/2'],
+            ['rediss://redis:sncredis@localhost:6379/2'],
             [
                 'parameters' => [
                     'database' => 3,
@@ -154,7 +154,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            [['redis://redis:sncredis@localhost:6379/2']],
+            [['redis://redis:sncredis@localhost:6380/2']],
             [
                 'parameters' => [
                     'database' => 3,
@@ -222,7 +222,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testMethodsWithVariadicParameters(): void
     {
         $this->logger->method('debug')->withConsecutive(
-            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            [$this->stringContains('Executing command "CONNECT localhost 6380 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "RAWCOMMAND scan fleet cursor 0 limit 10"'],
@@ -234,7 +234,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://redis:sncredis@localhost:6379/2'],
+            ['rediss://redis:sncredis@localhost:6380/2'],
             [
                 'parameters' => [
                     'database' => 3,
@@ -255,7 +255,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testMethodWithPassByRefArgument(): void
     {
         $this->logger->method('debug')->withConsecutive(
-            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            [$this->stringContains('Executing command "CONNECT localhost 6380 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "SSCAN set 1 <null> 0"'],
@@ -265,7 +265,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://redis:sncredis@localhost:6379/2'],
+            ['rediss://redis:sncredis@localhost:6380/2'],
             ['connection_timeout' => 5],
             'alias_test',
             true
