@@ -57,12 +57,6 @@ class Kernel extends BaseKernel
                 $framework['session'] = ['storage_factory_id' => 'session.storage.factory.mock_file'];
             }
 
-            // Since symfony/http-kernel 6.2: Starting from 7.0, "Symfony\Component\HttpKernel\HttpKernel::handle()" will catch
-            // \Throwable exceptions and convert them to HttpFoundation responses. Pass $catchThrowable=true to adapt to this behavior now.
-            if (self::VERSION_ID >= 60200) {
-                $framework['catch_all_throwables'] = true;
-            }
-
             $container->loadFromExtension('framework', $framework);
 
             $container->register('kernel', static::class)
