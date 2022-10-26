@@ -15,6 +15,7 @@ namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Closure;
 use Predis\Command\CommandInterface;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\Response\Error;
@@ -162,7 +163,11 @@ class ConnectionWrapper implements NodeConnectionInterface
         }
 
         $startTime = microtime(true);
-        $result    = $execute($command);
+        try {
+            $result = $execute($command);
+        } catch (ConnectionException $exception) {
+            throw new ConnectionException($this->getConnection(), $exception->getMessage(), $exception->getCode(), $exception);
+        }
 
         if (isset($event)) {
             $event->stop();
