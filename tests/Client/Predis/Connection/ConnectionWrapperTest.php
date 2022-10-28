@@ -51,7 +51,7 @@ class ConnectionWrapperTest extends TestCase
         try {
             $this->wrapper->executeCommand($command);
         } catch (ConnectionException $exception) {
-            $this->assertSame($this->wrapper->getConnection(), $exception->getConnection());
+            $this->assertSame($this->wrapper, $exception->getConnection());
         }
     }
 }

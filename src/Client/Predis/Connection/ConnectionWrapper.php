@@ -166,7 +166,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         try {
             $result = $execute($command);
         } catch (ConnectionException $exception) {
-            throw new ConnectionException($this->getConnection(), $exception->getMessage(), $exception->getCode(), $exception);
+            throw new ConnectionException($this, $exception->getMessage(), $exception->getCode(), $exception);
         }
 
         if (isset($event)) {
