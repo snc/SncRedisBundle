@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Functional;
 
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
+use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -21,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Service\ResetInterface;
 
 use function assert;
 
@@ -67,7 +69,12 @@ class IntegrationTest extends WebTestCase
         $collector = $this->client->getProfile()->getCollector('redis');
         assert($collector instanceof RedisDataCollector);
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
+        $this->assertInstanceOf(ResetInterface::class, $container = $this->client->getKernel()->getContainer());
+        $this->assertInstanceOf(RedisLogger::class, $redisLogger = $container->get('test.snc_redis.logger'));
+        $this->assertSame(5, $redisLogger->getNbCommands());
         $this->assertCount(5, $collector->getCommands());
+        $container->reset();
+        $this->assertSame(0, $redisLogger->getNbCommands());
     }
 
     private function profileRequest(string $method, string $uri): Response

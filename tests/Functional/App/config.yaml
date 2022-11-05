@@ -62,6 +62,10 @@ services:
     logger:
         class: Psr\Log\NullLogger
 
+    test.snc_redis.logger:
+        alias: snc_redis.logger
+        public: true
+
     Snc\RedisBundle\Tests\Functional\App\Controller\:
         resource: './Controller'
         tags: ['controller.service_arguments']
