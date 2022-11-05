@@ -35,6 +35,9 @@ class RedisDataCollector extends DataCollector
     public function reset(): void
     {
         $this->data = [];
+        if ($this->logger instanceof ResetInterface) {
+            $this->logger->reset();
+        }
     }
 
     /** @return array{cmd: string, executionMS: float, conn: string, error: string|false} */
