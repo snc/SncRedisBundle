@@ -26,7 +26,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame(
             [PredisParametersFactory::class, 'create'],
-            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory()
+            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
         );
     }
 
@@ -36,7 +36,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame(
             [PredisParametersFactory::class, 'create'],
-            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory()
+            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
         );
     }
 
@@ -65,7 +65,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'prefix' => null,
                 'service' => null,
             ],
-            $clientDefinition->getArgument(2)
+            $clientDefinition->getArgument(2),
         );
     }
 
@@ -104,7 +104,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'cluster' => null,
                 'service' => null,
             ],
-            $clientDefinition->getArgument(2)
+            $clientDefinition->getArgument(2),
         );
         $this->assertTrue($clientDefinition->getArgument(4));
     }
@@ -141,7 +141,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'service' => null,
                 'throw_errors' => true,
             ],
-            $clientDefinition->getArgument(2)
+            $clientDefinition->getArgument(2),
         );
     }
 
@@ -194,7 +194,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'prefix' => null,
                 'service' => null,
             ],
-            $clientDefinition->getArgument(2)
+            $clientDefinition->getArgument(2),
         );
     }
 
@@ -224,7 +224,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'prefix' => null,
                 'service' => null,
             ],
-            $clientDefinition->getArgument(2)
+            $clientDefinition->getArgument(2),
         );
     }
 

@@ -75,7 +75,7 @@ class PhpredisClientFactoryTest extends TestCase
             ['redis://localhost:7000'],
             ['connection_timeout' => 5, 'connection_persistent' => false],
             'phprediscluster',
-            false
+            false,
         );
 
         $this->assertInstanceOf(RedisCluster::class, $client);
@@ -105,7 +105,7 @@ class PhpredisClientFactoryTest extends TestCase
                 ],
             ],
             'alias_test',
-            false
+            false,
         );
 
         $this->assertInstanceOf(Redis::class, $client);
@@ -139,7 +139,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 5,
             ],
             'alias_test',
-            true
+            true,
         );
 
         $this->assertInstanceOf(Redis::class, $client);
@@ -163,7 +163,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 5,
             ],
             'alias_test',
-            false
+            false,
         );
 
         $this->assertInstanceOf(Redis::class, $client);
@@ -185,7 +185,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 5,
             ],
             'default',
-            false
+            false,
         );
 
         self::assertSame($serializer, $client->getOption(Redis::OPT_SERIALIZER));
@@ -204,7 +204,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 5,
             ],
             'default',
-            false
+            false,
         );
     }
 
@@ -243,7 +243,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 5,
             ],
             'alias_test',
-            true
+            true,
         );
 
         /** @psalm-suppress TooManyArguments */
@@ -268,7 +268,7 @@ class PhpredisClientFactoryTest extends TestCase
             ['redis://redis:sncredis@localhost:6379/2'],
             ['connection_timeout' => 5],
             'alias_test',
-            true
+            true,
         );
 
         $iterator = 1;

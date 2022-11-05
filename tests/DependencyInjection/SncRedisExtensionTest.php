@@ -756,7 +756,7 @@ EOF;
 
     private function getPhpRedisWithACLYamlMinimalConfig(): string
     {
-        return <<<YAML
+        return <<<'YAML'
 clients:
     default:
         type: phpredis
@@ -772,7 +772,7 @@ YAML;
 
     private function getPhpRedisWithInvalidACLYamlMinimalConfig(): string
     {
-        return <<<YAML
+        return <<<'YAML'
 clients:
     default:
         type: phpredis

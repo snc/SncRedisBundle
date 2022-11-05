@@ -49,10 +49,10 @@ return static function (ContainerConfigurator $configurator): void {
                     ->addMethodCall('setGeneratorStrategy', [
                         new Definition(
                             FileWriterGeneratorStrategy::class,
-                            [new Definition(FileLocator::class, ['%kernel.cache_dir%'])]
+                            [new Definition(FileLocator::class, ['%kernel.cache_dir%'])],
                         ),
                     ])
-                    ->addMethodCall('setProxiesTargetDir', ['%kernel.cache_dir%'])
+                    ->addMethodCall('setProxiesTargetDir', ['%kernel.cache_dir%']),
             ),
         ]);
 };

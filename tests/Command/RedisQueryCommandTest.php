@@ -44,7 +44,7 @@ class RedisQueryCommandTest extends TestCase
         $cloner->method('cloneVar')->willReturn(new Data([]));
 
         $this->tester = new CommandTester(
-            new RedisQueryCommand($this->container, $this->createMock(DataDumperInterface::class), $cloner)
+            new RedisQueryCommand($this->container, $this->createMock(DataDumperInterface::class), $cloner),
         );
 
         $this->container->expects($this->once())->method('get')->will($this->returnValue($this->predisClient));
