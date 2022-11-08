@@ -42,9 +42,11 @@ class RedisCallInterceptor
             $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $command), 'redis');
         }
 
-        $return = $instance->$method(...$args);
-
-        $this->logger->logCommand($command, (microtime(true) - $time) * 1000, $connection);
+        try {
+            $return = $instance->$method(...$args);
+        } finally {
+            $this->logger->logCommand($command, (microtime(true) - $time) * 1000, $connection);
+        }
 
         if (isset($event)) {
             $event->stop();
