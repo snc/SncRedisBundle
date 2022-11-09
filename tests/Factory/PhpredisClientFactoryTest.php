@@ -130,7 +130,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://redis:sncredis@localhost:6379/2'],
+            ['redis://sncredis@localhost:6379/2'],
             [
                 'parameters' => [
                     'database' => 3,
@@ -148,13 +148,43 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertNull($client->getPersistentID());
     }
 
+    public function testDsnConfigWithUsername(): void
+    {
+        $this->logger->method('debug')->withConsecutive(
+            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            ['Executing command "AUTH snc_redis snc_password"'],
+            ['Executing command "SELECT 2"'],
+        );
+
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://snc_redis:snc_password@localhost:6379/2'],
+            [
+                'parameters' => [
+                    'database' => 3,
+                    'password' => 'secret',
+                ],
+                'connection_timeout' => 5,
+            ],
+            'alias_test',
+            true,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertSame(2, $client->getDBNum());
+        $this->assertSame(['snc_redis', 'snc_password'], $client->getAuth());
+        $this->assertNull($client->getPersistentID());
+    }
+
     public function testNestedDsnConfig(): void
     {
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             Redis::class,
-            [['redis://redis:sncredis@localhost:6379/2']],
+            [['redis://sncredis@localhost:6379/2']],
             [
                 'parameters' => [
                     'database' => 3,
@@ -234,7 +264,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://redis:sncredis@localhost:6379/2'],
+            ['redis://sncredis@localhost:6379/2'],
             [
                 'parameters' => [
                     'database' => 3,
@@ -265,7 +295,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://redis:sncredis@localhost:6379/2'],
+            ['redis://sncredis@localhost:6379/2'],
             ['connection_timeout' => 5],
             'alias_test',
             true,
