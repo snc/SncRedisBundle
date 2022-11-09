@@ -434,7 +434,7 @@ class SncRedisExtensionTest extends TestCase
         $redis = $container->get('snc_redis.default');
 
         $this->assertSame(1, $redis->getDBNum());
-        $this->assertSame(['redis', 'sncredis'], $redis->getAuth());
+        $this->assertSame(['snc_redis', 'snc_password'], $redis->getAuth());
     }
 
     /**
@@ -734,7 +734,7 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: redis://redis:sncredis@localhost/1
+        dsn: redis://snc_redis:snc_password@localhost:8000/1
         options:
             parameters:
                 database: 2

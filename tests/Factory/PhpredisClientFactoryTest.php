@@ -151,16 +151,16 @@ class PhpredisClientFactoryTest extends TestCase
     public function testDsnConfigWithUsername(): void
     {
         $this->logger->method('debug')->withConsecutive(
-            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            [$this->stringContains('Executing command "CONNECT localhost 8000 5')],
             ['Executing command "AUTH snc_redis snc_password"'],
-            ['Executing command "SELECT 2"'],
+            ['Executing command "SELECT 0"'],
         );
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             Redis::class,
-            ['redis://snc_redis:snc_password@localhost:6379/2'],
+            ['redis://snc_redis:snc_password@localhost:8000/0'],
             [
                 'parameters' => [
                     'database' => 3,
@@ -173,7 +173,7 @@ class PhpredisClientFactoryTest extends TestCase
         );
 
         $this->assertInstanceOf(Redis::class, $client);
-        $this->assertSame(2, $client->getDBNum());
+        $this->assertSame(0, $client->getDBNum());
         $this->assertSame(['snc_redis', 'snc_password'], $client->getAuth());
         $this->assertNull($client->getPersistentID());
     }
