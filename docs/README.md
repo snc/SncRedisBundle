@@ -193,6 +193,7 @@ services:
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments: ['@snc_redis.session']
 ```
+Note that this solution does not perform session locking and that you may face race conditions when accessing sessions (see [Symfony docs](https://symfony.com/doc/current/session/database.html#store-sessions-in-a-key-value-database-redis)).
 
 ### Monolog logging ###
 
