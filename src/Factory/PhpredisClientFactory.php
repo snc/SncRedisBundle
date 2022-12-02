@@ -106,11 +106,11 @@ class PhpredisClientFactory
         );
 
         if (isset($options['prefix'])) {
-            $client->setOption(RedisCluster::OPT_PREFIX, $options['prefix']);
+            $client->setOption(Redis::OPT_PREFIX, $options['prefix']);
         }
 
         if (isset($options['serialization'])) {
-            $client->setOption(RedisCluster::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
+            $client->setOption(Redis::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
         }
 
         if (isset($options['slave_failover'])) {

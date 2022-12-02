@@ -79,10 +79,10 @@ class PhpredisClientFactoryTest extends TestCase
         );
 
         $this->assertInstanceOf(RedisCluster::class, $client);
-        $this->assertNull($client->getOption(RedisCluster::OPT_PREFIX));
-        $this->assertSame(0, $client->getOption(RedisCluster::OPT_SERIALIZER));
-        $this->assertSame(0., $client->getOption(RedisCluster::OPT_READ_TIMEOUT));
-        $this->assertSame(0, $client->getOption(RedisCluster::OPT_SCAN));
+        $this->assertNull($client->getOption(Redis::OPT_PREFIX));
+        $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
+        $this->assertSame(0., $client->getOption(Redis::OPT_READ_TIMEOUT));
+        $this->assertSame(0, $client->getOption(Redis::OPT_SCAN));
         $this->assertSame(0, $client->getOption(RedisCluster::OPT_SLAVE_FAILOVER));
     }
 
