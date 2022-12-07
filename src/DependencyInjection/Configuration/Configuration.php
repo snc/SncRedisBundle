@@ -125,6 +125,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('serialization')->defaultValue('default')->end()
                                     ->scalarNode('profile')->defaultValue('default')->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
+                                    ->scalarNode('sentinel')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
                                     ->enumNode('replication')->values([true, false, 'sentinel'])->end()
                                     ->scalarNode('service')->defaultNull()->end()

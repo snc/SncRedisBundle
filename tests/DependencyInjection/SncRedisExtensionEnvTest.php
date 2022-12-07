@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Predis\Profile\RedisVersion260;
 use Redis;
 use RedisCluster;
+use RedisSentinel;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Config\FileLocator;
@@ -62,6 +63,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'serialization' => 'default',
                 'profile' => 'default',
                 'cluster' => null,
+                'sentinel' => null,
                 'prefix' => null,
                 'service' => null,
             ],
@@ -102,6 +104,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'throw_errors' => true,
                 'profile' => 'default',
                 'cluster' => null,
+                'sentinel' => null,
                 'service' => null,
             ],
             $clientDefinition->getArgument(2),
@@ -140,6 +143,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'serialization' => 'php',
                 'service' => null,
                 'throw_errors' => true,
+                'sentinel' => null,
             ],
             $clientDefinition->getArgument(2),
         );
@@ -191,6 +195,37 @@ class SncRedisExtensionEnvTest extends TestCase
                 'throw_errors' => true,
                 'serialization' => 'default',
                 'profile' => 'default',
+                'sentinel' => null,
+                'prefix' => null,
+                'service' => null,
+            ],
+            $clientDefinition->getArgument(2),
+        );
+    }
+
+    public function testPhpRedisSentinelOption(): void
+    {
+        $container        = $this->getConfiguredContainer('env_phpredis_sentinel');
+        $clientDefinition = $container->findDefinition('snc_redis.phpredissentinel');
+
+        $this->assertSame(Redis::class, $clientDefinition->getClass());
+        $this->assertSame(RedisSentinel::class, $clientDefinition->getArgument(0));
+        $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
+        $this->assertSame('phpredissentinel', $clientDefinition->getArgument(3));
+        $this->assertFalse($clientDefinition->getArgument(4));
+
+        $this->assertSame(
+            [
+                'sentinel' => 'mymaster',
+                'connection_async' => false,
+                'connection_persistent' => false,
+                'connection_timeout' => 5,
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+                'serialization' => 'default',
+                'profile' => 'default',
+                'cluster' => null,
                 'prefix' => null,
                 'service' => null,
             ],
@@ -221,6 +256,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'throw_errors' => true,
                 'serialization' => 'default',
                 'profile' => 'default',
+                'sentinel' => null,
                 'prefix' => null,
                 'service' => null,
             ],
@@ -231,7 +267,7 @@ class SncRedisExtensionEnvTest extends TestCase
     public function testPhpRedisArrayIsNotSupported(): void
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('RedisArray is not supported yet');
+        $this->expectExceptionMessage('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
 
         $this->getConfiguredContainer('env_phpredis_array_not_supported');
     }

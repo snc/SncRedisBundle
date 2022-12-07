@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use LogicException;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Profile\Factory;
+use RedisSentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
@@ -225,16 +226,22 @@ class SncRedisExtension extends Extension
     /** @param mixed[] $options A client configuration */
     private function loadPhpredisClient(array $options, ContainerBuilder $container): void
     {
-        $connectionCount  = count($options['dsns']);
-        $hasClusterOption = $options['options']['cluster'] !== null;
+        $connectionCount   = count($options['dsns']);
+        $hasClusterOption  = $options['options']['cluster'] !== null;
+        $hasSentinelOption = (bool) $options['options']['sentinel'];
 
-        if ($connectionCount > 1 && !$hasClusterOption) {
-            throw new LogicException(sprintf('\RedisArray is not supported yet but \RedisCluster is: set option "cluster" to true to enable it.'));
+        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption) {
+            throw new LogicException('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
+        }
+
+        if ($hasClusterOption && $hasSentinelOption) {
+            throw new LogicException('You cannot have both cluster and sentinel enabled for same redis connection');
         }
 
         $phpredisClientClass = (string) $container->getParameter('snc_redis.phpredis_' . ($hasClusterOption ? 'cluster' : '') . 'client.class');
-        $phpredisDef         = new Definition($phpredisClientClass, [
-            $phpredisClientClass,
+
+        $phpredisDef = new Definition($phpredisClientClass, [
+            $hasSentinelOption ? RedisSentinel::class : $phpredisClientClass,
             array_map('strval', $options['dsns']),
             $options['options'],
             $options['alias'],

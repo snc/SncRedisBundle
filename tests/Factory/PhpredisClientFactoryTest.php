@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
 use RedisCluster;
+use RedisSentinel;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
@@ -84,6 +85,28 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0., $client->getOption(Redis::OPT_READ_TIMEOUT));
         $this->assertSame(0, $client->getOption(Redis::OPT_SCAN));
         $this->assertSame(0, $client->getOption(RedisCluster::OPT_SLAVE_FAILOVER));
+    }
+
+    public function testCreatSentinelConfig(): void
+    {
+        $this->logger->method('debug')->withConsecutive(
+            [$this->stringContains('Executing command "CONNECT 127.0.0.1 6379 5 <null>')],
+            ['Executing command "AUTH sncredis"'],
+        );
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            RedisSentinel::class,
+            ['redis://sncredis@localhost:26379'],
+            ['connection_timeout' => 5, 'connection_persistent' => false, 'sentinel' => 'mymaster'],
+            'phpredissentinel',
+            true,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertNull($client->getOption(Redis::OPT_PREFIX));
+        $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
+        $this->assertSame('sncredis', $client->getAuth());
     }
 
     public function testCreateFullConfig(): void
