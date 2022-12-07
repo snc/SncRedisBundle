@@ -41,6 +41,13 @@ snc_redis:
                 read_write_timeout: 30
                 iterable_multibulk: false
                 throw_errors: true
+        sentinel:
+            type: phpredis
+            alias: sentinel
+            dsn: redis://sncredis@localhost:26379
+            options:
+                replication: true
+                service: mymaster
         with_acl:
             type: predis
             alias: with_acl

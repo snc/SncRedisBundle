@@ -1,0 +1,12 @@
+parameters:
+    env(REDIS_URL_1): redis://localhost:7000
+
+snc_redis:
+    clients:
+        phpredissentinel:
+            type: phpredis
+            alias: phpredissentinel
+            dsn: "%env(REDIS_URL_1)%"
+            options:
+                replication: sentinel
+                service: mymaster

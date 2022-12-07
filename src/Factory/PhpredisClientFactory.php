@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Factory;
 
+use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use ProxyManager\Proxy\AccessInterceptorInterface;
 use Redis;
 use RedisCluster;
+use RedisSentinel;
 use ReflectionClass;
 use ReflectionMethod;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
@@ -26,6 +28,7 @@ use function is_a;
 use function is_array;
 use function spl_autoload_register;
 use function sprintf;
+use function var_export;
 
 /** @internal */
 class PhpredisClientFactory
@@ -67,8 +70,12 @@ class PhpredisClientFactory
      */
     public function create(string $class, array $dsns, array $options, string $alias, bool $loggingEnabled)
     {
-        if (!is_a($class, Redis::class, true) && !is_a($class, RedisCluster::class, true)) {
-            throw new LogicException(sprintf('The factory can only instantiate \Redis|\RedisCluster classes: "%s" asked', $class));
+        $isRedis    = is_a($class, Redis::class, true);
+        $isSentinel = is_a($class, RedisSentinel::class, true);
+        $isCluster  = is_a($class, RedisCluster::class, true);
+
+        if (!$isRedis && !$isSentinel && !$isCluster) {
+            throw new LogicException(sprintf('The factory can only instantiate Redis|RedisCluster|RedisSentinel classes: "%s" asked', $class));
         }
 
         // Normalize the DSNs, because using processed environment variables could lead to nested values.
@@ -76,7 +83,7 @@ class PhpredisClientFactory
 
         $parsedDsns = array_map(static fn (string $dsn) => new RedisDsn($dsn), $dsns);
 
-        if (is_a($class, Redis::class, true)) {
+        if ($isRedis) {
             if (count($parsedDsns) > 1) {
                 throw new LogicException('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
             }
@@ -84,7 +91,49 @@ class PhpredisClientFactory
             return $this->createClient($parsedDsns[0], $class, $alias, $options, $loggingEnabled);
         }
 
+        if ($isSentinel) {
+            return $this->createClientFromSentinel($parsedDsns, $alias, $options, $loggingEnabled);
+        }
+
         return $this->createClusterClient($parsedDsns, $class, $alias, $options, $loggingEnabled);
+    }
+
+    /**
+     * @param list<RedisDsn>          $dsns
+     * @param array{service: ?string} $options
+     */
+    private function createClientFromSentinel(array $dsns, string $alias, array $options, bool $loggingEnabled): Redis
+    {
+        foreach ($dsns as $dsn) {
+            $address = (new RedisSentinel($dsn->getHost(), (int) $dsn->getPort()))->getMasterAddrByName($options['service']);
+
+            if (!$address) {
+                continue;
+            }
+
+            return $this->createClient(
+                new class ($dsn->__toString(), $address[0], (int) $address[1]) extends RedisDsn {
+                    public function __construct(string $dsn, string $host, int $port)
+                    {
+                        parent::__construct($dsn);
+                        $this->host = $host;
+                        $this->port = $port;
+                    }
+                },
+                Redis::class,
+                $alias,
+                $options,
+                $loggingEnabled,
+            );
+        }
+
+        throw new InvalidArgumentException(
+            sprintf(
+                'Failed to retrieve master information from sentinel %s and dsn %s.',
+                var_export($options['service'], true),
+                var_export($dsns, true),
+            ),
+        );
     }
 
     /**

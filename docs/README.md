@@ -105,7 +105,7 @@ snc_redis:
 Please note that the master dsn connection needs to be tagged with the ```master``` alias.
 If not, `predis` will complain.
 
-A setup using `predis` sentinel replication could look like this:
+A setup using `predis` or `phpredis` sentinel replication could look like this:
 
 ``` yaml
 snc_redis:

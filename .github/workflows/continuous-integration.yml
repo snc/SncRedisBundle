@@ -12,6 +12,14 @@ jobs:
       SYMFONY_REQUIRE: "${{matrix.symfony-require}}"
       SYMFONY_DEPRECATIONS_HELPER: "max[self]=0"
 
+    services:
+      redis-sentinel:
+        image: bitnami/redis-sentinel
+        env:
+          REDIS_MASTER_HOST: localhost
+        ports:
+          - 26379:26379
+
     strategy:
       fail-fast: false
       matrix:
