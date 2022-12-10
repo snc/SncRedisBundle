@@ -338,8 +338,8 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals('sentinel', $options['replication']);
         $this->assertEquals('mymaster', $options['service']);
         $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
-        $this->assertEquals('snc_redis.connection.default_parameters.default', (string) $parameters[0]);
-        $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
+        $this->assertEquals('snc_redis.connection.default_parameters.default', (string) $parameters);
+        $masterParameters = $container->getDefinition((string) $parameters)->getArgument(0);
         $this->assertEquals('sentinel', $masterParameters['replication']);
         $this->assertEquals('mymaster', $masterParameters['service']);
         $this->assertIsArray($masterParameters['parameters']);

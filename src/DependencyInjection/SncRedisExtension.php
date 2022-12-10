@@ -190,7 +190,7 @@ class SncRedisExtension extends Extension
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition((string) $container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
-        if ($connectionCount === 1 && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
+        if ($connectionCount === 1 && !isset($client['options']['cluster'], $client['options']['replication'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = [];
@@ -228,7 +228,7 @@ class SncRedisExtension extends Extension
     {
         $connectionCount   = count($options['dsns']);
         $hasClusterOption  = $options['options']['cluster'] !== null;
-        $hasSentinelOption = (bool) $options['options']['replication'];
+        $hasSentinelOption = isset($options['options']['replication']);
 
         if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption) {
             throw new LogicException('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
