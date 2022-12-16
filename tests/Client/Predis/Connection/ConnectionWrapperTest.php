@@ -6,8 +6,8 @@ namespace Snc\RedisBundle\Tests\Client\Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Predis\Command\KeyExists;
-use Predis\Command\KeyScan;
+use Predis\Command\Redis\EXISTS;
+use Predis\Command\Redis\SCAN;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
@@ -34,7 +34,7 @@ class ConnectionWrapperTest extends TestCase
 
     public function testSanitizingArguments(): void
     {
-        $command = new KeyScan();
+        $command = new SCAN();
         $command->setArguments([null, 'MATCH', 'foo:bar', 'COUNT', 1000]);
 
         $this->logger->expects($this->once())->method('debug')->with('Executing command "SCAN NULL \'MATCH\' \'foo:bar\' \'COUNT\' 1000"');
@@ -43,7 +43,7 @@ class ConnectionWrapperTest extends TestCase
 
     public function testReturnWrappedConnectionAfterException(): void
     {
-        $command = new KeyExists();
+        $command = new EXISTS();
         $command->setArguments(['key']);
 
         $this->connection->method('executeCommand')->willThrowException(new ConnectionException($this->wrapper));
