@@ -69,7 +69,6 @@ snc_redis:
             alias: cache
             dsn: redis://secret@localhost/1
             options:
-                profile: 2.2
                 connection_timeout: 10
                 read_write_timeout: 30
         cluster:
@@ -287,7 +286,6 @@ snc_redis:
                 - redis://pw@127.0.0.1:63790/10
             options:
                 prefix: foo
-                profile: 2.4
                 connection_timeout: 10
                 connection_persistent: true
                 read_write_timeout: 30

@@ -51,7 +51,6 @@
         <xsd:attribute name="iterable-multibulk" type="xsd:boolean" />
         <xsd:attribute name="throw-errors" type="xsd:boolean" />
         <xsd:attribute name="serialization" type="phpredis-serialization-type" />
-        <xsd:attribute name="profile" type="client-profile" />
         <xsd:attribute name="cluster" type="xsd:string" />
         <xsd:attribute name="prefix" type="xsd:string" />
         <xsd:attribute name="replication" type="xsd:boolean" />
@@ -73,17 +72,6 @@
             <xsd:enumeration value="error" />
             <xsd:enumeration value="distribute" />
             <xsd:enumeration value="distribute_slaves" />
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:simpleType name="client-profile">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="1.2" />
-            <xsd:enumeration value="2.0" />
-            <xsd:enumeration value="2.2" />
-            <xsd:enumeration value="2.4" />
-            <xsd:enumeration value="2.6" />
-            <xsd:enumeration value="dev" />
         </xsd:restriction>
     </xsd:simpleType>
 

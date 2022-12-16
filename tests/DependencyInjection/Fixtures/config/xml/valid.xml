@@ -3,7 +3,7 @@
     <redis:config>
         <redis:client alias="default" logging="true" type="predis">
             <redis:dsn>redis://localhost</redis:dsn>
-            <redis:options connection-async="true" connection-persistent="true" connection-timeout="66" read-write-timeout="123" cluster="Snc\RedisBundle\Client\Predis\Connection\PredisCluster" iterable-multibulk="true" profile="2.6" throw-errors="true" prefix="true" />
+            <redis:options connection-async="true" connection-persistent="true" connection-timeout="66" read-write-timeout="123" cluster="Snc\RedisBundle\Client\Predis\Connection\PredisCluster" iterable-multibulk="true" throw-errors="true" prefix="true" />
         </redis:client>
         <redis:client alias="cluster" type="phpredis">
             <redis:dsn>redis://localhost</redis:dsn>

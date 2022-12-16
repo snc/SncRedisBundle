@@ -35,7 +35,6 @@ snc_redis:
               - redis://sncredis@127.0.0.1/5
             options:
                 prefix: foo
-                profile: 2.4
                 connection_timeout: 10
                 connection_persistent: true
                 read_write_timeout: 30

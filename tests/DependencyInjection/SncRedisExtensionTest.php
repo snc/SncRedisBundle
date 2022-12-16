@@ -15,7 +15,6 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Predis\Profile\RedisVersion200;
 use Redis;
 use RedisException;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -117,7 +116,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters.default'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertFalse($container->hasAlias('snc_redis.default_client'));
@@ -140,19 +138,16 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.data_collector'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.default_parameters.default'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.default_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $this->assertFalse($container->hasAlias('snc_redis.default_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cache_parameters.cache'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.cache_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cache_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cache'));
         $this->assertFalse($container->hasAlias('snc_redis.cache_client'));
 
         $this->assertTrue($container->hasDefinition('snc_redis.connection.monolog_parameters.monolog'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.monolog_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.monolog'));
         $this->assertFalse($container->hasAlias('snc_redis.monolog_client'));
@@ -160,7 +155,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster1_parameters.cluster'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster2_parameters.cluster'));
         $this->assertTrue($container->hasDefinition('snc_redis.connection.cluster3_parameters.cluster'));
-        $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_profile'));
         $this->assertTrue($container->hasDefinition('snc_redis.client.cluster_options'));
         $this->assertTrue($container->hasDefinition('snc_redis.cluster'));
         $this->assertFalse($container->hasAlias('snc_redis.cluster_client'));
@@ -213,26 +207,6 @@ class SncRedisExtensionTest extends TestCase
                 break;
             }
         }
-    }
-
-    /**
-     * @group legacy
-     *
-     * Test valid parsing of the client profile option
-     */
-    public function testClientProfileOption(): void
-    {
-        $extension = new SncRedisExtension();
-        $config    = $this->parseYaml($this->getFullYamlConfig());
-        $extension->load([$config], $container = $this->getContainer());
-
-        $profileDefinition = $container->getDefinition('snc_redis.client.default_profile');
-        $options           = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
-
-        $this->assertSame((float) 2, $config['clients']['default']['options']['profile'], 'Profile version 2.0 was parsed as float');
-        $this->assertSame(RedisVersion200::class, $profileDefinition->getClass(), 'Profile definition is instance of Predis\\Profile\\RedisVersion200');
-
-        $this->assertSame('snc:', $options['prefix'], 'Prefix option was allowed');
     }
 
     /**
@@ -533,7 +507,6 @@ clients:
         dsn: redis://localhost
         logging: true
         options:
-            profile: 2.0
             prefix: snc:
     cache:
         type: predis
@@ -553,7 +526,6 @@ clients:
             - redis://pw@/var/run/redis/redis-1.sock/10
             - redis://pw@127.0.0.1:63790/10
         options:
-            profile: 2.4
             connection_timeout: 10
             connection_persistent: true
             read_write_timeout: 30
