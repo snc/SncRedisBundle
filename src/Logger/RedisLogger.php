@@ -23,7 +23,7 @@ class RedisLogger implements ResetInterface
 {
     protected ?LoggerInterface $logger;
     protected int $nbCommands = 0;
-    /** @var list<array{cmd: string, executionMS: float, conn: string, error: string|false}> */
+    /** @var list<array{cmd: string, executionMS: float, conn: ?string, error: string|false}> */
     protected array $commands = [];
     private int $bufferSize   = 200;
 

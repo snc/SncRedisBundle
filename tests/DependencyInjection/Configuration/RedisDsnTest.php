@@ -201,7 +201,7 @@ class RedisDsnTest extends TestCase
         $this->assertSame($database, $dsn->getDatabase());
     }
 
-    /** @return array<array{0: string, 1: ?string}> */
+    /** @return array<array{0: string, 1: ?string, 2: ?string}> */
     public static function authenticationParametersValues(): array
     {
         return [
