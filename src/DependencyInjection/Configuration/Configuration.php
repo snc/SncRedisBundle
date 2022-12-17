@@ -123,7 +123,6 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
                                     ->scalarNode('serialization')->defaultValue('default')->end()
-                                    ->scalarNode('profile')->defaultValue('default')->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
                                     ->enumNode('replication')->values([true, 'sentinel'])->end()

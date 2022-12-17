@@ -6,7 +6,6 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use Predis\Profile\RedisVersion260;
 use Redis;
 use RedisCluster;
 use RedisSentinel;
@@ -61,7 +60,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
                 'serialization' => 'default',
-                'profile' => 'default',
                 'cluster' => null,
                 'prefix' => null,
                 'service' => null,
@@ -101,7 +99,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
-                'profile' => 'default',
                 'cluster' => null,
                 'service' => null,
             ],
@@ -136,7 +133,6 @@ class SncRedisExtensionEnvTest extends TestCase
                     'ssl_context' => null,
                 ],
                 'prefix' => null,
-                'profile' => 'default',
                 'read_write_timeout' => null,
                 'serialization' => 'php',
                 'service' => null,
@@ -144,14 +140,6 @@ class SncRedisExtensionEnvTest extends TestCase
             ],
             $clientDefinition->getArgument(2),
         );
-    }
-
-    public function testProfileOption(): void
-    {
-        $container = $this->getConfiguredContainer('env_predis_profile');
-
-        $this->assertTrue($container->hasDefinition('snc_redis.client.default_profile'));
-        $this->assertSame(RedisVersion260::class, $container->getDefinition('snc_redis.client.default_profile')->getClass());
     }
 
     public function testClusterOption(): void
@@ -191,7 +179,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
                 'serialization' => 'default',
-                'profile' => 'default',
                 'prefix' => null,
                 'service' => null,
             ],
@@ -221,7 +208,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
                 'serialization' => 'default',
-                'profile' => 'default',
                 'cluster' => null,
                 'prefix' => null,
             ],
@@ -251,7 +237,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
                 'serialization' => 'default',
-                'profile' => 'default',
                 'prefix' => null,
                 'service' => null,
             ],

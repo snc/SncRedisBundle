@@ -15,8 +15,6 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 use InvalidArgumentException;
 use LogicException;
-use Predis\Command\Processor\KeyPrefixProcessor;
-use Predis\Profile\Factory;
 use RedisSentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
@@ -37,8 +35,6 @@ use function array_map;
 use function assert;
 use function class_exists;
 use function count;
-use function get_class;
-use function is_string;
 use function sprintf;
 
 class SncRedisExtension extends Extension
@@ -166,23 +162,6 @@ class SncRedisExtension extends Extension
 
             $this->loadPredisConnectionParameters($client['alias'], $connection, $container, $dsn);
         }
-
-        $profile = $client['options']['profile'];
-        // TODO can be shared between clients?!
-        $profile    = $container->resolveEnvPlaceholders($profile, true);
-        $profile    = !is_string($profile) ? sprintf('%.1F', $profile) : $profile;
-        $profileId  = sprintf('snc_redis.client.%s_profile', $client['alias']);
-        $profileDef = new Definition(get_class(Factory::get($profile))); // TODO get_class alternative?
-        if ($client['options']['prefix'] !== null) {
-            $processorId  = sprintf('snc_redis.client.%s_processor', $client['alias']);
-            $processorDef = new Definition(KeyPrefixProcessor::class);
-            $processorDef->setArguments([$client['options']['prefix']]);
-            $container->setDefinition($processorId, $processorDef);
-            $profileDef->addMethodCall('setProcessor', [new Reference($processorId)]);
-        }
-
-        $container->setDefinition($profileId, $profileDef);
-        $client['options']['profile'] = new Reference($profileId);
 
         $optionId  = sprintf('snc_redis.client.%s_options', $client['alias']);
         $optionDef = new Definition((string) $container->getParameter('snc_redis.client_options.class'));
