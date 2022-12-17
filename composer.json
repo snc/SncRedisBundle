@@ -47,7 +47,7 @@
         "symfony/stopwatch": "^4.4 || ^5.3 || ^6.0",
         "symfony/twig-bundle": "^4.4 || ^5.3 || ^6.0",
         "symfony/yaml": "^4.4 || ^5.3 || ^6.0",
-        "vimeo/psalm": "^4.13"
+        "vimeo/psalm": "^5.2"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
