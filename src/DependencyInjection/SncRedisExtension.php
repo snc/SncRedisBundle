@@ -115,6 +115,7 @@ class SncRedisExtension extends Extension
                 $this->loadPredisClient($client, $container);
                 break;
             case 'phpredis':
+            case 'relay':
                 $this->loadPhpredisClient($client, $container);
                 break;
             default:
@@ -217,7 +218,9 @@ class SncRedisExtension extends Extension
             throw new LogicException('You cannot have both cluster and sentinel enabled for same redis connection');
         }
 
-        $phpredisClientClass = (string) $container->getParameter('snc_redis.phpredis_' . ($hasClusterOption ? 'cluster' : '') . 'client.class');
+        $phpredisClientClass = (string) $container->getParameter(
+            sprintf('snc_redis.%s_%sclient.class', $options['type'], ($hasClusterOption ? 'cluster' : '')),
+        );
 
         $phpredisDef = new Definition($phpredisClientClass, [
             $hasSentinelOption ? RedisSentinel::class : $phpredisClientClass,

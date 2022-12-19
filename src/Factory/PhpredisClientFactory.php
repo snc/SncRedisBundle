@@ -14,6 +14,8 @@ use RedisCluster;
 use RedisSentinel;
 use ReflectionClass;
 use ReflectionMethod;
+use Relay\Relay;
+use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
@@ -21,7 +23,7 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function count;
-use function defined;
+use function get_class;
 use function implode;
 use function in_array;
 use function is_a;
@@ -63,7 +65,7 @@ class PhpredisClientFactory
      * @param list<string|list<string>> $dsns    Multiple DSN string
      * @param mixed[]                   $options Options provided in bundle client config
      *
-     * @return Redis|RedisCluster
+     * @return Redis|RedisCluster|Relay
      *
      * @throws InvalidConfigurationException
      * @throws LogicException
@@ -71,11 +73,12 @@ class PhpredisClientFactory
     public function create(string $class, array $dsns, array $options, string $alias, bool $loggingEnabled)
     {
         $isRedis    = is_a($class, Redis::class, true);
-        $isSentinel = is_a($class, RedisSentinel::class, true);
+        $isRelay    = is_a($class, Relay::class, true);
+        $isSentinel = is_a($class, RedisSentinel::class, true) || is_a($class, Sentinel::class, true);
         $isCluster  = is_a($class, RedisCluster::class, true);
 
-        if (!$isRedis && !$isSentinel && !$isCluster) {
-            throw new LogicException(sprintf('The factory can only instantiate Redis|RedisCluster|RedisSentinel classes: "%s" asked', $class));
+        if (!$isRedis && !$isRelay && !$isSentinel && !$isCluster) {
+            throw new LogicException(sprintf('The factory can only instantiate Redis|Relay\Relay|RedisCluster|RedisSentinel|Relay\Sentinel classes: "%s" asked', $class));
         }
 
         // Normalize the DSNs, because using processed environment variables could lead to nested values.
@@ -83,7 +86,7 @@ class PhpredisClientFactory
 
         $parsedDsns = array_map(static fn (string $dsn) => new RedisDsn($dsn), $dsns);
 
-        if ($isRedis) {
+        if ($isRedis || $isRelay) {
             if (count($parsedDsns) > 1) {
                 throw new LogicException('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
             }
@@ -92,20 +95,26 @@ class PhpredisClientFactory
         }
 
         if ($isSentinel) {
-            return $this->createClientFromSentinel($parsedDsns, $alias, $options, $loggingEnabled);
+            return $this->createClientFromSentinel($class, $parsedDsns, $alias, $options, $loggingEnabled);
         }
 
         return $this->createClusterClient($parsedDsns, $class, $alias, $options, $loggingEnabled);
     }
 
     /**
+     * @param class-string            $class
      * @param list<RedisDsn>          $dsns
      * @param array{service: ?string} $options
+     *
+     * @return Redis|Relay
      */
-    private function createClientFromSentinel(array $dsns, string $alias, array $options, bool $loggingEnabled): Redis
+    private function createClientFromSentinel(string $class, array $dsns, string $alias, array $options, bool $loggingEnabled)
     {
+        $isRelay       = is_a($class, Sentinel::class, true);
+        $sentinelClass = $isRelay ? Sentinel::class : RedisSentinel::class;
+
         foreach ($dsns as $dsn) {
-            $address = (new RedisSentinel($dsn->getHost(), (int) $dsn->getPort()))->getMasterAddrByName($options['service']);
+            $address = (new $sentinelClass($dsn->getHost(), (int) $dsn->getPort()))->getMasterAddrByName($options['service']);
 
             if (!$address) {
                 continue;
@@ -120,7 +129,7 @@ class PhpredisClientFactory
                         $this->port = $port;
                     }
                 },
-                Redis::class,
+                $isRelay ? Relay::class : Redis::class,
                 $alias,
                 $options,
                 $loggingEnabled,
@@ -155,7 +164,7 @@ class PhpredisClientFactory
         );
 
         if (isset($options['prefix'])) {
-            $client->setOption(Redis::OPT_PREFIX, $options['prefix']);
+            $client->setOption(2, $options['prefix']);
         }
 
         if (isset($options['serialization'])) {
@@ -169,8 +178,12 @@ class PhpredisClientFactory
         return $loggingEnabled ? $this->createLoggingProxy($client, $alias) : $client;
     }
 
-    /** @param mixed[] $options */
-    private function createClient(RedisDsn $dsn, string $class, string $alias, array $options, bool $loggingEnabled): Redis
+    /**
+     * @param mixed[] $options
+     *
+     * @return Redis|Relay
+     */
+    private function createClient(RedisDsn $dsn, string $class, string $alias, array $options, bool $loggingEnabled)
     {
         $client = new $class();
 
@@ -229,23 +242,17 @@ class PhpredisClientFactory
         return $client;
     }
 
-    /**
-     * @return Redis::SERIALIZER_*
-     *
-     * @throws InvalidConfigurationException
-     */
+    /** @throws InvalidConfigurationException */
     private function loadSerializationType(string $type): int
     {
         $types = [
-            'default' => Redis::SERIALIZER_NONE,
-            'json' => Redis::SERIALIZER_JSON,
-            'none' => Redis::SERIALIZER_NONE,
-            'php' => Redis::SERIALIZER_PHP,
+            'default' => 0, // Redis::SERIALIZER_NONE,
+            'none' => 0, // Redis::SERIALIZER_NONE,
+            'php' => 1, //Redis::SERIALIZER_PHP,
+            'igbinary' => 2, //Redis::SERIALIZER_IGBINARY,
+            'msgpack' => 3, //Redis::SERIALIZER_MSGPACK,
+            'json' => 4, // Redis::SERIALIZER_JSON,
         ];
-
-        if (defined('Redis::SERIALIZER_IGBINARY')) {
-            $types['igbinary'] = Redis::SERIALIZER_IGBINARY;
-        }
 
         if (array_key_exists($type, $types)) {
             return $types[$type];
@@ -275,14 +282,13 @@ class PhpredisClientFactory
      *
      * @return T
      *
-     * @template T of Redis|RedisCluster
+     * @template T of Redis|Relay|RedisCluster
      */
     private function createLoggingProxy(object $client, string $alias): object
     {
-        $prefixInterceptors     = [];
-        $classToCopyMethodsFrom = $client instanceof Redis ? Redis::class : RedisCluster::class;
+        $prefixInterceptors = [];
 
-        foreach ((new ReflectionClass($classToCopyMethodsFrom))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ((new ReflectionClass(get_class($client)))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $name = $method->getName();
 
             if ($name[0] === '_' || in_array($name, self::CLIENT_ONLY_COMMANDS, true)) {

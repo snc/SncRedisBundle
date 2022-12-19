@@ -2,7 +2,7 @@
 
 ## About ##
 
-This bundle integrates [Predis](https://github.com/nrk/predis) and [phpredis](https://github.com/nicolasff/phpredis) into your Symfony application.
+This bundle integrates [Predis](https://github.com/nrk/predis), [PhpRedis](https://github.com/nicolasff/phpredis) and [Relay](https://relay.so/) into your Symfony application.
 
 ## Installation ##
 
@@ -52,7 +52,7 @@ You have to configure at least one client. In the above example your service
 container will contain the service `snc_redis.default` which will return a
 `Predis` client.
 
-Available types are `predis` and `phpredis`.
+Available types are `predis`, `phpredis` and `relay`.
 
 A more complex setup which contains a clustered client could look like this:
 
@@ -104,13 +104,13 @@ snc_redis:
 Please note that the master dsn connection needs to be tagged with the ```master``` alias.
 If not, `predis` will complain.
 
-A setup using `predis` or `phpredis` sentinel replication could look like this:
+A setup using `predis`, `phpredis` or `relay` sentinel replication could look like this:
 
 ``` yaml
 snc_redis:
     clients:
         default:
-            type: predis
+            type: "predis" # or "phpredis", or "relay"
             alias: default
             dsn:
                 - redis://localhost:26379
@@ -254,12 +254,6 @@ framework:
                 # a specific provider, e.g. if you have a snc_redis.clients.cache
                 provider: snc_redis.cache
 ```
-
-### Profiler storage ###
-
-:warning: this feature is not supported anymore since Symfony 4.4 and will be automatically disabled if you are using Symfony 4.4.
-
->As the profiler must only be used on non-production servers, the file storage is more than enough and no other implementations will ever be supported. 
 
 ### Complete configuration example ###
 

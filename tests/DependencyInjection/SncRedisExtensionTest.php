@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Redis;
 use RedisException;
+use Relay\Relay;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -43,6 +44,7 @@ class SncRedisExtensionTest extends TestCase
     {
         return [
             ['snc_redis.client.class', 'Predis\Client'],
+            ['snc_redis.relay_client.class', Relay::class],
             ['snc_redis.client_options.class', 'Predis\Configuration\Options'],
             ['snc_redis.connection_parameters.class', 'Predis\Connection\Parameters'],
             ['snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory'],

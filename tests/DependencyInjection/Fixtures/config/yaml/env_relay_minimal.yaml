@@ -1,0 +1,9 @@
+parameters:
+    env(REDIS_URL): redis://localhost
+
+snc_redis:
+    clients:
+        default:
+            type: relay
+            alias: default
+            dsn: "%env(REDIS_URL)%"
