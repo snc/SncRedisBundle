@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
 use RedisCluster;
-use RedisSentinel;
+use Relay\Relay;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
@@ -51,6 +51,19 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertNull($client->getPersistentID());
     }
 
+    /** @requires extension relay */
+    public function testCreateRelay(): void
+    {
+        $this->logger->method('debug')->withConsecutive(
+            [$this->stringContains('Executing command "CONNECT localhost 6379 5 <null>')],
+        );
+
+        $client = (new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger)))
+            ->create(Relay::class, ['redis://localhost:6379'], ['connection_timeout' => 5], 'default', true);
+
+        $this->assertInstanceOf(Relay::class, $client);
+    }
+
     public function testUnixDsnConfig(): void
     {
         $this->logger->expects($this->never())->method('debug');
@@ -87,7 +100,12 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0, $client->getOption(RedisCluster::OPT_SLAVE_FAILOVER));
     }
 
-    public function testCreatSentinelConfig(): void
+    /**
+     * @requires extension relay
+     * @testWith ["RedisSentinel", "Redis"]
+     *           ["Relay\\Sentinel", "Relay\\Relay"]
+     */
+    public function testCreateSentinelConfig(string $sentinelClass, string $outputClass): void
     {
         $this->logger->method('debug')->withConsecutive(
             [$this->stringContains('Executing command "CONNECT 127.0.0.1 6379 5 <null>')],
@@ -96,14 +114,14 @@ class PhpredisClientFactoryTest extends TestCase
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
-            RedisSentinel::class,
+            $sentinelClass,
             ['redis://sncredis@localhost:26379'],
             ['connection_timeout' => 5, 'connection_persistent' => false, 'service' => 'mymaster'],
             'phpredissentinel',
             true,
         );
 
-        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertInstanceOf($outputClass, $client);
         $this->assertNull($client->getOption(Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
         $this->assertSame('sncredis', $client->getAuth());

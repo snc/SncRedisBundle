@@ -40,14 +40,18 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
-    public function testPhpredisDefaultParameterConfig(): void
+    /**
+     * @testWith ["env_phpredis_minimal", "Redis"]
+     *           ["env_relay_minimal", "Relay\\Relay"]
+     */
+    public function testPhpredisDefaultParameterConfig(string $config, string $class): void
     {
-        $container = $this->getConfiguredContainer('env_phpredis_minimal');
+        $container = $this->getConfiguredContainer($config);
 
         $clientDefinition = $container->findDefinition('snc_redis.default');
 
-        $this->assertSame(Redis::class, $clientDefinition->getClass());
-        $this->assertSame(Redis::class, $clientDefinition->getArgument(0));
+        $this->assertSame($class, $clientDefinition->getClass());
+        $this->assertSame($class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('REDIS_URL', $clientDefinition->getArgument(1)[0]);
         $this->assertSame('default', $clientDefinition->getArgument(3));
 

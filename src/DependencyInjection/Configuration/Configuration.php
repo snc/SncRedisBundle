@@ -19,6 +19,7 @@ use Predis\Configuration\Options;
 use Predis\Connection\Parameters;
 use Redis;
 use RedisCluster;
+use Relay\Relay;
 use Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory;
 use Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
@@ -54,6 +55,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('connection_factory')->defaultValue(ConnectionFactory::class)->end()
                         ->scalarNode('connection_wrapper')->defaultValue(ConnectionWrapper::class)->end()
                         ->scalarNode('phpredis_client')->defaultValue(Redis::class)->end()
+                        ->scalarNode('relay_client')->defaultValue(Relay::class)->end()
                         ->scalarNode('phpredis_clusterclient')->defaultValue(RedisCluster::class)->end()
                         ->scalarNode('logger')->defaultValue(RedisLogger::class)->end()
                         ->scalarNode('data_collector')->defaultValue(RedisDataCollector::class)->end()
