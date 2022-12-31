@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Predis\Connection\ParametersInterface;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
+use function array_filter;
 use function array_merge;
 use function is_a;
 use function sprintf;
@@ -62,6 +63,6 @@ class PredisParametersFactory
             $options['alias'] = $dsn->getAlias();
         }
 
-        return $options;
+        return array_filter($options, static fn ($value) => $value !== null);
     }
 }
