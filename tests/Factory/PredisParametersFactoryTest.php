@@ -83,7 +83,7 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://localhost?alias=master',
-                'Predis\Connection\Parameters',
+                Parameters::class,
                 ['replication' => true],
                 [
                     'scheme' => 'tcp',
@@ -98,7 +98,7 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://localhost?alias=connection_alias',
-                'Predis\Connection\Parameters',
+                Parameters::class,
                 [
                     'replication' => true,
                     'alias' => 'client_alias',
@@ -116,11 +116,21 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://localhost/0',
-                'Predis\Connection\Parameters',
+                Parameters::class,
                 ['persistent' => true],
                 [
                     'persistent' => true,
                     'database' => 0,
+                ],
+            ],
+
+            [
+                'redis://localhost',
+                Parameters::class,
+                ['database' => 11, 'password' => 'pass'],
+                [
+                    'database' => 11,
+                    'password' => 'pass',
                 ],
             ],
         ];
