@@ -127,7 +127,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('serialization')->defaultValue('default')->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
-                                    ->enumNode('replication')->values([true, 'sentinel'])->end()
+                                    ->enumNode('replication')->values([true, 'predis', 'sentinel'])->end()
                                     ->scalarNode('service')->defaultNull()->end()
                                     ->enumNode('slave_failover')->values(['none', 'error', 'distribute', 'distribute_slaves'])->end()
                                     ->arrayNode('parameters')
