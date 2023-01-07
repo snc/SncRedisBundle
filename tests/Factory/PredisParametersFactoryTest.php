@@ -84,12 +84,12 @@ class PredisParametersFactoryTest extends TestCase
             [
                 'redis://localhost?alias=master',
                 Parameters::class,
-                ['replication' => true],
+                ['replication' => 'predis'],
                 [
                     'scheme' => 'tcp',
                     'host' => 'localhost',
                     'port' => 6379,
-                    'replication' => true,
+                    'replication' => 'predis',
                     'password' => null,
                     'weight' => null,
                     'alias' => 'master',
@@ -100,14 +100,14 @@ class PredisParametersFactoryTest extends TestCase
                 'redis://localhost?alias=connection_alias',
                 Parameters::class,
                 [
-                    'replication' => true,
+                    'replication' => 'predis',
                     'alias' => 'client_alias',
                 ],
                 [
                     'scheme' => 'tcp',
                     'host' => 'localhost',
                     'port' => 6379,
-                    'replication' => true,
+                    'replication' => 'predis',
                     'password' => null,
                     'weight' => null,
                     'alias' => 'connection_alias',

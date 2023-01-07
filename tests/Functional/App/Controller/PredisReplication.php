@@ -19,12 +19,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class PredisReplication extends AbstractController
 {
-    public function __invoke(Client $redisReplication): JsonResponse
+    public function __invoke(Client $predisReplication): JsonResponse
     {
-        $redisReplication->set('foo', 'bar');
+        $predisReplication->set('foo', 'bar');
 
-        return new JsonResponse([
-            'result' => $redisReplication->get('foo'),
-        ]);
+        return new JsonResponse(['result' => $predisReplication->get('foo')]);
     }
 }

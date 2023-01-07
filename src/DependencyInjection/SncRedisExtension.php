@@ -132,10 +132,6 @@ class SncRedisExtension extends Extension
             unset($client['options']['replication']);
         }
 
-        if (isset($client['options']['replication']) && $client['options']['replication'] === true) {
-            $client['options']['replication'] = 'predis';
-        }
-
         // predis connection parameters have been renamed in v0.8
         $client['options']['async_connect'] = $client['options']['connection_async'];
         $client['options']['timeout']       = $client['options']['connection_timeout'];

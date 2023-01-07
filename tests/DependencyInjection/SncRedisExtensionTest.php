@@ -606,7 +606,7 @@ clients:
             - redis://localhost?alias=master
             - redis://otherhost
         options:
-            replication: true
+            replication: predis
 EOF;
     }
 
@@ -672,7 +672,7 @@ clients:
             - redis://defaulthost?alias=master
             - redis://defaultslave
         options:
-            replication: true
+            replication: predis
             prefix: defaultprefix
     second:
         type: predis
@@ -681,7 +681,7 @@ clients:
             - redis://secondmaster?alias=master
             - redis://secondslave
         options:
-            replication: true
+            replication: sentinel
             prefix: secondprefix
 EOF;
     }

@@ -61,10 +61,6 @@ class PredisParametersFactory
 
         if ($dsn->getAlias() !== null) {
             $options['alias'] = $dsn->getAlias();
-
-            if ($dsn->getAlias() === 'master') {
-                $options['role'] = 'master';
-            }
         }
 
         if ($dsn->getRole() !== null) {

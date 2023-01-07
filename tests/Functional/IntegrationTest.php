@@ -77,6 +77,7 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $redisLogger->getNbCommands());
     }
 
+    /** @group legacy */
     public function testPredisReplication(): void
     {
         $this->client->request('GET', '/predis_replication');

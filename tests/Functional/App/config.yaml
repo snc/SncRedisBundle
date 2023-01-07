@@ -30,7 +30,7 @@ snc_redis:
             type: predis
             alias: predis_replication
             dsn:
-                - redis://sncredis@localhost/1?alias=master
+                - redis://sncredis@localhost/1?role=master
                 - redis://sncredis@localhost/2
             options:
                 replication: true
@@ -71,7 +71,7 @@ services:
         autoconfigure: true
         public: false
         bind:
-            Predis\Client $redisReplication: '@snc_redis.predis_replication'
+            Predis\Client $predisReplication: '@snc_redis.predis_replication'
 
     Redis: '@snc_redis.default'
 
