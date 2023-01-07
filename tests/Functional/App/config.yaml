@@ -26,6 +26,14 @@ snc_redis:
             alias: cache
             dsn: redis://sncredis@localhost/1
             logging: false
+        predis_replication:
+            type: predis
+            alias: predis_replication
+            dsn:
+                - redis://sncredis@localhost/1?alias=master
+                - redis://sncredis@localhost/2
+            options:
+                replication: true
         cluster:
             type: predis
             alias: cluster
@@ -62,6 +70,8 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+        bind:
+            Predis\Client $redisReplication: '@snc_redis.predis_replication'
 
     Redis: '@snc_redis.default'
 

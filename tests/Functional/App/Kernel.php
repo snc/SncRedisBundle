@@ -16,6 +16,7 @@ namespace Snc\RedisBundle\Tests\Functional\App;
 use ReflectionObject;
 use Snc\RedisBundle\SncRedisBundle;
 use Snc\RedisBundle\Tests\Functional\App\Controller\Controller;
+use Snc\RedisBundle\Tests\Functional\App\Controller\PredisReplication;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
@@ -76,6 +77,7 @@ class Kernel extends BaseKernel
 
         $collection = new RouteCollection();
         $collection->add('home', new Route('/', ['_controller' => Controller::class]));
+        $collection->add('predis_replication', new Route('/predis_replication', ['_controller' => PredisReplication::class]));
 
         return $collection;
     }

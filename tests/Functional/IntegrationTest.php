@@ -77,6 +77,13 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $redisLogger->getNbCommands());
     }
 
+    public function testPredisReplication(): void
+    {
+        $this->client->request('GET', '/predis_replication');
+
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+    }
+
     private function profileRequest(string $method, string $uri): Response
     {
         $client = $this->client;
