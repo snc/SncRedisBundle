@@ -61,6 +61,14 @@ class PredisParametersFactory
 
         if ($dsn->getAlias() !== null) {
             $options['alias'] = $dsn->getAlias();
+
+            if ($dsn->getAlias() === 'master') {
+                $options['role'] = 'master';
+            }
+        }
+
+        if ($dsn->getRole() !== null) {
+            $options['role'] = $dsn->getRole();
         }
 
         return array_filter($options, static fn ($value) => $value !== null);

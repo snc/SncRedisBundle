@@ -50,6 +50,8 @@ class RedisDsn
 
     protected ?string $alias = null;
 
+    protected ?string $role = null;
+
     public function __construct(string $dsn)
     {
         $this->dsn = $dsn;
@@ -105,6 +107,11 @@ class RedisDsn
     public function getAlias(): ?string
     {
         return $this->alias;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
     }
 
     public function getPersistentId(): string
@@ -189,6 +196,10 @@ class RedisDsn
 
         if (!empty($params['alias'])) {
             $this->alias = $params['alias'];
+        }
+
+        if (!empty($params['role'])) {
+            $this->role = $params['role'];
         }
 
         return '';
