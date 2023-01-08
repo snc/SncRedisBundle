@@ -94,14 +94,14 @@ snc_redis:
             type: predis
             alias: default
             dsn:
-                - redis://master-host?alias=master
+                - redis://master-host?role=master
                 - redis://slave-host1
                 - redis://slave-host2
             options:
-                replication: true
+                replication: predis
 ```
 
-Please note that the master dsn connection needs to be tagged with the ```master``` alias.
+Please note that the master dsn connection needs to be tagged with the ```master``` role.
 If not, `predis` will complain.
 
 A setup using `predis`, `phpredis` or `relay` sentinel replication could look like this:

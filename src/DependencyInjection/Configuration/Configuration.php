@@ -30,6 +30,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function class_exists;
 use function is_iterable;
+use function trigger_deprecation;
 
 class Configuration implements ConfigurationInterface
 {
@@ -127,7 +128,21 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('serialization')->defaultValue('default')->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
-                                    ->enumNode('replication')->values([true, 'sentinel'])->end()
+                                    ->enumNode('replication')
+                                        ->values([true, 'predis', 'sentinel'])
+                                        ->beforeNormalization()
+                                            ->ifTrue(static fn ($v) => $v === true)
+                                            ->then(static function () {
+                                                trigger_deprecation(
+                                                    'snc/redis-bundle',
+                                                    '4.6',
+                                                    'Setting true for "clients.options.replication" is deprecated. Use "predis" or "sentinel" instead',
+                                                );
+
+                                                return 'predis';
+                                            })
+                                        ->end()
+                                    ->end()
                                     ->scalarNode('service')->defaultNull()->end()
                                     ->enumNode('slave_failover')->values(['none', 'error', 'distribute', 'distribute_slaves'])->end()
                                     ->arrayNode('parameters')

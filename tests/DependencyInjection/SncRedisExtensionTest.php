@@ -277,11 +277,11 @@ class SncRedisExtensionTest extends TestCase
         $extension->load([$config], $container = $this->getContainer());
 
         $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
-        $this->assertTrue($options['replication']);
+        $this->assertSame('predis', $options['replication']);
         $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
         $this->assertEquals('snc_redis.connection.master_parameters.default', (string) $parameters[0]);
         $masterParameters = $container->getDefinition((string) $parameters[0])->getArgument(0);
-        $this->assertTrue($masterParameters['replication']);
+        $this->assertSame('predis', $masterParameters['replication']);
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
@@ -606,7 +606,7 @@ clients:
             - redis://localhost?alias=master
             - redis://otherhost
         options:
-            replication: true
+            replication: predis
 EOF;
     }
 
@@ -672,7 +672,7 @@ clients:
             - redis://defaulthost?alias=master
             - redis://defaultslave
         options:
-            replication: true
+            replication: predis
             prefix: defaultprefix
     second:
         type: predis
@@ -681,7 +681,7 @@ clients:
             - redis://secondmaster?alias=master
             - redis://secondslave
         options:
-            replication: true
+            replication: sentinel
             prefix: secondprefix
 EOF;
     }
