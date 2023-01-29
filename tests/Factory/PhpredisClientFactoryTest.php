@@ -115,8 +115,15 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             $sentinelClass,
-            ['redis://sncredis@localhost:26379'],
-            ['connection_timeout' => 5, 'connection_persistent' => false, 'service' => 'mymaster'],
+            [
+                'redis://undefined@localhost:55555', // unreachable instance
+                'redis://sncredis@localhost:26379',
+            ],
+            [
+                'connection_timeout' => 5,
+                'connection_persistent' => false,
+                'service' => 'mymaster',
+            ],
             'phpredissentinel',
             true,
         );
@@ -124,6 +131,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertInstanceOf($outputClass, $client);
         $this->assertNull($client->getOption(Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
+        $this->assertSame(5., $client->getTimeout());
         $this->assertSame('sncredis', $client->getAuth());
     }
 
