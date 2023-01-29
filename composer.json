@@ -35,7 +35,7 @@
         "doctrine/coding-standard": "^10.0",
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
-        "phpunit/phpunit": "^8.5 || ^9.5",
+        "phpunit/phpunit": "^8.5.32 || ^9.5.28",
         "predis/predis": "^2.0",
         "symfony/browser-kit": "^4.4 || ^5.3 || ^6.0",
         "symfony/cache": "^4.4 || ^5.3 || ^6.0",
