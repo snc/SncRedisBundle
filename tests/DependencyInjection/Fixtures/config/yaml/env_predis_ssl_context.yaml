@@ -10,3 +10,5 @@ snc_redis:
             options:
                 parameters:
                     ssl_context: {'verify_peer': false, 'allow_self_signed': true, 'verify_peer_name': false}
+                commands:
+                    foo: 'Foo\Bar\Baz'
