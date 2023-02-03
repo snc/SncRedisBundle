@@ -222,6 +222,8 @@ class SncRedisExtension extends Extension
             sprintf('snc_redis.%s_%sclient.class', $options['type'], ($hasClusterOption ? 'cluster' : '')),
         );
 
+        unset($options['options']['commands']);
+
         $phpredisDef = new Definition($phpredisClientClass, [
             $hasSentinelOption ? RedisSentinel::class : $phpredisClientClass,
             array_map('strval', $options['dsns']),

@@ -40,6 +40,41 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
+    public function testPredisDefaultParameterConfig(): void
+    {
+        $container = $this->getConfiguredContainer('env_predis_ssl_context');
+
+        $clientDefinition = $container->findDefinition('snc_redis.default');
+
+        $this->assertSame('Predis\Client', $clientDefinition->getClass());
+        $this->assertSame(
+            [
+                'parameters' => [
+                    'database' => null,
+                    'username' => null,
+                    'password' => null,
+                    'logging' => false,
+                ],
+                'commands' => ['foo' => 'Foo\Bar\Baz'],
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'serialization' => 'default',
+                'prefix' => null,
+                'service' => null,
+                'async_connect' => false,
+                'timeout' => 5,
+                'persistent' => false,
+                'exceptions' => true,
+                'ssl' => [
+                    'verify_peer' => false,
+                    'allow_self_signed' => true,
+                    'verify_peer_name' => false,
+                ],
+            ],
+            $container->findDefinition((string) $clientDefinition->getArgument(1))->getArgument(0),
+        );
+    }
+
     /**
      * @testWith ["env_phpredis_minimal", "Redis"]
      *           ["env_relay_minimal", "Relay\\Relay"]
