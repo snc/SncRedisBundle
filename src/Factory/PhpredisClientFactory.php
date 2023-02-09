@@ -120,6 +120,12 @@ class PhpredisClientFactory
         $readTimeout          = $options['read_write_timeout'] ?? 0;
 
         foreach ($dsns as $dsn) {
+            $password = $options['parameters']['password'] ?? null;
+
+            if ($dsn->getPassword()) {
+                $password = $dsn->getPassword();
+            }
+
             try {
                 $address = (new $sentinelClass(
                     $dsn->getHost(),
@@ -128,6 +134,7 @@ class PhpredisClientFactory
                     $connectionPersistent,
                     5, // retry interval
                     $readTimeout,
+                    $password
                 ))->getMasterAddrByName($masterName);
             } catch (RedisException | RelayException $e) {
                 continue;
