@@ -178,32 +178,9 @@ class ConnectionWrapper implements NodeConnectionInterface
             $this->commandToString($command),
             (microtime(true) - $startTime) * 1000,
             $this->getParameters()->alias,
-            $this->isResultTrulyAnError($result) ? (string) $result : false,
+            $result instanceof Error ? $result->getMessage() : false,
         );
 
         return $result;
-    }
-
-    /**
-     * Certain results from redis are marked as "error", but are meant to be handled by redis client.
-     * Unfortunately, in some cases this evaluation happens only after executeCommand in ConnectionWrapper returns.
-     * For example, RedisCluster wraps ConnectionWrapper and not opposite, hence ConnectionWrapper must make assumption
-     * here about handling of certain errors based on error type and connection parameters in order of not wrongly
-     * classifying responses as errors that were already taken care of by client.
-     *
-     * @param mixed $result
-     */
-    private function isResultTrulyAnError($result): bool
-    {
-        if (!$result instanceof Error) {
-            return false;
-        }
-
-        /** @psalm-suppress NoInterfaceProperties */
-        if ($this->connection->getParameters()->cluster) {
-            return $result->getErrorType() !== 'MOVED';
-        }
-
-        return true;
     }
 }
