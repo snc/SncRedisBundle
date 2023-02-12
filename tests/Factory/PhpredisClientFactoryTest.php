@@ -108,16 +108,16 @@ class PhpredisClientFactoryTest extends TestCase
     public function testCreateSentinelConfig(string $sentinelClass, string $outputClass): void
     {
         $this->logger->method('debug')->withConsecutive(
-            [$this->stringContains('Executing command "CONNECT 127.0.0.1 6379 5 <null>')],
-            ['Executing command "AUTH sncredis"'],
+            [$this->stringContains('Executing command "CONNECT 127.0.0.1 8000 5 <null>')],
+            ['Executing command "AUTH snc_redis snc_password"'],
         );
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
             $sentinelClass,
             [
-                'redis://undefined@localhost:55555', // unreachable instance
-                'redis://sncredis@localhost:26379',
+                'redis://snc_redis:snc_password@localhost:55555', // unreachable instance
+                'redis://snc_redis:snc_password@localhost:26379',
             ],
             [
                 'connection_timeout' => 5,
@@ -132,7 +132,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertNull($client->getOption(Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
         $this->assertSame(5., $client->getTimeout());
-        $this->assertSame('sncredis', $client->getAuth());
+        $this->assertSame(['snc_redis', 'snc_password'], $client->getAuth());
     }
 
     public function testCreateFullConfig(): void

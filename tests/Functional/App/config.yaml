@@ -51,7 +51,7 @@ snc_redis:
         sentinel:
             type: phpredis
             alias: sentinel
-            dsn: redis://sncredis@localhost:26379
+            dsn: redis://snc_redis:snc_password@localhost:26379
             options:
                 replication: true
                 service: mymaster
