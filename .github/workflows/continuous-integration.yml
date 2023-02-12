@@ -17,6 +17,7 @@ jobs:
         image: bitnami/redis-sentinel
         env:
           REDIS_MASTER_HOST: localhost
+          REDIS_MASTER_PASSWORD: "sncredis"
         ports:
           - 26379:26379
 
