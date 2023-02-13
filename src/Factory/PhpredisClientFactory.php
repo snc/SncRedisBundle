@@ -128,6 +128,7 @@ class PhpredisClientFactory
                     $connectionPersistent,
                     5, // retry interval
                     $readTimeout,
+                    $dsn->getPassword() ?? $options['parameters']['password'] ?? null,
                 ))->getMasterAddrByName($masterName);
             } catch (RedisException | RelayException $e) {
                 continue;

@@ -17,6 +17,8 @@ jobs:
         image: bitnami/redis-sentinel
         env:
           REDIS_MASTER_HOST: localhost
+          REDIS_MASTER_PORT_NUMBER: 8000
+          REDIS_SENTINEL_PASSWORD: snc_password
         ports:
           - 26379:26379
 
@@ -26,7 +28,7 @@ jobs:
         include:
           - dependency-versions: "lowest"
             php-version: "7.4"
-            php-extensions: "redis-5.3.0"
+            php-extensions: "redis-5.3.2"
           - symfony-require: "4.4.*"
             php-version: "8.1"
             php-extensions: "redis"
