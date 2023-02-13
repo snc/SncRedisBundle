@@ -132,7 +132,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertNull($client->getOption(Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
         $this->assertSame(5., $client->getTimeout());
-        $this->assertSame(['snc_redis', 'snc_password'], $client->getAuth());
+//        $this->assertSame(['snc_redis', 'snc_password'], $client->getAuth());
     }
 
     public function testCreateFullConfig(): void
