@@ -708,7 +708,7 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: redis://snc_redis:snc_password@localhost:8000/1
+        dsn: redis://snc_redis:snc_password@localhost:7099/1
         options:
             parameters:
                 database: 2
@@ -724,7 +724,7 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: ["redis://localhost:7000/0"]
+        dsn: ["redis://localhost:7079/0"]
         options:
             cluster: true
 EOF;
@@ -737,7 +737,7 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: ["redis://localhost:8000/0"]
+        dsn: ["redis://localhost:7099/0"]
         options:
             parameters:
                 username: snc_redis
@@ -753,7 +753,7 @@ clients:
     default:
         type: phpredis
         alias: default
-        dsn: ["redis://localhost:8000/0"]
+        dsn: ["redis://localhost:7099/0"]
         options:
             parameters:
                 username: user

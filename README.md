@@ -23,6 +23,15 @@ composer require snc/redis-bundle
 
 [Read the documentation in docs/](docs/)
 
+## Contributing
+
+Test suite requires fleet of redis servers running. You can easily spin this up locally via [overmind](https://github.com/DarthSim/overmind):
+```
+# cd to project directory
+overmind start
+```
+Assuming you have redis installed locally, no further action should be necessary and test suite should be able to connect to these servers.
+
 ## License ##
 
 See [LICENSE](LICENSE).

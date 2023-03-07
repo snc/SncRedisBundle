@@ -86,7 +86,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             RedisCluster::class,
-            ['redis://localhost:7000'],
+            ['redis://localhost:7079'],
             ['connection_timeout' => 5, 'connection_persistent' => false],
             'phprediscluster',
             false,
@@ -200,7 +200,7 @@ class PhpredisClientFactoryTest extends TestCase
     public function testDsnConfigWithUsername(): void
     {
         $this->logger->method('debug')->withConsecutive(
-            [$this->stringContains('Executing command "CONNECT localhost 8000 5')],
+            [$this->stringContains('Executing command "CONNECT localhost 7099 5')],
             ['Executing command "AUTH snc_redis snc_password"'],
             ['Executing command "SELECT 0"'],
         );
@@ -209,7 +209,7 @@ class PhpredisClientFactoryTest extends TestCase
 
         $client = $factory->create(
             Redis::class,
-            ['redis://snc_redis:snc_password@localhost:8000/0'],
+            ['redis://snc_redis:snc_password@localhost:7099/0'],
             [
                 'parameters' => [
                     'database' => 3,

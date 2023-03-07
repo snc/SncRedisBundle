@@ -12,14 +12,6 @@ jobs:
       SYMFONY_REQUIRE: "${{matrix.symfony-require}}"
       SYMFONY_DEPRECATIONS_HELPER: "max[self]=0"
 
-    services:
-      redis-sentinel:
-        image: bitnami/redis-sentinel
-        env:
-          REDIS_MASTER_HOST: localhost
-        ports:
-          - 26379:26379
-
     strategy:
       fail-fast: false
       matrix:
@@ -45,34 +37,10 @@ jobs:
         uses: "actions/checkout@v3"
         with:
           fetch-depth: 2
-
-      - name: "Set up redis single node"
-        uses: "getong/redis-action@v1"
-        with:
-          redis password: "sncredis"
-      - name: "Set up redis cluster"
-        uses: "vishnudxb/redis-cluster@1.0.5"
-        with:
-          master1-port: 7000
-          master2-port: 7001
-          master3-port: 7002
-      - name: "Setup redis with ACL"
-        uses: shogo82148/actions-setup-redis@v1
-        with:
-          redis-version: "6.2"
-          redis-port: "8000"
-          auto-start: "true"
-          redis-conf: |
-            user default on -@all ~* >ARandomPassword
-            user snc_redis on +@all ~* >snc_password
-      - name: "Install redis"
-        run: |
-          sudo apt-get update
-          sudo apt-get install redis
-      - name: "Run redis"
-        run: |
-          redis-server --port 0 --unixsocket /tmp/redis.sock --daemonize yes
-
+      - name: "Install requirements"
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends redis-server ruby-foreman
+      - name: "Start background services"
+        run: sudo systemctl stop redis-server && foreman start &
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -89,4 +57,4 @@ jobs:
           dependency-versions: "${{ matrix.dependency-versions }}"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -v"
+        run: vendor/bin/phpunit -v

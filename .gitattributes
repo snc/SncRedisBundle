@@ -7,3 +7,4 @@
 /phpcs.xml.dist   export-ignore
 /psalm.xml.dist   export-ignore
 /UPDATE.md        export-ignore
+/Procfile         export-ignore

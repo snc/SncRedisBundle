@@ -1,7 +1,7 @@
 parameters:
-    env(REDIS_URL_1): redis://localhost:7000
-    env(REDIS_URL_2): redis://localhost:7001
-    env(REDIS_URL_3): redis://localhost:7002
+    env(REDIS_URL_1): redis://localhost:7079
+    env(REDIS_URL_2): redis://localhost:7080
+    env(REDIS_URL_3): redis://localhost:7081
 
 snc_redis:
     clients:

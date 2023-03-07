@@ -5,3 +5,5 @@
 /.phpunit.result.cache
 /vendor/
 /.phpcs-cache
+/.github/workflows/redis-configs/*/nodes.conf
+/.github/workflows/redis-configs/*/*.rdb
