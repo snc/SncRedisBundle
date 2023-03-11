@@ -59,7 +59,7 @@
                       src = builtins.fetchTarball {
                         url =
                           "https://builds.r2.relay.so/v${relayVersion}/relay-v${relayVersion}-php"
-                          + (builtins.substring 0 3 php.version)
+                          + (pkgs.lib.strings.concatStringsSep "." (pkgs.lib.take 2 (builtins.splitVersion php.version)))
                           + "-"
                           + relay.platform
                           + ".tar.gz";
@@ -73,13 +73,17 @@
                         ''
                         + (
                           if pkgs.stdenv.isDarwin
-                          then ''
-                            install_name_tool \
-                                -change /Users/administrator/dev/relay-dev/relay-deps/build/arm64/lib/libssl.1.1.dylib ${pkgs.openssl_1_1.out}/lib/libssl.1.1.dylib \
-                                -change /Users/administrator/dev/relay-dev/relay-deps/build/arm64/lib/libcrypto.1.1.dylib ${pkgs.openssl_1_1.out}/lib/libcrypto.1.1.dylib \
-                                -change /Users/administrator/dev/relay-dev/relay-deps/build/arm64/lib/libzstd.1.dylib ${pkgs.zstd.out}/lib/libzstd.1.dylib \
-                                -change /Users/administrator/dev/relay-dev/relay-deps/build/arm64/lib/liblz4.1.dylib ${pkgs.lz4.out}/lib/liblz4.1.dylib \
-                                $out/lib/php/extensions/relay.so
+                          then let
+                            n = pkgs.lib.attrsets.nameValuePair;
+                            s = pkgs.lib.strings;
+                            args = s.concatMapStrings (v: " -change /Users/administrator/dev/relay-dev/relay-deps/build/arm64/lib/${v.name} ${s.makeLibraryPath [v.value]}/${v.name}") (with pkgs; [
+                              (n "libssl.1.1.dylib" openssl_1_1)
+                              (n "libcrypto.1.1.dylib" openssl_1_1)
+                              (n "libzstd.1.dylib" zstd)
+                              (n "liblz4.1.dylib" lz4)
+                            ]);
+                          in ''
+                            install_name_tool${args} $out/lib/php/extensions/relay.so
                           ''
                           else ""
                         )
