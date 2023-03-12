@@ -85,3 +85,7 @@ services:
     Snc\RedisBundle\Tests\Functional\App\Controller\:
         resource: './Controller'
         tags: ['controller.service_arguments']
+
+    var_dumper.cli_dumper:
+        class: Symfony\Component\VarDumper\Dumper\CliDumper
+        arguments: ['/dev/null']
