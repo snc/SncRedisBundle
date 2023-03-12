@@ -32,17 +32,14 @@
                 enabled
                 ++ [
                   all.xdebug
-                  (php.buildPecl {
-                    version = "dev";
-                    pname = "redis";
+                  (all.redis.overrideAttrs (finalAttrs: previousAttrs: {
                     src = pkgs.fetchFromGitHub {
                       repo = "phpredis";
                       owner = "phpredis";
                       rev = "2b2bc042da712677118d82608a3b559188a66219";
                       sha256 = "sha256-j6WLOHfthLOHNHOyhcIpYEbFqoGknABouZbYQTc4GyE";
                     };
-                    internalDeps = [php.extensions.session];
-                  })
+                  }))
                   # relay section https://relay.so/docs/1.x/installation#manual-installation
                   all.igbinary
                   (
@@ -59,7 +56,7 @@
                       src = builtins.fetchTarball {
                         url =
                           "https://builds.r2.relay.so/v${relayVersion}/relay-v${relayVersion}-php"
-                          + (pkgs.lib.strings.concatStringsSep "." (pkgs.lib.take 2 (builtins.splitVersion php.version)))
+                          + (pkgs.lib.versions.majorMinor php.version)
                           + "-"
                           + relay.platform
                           + ".tar.gz";
