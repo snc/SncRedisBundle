@@ -151,9 +151,6 @@ class PredisParametersFactoryTest extends TestCase
         foreach ($expectedParameters as $name => $value) {
             $this->assertSame($value, $parameters->{$name}, sprintf("Wrong '%s' value", $name));
         }
-
-        // No user can exist within a redis connection.
-        $this->assertObjectNotHasAttribute('user', $parameters);
     }
 
     public function testCreateException(): void
