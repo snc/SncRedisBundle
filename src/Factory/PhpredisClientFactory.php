@@ -24,15 +24,18 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
+use function array_values;
 use function count;
 use function get_class;
 use function implode;
 use function in_array;
 use function is_a;
 use function is_array;
+use function phpversion;
 use function spl_autoload_register;
 use function sprintf;
 use function var_export;
+use function version_compare;
 
 /** @internal */
 class PhpredisClientFactory
@@ -120,15 +123,22 @@ class PhpredisClientFactory
         $readTimeout          = $options['read_write_timeout'] ?? 0;
 
         foreach ($dsns as $dsn) {
+            $args = [
+                'host' => $dsn->getHost(),
+                'port' => (int) $dsn->getPort(),
+                'connectTimeout' => $connectionTimeout,
+                'persistent' => $connectionPersistent,
+                'retryInterval' => 5,
+                'readTimeout' => $readTimeout,
+            ];
             try {
-                $address = (new $sentinelClass(
-                    $dsn->getHost(),
-                    (int) $dsn->getPort(),
-                    $connectionTimeout,
-                    $connectionPersistent,
-                    5, // retry interval
-                    $readTimeout,
-                ))->getMasterAddrByName($masterName);
+                if ($isRelay || version_compare(phpversion('redis'), '6.0', '<')) {
+                    $sentinel = new $sentinelClass(...array_values($args));
+                } else {
+                    $sentinel = new $sentinelClass($args);
+                }
+
+                $address = $sentinel->getMasterAddrByName($masterName);
             } catch (RedisException | RelayException $e) {
                 continue;
             }
