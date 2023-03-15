@@ -42,13 +42,7 @@
                   }))
                   # relay section https://relay.so/docs/1.x/installation#manual-installation
                   all.igbinary
-                  (
-                    php.buildPecl {
-                      version = "2.2.0RC2";
-                      pname = "msgpack";
-                      sha256 = "sha256-bVV043knbk7rionXqB70RKa1zlJ5K/Nw0oTXZllmJOg=";
-                    }
-                  )
+                  all.msgpack
                   (
                     pkgs.stdenv.mkDerivation {
                       name = "relay";
