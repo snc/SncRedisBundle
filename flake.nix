@@ -17,7 +17,6 @@
         name = "snc-redis";
         paths = let
           php = pkgs.php82;
-          relayVersion = "0.6.1";
         in [
           php.packages.composer
           pkgs.redis
@@ -36,54 +35,14 @@
                     src = pkgs.fetchFromGitHub {
                       repo = "phpredis";
                       owner = "phpredis";
-                      rev = "2b2bc042da712677118d82608a3b559188a66219";
-                      sha256 = "sha256-j6WLOHfthLOHNHOyhcIpYEbFqoGknABouZbYQTc4GyE";
+                      rev = "fea19b5229343212424c9921a977fce300d4e130";
+                      sha256 = "sha256-1TII8sLDsH9Ufjl0HHtHtBi29FNEG2qNrMkMhM6+iO0=";
                     };
                   }))
                   # relay section https://relay.so/docs/1.x/installation#manual-installation
                   all.igbinary
                   all.msgpack
-                  (
-                    pkgs.stdenv.mkDerivation {
-                      name = "relay";
-                      extensionName = "relay";
-                      src = builtins.fetchTarball {
-                        url =
-                          "https://builds.r2.relay.so/v${relayVersion}/relay-v${relayVersion}-php"
-                          + (pkgs.lib.versions.majorMinor php.version)
-                          + "-"
-                          + relay.platform
-                          + ".tar.gz";
-                        sha256 = relay.sha256;
-                      };
-                      installPhase =
-                        ''
-                          mkdir -p $out/lib/php/extensions
-                          cp $src/relay-pkg.so $out/lib/php/extensions/relay.so
-                          chmod +w $out/lib/php/extensions/relay.so
-                        ''
-                        + (
-                          if pkgs.stdenv.isDarwin
-                          then let
-                            n = pkgs.lib.attrsets.nameValuePair;
-                            s = pkgs.lib.strings;
-                            args = s.concatMapStrings (v: " -change /Users/administrator/dev/relay-dev/relay-deps/build/arm64/lib/${v.name} ${s.makeLibraryPath [v.value]}/${v.name}") (with pkgs; [
-                              (n "libssl.1.1.dylib" openssl_1_1)
-                              (n "libcrypto.1.1.dylib" openssl_1_1)
-                              (n "libzstd.1.dylib" zstd)
-                              (n "liblz4.1.dylib" lz4)
-                            ]);
-                          in ''
-                            install_name_tool${args} $out/lib/php/extensions/relay.so
-                          ''
-                          else ""
-                        )
-                        + ''
-                          sed -i "s/00000000-0000-0000-0000-000000000000/6f70cad7-4e83-4c25-be90-0812eb50302e/" $out/lib/php/extensions/relay.so
-                          chmod -w $out/lib/php/extensions/relay.so
-                        '';
-                    }
-                  )
+                  all.relay
                 ]
             )
           )
