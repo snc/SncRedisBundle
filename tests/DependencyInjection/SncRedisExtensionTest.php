@@ -125,11 +125,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
-    /**
-     * @group legacy
-     *
-     * Test loading of full config
-     */
+    /** @group legacy */
     public function testFullConfigLoad(): void
     {
         $extension = new SncRedisExtension();

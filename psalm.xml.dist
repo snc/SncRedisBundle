@@ -19,5 +19,16 @@
                 <referencedClass name="UnitEnum" />
             </errorLevel>
         </UndefinedDocblockClass>
+        <UndefinedInterfaceMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeParentInterface::scalarNode" />
+            </errorLevel>
+        </UndefinedInterfaceMethod>
+        <UndefinedMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::children" />
+                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::prototype" />
+            </errorLevel>
+        </UndefinedMethod>
     </issueHandlers>
 </psalm>
