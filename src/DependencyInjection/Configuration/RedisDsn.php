@@ -145,7 +145,7 @@ class RedisDsn
                 [$username, $password] = explode(':', $password, 2);
             }
 
-            $this->username = $username !== null ? urldecode($username) : null;
+            $this->username = $username ? urldecode($username) : null;
             $this->password = urldecode($password);
 
             $dsn = substr($dsn, $pos + 1);

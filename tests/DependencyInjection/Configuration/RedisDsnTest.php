@@ -208,6 +208,7 @@ class RedisDsnTest extends TestCase
             ['redis://localhost', null, null],
             ['redis://localhost/1', null, null],
             ['redis://pw@localhost:63790/10', null, 'pw'],
+            ['redis://:pw@localhost:63790/10', null, 'pw'],
             ['redis://user:pw@localhost:63790/10', 'user', 'pw'],
             ['redis://user:pw:withcolon@localhost:63790/10', 'user', 'pw:withcolon'],
             ['redis://Pw%3AColon%25@localhost:63790/10', null, 'Pw:Colon%'],
