@@ -32,7 +32,7 @@ Because of this, we use [Nix](https://nixos.org/) for local development.
 After you [install Nix](https://github.com/DeterminateSystems/nix-installer), make sure you are in directory with SncRedisBundle.
 Within it, you can run
 ```
-NIXPKGS_ALLOW_INSECURE=1 NIXPKGS_ALLOW_UNFREE=1 nix shell --extra-experimental-features nix-command --extra-experimental-features flakes --impure
+nix shell
 ```
 
 to install and enter the development environment. Once there, you can run
