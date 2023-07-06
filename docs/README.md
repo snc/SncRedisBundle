@@ -98,7 +98,7 @@ snc_redis:
                 - redis://slave-host1
                 - redis://slave-host2
             options:
-                replication: predis
+                replication: true
 ```
 
 Please note that the master dsn connection needs to be tagged with the ```master``` role.
