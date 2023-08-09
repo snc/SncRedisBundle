@@ -356,4 +356,34 @@ class PhpredisClientFactoryTest extends TestCase
 
         $this->assertSame(0, $iterator);
     }
+
+    public function testDsnConfigWithEmptyUsername(): void
+    {
+        $this->logger->method('debug')->withConsecutive(
+            [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
+            ['Executing command "AUTH sncredis"'],
+            ['Executing command "SELECT 2"'],
+        );
+
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://:sncredis@localhost:6379/2'],
+            [
+                'parameters' => [
+                    'database' => 3,
+                    'password' => 'secret',
+                ],
+                'connection_timeout' => 5,
+            ],
+            'alias_test',
+            true,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertSame(2, $client->getDBNum());
+        $this->assertSame('sncredis', $client->getAuth());
+        $this->assertNull($client->getPersistentID());
+    }
 }
