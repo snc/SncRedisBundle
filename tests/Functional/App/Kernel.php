@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App;
 
+use Doctrine\Common\Annotations\Annotation;
 use ReflectionObject;
 use Snc\RedisBundle\SncRedisBundle;
 use Snc\RedisBundle\Tests\Functional\App\Controller\Controller;
@@ -28,6 +29,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 use function assert;
+use function class_exists;
 use function dirname;
 
 class Kernel extends BaseKernel
@@ -50,7 +52,10 @@ class Kernel extends BaseKernel
         $loader->load(__DIR__ . '/config.yaml');
 
         $loader->load(static function (ContainerBuilder $container): void {
-            $framework = ['router' => ['resource' => 'kernel::loadRoutes', 'type' => 'service', 'utf8' => true]];
+            $framework = [
+                'router' => ['resource' => 'kernel::loadRoutes', 'type' => 'service', 'utf8' => true],
+                'annotations' => class_exists(Annotation::class) && self::VERSION_ID < 60400,
+            ];
 
             // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option
             // is deprecated, it will replace the "framework.session.storage_id" configuration option in version 6.0.
