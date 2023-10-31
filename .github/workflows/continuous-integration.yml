@@ -25,12 +25,12 @@ jobs:
           - symfony-require: "5.4.*"
             php-version: "8.2"
             php-extensions: "redis"
-          - symfony-require: "6.2.*"
-            php-version: "8.2"
-            php-extensions: "redis"
-          - symfony-require: "6.3.*"
+          - symfony-require: "6.4.*"
             php-version: "8.2"
             php-extensions: "redis-phpredis/phpredis@develop"
+          - symfony-require: "7.0.*"
+            php-version: "8.2"
+            php-extensions: "redis"
 
     steps:
       - name: "Checkout"
