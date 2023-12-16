@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Redis;
 use RedisCluster;
 use Relay\Relay;
+use SEEC\PhpUnit\Helper\ConsecutiveParams;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
@@ -23,6 +24,8 @@ use function version_compare;
 
 class PhpredisClientFactoryTest extends TestCase
 {
+    use ConsecutiveParams;
+
     private MockObject $logger;
     private RedisLogger $redisLogger;
 
@@ -56,9 +59,9 @@ class PhpredisClientFactoryTest extends TestCase
     /** @requires extension relay */
     public function testCreateRelay(): void
     {
-        $this->logger->method('debug')->withConsecutive(
+        $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 6379 5 <null>')],
-        );
+        ));
 
         $client = (new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger)))
             ->create(Relay::class, ['redis://localhost:6379'], ['connection_timeout' => 5], 'default', true);
@@ -109,10 +112,12 @@ class PhpredisClientFactoryTest extends TestCase
      */
     public function testCreateSentinelConfig(string $sentinelClass, string $outputClass): void
     {
-        $this->logger->method('debug')->withConsecutive(
+        $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT 127.0.0.1 6379 5 <null>')],
             ['Executing command "AUTH sncredis"'],
-        );
+            ['Executing command "GETTIMEOUT"'],
+            ['Executing command "GETAUTH"'],
+        ));
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
         $client = $factory->create(
@@ -171,11 +176,13 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testDsnConfig(): void
     {
-        $this->logger->method('debug')->withConsecutive(
+        $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
-        );
+            ['Executing command "GETDBNUM"'],
+            ['Executing command "GETAUTH"'],
+        ));
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
@@ -201,11 +208,13 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testDsnConfigWithUsername(): void
     {
-        $this->logger->method('debug')->withConsecutive(
+        $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 7099 5')],
             ['Executing command "AUTH snc_redis snc_password"'],
             ['Executing command "SELECT 0"'],
-        );
+            ['Executing command "GETDBNUM"'],
+            ['Executing command "GETAUTH"'],
+        ));
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
@@ -290,7 +299,7 @@ class PhpredisClientFactoryTest extends TestCase
     }
 
     /** @return list<array{0: string, 1: Redis::SERIALIZER_*}> */
-    public function serializationTypes(): array
+    public static function serializationTypes(): array
     {
         return [
             ['default', Redis::SERIALIZER_NONE],
@@ -302,14 +311,14 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testMethodsWithVariadicParameters(): void
     {
-        $this->logger->method('debug')->withConsecutive(
+        $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "RAWCOMMAND scan fleet cursor 0 limit 10"'],
             ['Executing command "HDEL foo bar"'],
             ['Executing command "UNLINK bar baz"'],
-        );
+        ));
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 
@@ -335,14 +344,14 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testMethodWithPassByRefArgument(): void
     {
-        $this->logger->method('debug')->withConsecutive(
+        $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "SSCAN set 1 <null> 0"'],
             ['Executing command "SET mykey myvalue <null>"'],
             ['Executing command "SCAN <null> <null> ' . (version_compare(phpversion('redis'), '6', '<') ? '' : '0 ') . '<null>"'],
-        );
+        ));
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 

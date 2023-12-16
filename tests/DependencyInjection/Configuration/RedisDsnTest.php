@@ -19,7 +19,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 class RedisDsnTest extends TestCase
 {
     /** @return list<list<string>> */
-    public function hostValues(): array
+    public static function hostValues(): array
     {
         return [
             ['redis://localhost', 'localhost'],
@@ -108,7 +108,7 @@ class RedisDsnTest extends TestCase
     }
 
     /** @return list<array{0: string, 1:bool}> */
-    public function tlsValues(): array
+    public static function tlsValues(): array
     {
         return [
             ['redis://localhost', false],
