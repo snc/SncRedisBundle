@@ -38,6 +38,7 @@ class RedisQueryCommand extends Command
     public function __construct(ContainerInterface $clientLocator, ?DataDumperInterface $dumper, ?ClonerInterface $cloner)
     {
         parent::__construct();
+
         $this->clientLocator = $clientLocator;
         $this->dumper        = $dumper ?: new CliDumper();
         $this->cloner        = $cloner ?: new VarCloner();

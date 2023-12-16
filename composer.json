@@ -32,7 +32,7 @@
         "ext-pdo_sqlite": "*",
         "ext-redis": "*",
         "doctrine/annotations": "^1.13",
-        "doctrine/coding-standard": "^10.0",
+        "doctrine/coding-standard": "^12.0",
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
         "phpunit/phpunit": "^8.5.32 || ^9.5.28",

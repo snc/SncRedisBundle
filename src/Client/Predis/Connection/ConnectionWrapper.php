@@ -65,7 +65,7 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function connect()
     {
