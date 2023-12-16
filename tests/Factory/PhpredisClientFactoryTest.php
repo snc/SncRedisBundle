@@ -17,7 +17,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 use function class_exists;
 use function fsockopen;
+use function phpversion;
 use function sprintf;
+use function version_compare;
 
 class PhpredisClientFactoryTest extends TestCase
 {
@@ -338,6 +340,8 @@ class PhpredisClientFactoryTest extends TestCase
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "SSCAN set 1 <null> 0"'],
+            ['Executing command "SET mykey myvalue <null>"'],
+            ['Executing command "SCAN <null> <null> ' . (version_compare(phpversion('redis'), '6', '<') ? '' : '0 ') . '<null>"'],
         );
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
@@ -355,5 +359,9 @@ class PhpredisClientFactoryTest extends TestCase
         $client->sscan('set', $iterator, null, 0);
 
         $this->assertSame(0, $iterator);
+
+        $client->set('mykey', 'myvalue');
+        /** @psalm-suppress TooFewArguments */
+        $this->assertSame(['mykey'], $client->scan($iterator2));
     }
 }

@@ -30,8 +30,8 @@
                   src = pkgs.fetchFromGitHub {
                     repo = "phpredis";
                     owner = "phpredis";
-                    rev = "2bddd84f2f653ee3e956a4683f9938787905f72d";
-                    sha256 = "sha256-quKibCW9bMselVNWdu4ZfdZ+dcDYmQxBnKVCHwYpRJA=";
+                    rev = "ff305349dba87ab857a8f28acbc3b22af5a271cc";
+                    sha256 = "sha256-vTuUoYATt2NEtkpztaHMEFVWvv9oEnJ5/ZI+FAbjqWo=";
                   };
                 }))
                 # relay section https://relay.so/docs/1.x/installation#manual-installation
