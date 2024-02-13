@@ -55,6 +55,10 @@ class PredisParametersFactory
             }
         }
 
+        if ($dsn->getUsername() !== null) {
+            $options['username'] = $dsn->getUsername();
+        }
+
         if ($dsn->getDatabase() !== null) {
             $options['database'] = $dsn->getDatabase();
         }
