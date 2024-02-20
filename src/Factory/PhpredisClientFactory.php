@@ -25,6 +25,7 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_values;
+use function class_exists;
 use function count;
 use function get_class;
 use function implode;
@@ -36,6 +37,9 @@ use function spl_autoload_register;
 use function sprintf;
 use function var_export;
 use function version_compare;
+
+// Help opcache.preload discover always-needed symbols
+class_exists(RedisDsn::class);
 
 /** @internal */
 class PhpredisClientFactory

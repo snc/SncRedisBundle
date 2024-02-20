@@ -36,7 +36,7 @@ class Kernel extends BaseKernel
 {
     public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function registerBundles(): iterable
     {
         return [
