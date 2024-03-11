@@ -16,6 +16,7 @@ namespace Snc\RedisBundle\DependencyInjection;
 use InvalidArgumentException;
 use LogicException;
 use RedisSentinel;
+use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisEnvDsn;
@@ -222,9 +223,10 @@ class SncRedisExtension extends Extension
         );
 
         unset($options['options']['commands']);
+        $sentinelClass = $options['type'] === 'relay' ? Sentinel::class : RedisSentinel::class;
 
         $phpredisDef = new Definition($phpredisClientClass, [
-            $hasSentinelOption ? RedisSentinel::class : $phpredisClientClass,
+            $hasSentinelOption ? $sentinelClass : $phpredisClientClass,
             array_map('strval', $options['dsns']),
             $options['options'],
             $options['alias'],

@@ -259,15 +259,15 @@ class PhpredisClientFactory
         }
 
         if (isset($options['prefix'])) {
-            $client->setOption(Redis::OPT_PREFIX, $options['prefix']);
+            $client->setOption($class::OPT_PREFIX, $options['prefix']);
         }
 
         if (isset($options['read_write_timeout'])) {
-            $client->setOption(Redis::OPT_READ_TIMEOUT, (float) $options['read_write_timeout']);
+            $client->setOption($class::OPT_READ_TIMEOUT, (float) $options['read_write_timeout']);
         }
 
         if (isset($options['serialization'])) {
-            $client->setOption(Redis::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
+            $client->setOption($class::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
         }
 
         return $client;
