@@ -223,7 +223,7 @@ class SncRedisExtension extends Extension
         );
 
         unset($options['options']['commands']);
-        $sentinelClass = 'relay' === $options['type'] ? Sentinel::class : RedisSentinel::class;
+        $sentinelClass = $options['type'] === 'relay' ? Sentinel::class : RedisSentinel::class;
 
         $phpredisDef = new Definition($phpredisClientClass, [
             $hasSentinelOption ? $sentinelClass : $phpredisClientClass,
