@@ -8,6 +8,7 @@ use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Snc\RedisBundle\Command\RedisQueryCommand;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\InlineServiceConfigurator;
@@ -26,13 +27,15 @@ return static function (ContainerConfigurator $configurator): void {
         ->tag('data_collector', ['id' => 'redis', 'template' => '@SncRedis/Collector/redis.html.twig'])
         ->args([new ReferenceConfigurator('snc_redis.logger')]);
 
-    $container->set(RedisQueryCommand::class)
-        ->tag('console.command', ['command' => RedisQueryCommand::COMMAND_NAME])
-        ->args([
-            tagged_locator('snc_redis.client', 'alias'),
-            (new ReferenceConfigurator('var_dumper.cli_dumper'))->nullOnInvalid(),
-            (new ReferenceConfigurator('var_dumper.cloner'))->nullOnInvalid(),
-        ]);
+    if (class_exists(Command::class)) {
+        $container->set(RedisQueryCommand::class)
+            ->tag('console.command', ['command' => RedisQueryCommand::COMMAND_NAME])
+            ->args([
+                tagged_locator('snc_redis.client', 'alias'),
+                (new ReferenceConfigurator('var_dumper.cli_dumper'))->nullOnInvalid(),
+                (new ReferenceConfigurator('var_dumper.cloner'))->nullOnInvalid(),
+            ]);
+    }
 
     $container->set(RedisCallInterceptor::class)
         ->class(RedisCallInterceptor::class)
