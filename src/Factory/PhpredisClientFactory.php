@@ -134,7 +134,7 @@ class PhpredisClientFactory
                 'persistent' => $connectionPersistent,
                 'retryInterval' => 5,
                 'readTimeout' => $readTimeout,
-                'auth' => $options['parameters']['disable_sentinel_auth'] ? null : ($options['parameters']['sentinel_auth'] ?? $dsn->getPassword() ?? null)
+                'auth' => $options['parameters']['sentinel_auth'] ?? null,
             ];
             try {
                 if ($isRelay || version_compare(phpversion('redis'), '6.0', '<')) {

@@ -121,8 +121,7 @@ snc_redis:
                 parameters:
                     database: 1
                     password: pass
-                    sentinel_auth: pass1
-                    disable_sentinel_auth: false # default to false
+                    sentinel_auth: pass1 # default to null
 
 ```
 
@@ -134,8 +133,7 @@ If you use a password, it must be in the password parameter and must
 be omitted from the DSNs. Also make sure to use the sentinel port number
 (26379 by default) in the DSNs, and not the default Redis port.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
-`sentinel_auth` is used to set a specific password for Sentinel authentication. If you do not provide a `sentinel_auth` password, the default `password` will be used for Sentinel authentication. you can disable sentinel auth `disable_sentinel_auth` if you don't require
-
+`sentinel_auth` is used to set a specific password for Sentinel authentication. default is null (No authentication)
 A setup using `RedisCluster` from `phpredis`  could look like this:
 
 ``` yaml

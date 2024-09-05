@@ -156,7 +156,6 @@ class Configuration implements ConfigurationInterface
                                             ->scalarNode('username')->defaultNull()->end()
                                             ->scalarNode('password')->defaultNull()->end()
                                             ->scalarNode('sentinel_auth')->defaultNull()->end()
-                                            ->booleanNode('disable_sentinel_auth')->defaultValue(false)->end()
                                             ->booleanNode('logging')->defaultValue($this->debug)->end()
                                             ->variableNode('ssl_context')->defaultNull()->end()
                                         ->end()
