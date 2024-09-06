@@ -110,7 +110,7 @@ A setup using `predis`, `phpredis` or `relay` sentinel replication could look li
 snc_redis:
     clients:
         default:
-            type: "predis" # or "phpredis", or "relay"
+            type: "phpredis" # or "predis", or "relay"
             alias: default
             dsn:
                 - redis://localhost:26379
@@ -121,6 +121,8 @@ snc_redis:
                 parameters:
                     database: 1
                     password: pass
+                    sentinel_username: myuser # default to null
+                    sentinel_password: mypass # default to null
 ```
 
 The `service` is the name of the set of Redis instances.
@@ -131,7 +133,6 @@ If you use a password, it must be in the password parameter and must
 be omitted from the DSNs. Also make sure to use the sentinel port number
 (26379 by default) in the DSNs, and not the default Redis port.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
-
 A setup using `RedisCluster` from `phpredis`  could look like this:
 
 ``` yaml

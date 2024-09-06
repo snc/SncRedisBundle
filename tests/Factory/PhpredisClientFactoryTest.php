@@ -107,11 +107,17 @@ class PhpredisClientFactoryTest extends TestCase
 
     /**
      * @requires extension relay
-     * @testWith ["RedisSentinel", "Redis"]
-     *           ["Relay\\Sentinel", "Relay\\Relay"]
+     * @testWith ["RedisSentinel", "Redis", null, "sentinelauthdefaultpw"]
+     *           ["RedisSentinel", "Redis", "sentinelauth", "sentinelauthpw"]
+     *           ["Relay\\Sentinel", "Relay\\Relay", null, "sentinelauthdefaultpw"]
+     *           ["Relay\\Sentinel", "Relay\\Relay", "sentinelauth", "sentinelauthpw"]
      */
-    public function testCreateSentinelConfig(string $sentinelClass, string $outputClass): void
-    {
+    public function testCreateSentinelConfig(
+        string $sentinelClass,
+        string $outputClass,
+        ?string $sentinelUser,
+        ?string $sentinelPassword
+    ): void {
         $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT 127.0.0.1 6379 5 <null>')],
             ['Executing command "AUTH sncredis"'],
@@ -130,6 +136,10 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 5,
                 'connection_persistent' => false,
                 'service' => 'mymaster',
+                'parameters' => [
+                    'sentinel_username' => $sentinelUser,
+                    'sentinel_password' => $sentinelPassword,
+                ],
             ],
             'phpredissentinel',
             true,
