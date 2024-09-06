@@ -17,7 +17,7 @@
           config.allowUnfree = true;
           config.allowInsecurePredicate = pkg: pkgs.lib.getName pkg == "openssl";
         };
-        php = pkgs.php82.buildEnv {
+        php = pkgs.php83.buildEnv {
           extensions = (
             {
               all,

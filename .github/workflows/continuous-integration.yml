@@ -18,7 +18,7 @@ jobs:
         include:
           - dependency-versions: "lowest"
             php-version: "7.4"
-            php-extensions: "redis-5.3.0"
+            php-extensions: "redis-5.3.2"
           - symfony-require: "5.4.*"
             php-version: "8.2"
             php-extensions: "redis"
@@ -31,13 +31,18 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
-      - name: "Install requirements"
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends redis-server ruby-foreman
+      - name: "Install redis server"
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: "7.x"
+          auto-start: 'false'
+      - name: "Install cli for Procfile"
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends ruby-foreman
       - name: "Start background services"
-        run: sudo systemctl stop redis-server && foreman start &
+        run: foreman start &
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -47,7 +52,7 @@ jobs:
           tools: "flex"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
 

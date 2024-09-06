@@ -55,6 +55,9 @@ snc_redis:
             options:
                 replication: true
                 service: mymaster
+                parameters:
+                    sentinel_username: sentinelauth
+                    sentinel_password: sentinelauthpw
         with_acl:
             type: predis
             alias: with_acl

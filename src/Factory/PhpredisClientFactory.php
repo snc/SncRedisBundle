@@ -111,9 +111,9 @@ class PhpredisClientFactory
     }
 
     /**
-     * @param class-string                                                                                                    $class
-     * @param list<RedisDsn>                                                                                                  $dsns
-     * @param array{service: ?string, connection_persistent: ?bool, connection_timeout: ?string, read_write_timeout: ?string} $options
+     * @param class-string                                                                                                                                                                             $class
+     * @param list<RedisDsn>                                                                                                                                                                           $dsns
+     * @param array{service: ?string, connection_persistent: ?bool, connection_timeout: ?string, read_write_timeout: ?string, parameters: array{sentinel_username: string, sentinel_password: string}} $options
      *
      * @return Redis|Relay
      */
@@ -125,6 +125,7 @@ class PhpredisClientFactory
         $connectionTimeout    = $options['connection_timeout'] ?? 0;
         $connectionPersistent = $options['connection_persistent'] ? $masterName : null;
         $readTimeout          = $options['read_write_timeout'] ?? 0;
+        $parameters           = $options['parameters'];
 
         foreach ($dsns as $dsn) {
             $args = [
@@ -134,7 +135,7 @@ class PhpredisClientFactory
                 'persistent' => $connectionPersistent,
                 'retryInterval' => 5,
                 'readTimeout' => $readTimeout,
-                'auth' => $options['parameters']['sentinel_auth'] ?? null,
+                'auth' => [$parameters['sentinel_username'], $parameters['sentinel_password']],
             ];
             try {
                 if ($isRelay || version_compare(phpversion('redis'), '6.0', '<')) {
