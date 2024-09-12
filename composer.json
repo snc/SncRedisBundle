@@ -63,7 +63,7 @@
         }
     },
     "conflict": {
-        "ext-redis": "<5.3",
+        "ext-redis": "<5.3.2",
         "predis/predis": "<2.0"
     },
     "extra": {

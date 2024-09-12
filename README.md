@@ -42,8 +42,6 @@ overmind start & # start redis fleet
 php vendor/bin/phpunit # run tests, or anything else you want with php binary
 ```
 
-When committing, please do not include changes in redis-sentinel.conf or nodes.conf files, as those change often.
-
 ## License ##
 
 See [LICENSE](LICENSE).
