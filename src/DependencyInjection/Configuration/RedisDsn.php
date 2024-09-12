@@ -158,6 +158,10 @@ class RedisDsn
             $dsn            = $matches[1];
         }
 
+        if ($dsn[-1] === '/') {
+            $dsn = substr($dsn, 0, -1); // remove a trailing slash if present
+        }
+
         if (preg_match('#^([^:]+)(:(\d+|%[^%]+%))?$#', $dsn, $matches)) {
             if (!empty($matches[1])) {
                 // parse host/ip or socket
