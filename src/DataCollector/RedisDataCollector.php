@@ -17,13 +17,14 @@ use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 use Throwable;
 
 use function array_filter;
 use function array_reduce;
 use function count;
 
-class RedisDataCollector extends DataCollector
+class RedisDataCollector extends DataCollector implements LateDataCollectorInterface
 {
     protected RedisLogger $logger;
 
@@ -66,5 +67,10 @@ class RedisDataCollector extends DataCollector
     public function getName(): string
     {
         return 'redis';
+    }
+
+    public function lateCollect(): void
+    {
+        $this->data = ['commands' => $this->logger->getCommands()];
     }
 }
