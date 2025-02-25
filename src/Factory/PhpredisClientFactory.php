@@ -187,13 +187,36 @@ class PhpredisClientFactory
      */
     private function createClusterClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisCluster
     {
+        $auth     = $options['parameters']['password'] ?? null;
+        $username = $options['parameters']['username'] ?? null;
+        if ($username !== null && $auth !== null) {
+            $auth = [$username, $auth];
+        }
+
+        if ($auth === null) {
+            $uniqueAuth = null;
+            foreach ($dsns as $index => $dsn) {
+                $uniqueAuth = $dsn->getPassword();
+                $username   = $dsn->getUsername();
+                if ($username !== null && $uniqueAuth !== null) {
+                    $uniqueAuth = [$username, $uniqueAuth];
+                }
+
+                if ($index > 0 && $auth !== $uniqueAuth) {
+                    throw new InvalidConfigurationException('DSNs cannot have different authentication for RedisCluster.');
+                }
+
+                $auth = $uniqueAuth;
+            }
+        }
+
         $client = new $class(
             null,
             array_map(static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(), $dsns),
             $options['connection_timeout'],
             $options['read_write_timeout'] ?? 0,
             (bool) $options['connection_persistent'],
-            $options['parameters']['password'] ?? null,
+            $auth,
         );
 
         if (isset($options['prefix'])) {
