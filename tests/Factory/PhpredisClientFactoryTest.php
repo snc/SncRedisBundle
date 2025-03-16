@@ -105,6 +105,34 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0, $client->getOption(RedisCluster::OPT_SLAVE_FAILOVER));
     }
 
+    public function testCreateMinimalClusterConfigWithAcl(): void
+    {
+        $this->logger->expects($this->never())->method('debug');
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            RedisCluster::class,
+            ['redis://localhost:7079'],
+            [
+                'connection_timeout' => 5,
+                'connection_persistent' => false,
+                'parameters' => [
+                    'username' => 'snc_redis',
+                    'password' => 'snc_password',
+                ],
+            ],
+            'phprediscluster',
+            false,
+        );
+
+        $this->assertInstanceOf(RedisCluster::class, $client);
+        $this->assertNull($client->getOption(Redis::OPT_PREFIX));
+        $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
+        $this->assertSame(0., $client->getOption(Redis::OPT_READ_TIMEOUT));
+        $this->assertSame(0, $client->getOption(Redis::OPT_SCAN));
+        $this->assertSame(0, $client->getOption(RedisCluster::OPT_SLAVE_FAILOVER));
+    }
+
     /**
      * @requires extension relay
      * @testWith ["RedisSentinel", "Redis", null, "sentinelauthdefaultpw"]

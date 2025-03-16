@@ -169,6 +169,7 @@ snc_redis:
                 
 ```
 
+It also works for the Phpredis Cluster mode.
 
 ### Sessions ###
 
