@@ -48,7 +48,7 @@
         "symfony/twig-bundle": "^5.4.20 ||^6.0 || ^7.0",
         "symfony/web-profiler-bundle": "^5.4.20 ||^6.0 || ^7.0",
         "symfony/yaml": "^5.4.20 ||^6.0 || ^7.0",
-        "vimeo/psalm": "^5.2"
+        "vimeo/psalm": "^5|^6"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",

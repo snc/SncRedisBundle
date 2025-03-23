@@ -17,7 +17,7 @@
           config.allowUnfree = true;
           config.allowInsecurePredicate = pkg: pkgs.lib.getName pkg == "openssl";
         };
-        php = pkgs.php83.buildEnv {
+        php = pkgs.php84.buildEnv {
           extensions = (
             {
               all,
@@ -30,8 +30,8 @@
                   src = pkgs.fetchFromGitHub {
                     repo = "phpredis";
                     owner = "phpredis";
-                    rev = "ff305349dba87ab857a8f28acbc3b22af5a271cc";
-                    sha256 = "sha256-vTuUoYATt2NEtkpztaHMEFVWvv9oEnJ5/ZI+FAbjqWo=";
+                    rev = "300c5fb218ebb55fb6eca4de91756a91e57912ea";
+                    sha256 = "sha256-ScUVyzd7GG33oNCXl1dqBd4m4xYK2fYHHbPNGu/Hl6c=";
                   };
                 }))
                 # relay section https://relay.so/docs/1.x/installation#manual-installation
