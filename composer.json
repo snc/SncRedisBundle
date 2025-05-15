@@ -36,7 +36,7 @@
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
         "phpunit/phpunit": "^9.5.28 || ^10",
-        "predis/predis": "^2.0",
+        "predis/predis": "^2.0 || ^3.0 ",
         "seec/phpunit-consecutive-params": "dev-master",
         "symfony/browser-kit": "^5.4.20 ||^6.0 || ^7.0",
         "symfony/cache": "^5.4.20 ||^6.0 || ^7.0",
