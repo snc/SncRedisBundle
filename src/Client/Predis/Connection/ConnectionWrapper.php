@@ -82,6 +82,11 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->isConnected();
     }
 
+    public function hasDataToRead(): bool
+    {
+        return $this->connection->hasDataToRead();
+    }
+
     public function writeRequest(CommandInterface $command): void
     {
         $this->execute($command, fn (CommandInterface $command) => $this->connection->writeRequest($command));
@@ -96,6 +101,11 @@ class ConnectionWrapper implements NodeConnectionInterface
     public function __toString(): string
     {
         return (string) $this->connection;
+    }
+
+    public function getClientId(): ?int
+    {
+        return $this->connection->getClientId();
     }
 
     /** @return resource */
@@ -118,6 +128,11 @@ class ConnectionWrapper implements NodeConnectionInterface
     public function read()
     {
         return $this->connection->read();
+    }
+
+    public function write(string $buffer): void
+    {
+        $this->connection->write($buffer);
     }
 
     /** @return mixed */
