@@ -127,8 +127,9 @@ class PhpredisClientFactory
         if ($options['connection_persistent']) {
             $connectionPersistent = $options['connection_persistent_id'] ?? $masterName;
         }
-        $readTimeout          = $options['read_write_timeout'] ?? 0;
-        $parameters           = $options['parameters'];
+
+        $readTimeout = $options['read_write_timeout'] ?? 0;
+        $parameters  = $options['parameters'];
 
         foreach ($dsns as $dsn) {
             $args = [

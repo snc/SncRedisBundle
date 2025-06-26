@@ -15,6 +15,7 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Predis\Client;
 use Redis;
 use RedisException;
 use Relay\Relay;
@@ -30,9 +31,11 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Yaml\Parser;
 
 use function array_key_exists;
+use function class_exists;
 use function count;
 use function current;
 use function sys_get_temp_dir;
+use function version_compare;
 
 /**
  * SncRedisExtensionTest
@@ -764,12 +767,12 @@ YAML;
             $this->markTestSkipped('Predis not available');
         }
 
-        if (version_compare(\Predis\Client::VERSION, '2.4.0', '<')) {
+        if (version_compare(Client::VERSION, '2.4.0', '<')) {
             $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent_id');
         }
 
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
+        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
         $extension->load([$config], $container = $this->getContainer());
 
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
@@ -783,7 +786,7 @@ YAML;
             $this->markTestSkipped('Predis not available');
         }
 
-        if (version_compare(\Predis\Client::VERSION, '2.4.0', '>=')) {
+        if (version_compare(Client::VERSION, '2.4.0', '>=')) {
             $this->markTestSkipped('This test requires Predis version < 2.4.0');
         }
 
@@ -791,7 +794,7 @@ YAML;
         $this->expectExceptionMessage('The connection_persistent_id parameter for Predis requires predis/predis version 2.4.0 or higher');
 
         $extension = new SncRedisExtension();
-        $config = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
+        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
         $extension->load([$config], $container = $this->getContainer());
     }
 

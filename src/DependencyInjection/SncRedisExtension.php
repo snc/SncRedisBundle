@@ -15,6 +15,7 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 use InvalidArgumentException;
 use LogicException;
+use Predis\Client;
 use RedisSentinel;
 use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -36,6 +37,7 @@ use function assert;
 use function class_exists;
 use function count;
 use function sprintf;
+use function version_compare;
 
 class SncRedisExtension extends Extension
 {
@@ -139,21 +141,21 @@ class SncRedisExtension extends Extension
         $client['options']['exceptions']    = $client['options']['throw_errors'];
         // fix ssl configuration key name
         $client['options']['ssl'] = $client['options']['parameters']['ssl_context'] ?? [];
-        
+
         // Handle connection_persistent_id for predis conn_uid (requires predis >= 2.4.0)
         if (isset($client['options']['connection_persistent_id'])) {
             if (class_exists('Predis\Client')) {
-                if (version_compare(\Predis\Client::VERSION, '2.4.0', '>=')) {
-                    $client['options']['conn_uid'] = $client['options']['connection_persistent_id'];
-                } else {
+                if (!version_compare(Client::VERSION, '2.4.0', '>=')) {
                     throw new InvalidConfigurationException(
                         'The connection_persistent_id parameter for Predis requires predis/predis version 2.4.0 or higher. ' .
-                        sprintf('Current version: %s', \Predis\Client::VERSION)
+                        sprintf('Current version: %s', Client::VERSION),
                     );
                 }
+
+                $client['options']['conn_uid'] = $client['options']['connection_persistent_id'];
             }
         }
-        
+
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
