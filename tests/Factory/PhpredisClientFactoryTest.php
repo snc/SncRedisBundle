@@ -411,4 +411,24 @@ class PhpredisClientFactoryTest extends TestCase
         /** @psalm-suppress TooFewArguments */
         $this->assertSame(['mykey'], $client->scan($iterator2));
     }
+
+    public function testCreateWithCustomPersistentId(): void
+    {
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://localhost:6379'],
+            [
+                'connection_timeout' => 5,
+                'connection_persistent' => true,
+                'connection_persistent_id' => 'my_custom_persistent_id',
+            ],
+            'default',
+            false,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertSame('my_custom_persistent_id', $client->getPersistentID());
+    }
 }

@@ -171,6 +171,35 @@ snc_redis:
 
 It also works for the Phpredis Cluster mode.
 
+### Persistent Connections ###
+
+When using persistent connections, you may need to provide a unique identifier to ensure that different clients don't share the same socket connection. This is especially important when operating multiple clients within the same application that communicate with the same Redis server.
+
+``` yaml
+snc_redis:
+    clients:
+        app_cache:
+            type: predis  # or phpredis
+            alias: app_cache
+            dsn: redis://localhost/0
+            options:
+                connection_persistent: true
+                connection_persistent_id: "app_cache_connection"
+        session_store:
+            type: predis  # or phpredis
+            alias: session_store
+            dsn: redis://localhost/1
+            options:
+                connection_persistent: true
+                connection_persistent_id: "session_store_connection"
+```
+
+**Why this matters:** Without `connection_persistent_id`, two clients connecting to different databases on the same Redis server would share the same persistent socket, leading to unexpected behavior where commands from one client could affect the database context of another.
+
+**For phpredis clients:** The `connection_persistent_id` is passed directly to the `pconnect()` function as the persistent ID parameter.
+
+**For predis clients:** The `connection_persistent_id` is mapped to the `conn_uid` connection option (requires predis/predis version 2.4.0 or higher). This ensures each client creates its own socket so the connection context won't be shared across clients.
+
 ### Sessions ###
 
 Use Redis sessions by utilizing Symfony built-in Redis session handler like so:
@@ -284,6 +313,7 @@ snc_redis:
                 prefix: foo
                 connection_timeout: 10
                 connection_persistent: true
+                connection_persistent_id: "cluster_connection"
                 read_write_timeout: 30
                 iterable_multibulk: false
                 throw_errors: true

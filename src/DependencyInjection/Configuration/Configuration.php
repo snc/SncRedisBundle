@@ -125,6 +125,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->booleanNode('connection_async')->defaultFalse()->end()
                                     ->booleanNode('connection_persistent')->defaultFalse()->end()
+                                    ->scalarNode('connection_persistent_id')->defaultNull()->end()
                                     ->scalarNode('connection_timeout')->cannotBeEmpty()->defaultValue(5)->end()
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()

@@ -123,7 +123,10 @@ class PhpredisClientFactory
         $sentinelClass        = $isRelay ? Sentinel::class : RedisSentinel::class;
         $masterName           = $options['service'];
         $connectionTimeout    = $options['connection_timeout'] ?? 0;
-        $connectionPersistent = $options['connection_persistent'] ? $masterName : null;
+        $connectionPersistent = null;
+        if ($options['connection_persistent']) {
+            $connectionPersistent = $options['connection_persistent_id'] ?? $masterName;
+        }
         $readTimeout          = $options['read_write_timeout'] ?? 0;
         $parameters           = $options['parameters'];
 
@@ -254,11 +257,16 @@ class PhpredisClientFactory
             $context['stream'] = $options['parameters']['ssl_context'];
         }
 
+        $persistentId = null;
+        if (!empty($options['connection_persistent'])) {
+            $persistentId = $options['connection_persistent_id'] ?? $dsn->getPersistentId();
+        }
+
         $connectParameters = [
             $socket ?? ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost(),
             $dsn->getPort(),
             $options['connection_timeout'],
-            empty($options['connection_persistent']) ? null : $dsn->getPersistentId(),
+            $persistentId,
             5, // retry interval
             5, // read timeout
             $context,

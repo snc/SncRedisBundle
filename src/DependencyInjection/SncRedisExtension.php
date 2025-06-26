@@ -139,9 +139,25 @@ class SncRedisExtension extends Extension
         $client['options']['exceptions']    = $client['options']['throw_errors'];
         // fix ssl configuration key name
         $client['options']['ssl'] = $client['options']['parameters']['ssl_context'] ?? [];
+        
+        // Handle connection_persistent_id for predis conn_uid (requires predis >= 2.4.0)
+        if (isset($client['options']['connection_persistent_id'])) {
+            if (class_exists('Predis\Client')) {
+                if (version_compare(\Predis\Client::VERSION, '2.4.0', '>=')) {
+                    $client['options']['conn_uid'] = $client['options']['connection_persistent_id'];
+                } else {
+                    throw new InvalidConfigurationException(
+                        'The connection_persistent_id parameter for Predis requires predis/predis version 2.4.0 or higher. ' .
+                        sprintf('Current version: %s', \Predis\Client::VERSION)
+                    );
+                }
+            }
+        }
+        
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
+        unset($client['options']['connection_persistent_id']);
         unset($client['options']['throw_errors']);
         unset($client['options']['parameters']['ssl_context']);
 

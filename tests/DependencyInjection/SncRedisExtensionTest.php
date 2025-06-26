@@ -758,6 +758,58 @@ clients:
 YAML;
     }
 
+    public function testPredisWithConnectionPersistentId(): void
+    {
+        if (!class_exists('Predis\Client')) {
+            $this->markTestSkipped('Predis not available');
+        }
+
+        if (version_compare(\Predis\Client::VERSION, '2.4.0', '<')) {
+            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent_id');
+        }
+
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $this->assertTrue($container->hasDefinition('snc_redis.default'));
+        $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
+        $this->assertSame('my_custom_conn_uid', $definition->getArgument(0)['conn_uid']);
+    }
+
+    public function testPredisWithConnectionPersistentIdVersionTooOld(): void
+    {
+        if (!class_exists('Predis\Client')) {
+            $this->markTestSkipped('Predis not available');
+        }
+
+        if (version_compare(\Predis\Client::VERSION, '2.4.0', '>=')) {
+            $this->markTestSkipped('This test requires Predis version < 2.4.0');
+        }
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The connection_persistent_id parameter for Predis requires predis/predis version 2.4.0 or higher');
+
+        $extension = new SncRedisExtension();
+        $config = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
+    }
+
+    private function getPredisWithConnectionPersistentIdYamlConfig(): string
+    {
+        return <<<'YAML'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost:6379/0
+        options:
+            connection_persistent: true
+            connection_persistent_id: my_custom_conn_uid
+            
+YAML;
+    }
+
     private function getContainer(): ContainerBuilder
     {
         return new ContainerBuilder(new ParameterBag([
