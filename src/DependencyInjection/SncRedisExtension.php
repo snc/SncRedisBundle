@@ -36,6 +36,7 @@ use function array_map;
 use function assert;
 use function class_exists;
 use function count;
+use function is_string;
 use function sprintf;
 use function version_compare;
 
@@ -137,29 +138,31 @@ class SncRedisExtension extends Extension
         // predis connection parameters have been renamed in v0.8
         $client['options']['async_connect'] = $client['options']['connection_async'];
         $client['options']['timeout']       = $client['options']['connection_timeout'];
-        $client['options']['persistent']    = $client['options']['connection_persistent'];
-        $client['options']['exceptions']    = $client['options']['throw_errors'];
-        // fix ssl configuration key name
-        $client['options']['ssl'] = $client['options']['parameters']['ssl_context'] ?? [];
-
-        // Handle connection_persistent_id for predis conn_uid (requires predis >= 2.4.0)
-        if (isset($client['options']['connection_persistent_id'])) {
+        // Handle connection_persistent as bool|string
+        if (is_string($client['options']['connection_persistent'])) {
+            $client['options']['persistent'] = true;
+            // For predis, use the string value as conn_uid (requires predis >= 2.4.0)
             if (class_exists('Predis\Client')) {
                 if (!version_compare(Client::VERSION, '2.4.0', '>=')) {
                     throw new InvalidConfigurationException(
-                        'The connection_persistent_id parameter for Predis requires predis/predis version 2.4.0 or higher. ' .
+                        'Using connection_persistent as string for Predis requires predis/predis version 2.4.0 or higher. ' .
                         sprintf('Current version: %s', Client::VERSION),
                     );
                 }
 
-                $client['options']['conn_uid'] = $client['options']['connection_persistent_id'];
+                $client['options']['conn_uid'] = $client['options']['connection_persistent'];
             }
+        } else {
+            $client['options']['persistent'] = $client['options']['connection_persistent'];
         }
+
+        $client['options']['exceptions'] = $client['options']['throw_errors'];
+        // fix ssl configuration key name
+        $client['options']['ssl'] = $client['options']['parameters']['ssl_context'] ?? [];
 
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
-        unset($client['options']['connection_persistent_id']);
         unset($client['options']['throw_errors']);
         unset($client['options']['parameters']['ssl_context']);
 

@@ -761,26 +761,47 @@ clients:
 YAML;
     }
 
-    public function testPredisWithConnectionPersistentId(): void
+    public function testPredisWithConnectionPersistentBool(): void
     {
         if (!class_exists('Predis\Client')) {
             $this->markTestSkipped('Predis not available');
         }
 
         if (version_compare(Client::VERSION, '2.4.0', '<')) {
-            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent_id');
+            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent');
         }
 
         $extension = new SncRedisExtension();
-        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
+        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentBoolYamlConfig());
         $extension->load([$config], $container = $this->getContainer());
 
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
+        $this->assertTrue($definition->getArgument(0)['persistent']);
+        $this->assertNull($definition->getArgument(0)['conn_uid']);
+    }
+
+    public function testPredisWithConnectionPersistentString(): void
+    {
+        if (!class_exists('Predis\Client')) {
+            $this->markTestSkipped('Predis not available');
+        }
+
+        if (version_compare(Client::VERSION, '2.4.0', '<')) {
+            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent');
+        }
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentStringYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $this->assertTrue($container->hasDefinition('snc_redis.default'));
+        $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
+        $this->assertTrue($definition->getArgument(0)['persistent']);
         $this->assertSame('my_custom_conn_uid', $definition->getArgument(0)['conn_uid']);
     }
 
-    public function testPredisWithConnectionPersistentIdVersionTooOld(): void
+    public function testPredisWithConnectionPersistentVersionTooOld(): void
     {
         if (!class_exists('Predis\Client')) {
             $this->markTestSkipped('Predis not available');
@@ -791,14 +812,14 @@ YAML;
         }
 
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('The connection_persistent_id parameter for Predis requires predis/predis version 2.4.0 or higher');
+        $this->expectExceptionMessage('Using connection_persistent as string for Predis requires predis/predis version 2.4.0 or higher');
 
         $extension = new SncRedisExtension();
-        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentIdYamlConfig());
+        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentStringYamlConfig());
         $extension->load([$config], $container = $this->getContainer());
     }
 
-    private function getPredisWithConnectionPersistentIdYamlConfig(): string
+    private function getPredisWithConnectionPersistentBoolYamlConfig(): string
     {
         return <<<'YAML'
 clients:
@@ -808,7 +829,102 @@ clients:
         dsn: redis://localhost:6379/0
         options:
             connection_persistent: true
-            connection_persistent_id: my_custom_conn_uid
+
+YAML;
+    }
+
+    private function getPredisWithConnectionPersistentStringYamlConfig(): string
+    {
+        return <<<'YAML'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost:6379/0
+        options:
+            connection_persistent: my_custom_conn_uid
+
+YAML;
+    }
+
+    public function testPredisWithConnectionPersistentFalse(): void
+    {
+        if (!class_exists('Predis\Client')) {
+            $this->markTestSkipped('Predis not available');
+        }
+
+        if (version_compare(Client::VERSION, '2.4.0', '<')) {
+            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent');
+        }
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentFalseYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $this->assertTrue($container->hasDefinition('snc_redis.default'));
+        $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
+        $this->assertFalse($definition->getArgument(0)['persistent']);
+        $this->assertNull($definition->getArgument(0)['conn_uid']);
+    }
+
+    private function getPredisWithConnectionPersistentFalseYamlConfig(): string
+    {
+        return <<<'YAML'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost:6379/0
+        options:
+            connection_persistent: false
+
+YAML;
+    }
+
+    public function testInvalidConnectionPersistentValue(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('connection_persistent must be a boolean or string');
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getInvalidConnectionPersistentYamlConfig());
+        $extension->load([$config], $this->getContainer());
+    }
+
+    private function getInvalidConnectionPersistentYamlConfig(): string
+    {
+        return <<<'YAML'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost:6379/0
+        options:
+            connection_persistent: []
+
+YAML;
+    }
+
+    public function testEmptyStringConnectionPersistentValue(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('connection_persistent must be a boolean or string');
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getEmptyStringConnectionPersistentYamlConfig());
+        $extension->load([$config], $this->getContainer());
+    }
+
+    private function getEmptyStringConnectionPersistentYamlConfig(): string
+    {
+        return <<<'YAML'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost:6379/0
+        options:
+            connection_persistent: ""
             
 YAML;
     }
