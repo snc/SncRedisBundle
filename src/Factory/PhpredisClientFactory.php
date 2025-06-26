@@ -111,9 +111,9 @@ class PhpredisClientFactory
     }
 
     /**
-     * @param class-string                                                                                                                                                                             $class
-     * @param list<RedisDsn>                                                                                                                                                                           $dsns
-     * @param array{service: ?string, connection_persistent: ?bool, connection_timeout: ?string, read_write_timeout: ?string, parameters: array{sentinel_username: string, sentinel_password: string}} $options
+     * @param class-string                                                                                                                                                                                                                $class
+     * @param list<RedisDsn>                                                                                                                                                                                                              $dsns
+     * @param array{service: ?string, connection_persistent: ?bool, connection_persistent_id: ?string, connection_timeout: ?string, read_write_timeout: ?string, parameters: array{sentinel_username: string, sentinel_password: string}} $options
      *
      * @return Redis|Relay
      */
