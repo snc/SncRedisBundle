@@ -37,7 +37,7 @@
         "monolog/monolog": "*",
         "phpunit/phpunit": "^9.5.28 || ^10",
         "predis/predis": "^2.0 || ^3.0 ",
-        "seec/phpunit-consecutive-params": "dev-master",
+        "seec/phpunit-consecutive-params": "^1.1.4",
         "symfony/browser-kit": "^5.4.20 ||^6.0 || ^7.0",
         "symfony/cache": "^5.4.20 ||^6.0 || ^7.0",
         "symfony/config": "^5.4.20 ||^6.0 || ^7.0",
