@@ -29,7 +29,9 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function class_exists;
+use function is_bool;
 use function is_iterable;
+use function is_string;
 use function trigger_deprecation;
 
 class Configuration implements ConfigurationInterface
@@ -124,7 +126,13 @@ class Configuration implements ConfigurationInterface
                                         ->scalarPrototype()->end()
                                     ->end()
                                     ->booleanNode('connection_async')->defaultFalse()->end()
-                                    ->booleanNode('connection_persistent')->defaultFalse()->end()
+                                    ->variableNode('connection_persistent')
+                                        ->defaultFalse()
+                                        ->validate()
+                                            ->ifTrue(static fn ($v) => !(is_bool($v) || (is_string($v) && $v !== '')))
+                                            ->thenInvalid('connection_persistent must be a boolean or string')
+                                        ->end()
+                                    ->end()
                                     ->scalarNode('connection_timeout')->cannotBeEmpty()->defaultValue(5)->end()
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()

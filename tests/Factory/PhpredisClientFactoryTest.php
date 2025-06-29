@@ -411,4 +411,61 @@ class PhpredisClientFactoryTest extends TestCase
         /** @psalm-suppress TooFewArguments */
         $this->assertSame(['mykey'], $client->scan($iterator2));
     }
+
+    public function testCreateWithConnectionPersistentTrue(): void
+    {
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://localhost:6379'],
+            [
+                'connection_timeout' => 5,
+                'connection_persistent' => true,
+            ],
+            'default',
+            false,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertSame('default', $client->getPersistentID());
+    }
+
+    public function testCreateWithConnectionPersistentString(): void
+    {
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://localhost:6379'],
+            [
+                'connection_timeout' => 5,
+                'connection_persistent' => 'my_custom_persistent_id',
+            ],
+            'default',
+            false,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertSame('my_custom_persistent_id', $client->getPersistentID());
+    }
+
+    public function testCreateWithConnectionPersistentFalse(): void
+    {
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            Redis::class,
+            ['redis://localhost:6379'],
+            [
+                'connection_timeout' => 5,
+                'connection_persistent' => false,
+            ],
+            'default',
+            false,
+        );
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertNull($client->getPersistentID());
+    }
 }

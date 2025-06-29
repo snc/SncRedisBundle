@@ -32,6 +32,7 @@ use function implode;
 use function in_array;
 use function is_a;
 use function is_array;
+use function is_string;
 use function phpversion;
 use function spl_autoload_register;
 use function sprintf;
@@ -111,9 +112,9 @@ class PhpredisClientFactory
     }
 
     /**
-     * @param class-string                                                                                                                                                                             $class
-     * @param list<RedisDsn>                                                                                                                                                                           $dsns
-     * @param array{service: ?string, connection_persistent: ?bool, connection_timeout: ?string, read_write_timeout: ?string, parameters: array{sentinel_username: string, sentinel_password: string}} $options
+     * @param class-string                                                                                                                                                                                                  $class
+     * @param list<RedisDsn>                                                                                                                                                                                                $dsns
+     * @param array{service: ?string, connection_persistent: bool|non-empty-string|null, connection_timeout: ?string, read_write_timeout: ?string, parameters: array{sentinel_username: string, sentinel_password: string}} $options
      *
      * @return Redis|Relay
      */
@@ -123,9 +124,15 @@ class PhpredisClientFactory
         $sentinelClass        = $isRelay ? Sentinel::class : RedisSentinel::class;
         $masterName           = $options['service'];
         $connectionTimeout    = $options['connection_timeout'] ?? 0;
-        $connectionPersistent = $options['connection_persistent'] ? $masterName : null;
-        $readTimeout          = $options['read_write_timeout'] ?? 0;
-        $parameters           = $options['parameters'];
+        $connectionPersistent = null;
+        if ($options['connection_persistent']) {
+            $connectionPersistent = is_string($options['connection_persistent'])
+                ? $options['connection_persistent']
+                : $masterName;
+        }
+
+        $readTimeout = $options['read_write_timeout'] ?? 0;
+        $parameters  = $options['parameters'];
 
         foreach ($dsns as $dsn) {
             $args = [
@@ -254,11 +261,18 @@ class PhpredisClientFactory
             $context['stream'] = $options['parameters']['ssl_context'];
         }
 
+        $persistentId = null;
+        if (!empty($options['connection_persistent'])) {
+            $persistentId = is_string($options['connection_persistent'])
+                ? $options['connection_persistent']
+                : $alias;
+        }
+
         $connectParameters = [
             $socket ?? ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost(),
             $dsn->getPort(),
             $options['connection_timeout'],
-            empty($options['connection_persistent']) ? null : $dsn->getPersistentId(),
+            $persistentId,
             5, // retry interval
             5, // read timeout
             $context,
