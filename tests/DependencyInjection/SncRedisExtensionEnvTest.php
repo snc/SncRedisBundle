@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
+use Predis\Client;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Redis;
@@ -46,7 +47,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $clientDefinition = $container->findDefinition('snc_redis.default');
 
-        $this->assertSame('Predis\Client', $clientDefinition->getClass());
+        $this->assertSame(Client::class, $clientDefinition->getClass());
         $this->assertSame(
             [
                 'parameters' => [
