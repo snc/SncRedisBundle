@@ -13,6 +13,14 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
+use Predis\Configuration\Options;
+use Predis\Connection\Parameters;
+use Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory;
+use Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper;
+use Snc\RedisBundle\Logger\RedisLogger;
+use Snc\RedisBundle\DataCollector\RedisDataCollector;
+use Monolog\Handler\RedisHandler;
+use Monolog\Formatter\LogstashFormatter;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
@@ -46,15 +54,15 @@ class SncRedisExtensionTest extends TestCase
     public static function parameterValues(): array
     {
         return [
-            ['snc_redis.client.class', 'Predis\Client'],
+            ['snc_redis.client.class', Client::class],
             ['snc_redis.relay_client.class', Relay::class],
-            ['snc_redis.client_options.class', 'Predis\Configuration\Options'],
-            ['snc_redis.connection_parameters.class', 'Predis\Connection\Parameters'],
-            ['snc_redis.connection_factory.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory'],
-            ['snc_redis.connection_wrapper.class', 'Snc\RedisBundle\Client\Predis\Connection\ConnectionWrapper'],
-            ['snc_redis.logger.class', 'Snc\RedisBundle\Logger\RedisLogger'],
-            ['snc_redis.data_collector.class', 'Snc\RedisBundle\DataCollector\RedisDataCollector'],
-            ['snc_redis.monolog_handler.class', 'Monolog\Handler\RedisHandler'],
+            ['snc_redis.client_options.class', Options::class],
+            ['snc_redis.connection_parameters.class', Parameters::class],
+            ['snc_redis.connection_factory.class', ConnectionFactory::class],
+            ['snc_redis.connection_wrapper.class', ConnectionWrapper::class],
+            ['snc_redis.logger.class', RedisLogger::class],
+            ['snc_redis.data_collector.class', RedisDataCollector::class],
+            ['snc_redis.monolog_handler.class', RedisHandler::class],
         ];
     }
 
@@ -193,7 +201,7 @@ class SncRedisExtensionTest extends TestCase
     {
         $container = $this->getContainer();
         //Create a fake formatter definition
-        $container->setDefinition('my_monolog_formatter', new Definition('Monolog\\Formatter\\LogstashFormatter', ['symfony']));
+        $container->setDefinition('my_monolog_formatter', new Definition(LogstashFormatter::class, ['symfony']));
         $extension = new SncRedisExtension();
         $config    = $this->parseYaml($this->getMonologFormatterOptionYamlConfig());
         $extension->load([$config], $container);
@@ -763,7 +771,7 @@ YAML;
 
     public function testPredisWithConnectionPersistentBool(): void
     {
-        if (!class_exists('Predis\Client')) {
+        if (!class_exists(Client::class)) {
             $this->markTestSkipped('Predis not available');
         }
 
@@ -783,7 +791,7 @@ YAML;
 
     public function testPredisWithConnectionPersistentString(): void
     {
-        if (!class_exists('Predis\Client')) {
+        if (!class_exists(Client::class)) {
             $this->markTestSkipped('Predis not available');
         }
 
@@ -803,7 +811,7 @@ YAML;
 
     public function testPredisWithConnectionPersistentVersionTooOld(): void
     {
-        if (!class_exists('Predis\Client')) {
+        if (!class_exists(Client::class)) {
             $this->markTestSkipped('Predis not available');
         }
 
@@ -849,7 +857,7 @@ YAML;
 
     public function testPredisWithConnectionPersistentFalse(): void
     {
-        if (!class_exists('Predis\Client')) {
+        if (!class_exists(Client::class)) {
             $this->markTestSkipped('Predis not available');
         }
 
