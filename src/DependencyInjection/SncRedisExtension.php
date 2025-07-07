@@ -142,7 +142,7 @@ class SncRedisExtension extends Extension
         if (is_string($client['options']['connection_persistent'])) {
             $client['options']['persistent'] = true;
             // For predis, use the string value as conn_uid (requires predis >= 2.4.0)
-            if (class_exists('Predis\Client')) {
+            if (class_exists(Client::class)) {
                 if (!version_compare(Client::VERSION, '2.4.0', '>=')) {
                     throw new InvalidConfigurationException(
                         'Using connection_persistent as string for Predis requires predis/predis version 2.4.0 or higher. ' .
