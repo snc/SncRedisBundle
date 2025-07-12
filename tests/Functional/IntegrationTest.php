@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
-use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
+use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
