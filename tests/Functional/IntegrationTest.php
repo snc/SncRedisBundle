@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
-use Symfony\Component\HttpFoundation\Request;
-use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Logger\RedisLogger;
+use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Service\ResetInterface;
 
