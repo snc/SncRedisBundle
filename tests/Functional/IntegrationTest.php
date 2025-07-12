@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
+use Symfony\Component\HttpFoundation\Request;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
@@ -80,7 +81,7 @@ class IntegrationTest extends WebTestCase
     /** @group legacy */
     public function testPredisReplication(): void
     {
-        $this->client->request('GET', '/predis_replication');
+        $this->client->request(Request::METHOD_GET, '/predis_replication');
 
         $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
