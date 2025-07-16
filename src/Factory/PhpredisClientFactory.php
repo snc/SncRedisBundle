@@ -6,6 +6,17 @@ namespace Snc\RedisBundle\Factory;
 
 use InvalidArgumentException;
 use LogicException;
+use ProxyManager\Configuration;
+use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
+use ProxyManager\Proxy\AccessInterceptorInterface;
+use Redis;
+use RedisCluster;
+use RedisException;
+use RedisSentinel;
+use ReflectionClass;
+use ReflectionMethod;
+use Relay\Exception as RelayException;
+use Relay\Relay;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
