@@ -155,7 +155,7 @@ class PhpredisClientFactory
         }
 
         try {
-            /** @var list<string> $hostsList */
+            /** @var array<int, string> $hostsList */
             $hostsList = array_map('strval', $hosts);
             $client    = new RedisArray($hostsList, $redisArrayOptions);
         } catch (RedisException $e) {
