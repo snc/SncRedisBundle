@@ -55,6 +55,7 @@
         <xsd:attribute name="prefix" type="xsd:string" />
         <xsd:attribute name="replication" type="xsd:boolean" />
         <xsd:attribute name="slave-failover" type="phpredis-slave-failover-type" />
+        <xsd:attribute name="redis_array" type="xsd:boolean" />
     </xsd:complexType>
 
     <xsd:simpleType name="phpredis-serialization-type">
