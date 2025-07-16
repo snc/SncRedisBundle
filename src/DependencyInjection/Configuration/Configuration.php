@@ -144,7 +144,7 @@ class Configuration implements ConfigurationInterface
                                         ->values([true, 'predis', 'sentinel'])
                                         ->beforeNormalization()
                                             ->ifTrue(static fn ($v) => $v === true)
-                                            ->then(static function () {
+                                            ->then(static function (): string {
                                                 trigger_deprecation(
                                                     'snc/redis-bundle',
                                                     '4.6',
