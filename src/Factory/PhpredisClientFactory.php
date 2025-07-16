@@ -14,11 +14,11 @@ use RedisArray;
 use RedisCluster;
 use RedisException;
 use RedisSentinel;
+use ReflectionClass;
+use ReflectionMethod;
 use Relay\Exception as RelayException;
 use Relay\Relay;
 use Relay\Sentinel;
-use ReflectionClass;
-use ReflectionMethod;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
@@ -138,7 +138,7 @@ class PhpredisClientFactory
 
         $hosts = array_values(array_map(
             static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(),
-            $dsns
+            $dsns,
         ));
 
         $redisArrayOptions = [

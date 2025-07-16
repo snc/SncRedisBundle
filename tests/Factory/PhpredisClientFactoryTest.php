@@ -544,7 +544,7 @@ class PhpredisClientFactoryTest extends TestCase
 
     public function testThrowsExceptionForRedisArrayWithSentinel(): void
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The redis_array option is only supported for Redis or Relay classes.');
 
         $dsns    = [
