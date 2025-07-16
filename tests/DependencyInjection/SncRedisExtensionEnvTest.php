@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Redis;

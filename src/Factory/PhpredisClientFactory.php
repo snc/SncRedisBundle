@@ -63,7 +63,7 @@ class PhpredisClientFactory
      * @param list<string|list<string>> $dsns    Multiple DSN string
      * @param mixed[]                   $options Options provided in bundle client config
      *
-     * @return Redis|RedisArray|RedisCluster|Relay\Relay
+     * @return Redis|RedisArray|RedisCluster|Relay
      *
      * @throws InvalidConfigurationException
      * @throws LogicException
@@ -114,8 +114,10 @@ class PhpredisClientFactory
     /**
      * @param RedisDsn[] $dsns
      * @param mixed[]    $options
+     *
+     * @return Redis|RedisArray|RedisCluster|Relay\Relay
      */
-    private function createRedisArrayClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisArray
+    private function createRedisArrayClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled)
     {
         if (count($dsns) < 2) {
             throw new LogicException('The redis_array option requires at least two DSNs.');
