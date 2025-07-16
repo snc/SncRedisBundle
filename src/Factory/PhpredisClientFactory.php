@@ -10,6 +10,7 @@ use ProxyManager\Configuration;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use ProxyManager\Proxy\AccessInterceptorInterface;
 use Redis;
+use RedisArray;
 use RedisCluster;
 use RedisException;
 use RedisSentinel;
