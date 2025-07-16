@@ -155,9 +155,11 @@ class PhpredisClientFactory
         }
 
         try {
-            $client = new RedisArray($hosts, $redisArrayOptions);
-        } catch (RedisException $e) {
-            throw new RedisException(sprintf('Failed to create RedisArray with hosts %s: %s', implode(', ', $hosts), $e->getMessage()), 0, $e);
+            /** @var list<string> $hostsList */
+            $hostsList = array_map('strval', $hosts);
+            $client = new RedisArray($hostsList, $redisArrayOptions);
+        } catch (\RedisException $e) {
+            throw new \RedisException(sprintf('Failed to create RedisArray with hosts %s: %s', implode(', ', $hosts), $e->getMessage()), 0, $e);
         }
 
         $connectedHosts = $client->getHosts();
@@ -422,7 +424,7 @@ class PhpredisClientFactory
      *
      * @return T
      *
-     * @template T of Redis|RedisCluster|Relay
+     * @template T of Redis|RedisArray|RedisCluster|Relay
      */
     private function createLoggingProxy(object $client, string $alias): object
     {
