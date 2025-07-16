@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Factory;
 
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -476,8 +477,8 @@ class PhpredisClientFactoryTest extends TestCase
     public function testCreateRedisArrayClient(): void
     {
         $dsns    = [
-            new RedisDsn('redis://localhost:6379'),
-            new RedisDsn('redis://localhost:6380'),
+            'redis://localhost:6379',
+            'redis://localhost:6380',
         ];
         $options = [
             'redis_array' => true,
