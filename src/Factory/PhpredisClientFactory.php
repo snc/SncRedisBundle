@@ -13,10 +13,11 @@ use Redis;
 use RedisCluster;
 use RedisException;
 use RedisSentinel;
-use ReflectionClass;
-use ReflectionMethod;
 use Relay\Exception as RelayException;
 use Relay\Relay;
+use Relay\Sentinel;
+use ReflectionClass;
+use ReflectionMethod;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
