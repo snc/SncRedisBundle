@@ -56,9 +56,9 @@ class SncRedisExtensionEnvTest extends TestCase
                     'sentinel_username' => null,
                     'sentinel_password' => null,
                     'logging' => false,
-                    'redis_array' => false,
                 ],
                 'commands' => ['foo' => 'Foo\Bar\Baz'],
+                'redis_array' => false,
                 'scan' => null,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
@@ -96,6 +96,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame(
             [
+                'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -140,8 +141,9 @@ class SncRedisExtensionEnvTest extends TestCase
                     'sentinel_username' => null,
                     'sentinel_password' => null,
                     'logging' => false,
-                    'redis_array' => false,
+
                 ],
+                'redis_array' => false,
                 'connection_async' => false,
                 'scan' => null,
                 'read_write_timeout' => null,
@@ -181,7 +183,6 @@ class SncRedisExtensionEnvTest extends TestCase
                     'ssl_context' => null,
                     'sentinel_username' => null,
                     'sentinel_password' => null,
-                    'redis_array' => false,
                 ],
                 'prefix' => null,
                 'read_write_timeout' => null,
@@ -189,6 +190,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'service' => null,
                 'throw_errors' => true,
                 'scan' => null,
+                'redis_array' => false,
             ],
             $clientDefinition->getArgument(2),
         );
@@ -226,6 +228,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'cluster' => true,
                 'connection_async' => false,
                 'connection_persistent' => false,
+                'redis_array' => false,
                 'connection_timeout' => 5,
                 'scan' => null,
                 'read_write_timeout' => null,
@@ -254,8 +257,10 @@ class SncRedisExtensionEnvTest extends TestCase
             [
                 'replication' => 'sentinel',
                 'service' => 'mymaster',
+                'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
+                'redis_array' => false,
                 'connection_timeout' => 5,
                 'scan' => null,
                 'read_write_timeout' => null,
@@ -287,6 +292,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'read_write_timeout' => 1.5,
                 'connection_timeout' => 1.5,
                 'connection_persistent' => true,
+                'redis_array' => false,
                 'connection_async' => false,
                 'scan' => null,
                 'iterable_multibulk' => false,
