@@ -94,7 +94,7 @@ class SncRedisExtension extends Extension
     private function loadClient(array $client, ContainerBuilder $container): void
     {
         $dsnResolver = /**
-         * @return Configuration\RedisDsn|Configuration\RedisEnvDsn
+         * @return RedisDsn|RedisEnvDsn
          */
         static function ($dsn) use ($container) {
             $usedEnvs = null;

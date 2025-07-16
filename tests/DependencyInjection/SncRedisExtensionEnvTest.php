@@ -226,9 +226,9 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame(
             [
                 'cluster' => true,
+                'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
-                'redis_array' => false,
                 'connection_timeout' => 5,
                 'scan' => null,
                 'read_write_timeout' => null,
@@ -260,7 +260,6 @@ class SncRedisExtensionEnvTest extends TestCase
                 'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
-                'redis_array' => false,
                 'connection_timeout' => 5,
                 'scan' => null,
                 'read_write_timeout' => null,

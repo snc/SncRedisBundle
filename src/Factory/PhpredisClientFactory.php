@@ -128,7 +128,7 @@ class PhpredisClientFactory
      * @param RedisDsn[] $dsns
      * @param mixed[]    $options
      *
-     * @return Redis|RedisArray|RedisCluster|Relay\Relay
+     * @return Redis|RedisArray|RedisCluster|Relay
      */
     private function createRedisArrayClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled)
     {
@@ -136,7 +136,10 @@ class PhpredisClientFactory
             throw new LogicException('The redis_array option requires at least two DSNs.');
         }
 
-        $hosts = array_map(static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(), $dsns);
+        $hosts = array_values(array_map(
+            static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(),
+            $dsns
+        ));
 
         $redisArrayOptions = [
             'connect_timeout' => (float) ($options['connection_timeout'] ?? 5),
@@ -419,7 +422,7 @@ class PhpredisClientFactory
      *
      * @return T
      *
-     * @template T of Redis|RedisCluster|Relay\Relay
+     * @template T of Redis|RedisCluster|Relay
      */
     private function createLoggingProxy(object $client, string $alias): object
     {
