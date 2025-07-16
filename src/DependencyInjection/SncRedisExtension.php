@@ -230,7 +230,7 @@ class SncRedisExtension extends Extension
         $connectionCount     = count($options['dsns']);
         $hasClusterOption    = $options['options']['cluster'] !== null;
         $hasSentinelOption   = isset($options['options']['replication']);
-        $hasRedisArrayOption = $client['options']['redis_array'] ?? false;
+        $hasRedisArrayOption = $options['options']['redis_array'] ?? false;
 
         if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption && !$hasRedisArrayOption) {
             throw new LogicException('Use options "cluster", "replication", or "redis_array" to enable support for multi DSN instances.');

@@ -526,8 +526,8 @@ class PhpredisClientFactoryTest extends TestCase
         $this->expectExceptionMessage('The redis_array option cannot be combined with cluster or replication options.');
 
         $dsns    = [
-            new RedisDsn('redis://localhost:6379'),
-            new RedisDsn('redis://localhost:6380'),
+            'redis://localhost:6379',
+            'redis://localhost:6380',
         ];
         $options = ['redis_array' => true, 'cluster' => true];
         $factory = new PhpredisClientFactory(static function (): void {

@@ -6,19 +6,6 @@ namespace Snc\RedisBundle\Factory;
 
 use InvalidArgumentException;
 use LogicException;
-use ProxyManager\Configuration;
-use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
-use ProxyManager\Proxy\AccessInterceptorInterface;
-use Redis;
-use RedisArray;
-use RedisCluster;
-use RedisException;
-use RedisSentinel;
-use ReflectionClass;
-use ReflectionMethod;
-use Relay\Exception as RelayException;
-use Relay\Relay;
-use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
@@ -76,7 +63,7 @@ class PhpredisClientFactory
      * @param list<string|list<string>> $dsns    Multiple DSN string
      * @param mixed[]                   $options Options provided in bundle client config
      *
-     * @return Redis|RedisCluster|Relay|RedisArray
+     * @return Redis|RedisArray|RedisCluster|Relay\Relay
      *
      * @throws InvalidConfigurationException
      * @throws LogicException
@@ -417,7 +404,7 @@ class PhpredisClientFactory
      *
      * @return T
      *
-     * @template T of Redis|Relay|RedisCluster
+     * @template T of Redis|RedisCluster|Relay\Relay
      */
     private function createLoggingProxy(object $client, string $alias): object
     {
