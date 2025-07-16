@@ -227,12 +227,13 @@ class SncRedisExtension extends Extension
     /** @param mixed[] $options A client configuration */
     private function loadPhpredisClient(array $options, ContainerBuilder $container): void
     {
-        $connectionCount   = count($options['dsns']);
-        $hasClusterOption  = $options['options']['cluster'] !== null;
-        $hasSentinelOption = isset($options['options']['replication']);
+        $connectionCount     = count($options['dsns']);
+        $hasClusterOption    = $options['options']['cluster'] !== null;
+        $hasSentinelOption   = isset($options['options']['replication']);
+        $hasRedisArrayOption = $client['options']['redis_array'] ?? false;
 
-        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption) {
-            throw new LogicException('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
+        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption && !$hasRedisArrayOption) {
+            throw new LogicException('Use options "cluster", "replication", or "redis_array" to enable support for multi DSN instances.');
         }
 
         if ($hasClusterOption && $hasSentinelOption) {

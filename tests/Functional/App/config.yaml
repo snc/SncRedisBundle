@@ -19,8 +19,12 @@ snc_redis:
         default:
             type: phpredis
             alias: default
-            dsn: redis://sncredis@localhost
+            dsns: 
+                - redis://sncredis@localhost/1?role=master
+                - redis://sncredis@localhost/2
             logging: '%kernel.debug%'
+            options:
+                redis_array: true
         cache:
             type: predis
             alias: cache

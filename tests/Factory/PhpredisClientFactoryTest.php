@@ -8,14 +8,18 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
+use RedisArray;
 use RedisCluster;
+use RedisSentinel;
 use Relay\Relay;
 use SEEC\PhpUnit\Helper\ConsecutiveParams;
+use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
+use function array_map;
 use function class_exists;
 use function fsockopen;
 use function phpversion;
@@ -467,5 +471,94 @@ class PhpredisClientFactoryTest extends TestCase
 
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertNull($client->getPersistentID());
+    }
+
+    public function testCreateRedisArrayClient(): void
+    {
+        $dsns    = [
+            new RedisDsn('redis://localhost:6379'),
+            new RedisDsn('redis://localhost:6380'),
+        ];
+        $options = [
+            'redis_array' => true,
+            'connection_timeout' => 5,
+            'retry_interval' => 100,
+            'parameters' => ['database' => 0, 'password' => 'mypassword'],
+        ];
+        $factory = new PhpredisClientFactory(static function (): void {
+        }, null);
+        $client  = $factory->create(
+            Redis::class,
+            array_map('strval', $dsns),
+            $options,
+            'default',
+            false,
+        );
+
+        $this->assertInstanceOf(RedisArray::class, $client);
+        $this->assertEquals(['localhost:6379', 'localhost:6380'], $client->getHosts());
+    }
+
+    public function testThrowsExceptionForMultipleDsnsWithoutValidOption(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
+
+        $dsns    = [
+            new RedisDsn('redis://localhost:6379'),
+            new RedisDsn('redis://localhost:6380'),
+        ];
+        $options = [];
+        $factory = new PhpredisClientFactory(static function (): void {
+        }, null);
+        $factory->create(
+            Redis::class,
+            array_map('strval', $dsns),
+            $options,
+            'default',
+            false,
+        );
+    }
+
+    public function testThrowsExceptionForRedisArrayWithClusterOrReplication(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The redis_array option cannot be combined with cluster or replication options.');
+
+        $dsns    = [
+            new RedisDsn('redis://localhost:6379'),
+            new RedisDsn('redis://localhost:6380'),
+        ];
+        $options = ['redis_array' => true, 'cluster' => true];
+        $factory = new PhpredisClientFactory(static function (): void {
+        }, null);
+        $factory->create(
+            Redis::class,
+            array_map('strval', $dsns),
+            $options,
+            'default',
+            false,
+        );
+    }
+
+    public function testThrowsExceptionForRedisArrayWithSentinel(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('The redis_array option is only supported for Redis or Relay classes.');
+
+        $dsns    = [
+            new RedisDsn('redis://localhost:6379'),
+            new RedisDsn('redis://localhost:6380'),
+        ];
+        $options = ['redis_array' => true];
+        $factory = new PhpredisClientFactory(static function (): void {
+        }, null);
+        $factory->create(
+            RedisSentinel::class,
+            array_map('strval', $dsns),
+            $options,
+            'default',
+            false,
+        );
     }
 }

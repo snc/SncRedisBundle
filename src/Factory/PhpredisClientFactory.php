@@ -10,6 +10,7 @@ use ProxyManager\Configuration;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use ProxyManager\Proxy\AccessInterceptorInterface;
 use Redis;
+use RedisArray;
 use RedisCluster;
 use RedisException;
 use RedisSentinel;
@@ -75,7 +76,7 @@ class PhpredisClientFactory
      * @param list<string|list<string>> $dsns    Multiple DSN string
      * @param mixed[]                   $options Options provided in bundle client config
      *
-     * @return Redis|RedisCluster|Relay
+     * @return Redis|RedisCluster|Relay|RedisArray
      *
      * @throws InvalidConfigurationException
      * @throws LogicException
@@ -96,6 +97,18 @@ class PhpredisClientFactory
 
         $parsedDsns = array_map(static fn (string $dsn) => new RedisDsn($dsn), $dsns);
 
+        if ($options['redis_array'] ?? false) {
+            if ($isSentinel || $isCluster) {
+                throw new LogicException('The redis_array option is only supported for Redis or Relay classes.');
+            }
+
+            if ($options['cluster'] || $options['replication']) {
+                throw new LogicException('The redis_array option cannot be combined with cluster or replication options.');
+            }
+
+            return $this->createRedisArrayClient($parsedDsns, $class, $alias, $options, $loggingEnabled);
+        }
+
         if ($isRedis || $isRelay) {
             if (count($parsedDsns) > 1) {
                 throw new LogicException('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
@@ -109,6 +122,58 @@ class PhpredisClientFactory
         }
 
         return $this->createClusterClient($parsedDsns, $class, $alias, $options, $loggingEnabled);
+    }
+
+    /**
+     * @param RedisDsn[] $dsns
+     * @param mixed[]    $options
+     */
+    private function createRedisArrayClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisArray
+    {
+        if (count($dsns) < 2) {
+            throw new LogicException('The redis_array option requires at least two DSNs.');
+        }
+
+        $hosts = array_map(static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(), $dsns);
+
+        $redisArrayOptions = [
+            'connect_timeout' => (float) ($options['connection_timeout'] ?? 5),
+            'retry_interval' => (int) ($options['retry_interval'] ?? 100),
+        ];
+
+        $username = $options['parameters']['username'] ?? null;
+        $password = $options['parameters']['password'] ?? null;
+        if ($username !== null && $password !== null) {
+            $redisArrayOptions['auth'] = [$username, $password];
+        } elseif ($password !== null) {
+            $redisArrayOptions['auth'] = $password;
+        }
+
+        try {
+            $client = new RedisArray($hosts, $redisArrayOptions);
+        } catch (RedisException $e) {
+            throw new RedisException(sprintf('Failed to create RedisArray with hosts %s: %s', implode(', ', $hosts), $e->getMessage()), 0, $e);
+        }
+
+        $connectedHosts = $client->getHosts();
+        if (empty($connectedHosts)) {
+            throw new LogicException(sprintf('RedisArray failed to connect to any hosts: %s', implode(', ', $hosts)));
+        }
+
+        $db = $options['parameters']['database'] ?? null;
+        if ($db !== null && $db !== '') {
+            $client->select($db);
+        }
+
+        if (isset($options['prefix'])) {
+            $client->setOption(Redis::OPT_PREFIX, $options['prefix']);
+        }
+
+        if (isset($options['serialization'])) {
+            $client->setOption(Redis::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
+        }
+
+        return $loggingEnabled ? $this->createLoggingProxy($client, $alias) : $client;
     }
 
     /**
