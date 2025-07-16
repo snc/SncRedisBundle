@@ -16,6 +16,7 @@ namespace Snc\RedisBundle\DependencyInjection;
 use InvalidArgumentException;
 use LogicException;
 use Predis\Client;
+use Redis;
 use RedisSentinel;
 use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -31,7 +32,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Redis;
 
 use function array_map;
 use function assert;
