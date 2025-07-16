@@ -31,6 +31,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Redis;
 
 use function array_map;
 use function assert;
@@ -159,6 +160,10 @@ class SncRedisExtension extends Extension
         $client['options']['exceptions'] = $client['options']['throw_errors'];
         // fix ssl configuration key name
         $client['options']['ssl'] = $client['options']['parameters']['ssl_context'] ?? [];
+
+        if (isset($client['options']['scan']) && $client['options']['scan'] === 'prefix') {
+            $client['options']['scan'] = Redis::SCAN_PREFIX;
+        }
 
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);

@@ -301,6 +301,10 @@ class PhpredisClientFactory
             $client->setOption($class::OPT_PREFIX, $options['prefix']);
         }
 
+        if (isset($options['scan']) && $options['scan'] === 'prefix') {
+            $client->setOption($class::OPT_SCAN, $class::SCAN_PREFIX);
+        }
+
         if (isset($options['read_write_timeout'])) {
             $client->setOption($class::OPT_READ_TIMEOUT, (float) $options['read_write_timeout']);
         }

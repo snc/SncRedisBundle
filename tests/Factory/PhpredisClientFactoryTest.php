@@ -468,4 +468,19 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertNull($client->getPersistentID());
     }
+
+    public function testScanOption()
+    {
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+        $options = [
+            'connection_timeout' => 0.0,
+            'connection_persistent' => false,
+            'scan' => 'prefix'
+        ];
+
+        $client = $factory->create(Redis::class, ['redis://localhost:6379'], $options, 'default', false);
+
+        $this->assertInstanceOf(Redis::class, $client);
+        $this->assertEquals(Redis::SCAN_PREFIX, $client->getOption(Redis::OPT_SCAN));
+    }
 }
