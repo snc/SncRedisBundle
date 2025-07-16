@@ -157,9 +157,9 @@ class PhpredisClientFactory
         try {
             /** @var list<string> $hostsList */
             $hostsList = array_map('strval', $hosts);
-            $client = new RedisArray($hostsList, $redisArrayOptions);
-        } catch (\RedisException $e) {
-            throw new \RedisException(sprintf('Failed to create RedisArray with hosts %s: %s', implode(', ', $hosts), $e->getMessage()), 0, $e);
+            $client    = new RedisArray($hostsList, $redisArrayOptions);
+        } catch (RedisException $e) {
+            throw new RedisException(sprintf('Failed to create RedisArray with hosts %s: %s', implode(', ', $hosts), $e->getMessage()), 0, $e);
         }
 
         $connectedHosts = $client->getHosts();
