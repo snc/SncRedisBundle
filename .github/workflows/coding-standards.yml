@@ -2,29 +2,31 @@ name: "CS"
 
 on:
   push:
+    branches: [main, master]
   pull_request:
+    branches: [main, master]
 
 jobs:
   coding-standards:
     name: "Coding Standards"
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
 
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
+      - name: "Checkout code"
+        uses: actions/checkout@v4
 
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+      - name: "Set up PHP"
+        uses: shivammathur/setup-php@v2
         with:
-          coverage: "none"
-          php-version: "7.4"
-          tools: "cs2pr"
+          php-version: '7.4'
+          coverage: none
+          tools: cs2pr
 
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+      - name: "Install Composer dependencies"
+        uses: ramsey/composer-install@v3
         with:
-          dependency-versions: "highest"
+          dependency-versions: highest
 
       # https://github.com/doctrine/.github/issues/3
       - name: "Run PHP_CodeSniffer"
-        run: "vendor/bin/phpcs -q --no-colors --report=checkstyle | cs2pr"
+        run: vendor/bin/phpcs -q --no-colors --report=checkstyle | cs2pr
