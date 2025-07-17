@@ -51,6 +51,14 @@ jobs:
           ini-values: "zend.assertions=1, max_execution_time=30"
           tools: "flex"
 
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
