@@ -301,9 +301,8 @@ class PhpredisClientFactory
             $client->setOption($class::OPT_PREFIX, $options['prefix']);
         }
 
-        // Support for scan option since https://github.com/phpredis/phpredis/issues/548
-        if (isset($options['scan']) && $options['scan'] === 'prefix') {
-            $client->setOption($class::OPT_SCAN, $class::SCAN_PREFIX);
+        if (isset($options['scan'])) {
+            $client->setOption($class::OPT_SCAN, $options['scan']);
         }
 
         if (isset($options['read_write_timeout'])) {

@@ -6,7 +6,6 @@ namespace Snc\RedisBundle\Factory;
 
 use InvalidArgumentException;
 use Predis\Connection\ParametersInterface;
-use Redis;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 use function array_filter;
@@ -28,13 +27,8 @@ class PredisParametersFactory
         }
 
         $defaultOptions = ['timeout' => null]; // Allow to be consistent with old version of Predis where default timeout was 5
-
-        if (isset($options['scan']) && $options['scan'] === 'prefix') {
-            $dsnOptions[Redis::OPT_SCAN] = Redis::SCAN_PREFIX;
-        }
-
-        $dsnOptions = static::parseDsn(new RedisDsn($dsn));
-        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
+        $dsnOptions     = static::parseDsn(new RedisDsn($dsn));
+        $dsnOptions     = array_merge($defaultOptions, $options, $dsnOptions);
 
         if (!empty($dsnOptions['persistent']) && !empty($dsnOptions['database'])) {
             $dsnOptions['persistent'] = (int) $dsnOptions['database'];

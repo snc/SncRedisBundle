@@ -191,6 +191,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 10,
                 'connection_persistent' => 'x',
                 'prefix' => 'toto',
+                'scan' => Redis::SCAN_PREFIX,
                 'serialization' => 'php',
                 'read_write_timeout' => 4,
                 'parameters' => [
@@ -210,6 +211,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame('sncredis', $client->getAuth());
         $this->assertNotNull($client->getPersistentID());
         $this->assertNotFalse($client->getPersistentID());
+        $this->assertEquals(Redis::SCAN_PREFIX, $client->getOption(Redis::OPT_SCAN));
     }
 
     public function testDsnConfig(): void
@@ -467,20 +469,5 @@ class PhpredisClientFactoryTest extends TestCase
 
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertNull($client->getPersistentID());
-    }
-
-    public function testScanOption(): void
-    {
-        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
-        $options = [
-            'connection_timeout' => 0.0,
-            'connection_persistent' => false,
-            'scan' => 'prefix',
-        ];
-
-        $client = $factory->create(Redis::class, ['redis://localhost:6379'], $options, 'default', false);
-
-        $this->assertInstanceOf(Redis::class, $client);
-        $this->assertEquals(Redis::SCAN_PREFIX, $client->getOption(Redis::OPT_SCAN));
     }
 }

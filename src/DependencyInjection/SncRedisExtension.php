@@ -16,7 +16,6 @@ namespace Snc\RedisBundle\DependencyInjection;
 use InvalidArgumentException;
 use LogicException;
 use Predis\Client;
-use Redis;
 use RedisSentinel;
 use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -160,10 +159,6 @@ class SncRedisExtension extends Extension
         $client['options']['exceptions'] = $client['options']['throw_errors'];
         // fix ssl configuration key name
         $client['options']['ssl'] = $client['options']['parameters']['ssl_context'] ?? [];
-
-        if (isset($client['options']['scan']) && $client['options']['scan'] === 'prefix') {
-            $client['options']['scan'] = Redis::SCAN_PREFIX;
-        }
 
         unset($client['options']['connection_async']);
         unset($client['options']['connection_timeout']);

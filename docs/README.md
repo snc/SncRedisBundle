@@ -295,21 +295,6 @@ framework:
                 provider: snc_redis.cache
 ```
 
-### PhpRedis Scan Option ###
-
-To enable the `SCAN_PREFIX` feature for PhpRedis clients, add the `scan` option:
-
-```yaml
-snc_redis:
-    clients:
-        default:
-            type: phpredis
-            alias: default
-            dsn: redis://localhost
-            options:
-                scan: prefix
-```
-
 ### Complete configuration example ###
 
 ``` yaml
@@ -338,7 +323,7 @@ snc_redis:
                 connection_timeout: 10
                 connection_persistent: true
                 read_write_timeout: 30
-                scan: prefix
+                scan: !php/const REDIS::SCAN_PREFIX # OPT_SCAN option, phpredis only
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: predis

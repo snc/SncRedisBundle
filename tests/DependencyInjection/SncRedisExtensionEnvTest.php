@@ -127,6 +127,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'connection_timeout' => 10,
                 'connection_persistent' => true,
                 'prefix' => 'totoprofix',
+                'scan' => Redis::SCAN_PREFIX,
                 'serialization' => 'php',
                 'parameters' => [
                     'ssl_context' => [
@@ -142,7 +143,6 @@ class SncRedisExtensionEnvTest extends TestCase
                     'logging' => false,
                 ],
                 'connection_async' => false,
-                'scan' => null,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
                 'throw_errors' => true,
@@ -182,11 +182,11 @@ class SncRedisExtensionEnvTest extends TestCase
                     'sentinel_password' => null,
                 ],
                 'prefix' => null,
+                'scan' => Redis::SCAN_NORETRY,
                 'read_write_timeout' => null,
                 'serialization' => 'php',
                 'service' => null,
                 'throw_errors' => true,
-                'scan' => null,
             ],
             $clientDefinition->getArgument(2),
         );

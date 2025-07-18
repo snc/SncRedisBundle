@@ -128,7 +128,8 @@ class PredisParametersFactoryTest extends TestCase
             'everything in DSN' => [
                 'rediss://pw@localhost:6380/0?prefix=foo&alias=connection_alias',
                 [],
-                $allOptions = [
+                $allOptions =
+                [
                     'scheme' => 'tls',
                     'host' => 'localhost',
                     'port' => 6380,
@@ -138,7 +139,7 @@ class PredisParametersFactoryTest extends TestCase
                     'alias' => 'connection_alias',
                 ],
             ],
-            'everything in options' => ['rediss://localhost:6380', $allOptions, $allOptions]
+            'everything in options' => ['rediss://localhost:6380', $allOptions, $allOptions],
         ];
     }
 
@@ -163,17 +164,5 @@ class PredisParametersFactoryTest extends TestCase
 
         /** @psalm-suppress InvalidArgument */
         PredisParametersFactory::create([], stdClass::class, 'redis://localhost');
-    }
-
-    public function testScanOption(): void
-    {
-        $dsn     = 'redis://localhost:6379';
-        $options = ['scan' => 'prefix'];
-
-        $parameters = PredisParametersFactory::create($options, Parameters::class, $dsn);
-
-        $this->assertInstanceOf(Parameters::class, $parameters);
-        $this->assertArrayHasKey('scan', $parameters->toArray());
-        $this->assertSame('prefix', $parameters->toArray()['scan']);
     }
 }
