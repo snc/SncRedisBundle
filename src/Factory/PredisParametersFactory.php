@@ -16,7 +16,10 @@ use function sprintf;
 /** @internal */
 class PredisParametersFactory
 {
-    /** @param array<string, mixed> $options */
+    /**
+     * @param class-string<ParametersInterface> $class
+     * @param array<string, mixed>              $options
+     */
     public static function create(array $options, string $class, string $dsn): ParametersInterface
     {
         if (!is_a($class, ParametersInterface::class, true)) {
@@ -41,6 +44,7 @@ class PredisParametersFactory
         $options = [
             'password' => $dsn->getPassword(),
             'weight' => $dsn->getWeight(),
+            'prefix' => $dsn->getPrefix(),
         ];
 
         if ($socket !== null) {

@@ -14,13 +14,12 @@ use function sprintf;
 
 class PredisParametersFactoryTest extends TestCase
 {
-    /** @return array<array{0: string, 1: class-string, 2: array<string, mixed>, 3: array<string, mixed>}> */
+    /** @return array<array{0: string, 1: array<string, mixed>, 2: array<string, mixed>}> */
     public static function createDp(): array
     {
         return [
             [
                 'redis://z:df577d779b4f724c8c29b5eff5bcc534b732722b9df308a661f1b79014175063d5@ec2-34-321-123-45.us-east-1.compute.amazonaws.com:3210',
-                Parameters::class,
                 [
                     'test' => 123,
                     'some' => 'string',
@@ -48,7 +47,6 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://pw@/var/run/redis/redis-1.sock/10',
-                Parameters::class,
                 [
                     'test' => 124,
                     'password' => 'toto',
@@ -72,7 +70,6 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'rediss://pw@localhost:6380',
-                Parameters::class,
                 [],
                 [
                     'scheme' => 'tls',
@@ -83,7 +80,6 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://localhost?alias=master',
-                Parameters::class,
                 ['replication' => 'predis'],
                 [
                     'scheme' => 'tcp',
@@ -98,7 +94,6 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://localhost?alias=connection_alias',
-                Parameters::class,
                 [
                     'replication' => 'predis',
                     'alias' => 'client_alias',
@@ -116,23 +111,35 @@ class PredisParametersFactoryTest extends TestCase
             ],
             [
                 'redis://localhost/0',
-                Parameters::class,
                 ['persistent' => true],
                 [
                     'persistent' => true,
                     'database' => 0,
                 ],
             ],
-
             [
                 'redis://localhost',
-                Parameters::class,
                 ['database' => 11, 'password' => 'pass'],
                 [
                     'database' => 11,
                     'password' => 'pass',
                 ],
             ],
+            'everything in DSN' => [
+                'rediss://pw@localhost:6380/0?prefix=foo&alias=connection_alias',
+                [],
+                $allOptions =
+                [
+                    'scheme' => 'tls',
+                    'host' => 'localhost',
+                    'port' => 6380,
+                    'password' => 'pw',
+                    'database' => 0,
+                    'prefix' => 'foo',
+                    'alias' => 'connection_alias',
+                ],
+            ],
+            'everything in options' => ['rediss://localhost:6380', $allOptions, $allOptions],
         ];
     }
 
@@ -142,11 +149,9 @@ class PredisParametersFactoryTest extends TestCase
      *
      * @dataProvider createDp
      */
-    public function testCreate(string $dsn, string $class, array $options, array $expectedParameters): void
+    public function testCreate(string $dsn, array $options, array $expectedParameters): void
     {
-        $parameters = PredisParametersFactory::create($options, $class, $dsn);
-
-        $this->assertInstanceOf($class, $parameters);
+        $parameters = PredisParametersFactory::create($options, Parameters::class, $dsn);
 
         foreach ($expectedParameters as $name => $value) {
             $this->assertSame($value, $parameters->{$name}, sprintf("Wrong '%s' value", $name));
@@ -157,6 +162,7 @@ class PredisParametersFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
+        /** @psalm-suppress InvalidArgument */
         PredisParametersFactory::create([], stdClass::class, 'redis://localhost');
     }
 }
