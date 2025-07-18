@@ -135,6 +135,7 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                     ->end()
                                     ->scalarNode('connection_timeout')->cannotBeEmpty()->defaultValue(5)->end()
+                                    ->integerNode('scan')->defaultNull()->end()
                                     ->scalarNode('read_write_timeout')->defaultNull()->end()
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()

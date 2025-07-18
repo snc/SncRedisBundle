@@ -350,6 +350,7 @@ snc_redis:
                 connection_timeout: 10
                 connection_persistent: true
                 read_write_timeout: 30
+                scan: !php/const REDIS::SCAN_PREFIX # OPT_SCAN option, phpredis only
                 iterable_multibulk: false
                 throw_errors: true
                 cluster: predis

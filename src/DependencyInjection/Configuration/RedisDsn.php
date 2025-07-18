@@ -52,6 +52,8 @@ class RedisDsn
 
     protected ?string $role = null;
 
+    protected ?string $prefix = null;
+
     public function __construct(string $dsn)
     {
         $this->dsn = $dsn;
@@ -117,6 +119,11 @@ class RedisDsn
     public function getPersistentId(): string
     {
         return md5($this->dsn);
+    }
+
+    public function getPrefix(): ?string
+    {
+        return $this->prefix;
     }
 
     public function isValid(): bool
@@ -200,6 +207,10 @@ class RedisDsn
 
         if (!empty($params['role'])) {
             $this->role = $params['role'];
+        }
+
+        if (!empty($params['prefix'])) {
+            $this->prefix = $params['prefix'];
         }
 
         return '';

@@ -18,12 +18,14 @@ jobs:
         with:
           coverage: "none"
           php-version: "7.4"
-          tools: "cs2pr"
+          tools: "cs2pr,composer-normalize"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
+      - name: "Ensure composer.json is normalized"
+        run: 'composer normalize --dry-run'
 
       # https://github.com/doctrine/.github/issues/3
       - name: "Run PHP_CodeSniffer"
