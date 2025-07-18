@@ -1,15 +1,13 @@
 {
     "name": "snc/redis-bundle",
-    "type": "symfony-bundle",
     "description": "A Redis bundle for Symfony",
+    "license": "MIT",
+    "type": "symfony-bundle",
     "keywords": [
         "redis",
         "nosql",
         "symfony"
     ],
-    "homepage": "https://github.com/snc/SncRedisBundle",
-    "license": "MIT",
-    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Henrik Westphal",
@@ -20,13 +18,15 @@
             "homepage": "https://github.com/snc/SncRedisBundle/contributors"
         }
     ],
+    "homepage": "https://github.com/snc/SncRedisBundle",
     "require": {
         "php": "^7.4 || ^8.0",
+        "localheinz/composer-normalize": "^2.47",
         "symfony/deprecation-contracts": "^2 || ^3",
-        "symfony/framework-bundle": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/http-foundation": "^5.4.20 ||^6.0 || ^7.0",
+        "symfony/framework-bundle": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/http-foundation": "^5.4.20 || ^6.0 || ^7.0",
         "symfony/service-contracts": ">=1.0",
-        "symfony/var-dumper": "^5.4.20 ||^6.0 || ^7.0"
+        "symfony/var-dumper": "^5.4.20 || ^6.0 || ^7.0"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
@@ -36,41 +36,30 @@
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
         "phpunit/phpunit": "^9.5.28 || ^10",
-        "predis/predis": "^2.0 || ^3.0 ",
+        "predis/predis": "^2.0 || ^3.0",
         "seec/phpunit-consecutive-params": "^1.1.4",
-        "symfony/browser-kit": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/cache": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/config": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/console": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/dom-crawler": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/filesystem": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/stopwatch": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/twig-bundle": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/web-profiler-bundle": "^5.4.20 ||^6.0 || ^7.0",
-        "symfony/yaml": "^5.4.20 ||^6.0 || ^7.0",
-        "vimeo/psalm": "^5|^6"
+        "symfony/browser-kit": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/cache": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/config": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/console": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/dom-crawler": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/filesystem": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/stopwatch": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/twig-bundle": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/web-profiler-bundle": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/yaml": "^5.4.20 || ^6.0 || ^7.0",
+        "vimeo/psalm": "^5 || ^6"
+    },
+    "conflict": {
+        "ext-redis": "<5.3.2",
+        "predis/predis": "<2.0"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
         "predis/predis": "If you want to use predis.",
         "symfony/console": "If you want to use commands to interact with the redis database"
     },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "symfony/flex": true
-        }
-    },
-    "conflict": {
-        "ext-redis": "<5.3.2",
-        "predis/predis": "<2.0"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.x-dev"
-        }
-    },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Snc\\RedisBundle\\": "src/"
@@ -79,6 +68,19 @@
     "autoload-dev": {
         "psr-4": {
             "Snc\\RedisBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "localheinz/composer-normalize": true,
+            "symfony/flex": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.x-dev"
         }
     },
     "scripts": {
