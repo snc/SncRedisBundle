@@ -128,8 +128,7 @@ class PredisParametersFactoryTest extends TestCase
             'everything in DSN' => [
                 'rediss://pw@localhost:6380/0?prefix=foo&alias=connection_alias',
                 [],
-                $allOptions =
-                [
+                $allOptions = [
                     'scheme' => 'tls',
                     'host' => 'localhost',
                     'port' => 6380,
@@ -139,7 +138,7 @@ class PredisParametersFactoryTest extends TestCase
                     'alias' => 'connection_alias',
                 ],
             ],
-            'everything in options' => ['rediss://localhost:6380', $allOptions, $allOptions],
+            'everything in options' => ['rediss://localhost:6380', $allOptions, $allOptions]
         ];
     }
 
