@@ -12,6 +12,7 @@ snc_redis:
                 connection_timeout: 10
                 connection_persistent: true
                 prefix: totoprofix
+                scan: !php/const Redis::SCAN_PREFIX
                 serialization: php
                 parameters:
                     ssl_context: {'verify_peer': false, 'allow_self_signed': true, 'verify_peer_name': false}

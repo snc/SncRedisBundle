@@ -191,6 +191,7 @@ class PhpredisClientFactoryTest extends TestCase
                 'connection_timeout' => 10,
                 'connection_persistent' => 'x',
                 'prefix' => 'toto',
+                'scan' => Redis::SCAN_PREFIX,
                 'serialization' => 'php',
                 'read_write_timeout' => 4,
                 'parameters' => [
@@ -210,6 +211,7 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame('sncredis', $client->getAuth());
         $this->assertNotNull($client->getPersistentID());
         $this->assertNotFalse($client->getPersistentID());
+        $this->assertEquals(Redis::SCAN_PREFIX, $client->getOption(Redis::OPT_SCAN));
     }
 
     public function testDsnConfig(): void
