@@ -21,7 +21,6 @@
     "homepage": "https://github.com/snc/SncRedisBundle",
     "require": {
         "php": "^7.4 || ^8.0",
-        "localheinz/composer-normalize": "^2.47",
         "symfony/deprecation-contracts": "^2 || ^3",
         "symfony/framework-bundle": "^5.4.20 || ^6.0 || ^7.0",
         "symfony/http-foundation": "^5.4.20 || ^6.0 || ^7.0",
@@ -33,6 +32,7 @@
         "ext-redis": "*",
         "doctrine/annotations": "^2.0",
         "doctrine/coding-standard": "^12.0",
+        "ergebnis/composer-normalize": "^2.47",
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
         "phpunit/phpunit": "^9.5.28 || ^10",
@@ -73,7 +73,7 @@
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "localheinz/composer-normalize": true,
+            "ergebnis/composer-normalize": true,
             "symfony/flex": true
         },
         "sort-packages": true
