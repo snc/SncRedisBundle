@@ -25,7 +25,7 @@ jobs:
         with:
           dependency-versions: "highest"
       - name: "Ensure composer.json is normalized"
-        run: 'composer normalize --dry-run'
+        run: 'composer-normalize --dry-run'
 
       # https://github.com/doctrine/.github/issues/3
       - name: "Run PHP_CodeSniffer"
