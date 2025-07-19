@@ -121,6 +121,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('options')
                                 ->addDefaultsIfNotSet()
                                 ->children()
+                                    ->booleanNode('redis_array')->defaultFalse()->end()
                                     ->arrayNode('commands')
                                         ->useAttributeAsKey('name')
                                         ->scalarPrototype()->end()

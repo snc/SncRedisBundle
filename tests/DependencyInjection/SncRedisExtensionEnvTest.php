@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Redis;
@@ -59,6 +58,7 @@ class SncRedisExtensionEnvTest extends TestCase
                     'logging' => false,
                 ],
                 'commands' => ['foo' => 'Foo\Bar\Baz'],
+                'redis_array' => false,
                 'scan' => null,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
@@ -96,6 +96,7 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertSame(
             [
+                'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -141,7 +142,9 @@ class SncRedisExtensionEnvTest extends TestCase
                     'sentinel_username' => null,
                     'sentinel_password' => null,
                     'logging' => false,
+
                 ],
+                'redis_array' => false,
                 'connection_async' => false,
                 'read_write_timeout' => null,
                 'iterable_multibulk' => false,
@@ -187,6 +190,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'serialization' => 'php',
                 'service' => null,
                 'throw_errors' => true,
+                'redis_array' => false,
             ],
             $clientDefinition->getArgument(2),
         );
@@ -222,6 +226,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame(
             [
                 'cluster' => true,
+                'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -252,6 +257,7 @@ class SncRedisExtensionEnvTest extends TestCase
             [
                 'replication' => 'sentinel',
                 'service' => 'mymaster',
+                'redis_array' => false,
                 'connection_async' => false,
                 'connection_persistent' => false,
                 'connection_timeout' => 5,
@@ -285,6 +291,7 @@ class SncRedisExtensionEnvTest extends TestCase
                 'read_write_timeout' => 1.5,
                 'connection_timeout' => 1.5,
                 'connection_persistent' => true,
+                'redis_array' => false,
                 'connection_async' => false,
                 'scan' => null,
                 'iterable_multibulk' => false,
@@ -295,14 +302,6 @@ class SncRedisExtensionEnvTest extends TestCase
             ],
             $clientDefinition->getArgument(2),
         );
-    }
-
-    public function testPhpRedisArrayIsNotSupported(): void
-    {
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
-
-        $this->getConfiguredContainer('env_phpredis_array_not_supported');
     }
 
     private function getConfiguredContainer(string $file): ContainerBuilder
