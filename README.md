@@ -6,7 +6,7 @@
 
 ## About ##
 
-This bundle integrates [Predis](https://github.com/nrk/predis) and [PhpRedis](https://github.com/phpredis/phpredis) into your Symfony 4.4+ application,
+This bundle integrates [Predis](https://github.com/nrk/predis) and [PhpRedis](https://github.com/phpredis/phpredis) into your Symfony 6.4+ application,
 providing a fast and convenient interface to [Redis](https://redis.io/).
 
 Using the native PhpRedis extension is recommended as it is faster and our main development platform. If the extension is not available and cannot
