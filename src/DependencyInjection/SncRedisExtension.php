@@ -93,7 +93,8 @@ class SncRedisExtension extends Extension
     /** @param array{dsns: array<mixed>, type: string} $client */
     private function loadClient(array $client, ContainerBuilder $container): void
     {
-        $dsnResolver = static function ($dsn) use ($container) {
+        $dsnResolver = /** @return RedisDsn|RedisEnvDsn */
+        static function ($dsn) use ($container) {
             $usedEnvs = null;
             $container->resolveEnvPlaceholders($dsn, null, $usedEnvs);
 
@@ -227,12 +228,13 @@ class SncRedisExtension extends Extension
     /** @param mixed[] $options A client configuration */
     private function loadPhpredisClient(array $options, ContainerBuilder $container): void
     {
-        $connectionCount   = count($options['dsns']);
-        $hasClusterOption  = $options['options']['cluster'] !== null;
-        $hasSentinelOption = isset($options['options']['replication']);
+        $connectionCount     = count($options['dsns']);
+        $hasClusterOption    = $options['options']['cluster'] !== null;
+        $hasSentinelOption   = isset($options['options']['replication']);
+        $hasRedisArrayOption = $options['options']['redis_array'] ?? false;
 
-        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption) {
-            throw new LogicException('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
+        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption && !$hasRedisArrayOption) {
+            throw new LogicException('Use options "cluster", "replication", or "redis_array" to enable support for multi DSN instances.');
         }
 
         if ($hasClusterOption && $hasSentinelOption) {

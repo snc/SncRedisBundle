@@ -295,6 +295,33 @@ framework:
                 provider: snc_redis.cache
 ```
 
+### RedisArray Support ###
+
+The bundle supports RedisArray for phpredis clients, allowing data distribution across multiple Redis instances using the same client class as single connections.
+
+Example configuration:
+
+```yaml
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsns:
+                - redis://localhost:6379
+                - redis://localhost:6380
+            options:
+                connection_timeout: 5
+                retry_interval: 100
+                parameters:
+                    database: 0
+                    password: mypassword
+                redis_array: true
+```
+
+This configuration creates a RedisArray client for multiple Redis instances.
+
+
 ### Complete configuration example ###
 
 ``` yaml
