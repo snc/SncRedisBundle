@@ -19,7 +19,7 @@ jobs:
         with:
           coverage: "none"
           extensions: "relay"
-          php-version: "7.4"
+          php-version: "8.4"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
