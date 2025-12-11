@@ -34,7 +34,6 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Yaml\Parser;
 
@@ -236,29 +235,6 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals('snc_redis.connection.master_parameters.second', (string) $secondParameters[0]);
         $secondMasterParameters = $container->getDefinition((string) $secondParameters[0])->getArgument(0);
         $this->assertEquals('secondprefix', $secondMasterParameters['prefix']);
-    }
-
-    /**
-     * Test valid XML config
-     *
-     * @doesNotPerformAssertions
-     */
-    public function testValidXmlConfig(): void
-    {
-        $container = $this->getContainer();
-        $container->registerExtension(new SncRedisExtension());
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config/xml'));
-        $loader->load('valid.xml');
-    }
-
-    public function testInvalidXmlConfig(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $container = $this->getContainer();
-        $container->registerExtension(new SncRedisExtension());
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures/config/xml'));
-        $loader->load('invalid.xml');
     }
 
     /**

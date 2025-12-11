@@ -1,5 +1,4 @@
 framework:
-    annotations: true
     http_method_override: false
     secret: test
     test: ~
@@ -8,7 +7,6 @@ framework:
 
 twig:
     strict_variables: true
-    exception_controller: null
 
 web_profiler:
     toolbar: false

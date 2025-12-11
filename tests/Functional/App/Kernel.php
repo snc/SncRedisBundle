@@ -54,7 +54,6 @@ class Kernel extends BaseKernel
         $loader->load(static function (ContainerBuilder $container): void {
             $framework = [
                 'router' => ['resource' => 'kernel::loadRoutes', 'type' => 'service', 'utf8' => true],
-                'annotations' => class_exists(Annotation::class) && self::VERSION_ID < 60400,
             ];
 
             // Since symfony/framework-bundle 5.3: Not setting the "framework.session.storage_factory_id" configuration option

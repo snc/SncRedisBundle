@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redis="http://symfony.com/schema/dic/redis" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/redis http://symfony.com/schema/dic/redis/redis-1.0.xsd">
-    <redis:config>
-        <redis:client logging="true" type="phpredis">
-            <redis:dsn>redis://localhost</redis:dsn>
-            <redis:options connection-async="true" connection-persistent="true" connection-timeout="66" read-write-timeout="123" iterable-multibulk="true" throw-errors="true" />
-        </redis:client>
-    </redis:config>
-</container>

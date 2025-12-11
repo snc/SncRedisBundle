@@ -20,12 +20,12 @@
     ],
     "homepage": "https://github.com/snc/SncRedisBundle",
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.2",
         "symfony/deprecation-contracts": "^2 || ^3",
-        "symfony/framework-bundle": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/http-foundation": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/framework-bundle": "^6.4 || ^7.3 || ^8.0",
+        "symfony/http-foundation": "^6.4 || ^7.3 || ^8.0",
         "symfony/service-contracts": ">=1.0",
-        "symfony/var-dumper": "^5.4.20 || ^6.0 || ^7.0"
+        "symfony/var-dumper": "^6.4 || ^7.3 || ^8.0"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
@@ -37,16 +37,16 @@
         "phpunit/phpunit": "^9.5.28 || ^10",
         "predis/predis": "^2.0 || ^3.0",
         "seec/phpunit-consecutive-params": "^1.1.4",
-        "symfony/browser-kit": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/cache": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/config": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/console": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/dom-crawler": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/filesystem": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/stopwatch": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/twig-bundle": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/web-profiler-bundle": "^5.4.20 || ^6.0 || ^7.0",
-        "symfony/yaml": "^5.4.20 || ^6.0 || ^7.0",
+        "symfony/browser-kit": "^6.4 || ^7.3 || ^8.0",
+        "symfony/cache": "^6.4 || ^7.3 || ^8.0",
+        "symfony/config": "^6.4 || ^7.3 || ^8.0",
+        "symfony/console": "^6.4 || ^7.3 || ^8.0",
+        "symfony/dom-crawler": "^6.4 || ^7.3 || ^8.0",
+        "symfony/filesystem": "^6.4 || ^7.3 || ^8.0",
+        "symfony/stopwatch": "^6.4 || ^7.3 || ^8.0",
+        "symfony/twig-bundle": "^6.4 || ^7.3 || ^8.0",
+        "symfony/web-profiler-bundle": "^6.4 || ^7.3 || ^8.0",
+        "symfony/yaml": "^6.4 || ^7.3 || ^8.0",
         "vimeo/psalm": "^5 || ^6"
     },
     "conflict": {
