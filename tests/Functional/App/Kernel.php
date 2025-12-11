@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App;
 
-use Doctrine\Common\Annotations\Annotation;
 use ReflectionObject;
 use Snc\RedisBundle\SncRedisBundle;
 use Snc\RedisBundle\Tests\Functional\App\Controller\Controller;
@@ -29,7 +28,6 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 use function assert;
-use function class_exists;
 use function dirname;
 
 class Kernel extends BaseKernel

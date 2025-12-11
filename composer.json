@@ -58,7 +58,7 @@
         "predis/predis": "If you want to use predis.",
         "symfony/console": "If you want to use commands to interact with the redis database"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "rc",
     "autoload": {
         "psr-4": {
             "Snc\\RedisBundle\\": "src/"
