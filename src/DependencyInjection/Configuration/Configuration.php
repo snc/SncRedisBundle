@@ -77,6 +77,7 @@ final class Configuration implements ConfigurationInterface
 
     /**
      * Adds the snc_redis.clients configuration
+     * @psalm-suppress UnusedMethodCall
      */
     private function addClientsSection(ArrayNodeDefinition $rootNode): void
     {
@@ -177,12 +178,12 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            /** @psalm-suppress UnusedMethodCall */
             ->end();
     }
 
     /**
      * Adds the snc_redis.monolog configuration
+     * @psalm-suppress UnusedMethodCall
      */
     private function addMonologSection(ArrayNodeDefinition $rootNode): void
     {
@@ -196,7 +197,6 @@ final class Configuration implements ConfigurationInterface
                         ->scalarNode('formatter')->end()
                     ->end()
                 ->end()
-            /** @psalm-suppress UnusedMethodCall */
             ->end();
     }
 }
