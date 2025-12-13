@@ -55,7 +55,7 @@ final class SncRedisExtension extends Extension
 
         $phpredisFactoryDefinition = $container->getDefinition('snc_redis.phpredis_factory');
 
-        if (!$container->getParameter('kernel.debug')) {
+        if ($container->getParameter('kernel.debug') === false) {
             $container->getDefinition(RedisCallInterceptor::class)->replaceArgument(1, null);
         }
 
@@ -97,11 +97,11 @@ final class SncRedisExtension extends Extension
     /** @param array{dsns: array<mixed>, type: string} $client */
     private function loadClient(array $client, ContainerBuilder $container): void
     {
-        $dsnResolver = static function ($dsn) use ($container): RedisDsn|RedisEnvDsn {
+        $dsnResolver = static function (string $dsn) use ($container): RedisDsn|RedisEnvDsn {
             $usedEnvs = null;
             $container->resolveEnvPlaceholders($dsn, null, $usedEnvs);
 
-            if ($usedEnvs) {
+            if ($usedEnvs !== null) {
                 return new RedisEnvDsn($dsn);
             }
 
@@ -176,7 +176,7 @@ final class SncRedisExtension extends Extension
         foreach ($client['dsns'] as $i => $dsn) {
             assert($dsn instanceof RedisEnvDsn || $dsn instanceof RedisDsn);
             $connectionAlias = $dsn instanceof RedisDsn ? $dsn->getAlias() : null;
-            if (!$connectionAlias) {
+            if ($connectionAlias === null) {
                 $connectionAlias = $connectionCount === 1 ? $client['alias'] : $client['alias'] . ($i + 1);
             }
 
@@ -190,13 +190,19 @@ final class SncRedisExtension extends Extension
         }
 
         $optionId  = sprintf('snc_redis.client.%s_options', $client['alias']);
+        /** @psalm-suppress PossiblyInvalidCast */
         $optionDef = new Definition((string) $container->getParameter('snc_redis.client_options.class'));
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
-        $clientDef = new Definition((string) $container->getParameter('snc_redis.client.class'));
+        $clientClass = $container->getParameter('snc_redis.client.class');
+        assert(is_string($clientClass));
+        $clientDef = new Definition($clientClass);
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
         if ($connectionCount === 1 && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
-            $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
+            $firstAlias = $connectionAliases[0] ?? null;
+            if ($firstAlias !== null) {
+                $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $firstAlias, $client['alias'])));
+            }
         } else {
             $connections = [];
             foreach ($connectionAliases as $alias) {
@@ -216,6 +222,7 @@ final class SncRedisExtension extends Extension
      */
     private function loadPredisConnectionParameters(string $clientAlias, array $options, ContainerBuilder $container, object $dsn): void
     {
+        /** @psalm-suppress PossiblyInvalidCast */
         $parametersClass = (string) $container->getParameter('snc_redis.connection_parameters.class');
         $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
 
@@ -243,6 +250,7 @@ final class SncRedisExtension extends Extension
             throw new LogicException('You cannot have both cluster and sentinel enabled for same redis connection');
         }
 
+        /** @psalm-suppress PossiblyInvalidCast */
         $phpredisClientClass = (string) $container->getParameter(
             sprintf('snc_redis.%s_%sclient.class', $options['type'], ($hasClusterOption ? 'cluster' : '')),
         );
@@ -269,6 +277,7 @@ final class SncRedisExtension extends Extension
     {
         $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
 
+        /** @psalm-suppress PossiblyInvalidCast */
         $def = new Definition((string) $container->getParameter('snc_redis.monolog_handler.class'), [
             $ref,
             $config['monolog']['key'],

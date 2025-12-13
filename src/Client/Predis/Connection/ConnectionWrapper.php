@@ -95,7 +95,9 @@ final class ConnectionWrapper implements NodeConnectionInterface
     #[Override]
     public function writeRequest(CommandInterface $command): void
     {
-        $this->execute($command, fn (CommandInterface $command) => $this->connection->writeRequest($command));
+        $this->execute($command, function (CommandInterface $command): void {
+            $this->connection->writeRequest($command);
+        });
     }
 
     /** @return mixed */
@@ -156,7 +158,7 @@ final class ConnectionWrapper implements NodeConnectionInterface
     #[Override]
     public function executeCommand(CommandInterface $command)
     {
-        return $this->execute($command, fn (CommandInterface $command) => $this->connection->executeCommand($command));
+        return $this->execute($command, fn (CommandInterface $command): mixed => $this->connection->executeCommand($command));
     }
 
     private function commandToString(CommandInterface $command): string
@@ -182,10 +184,11 @@ final class ConnectionWrapper implements NodeConnectionInterface
      * @param Closure(CommandInterface): mixed $execute
      *
      * @return mixed
+     * @psalm-suppress RiskyTruthyFalsyComparison
      */
     private function execute(CommandInterface $command, Closure $execute)
     {
-        if (!$this->logger) {
+        if ($this->logger === null) {
             return $execute($command);
         }
 

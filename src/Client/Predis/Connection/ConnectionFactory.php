@@ -24,7 +24,7 @@ final class ConnectionFactory extends Factory
     /** @var class-string<ConnectionWrapper> */
     protected ?string $wrapper = null;
 
-    protected RedisLogger $logger;
+    protected ?RedisLogger $logger = null;
 
     protected ?Stopwatch $stopwatch = null;
 

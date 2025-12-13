@@ -29,12 +29,15 @@ use Symfony\Component\VarDumper\Dumper\DataDumperInterface;
 /** @psalm-suppress UnusedClass */
 final class RedisQueryCommandTest extends TestCase
 {
+    /** @psalm-suppress PropertyNotSetInConstructor */
     /** @var Client&MockObject */
     private $predisClient;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     /** @var ContainerInterface&MockObject */
     private $container;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private CommandTester $tester;
 
     #[Override]

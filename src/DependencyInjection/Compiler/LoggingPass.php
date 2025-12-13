@@ -45,8 +45,9 @@ final class LoggingPass implements CompilerPassInterface
             $arguments = $option->getArgument(0);
 
             $connectionFactoryId  = sprintf('snc_redis.%s_connectionfactory', $clientAlias);
+            /** @psalm-suppress PossiblyInvalidCast */
             $connectionFactoryDef = new Definition((string) $container->getParameter('snc_redis.connection_factory.class'));
-            if ($container->getParameter('kernel.debug')) {
+            if ($container->getParameter('kernel.debug') === true) {
                 $connectionFactoryDef->addMethodCall('setStopwatch', [new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)]);
             }
 

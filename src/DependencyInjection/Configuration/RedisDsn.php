@@ -133,7 +133,7 @@ class RedisDsn
             return false;
         }
 
-        if ($this->getHost() !== null && $this->getPort() !== null) {
+        if ($this->getHost() !== null) {
             return true;
         }
 
@@ -143,23 +143,31 @@ class RedisDsn
     protected function parseDsn(string $dsn): void
     {
         $dsn = preg_replace('#rediss?://#', '', $dsn); // remove "redis://" and "rediss://"
+        if ($dsn === null) {
+            throw new \InvalidArgumentException('Invalid DSN format');
+        }
         $pos = strrpos($dsn, '@');
         if ($pos !== false) {
             // parse username and password
             $username = null;
             $password = substr($dsn, 0, $pos);
 
-            if (strstr($password, ':')) {
-                [$username, $password] = explode(':', $password, 2);
+            if (strstr($password, ':') !== false) {
+                $parts = explode(':', $password, 2);
+                $username = $parts[0] ?? null;
+                $password = $parts[1] ?? '';
             }
 
-            $this->username = $username ? urldecode($username) : null;
+            $this->username = $username !== null ? urldecode($username) : null;
             $this->password = urldecode($password);
 
             $dsn = substr($dsn, $pos + 1);
         }
 
         $dsn = preg_replace_callback('/\?(.*)$/', [$this, 'parseParameters'], $dsn); // parse parameters
+        if ($dsn === null) {
+            throw new \InvalidArgumentException('Invalid DSN format');
+        }
         if (preg_match('#^(.*)/(\d+|%[^%]+%)$#', $dsn, $matches)) {
             // parse database
             $this->database = is_numeric($matches[2]) ? (int) $matches[2] : $matches[2];
@@ -167,7 +175,7 @@ class RedisDsn
         }
 
         if (preg_match('#^([^:]+)(:(\d+|%[^%]+%))?$#', $dsn, $matches)) {
-            if (!empty($matches[1])) {
+            if (isset($matches[1]) && $matches[1] !== '') {
                 // parse host/ip or socket
                 if ($matches[1][0] === '/') {
                     $this->socket = $matches[1];
@@ -176,16 +184,16 @@ class RedisDsn
                 }
             }
 
-            if ($this->socket === null && !empty($matches[3])) {
+            if ($this->socket === null && isset($matches[3]) && $matches[3] !== '') {
                 // parse port
                 $this->port = is_numeric($matches[3]) ? (int) $matches[3] : $matches[3];
             }
         } elseif (preg_match('#^\[([^\]]+)](:(\d+))?$#', $dsn, $matches)) { // parse enclosed IPv6 address and optional port
-            if (!empty($matches[1])) {
+            if (isset($matches[1]) && $matches[1] !== '') {
                 $this->host = $matches[1];
             }
 
-            if (!empty($matches[3])) {
+            if (isset($matches[3]) && $matches[3] !== '') {
                 $this->port = (int) $matches[3];
             }
         }
@@ -198,19 +206,19 @@ class RedisDsn
     {
         parse_str($matches[1], $params);
 
-        if (!empty($params['weight'])) {
+        if (isset($params['weight']) && $params['weight'] !== '') {
             $this->weight = (int) $params['weight'];
         }
 
-        if (!empty($params['alias'])) {
+        if (isset($params['alias']) && $params['alias'] !== '') {
             $this->alias = $params['alias'];
         }
 
-        if (!empty($params['role'])) {
+        if (isset($params['role']) && $params['role'] !== '') {
             $this->role = $params['role'];
         }
 
-        if (!empty($params['prefix'])) {
+        if (isset($params['prefix']) && $params['prefix'] !== '') {
             $this->prefix = $params['prefix'];
         }
 

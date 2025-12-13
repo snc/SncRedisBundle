@@ -28,7 +28,9 @@ final class PhpredisClientFactoryTest extends TestCase
 {
     use ConsecutiveParams;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private MockObject $logger;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private RedisLogger $redisLogger;
 
     #[Override]

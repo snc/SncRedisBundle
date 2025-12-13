@@ -19,9 +19,13 @@ use Snc\RedisBundle\Logger\RedisLogger;
 /** @psalm-suppress UnusedClass */
 final class ConnectionWrapperTest extends TestCase
 {
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private MockObject $connection;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private MockObject $logger;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private RedisLogger $redisLogger;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private ConnectionWrapper $wrapper;
 
     #[Override]

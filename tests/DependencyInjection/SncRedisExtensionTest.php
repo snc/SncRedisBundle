@@ -405,7 +405,7 @@ final class SncRedisExtensionTest extends TestCase
 
         $redis = $container->get('snc_redis.default');
 
-        $this->assertInstanceOf('\RedisCluster', $redis);
+        $this->assertInstanceOf(\RedisCluster::class, $redis);
     }
 
     /**
