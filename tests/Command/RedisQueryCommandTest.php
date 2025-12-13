@@ -47,7 +47,7 @@ final class RedisQueryCommandTest extends TestCase
         $this->predisClient = $this->getMockBuilder(Client::class)->getMock();
 
         $cloner = $this->createMock(ClonerInterface::class);
-        $cloner->method('cloneVar')->willReturn(new Data([]);
+        $cloner->method('cloneVar')->willReturn(new Data([]));
 
         $this->tester = new CommandTester(
             new RedisQueryCommand($this->container, $this->createMock(DataDumperInterface::class), $cloner),
@@ -60,7 +60,7 @@ final class RedisQueryCommandTest extends TestCase
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('default');
+            ->with($this->equalTo('default'));
 
         $node1 = $this->getMockBuilder(Client::class)->getMock();
         $node1->expects($this->once())
@@ -77,14 +77,14 @@ final class RedisQueryCommandTest extends TestCase
             ->method('getIterator')
             ->willReturn(new ArrayIterator([$node1, $node2]));
 
-        $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]);
+        $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]));
     }
 
     public function testClientOption(): void
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('special');
+            ->with($this->equalTo('special'));
 
         $node1 = $this->getMockBuilder(Client::class)->getMock();
         $node1->expects($this->once())
@@ -101,7 +101,7 @@ final class RedisQueryCommandTest extends TestCase
             ->method('getIterator')
             ->willReturn(new ArrayIterator([$node1, $node2]));
 
-        $this->assertSame(0, $this->tester->execute(['query' => ['flushall'], '--client' => 'special']);
+        $this->assertSame(0, $this->tester->execute(['query' => ['flushall'], '--client' => 'special']));
     }
 
     public function testClientOptionWithNotExistingClient(): void
@@ -109,31 +109,31 @@ final class RedisQueryCommandTest extends TestCase
         $this->container->expects($this->once())
             ->method('get')
             ->with($this->equalTo('notExisting'))
-            ->will($this->throwException(new ServiceNotFoundException(''));
+            ->will($this->throwException(new ServiceNotFoundException('')));
 
         $this->predisClient->expects($this->never())
             ->method('__call');
         $this->predisClient->expects($this->never())
             ->method('getIterator');
 
-        $this->assertSame(1, $this->tester->execute(['query' => ['flushall'], '--client' => 'notExisting']);
+        $this->assertSame(1, $this->tester->execute(['query' => ['flushall'], '--client' => 'notExisting']));
 
-        $this->assertStringContainsString('The client "notExisting" is not defined', $this->tester->getDisplay();
+        $this->assertStringContainsString('The client "notExisting" is not defined', $this->tester->getDisplay());
     }
 
     public function testBugFixInPredis(): void
     {
         $this->container->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('default');
+            ->with($this->equalTo('default'));
 
         $this->predisClient->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
             ->willReturn(true);
 
-        $this->predisClient->method('getIterator')->willReturn(new ArrayIterator([$this->predisClient]);
+        $this->predisClient->method('getIterator')->willReturn(new ArrayIterator([$this->predisClient]));
 
-        $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]);
+        $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]));
     }
 }

@@ -64,7 +64,7 @@ final class RedisLogger implements ResetInterface
         return $this->nbCommands;
     }
 
-    /** @return list<array{cmd: string, executionMS: float, conn: string, error: string|false}> */
+    /** @return list<array{cmd: string, executionMS: float, conn: null|string, error: string|false}> */
     public function getCommands(): array
     {
         return $this->commands;

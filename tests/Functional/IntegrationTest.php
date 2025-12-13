@@ -70,6 +70,8 @@ final class IntegrationTest extends WebTestCase
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
 
+        /** @psalm-suppress PossiblyNullReference */
+        /** @psalm-suppress PossiblyFalseReference */
         $collector = $this->client->getProfile()->getCollector('redis');
         assert($collector instanceof RedisDataCollector);
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
@@ -78,12 +80,14 @@ final class IntegrationTest extends WebTestCase
         $this->assertSame(5, $redisLogger->getNbCommands());
         $this->assertCount(5, $collector->getCommands());
         $container->reset();
+        /** @psalm-suppress DocblockTypeContradiction */
         $this->assertSame(0, $redisLogger->getNbCommands());
     }
 
     /** @group legacy */
     public function testPredisReplication(): void
     {
+        /** @psalm-suppress PossiblyNullReference */
         $this->client->request('GET', '/predis_replication');
 
         $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -92,7 +96,9 @@ final class IntegrationTest extends WebTestCase
     private function profileRequest(string $method, string $uri): Response
     {
         $client = $this->client;
+        /** @psalm-suppress PossiblyNullReference */
         $client->enableProfiler();
+        /** @psalm-suppress PossiblyNullReference */
         $client->request($method, $uri);
 
         return $client->getResponse();

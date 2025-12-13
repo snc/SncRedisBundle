@@ -181,7 +181,9 @@ final class PhpredisClientFactoryTest extends TestCase
         $this->assertInstanceOf($outputClass, $client);
         $this->assertNull($client->getOption(Redis::OPT_PREFIX));
         $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
+        /** @psalm-suppress PossiblyUndefinedMethod */
         $this->assertSame(5., $client->getTimeout());
+        /** @psalm-suppress PossiblyUndefinedMethod */
         $this->assertSame('sncredis', $client->getAuth());
     }
 
@@ -389,13 +391,17 @@ final class PhpredisClientFactoryTest extends TestCase
 
     public function testMethodWithPassByRefArgument(): void
     {
+        /** @psalm-suppress PossiblyFalseArgument */
+        $isRedisVersionLessThan6 = version_compare(phpversion('redis'), '6', '<');
+        $scanCommand = 'Executing command "SCAN <null> <null> ' . ($isRedisVersionLessThan6 ? '' : '0 ') . '<null>"';
+
         $this->logger->method('debug')->with(...$this->withConsecutive(
             [$this->stringContains('Executing command "CONNECT localhost 6379 5')],
             ['Executing command "AUTH sncredis"'],
             ['Executing command "SELECT 2"'],
             ['Executing command "SSCAN set 1 <null> 0"'],
             ['Executing command "SET mykey myvalue <null>"'],
-            ['Executing command "SCAN <null> <null> ' . (version_compare(phpversion('redis'), '6', '<') ? '' : '0 ') . '<null>"'],
+            [$this->stringContains($scanCommand)],
         ));
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));

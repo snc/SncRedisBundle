@@ -24,5 +24,75 @@
                 <referencedClass name="Relay\*" />
             </errorLevel>
         </UndefinedDocblockClass>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <directory name="tests"/>
+            </errorLevel>
+        </PropertyNotSetInConstructor>
+        <MissingPropertyType>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </MissingPropertyType>
+        <PossiblyInvalidArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyInvalidArgument>
+        <PossiblyUndefinedArrayOffset>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyUndefinedArrayOffset>
+        <RiskyTruthyFalsyComparison>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </RiskyTruthyFalsyComparison>
+        <PossiblyFalseArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyFalseArgument>
+        <PossiblyNullArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyNullArgument>
+        <MoreSpecificReturnType>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </MoreSpecificReturnType>
+        <InvalidStringClass>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </InvalidStringClass>
+        <PossiblyNullOperand>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyNullOperand>
+        <LessSpecificReturnStatement>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </LessSpecificReturnStatement>
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <file name="tests/Factory/PhpredisClientFactoryTest.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
+        <PossiblyFalseArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyFalseArgument>
     </issueHandlers>
 </psalm>

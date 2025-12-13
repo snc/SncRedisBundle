@@ -25,9 +25,10 @@ final class RedisCallInterceptor
     }
 
     /**
-     * @param list<mixed> $args
+     * @param array<array-key, mixed> $args
      *
      * @return mixed
+     * @psalm-suppress RiskyTruthyFalsyComparison
      */
     public function __invoke(
         object $instance,

@@ -47,7 +47,7 @@ final class MonologPass implements CompilerPassInterface
         $processor     = new Processor();
         $extensionConfig = $container->getExtensionConfig('monolog');
         /** @psalm-suppress PossiblyNullArgument */
-        $config        = $processor->processConfiguration($configuration, $extensionConfig ?? []);
+        $config        = $processor->processConfiguration($configuration, $extensionConfig);
         foreach ($config['handlers'] as $handler) {
             if (!isset($handler['id']) || $handler['id'] !== self::SERVICE_ID) {
                 continue;

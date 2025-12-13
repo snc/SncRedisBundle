@@ -161,7 +161,7 @@ final class RedisDsnTest extends TestCase
         $this->assertSame($port, $dsn->getPort());
     }
 
-    /** @return array<array{0: string, 1: ?int}> */
+    /** @return list<array{0: string, 1: int|string|null}> */
     public static function databaseValues(): array
     {
         return [
