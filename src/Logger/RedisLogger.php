@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Logger;
 
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
 use function array_shift;
 use function count;
 
-class RedisLogger implements ResetInterface
+final class RedisLogger implements ResetInterface
 {
     protected ?LoggerInterface $logger;
     protected int $nbCommands = 0;
@@ -49,7 +50,7 @@ class RedisLogger implements ResetInterface
 
         $this->commands[] = ['cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error];
 
-        if ($error) {
+        if ($error !== false) {
             $this->logger->error('Command "' . $command . '" failed (' . $error . ')');
 
             return;
@@ -63,12 +64,13 @@ class RedisLogger implements ResetInterface
         return $this->nbCommands;
     }
 
-    /** @return list<array{cmd: string, executionMS: float, conn: string, error: string|false}> */
+    /** @return list<array{cmd: string, executionMS: float, conn: null|string, error: string|false}> */
     public function getCommands(): array
     {
         return $this->commands;
     }
 
+    #[Override]
     public function reset(): void
     {
         $this->commands   = [];

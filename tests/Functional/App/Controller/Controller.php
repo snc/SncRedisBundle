@@ -17,7 +17,7 @@ use Redis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class Controller extends AbstractController
+final class Controller extends AbstractController
 {
     public function __invoke(Redis $redis): JsonResponse
     {

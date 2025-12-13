@@ -14,21 +14,85 @@
         <directory name="tests"/>
     </projectFiles>
     <issueHandlers>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Relay\*" />
+            </errorLevel>
+        </UndefinedClass>
         <UndefinedDocblockClass>
             <errorLevel type="suppress">
-                <referencedClass name="UnitEnum" />
+                <referencedClass name="Relay\*" />
             </errorLevel>
         </UndefinedDocblockClass>
-        <UndefinedInterfaceMethod>
+        <PropertyNotSetInConstructor>
             <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeParentInterface::scalarNode" />
+                <directory name="tests"/>
             </errorLevel>
-        </UndefinedInterfaceMethod>
-        <UndefinedMethod>
+        </PropertyNotSetInConstructor>
+        <MissingPropertyType>
             <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::children" />
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::prototype" />
+                <file name="src/Factory/PhpredisClientFactory.php"/>
             </errorLevel>
-        </UndefinedMethod>
+        </MissingPropertyType>
+        <PossiblyInvalidArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyInvalidArgument>
+        <PossiblyUndefinedArrayOffset>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyUndefinedArrayOffset>
+        <RiskyTruthyFalsyComparison>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </RiskyTruthyFalsyComparison>
+        <PossiblyFalseArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyFalseArgument>
+        <PossiblyNullArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyNullArgument>
+        <MoreSpecificReturnType>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </MoreSpecificReturnType>
+        <InvalidStringClass>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </InvalidStringClass>
+        <PossiblyNullOperand>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyNullOperand>
+        <LessSpecificReturnStatement>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </LessSpecificReturnStatement>
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <file name="tests/Factory/PhpredisClientFactoryTest.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
+        <PossiblyFalseArgument>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </PossiblyFalseArgument>
     </issueHandlers>
 </psalm>

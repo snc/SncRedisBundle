@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\DependencyInjection\Compiler;
 
+use Override;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,8 +24,9 @@ use Symfony\Component\DependencyInjection\Reference;
 use function count;
 use function sprintf;
 
-class LoggingPass implements CompilerPassInterface
+final class LoggingPass implements CompilerPassInterface
 {
+    #[Override]
     public function process(ContainerBuilder $container): void
     {
         foreach ($container->findTaggedServiceIds('snc_redis.connection_parameters') as $id => $attr) {
@@ -43,8 +45,9 @@ class LoggingPass implements CompilerPassInterface
             $arguments = $option->getArgument(0);
 
             $connectionFactoryId  = sprintf('snc_redis.%s_connectionfactory', $clientAlias);
+            /** @psalm-suppress PossiblyInvalidCast */
             $connectionFactoryDef = new Definition((string) $container->getParameter('snc_redis.connection_factory.class'));
-            if ($container->getParameter('kernel.debug')) {
+            if ($container->getParameter('kernel.debug') === true) {
                 $connectionFactoryDef->addMethodCall('setStopwatch', [new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)]);
             }
 

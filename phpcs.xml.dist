@@ -27,4 +27,9 @@
         <!-- Produces "Redis::flushAll(): Argument #1 ($async) must be of type bool, null given". Is fixed in dev version of phpredis -->
         <exclude-pattern>src/Logger/RedisCallInterceptor.php</exclude-pattern>
     </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>src/Factory/PhpredisClientFactory.php</exclude-pattern>
+    </rule>
+
 </ruleset>

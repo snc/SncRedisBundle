@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\DependencyInjection\Compiler;
 
+use Override;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,10 +25,11 @@ use function constant;
 use function is_int;
 use function strtoupper;
 
-class MonologPass implements CompilerPassInterface
+final class MonologPass implements CompilerPassInterface
 {
     public const SERVICE_ID = 'snc_redis.monolog.handler';
 
+    #[Override]
     public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(self::SERVICE_ID)) {
@@ -43,7 +45,9 @@ class MonologPass implements CompilerPassInterface
         assert($monologExtension instanceof ConfigurationExtensionInterface);
         $configuration = $monologExtension->getConfiguration([], $container);
         $processor     = new Processor();
-        $config        = $processor->processConfiguration($configuration, $container->getExtensionConfig('monolog'));
+        $extensionConfig = $container->getExtensionConfig('monolog');
+        /** @psalm-suppress PossiblyNullArgument */
+        $config        = $processor->processConfiguration($configuration, $extensionConfig);
         foreach ($config['handlers'] as $handler) {
             if (!isset($handler['id']) || $handler['id'] !== self::SERVICE_ID) {
                 continue;

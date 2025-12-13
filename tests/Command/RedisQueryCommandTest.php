@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/*
+/**
  * This file is part of the SncRedisBundle package.
  *
  * (c) Henrik Westphal <henrik.westphal@gmail.com>
@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Command;
 
 use ArrayIterator;
+use Override;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
@@ -25,16 +26,21 @@ use Symfony\Component\VarDumper\Cloner\ClonerInterface;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Dumper\DataDumperInterface;
 
-class RedisQueryCommandTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class RedisQueryCommandTest extends TestCase
 {
+    /** @psalm-suppress PropertyNotSetInConstructor */
     /** @var Client&MockObject */
     private $predisClient;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     /** @var ContainerInterface&MockObject */
     private $container;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private CommandTester $tester;
 
+    #[Override]
     public function setUp(): void
     {
         $this->container    = $this->getMockBuilder(ContainerInterface::class)->getMock();
@@ -47,7 +53,7 @@ class RedisQueryCommandTest extends TestCase
             new RedisQueryCommand($this->container, $this->createMock(DataDumperInterface::class), $cloner),
         );
 
-        $this->container->expects($this->once())->method('get')->will($this->returnValue($this->predisClient));
+        $this->container->expects($this->once())->method('get')->willReturn($this->predisClient);
     }
 
     public function testWithDefaultClientAndNoInteraction(): void
@@ -60,16 +66,16 @@ class RedisQueryCommandTest extends TestCase
         $node1->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $node2 = $this->getMockBuilder(Client::class)->getMock();
         $node2->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $this->predisClient->expects($this->once())
             ->method('getIterator')
-            ->will($this->returnValue(new ArrayIterator([$node1, $node2])));
+            ->willReturn(new ArrayIterator([$node1, $node2]));
 
         $this->assertSame(0, $this->tester->execute(['query' => ['flushall']]));
     }
@@ -84,16 +90,16 @@ class RedisQueryCommandTest extends TestCase
         $node1->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $node2 = $this->getMockBuilder(Client::class)->getMock();
         $node2->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $this->predisClient->expects($this->once())
             ->method('getIterator')
-            ->will($this->returnValue(new ArrayIterator([$node1, $node2])));
+            ->willReturn(new ArrayIterator([$node1, $node2]));
 
         $this->assertSame(0, $this->tester->execute(['query' => ['flushall'], '--client' => 'special']));
     }
@@ -124,7 +130,7 @@ class RedisQueryCommandTest extends TestCase
         $this->predisClient->expects($this->once())
             ->method('__call')
             ->with($this->equalTo('flushall'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $this->predisClient->method('getIterator')->willReturn(new ArrayIterator([$this->predisClient]));
 

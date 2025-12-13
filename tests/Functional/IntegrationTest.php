@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
+use Override;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
@@ -26,7 +27,8 @@ use Symfony\Contracts\Service\ResetInterface;
 
 use function assert;
 
-class IntegrationTest extends WebTestCase
+/** @psalm-suppress UnusedClass */
+final class IntegrationTest extends WebTestCase
 {
     private ?KernelBrowser $client = null;
 
@@ -35,6 +37,7 @@ class IntegrationTest extends WebTestCase
      *
      * @group legacy
      */
+    #[Override]
     protected function setUp(): void
     {
         $fs = new Filesystem();
@@ -53,6 +56,7 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $commandTester->execute(['query' => ['flushall'], '-n' => true]));
     }
 
+    #[Override]
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -66,6 +70,8 @@ class IntegrationTest extends WebTestCase
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
 
+        /** @psalm-suppress PossiblyNullReference */
+        /** @psalm-suppress PossiblyFalseReference */
         $collector = $this->client->getProfile()->getCollector('redis');
         assert($collector instanceof RedisDataCollector);
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
@@ -74,12 +80,14 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(5, $redisLogger->getNbCommands());
         $this->assertCount(5, $collector->getCommands());
         $container->reset();
+        /** @psalm-suppress DocblockTypeContradiction */
         $this->assertSame(0, $redisLogger->getNbCommands());
     }
 
     /** @group legacy */
     public function testPredisReplication(): void
     {
+        /** @psalm-suppress PossiblyNullReference */
         $this->client->request('GET', '/predis_replication');
 
         $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -88,12 +96,15 @@ class IntegrationTest extends WebTestCase
     private function profileRequest(string $method, string $uri): Response
     {
         $client = $this->client;
+        /** @psalm-suppress PossiblyNullReference */
         $client->enableProfiler();
+        /** @psalm-suppress PossiblyNullReference */
         $client->request($method, $uri);
 
         return $client->getResponse();
     }
 
+    #[Override]
     protected static function getKernelClass(): string
     {
         require_once __DIR__ . '/App/Kernel.php';

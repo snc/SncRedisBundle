@@ -20,10 +20,13 @@ use Snc\RedisBundle\Logger\RedisLogger;
 
 use function interface_exists;
 
-class RedisLoggerTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class RedisLoggerTest extends TestCase
 {
+    /** @psalm-suppress PropertyNotSetInConstructor */
     /** @var MockObject&LoggerInterface */
     private MockObject $logger;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private RedisLogger $redisLogger;
 
     private function setUpWithPsrLogger(): void
