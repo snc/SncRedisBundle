@@ -69,9 +69,9 @@ final class ConnectionWrapper implements NodeConnectionInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function connect()
+    public function connect(): void
     {
-        return $this->connection->connect();
+        $this->connection->connect();
     }
 
     #[Override]
@@ -192,7 +192,7 @@ final class ConnectionWrapper implements NodeConnectionInterface
         $commandName = $this->commandToString($command);
 
         if ($this->stopwatch) {
-            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $commandName), 'redis');
+            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $commandName) ?: '', 'redis');
         }
 
         $startTime = microtime(true);

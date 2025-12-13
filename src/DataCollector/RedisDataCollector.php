@@ -62,7 +62,7 @@ final class RedisDataCollector extends DataCollector implements LateDataCollecto
     /** @psalm-suppress PossiblyUnusedMethod */
     public function getTime(): float
     {
-        return array_reduce($this->data['commands'], static fn (float $carry, array $command) => $carry + $command['executionMS'], 0);
+        return array_reduce($this->data['commands'], static fn (float $carry, array $command): float => $carry + $command['executionMS'], 0);
     }
 
     #[Override]

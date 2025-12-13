@@ -88,7 +88,7 @@ final class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('alias', false)
                     ->beforeNormalization()
                         ->always()
-                        ->then(static function ($v) {
+                        ->then(static function (mixed $v): mixed {
                             if (is_iterable($v)) {
                                 foreach ($v as $name => &$client) {
                                     if (isset($client['alias'])) {
@@ -118,7 +118,7 @@ final class Configuration implements ConfigurationInterface
                                 ->isRequired()
                                 ->performNoDeepMerging()
                                 ->beforeNormalization()
-                                    ->ifString()->then(static fn ($v) => (array) $v)->end()
+                                    ->ifString()->then(static fn (string $v): array => (array) $v)->end()
                                 ->prototype('variable')->end()
                             ->end()
                             ->arrayNode('options')
@@ -132,7 +132,7 @@ final class Configuration implements ConfigurationInterface
                                     ->variableNode('connection_persistent')
                                         ->defaultFalse()
                                         ->validate()
-                                            ->ifTrue(static fn ($v) => !(is_bool($v) || (is_string($v) && $v !== '')))
+                                            ->ifTrue(static fn (mixed $v): bool => !(is_bool($v) || (is_string($v) && $v !== '')))
                                             ->thenInvalid('connection_persistent must be a boolean or string')
                                         ->end()
                                     ->end()
@@ -147,8 +147,8 @@ final class Configuration implements ConfigurationInterface
                                     ->enumNode('replication')
                                         ->values([true, 'predis', 'sentinel'])
                                         ->beforeNormalization()
-                                            ->ifTrue(static fn ($v) => $v === true)
-                                            ->then(static function () {
+                                            ->ifTrue(static fn (mixed $v): bool => $v === true)
+                                            ->then(static function (): string {
                                                 trigger_deprecation(
                                                     'snc/redis-bundle',
                                                     '4.6',

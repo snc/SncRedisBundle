@@ -50,7 +50,7 @@ final class RedisLogger implements ResetInterface
 
         $this->commands[] = ['cmd' => $command, 'executionMS' => $duration, 'conn' => $connection, 'error' => $error];
 
-        if ($error) {
+        if ($error !== false) {
             $this->logger->error('Command "' . $command . '" failed (' . $error . ')');
 
             return;

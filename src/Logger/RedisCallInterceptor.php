@@ -39,7 +39,7 @@ final class RedisCallInterceptor
         $time    = microtime(true);
 
         if ($this->stopwatch) {
-            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $command), 'redis');
+            $event = $this->stopwatch->start(preg_replace('/[^[:print:]]/', '', $command) ?: '', 'redis');
         }
 
         try {
