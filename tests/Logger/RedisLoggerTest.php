@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/*final
+/*
  * This file is part of the SncRedisBundle package.
  *
  * (c) Henrik Westphal <henrik.westphal@gmail.com>
@@ -21,7 +21,7 @@ use Snc\RedisBundle\Logger\RedisLogger;
 use function interface_exists;
 
 /** @psalm-suppress UnusedClass */
-class RedisLoggerTest extends TestCase
+final class RedisLoggerTest extends TestCase
 {
     /** @var MockObject&LoggerInterface */
     private MockObject $logger;
