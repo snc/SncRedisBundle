@@ -13,7 +13,7 @@ use function strtoupper;
 use function strval;
 use function trim;
 
-class RedisCallInterceptor
+final class RedisCallInterceptor
 {
     private RedisLogger $logger;
     private ?Stopwatch $stopwatch;
@@ -45,7 +45,7 @@ class RedisCallInterceptor
         try {
             $return = $instance->$method(...$args);
         } finally {
-            $this->logger->logCommand($command, (microtime(true) - $time) * 1000, $connection);
+            $this->logger->logCommand($command, (microtime(true) - $time) * 1000.0, $connection);
         }
 
         if (isset($event)) {

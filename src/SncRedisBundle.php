@@ -13,13 +13,15 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle;
 
+use Override;
 use Snc\RedisBundle\DependencyInjection\Compiler\LoggingPass;
 use Snc\RedisBundle\DependencyInjection\Compiler\MonologPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class SncRedisBundle extends Bundle
+final class SncRedisBundle extends Bundle
 {
+    #[Override]
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);

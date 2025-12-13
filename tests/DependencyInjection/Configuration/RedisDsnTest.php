@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/*
+/**
  * This file is part of the SncRedisBundle package.
  *
  * (c) Henrik Westphal <henrik.westphal@gmail.com>
@@ -16,7 +16,8 @@ namespace Snc\RedisBundle\Tests\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
-class RedisDsnTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class RedisDsnTest extends TestCase
 {
     /** @return list<list<string>> */
     public static function hostValues(): array

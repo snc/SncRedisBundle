@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
-class RedisEnvDsn
+final class RedisEnvDsn
 {
     private string $dsn;
 

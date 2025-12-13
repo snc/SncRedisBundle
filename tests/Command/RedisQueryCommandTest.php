@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/*
+/**
  * This file is part of the SncRedisBundle package.
  *
  * (c) Henrik Westphal <henrik.westphal@gmail.com>
@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Command;
 
 use ArrayIterator;
+use Override;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
@@ -25,7 +26,8 @@ use Symfony\Component\VarDumper\Cloner\ClonerInterface;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Dumper\DataDumperInterface;
 
-class RedisQueryCommandTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class RedisQueryCommandTest extends TestCase
 {
     /** @var Client&MockObject */
     private $predisClient;
@@ -35,6 +37,7 @@ class RedisQueryCommandTest extends TestCase
 
     private CommandTester $tester;
 
+    #[Override]
     public function setUp(): void
     {
         $this->container    = $this->getMockBuilder(ContainerInterface::class)->getMock();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/*
+/**
  * This file is part of the SncRedisBundle package.
  *
  * (c) Henrik Westphal <henrik.westphal@gmail.com>
@@ -45,7 +45,8 @@ use function version_compare;
 /**
  * SncRedisExtensionTest
  */
-class SncRedisExtensionTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class SncRedisExtensionTest extends TestCase
 {
     /** @return array<array{0: string, 1: string}> */
     public static function parameterValues(): array
@@ -204,7 +205,6 @@ class SncRedisExtensionTest extends TestCase
         $extension->load([$config], $container);
 
         $loggerDefinition = $container->getDefinition('snc_redis.monolog.handler');
-        $calls            = $loggerDefinition->getMethodCalls();
         $this->assertTrue($loggerDefinition->hasMethodCall('setFormatter'));
         $calls = $loggerDefinition->getMethodCalls();
         foreach ($calls as $call) {

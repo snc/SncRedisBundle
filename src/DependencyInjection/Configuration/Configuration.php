@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
 use Monolog\Handler\RedisHandler;
+use Override;
 use Predis\Client;
 use Predis\Configuration\Options;
 use Predis\Connection\Parameters;
@@ -34,7 +35,7 @@ use function is_iterable;
 use function is_string;
 use function trigger_deprecation;
 
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     private bool $debug;
 
@@ -43,6 +44,7 @@ class Configuration implements ConfigurationInterface
         $this->debug = $debug;
     }
 
+    #[Override]
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('snc_redis');
@@ -175,6 +177,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+            /** @psalm-suppress UnusedMethodCall */
             ->end();
     }
 
@@ -193,6 +196,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('formatter')->end()
                     ->end()
                 ->end()
+            /** @psalm-suppress UnusedMethodCall */
             ->end();
     }
 }

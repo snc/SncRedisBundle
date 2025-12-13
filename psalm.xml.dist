@@ -14,21 +14,15 @@
         <directory name="tests"/>
     </projectFiles>
     <issueHandlers>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Relay\*" />
+            </errorLevel>
+        </UndefinedClass>
         <UndefinedDocblockClass>
             <errorLevel type="suppress">
-                <referencedClass name="UnitEnum" />
+                <referencedClass name="Relay\*" />
             </errorLevel>
         </UndefinedDocblockClass>
-        <UndefinedInterfaceMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeParentInterface::scalarNode" />
-            </errorLevel>
-        </UndefinedInterfaceMethod>
-        <UndefinedMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::children" />
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::prototype" />
-            </errorLevel>
-        </UndefinedMethod>
     </issueHandlers>
 </psalm>

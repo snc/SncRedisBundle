@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Factory;
 
+use Override;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -22,13 +23,15 @@ use function phpversion;
 use function sprintf;
 use function version_compare;
 
-class PhpredisClientFactoryTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class PhpredisClientFactoryTest extends TestCase
 {
     use ConsecutiveParams;
 
     private MockObject $logger;
     private RedisLogger $redisLogger;
 
+    #[Override]
     protected function setUp(): void
     {
         if (!class_exists(Redis::class)) {

@@ -12,7 +12,8 @@ use stdClass;
 
 use function sprintf;
 
-class PredisParametersFactoryTest extends TestCase
+/** @psalm-suppress UnusedClass */
+final class PredisParametersFactoryTest extends TestCase
 {
     /** @return array<array{0: string, 1: array<string, mixed>, 2: array<string, mixed>}> */
     public static function createDp(): array

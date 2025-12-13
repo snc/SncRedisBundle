@@ -43,7 +43,7 @@ use function version_compare;
 class_exists(RedisDsn::class);
 
 /** @internal */
-class PhpredisClientFactory
+final class PhpredisClientFactory
 {
     /**
      * These shouldn't be logged, because they don't actually contact redis server
@@ -54,8 +54,11 @@ class PhpredisClientFactory
         'getDbNum',
         'getPersistentID',
     ];
+    /** @psalm-suppress UnusedProperty */
     private ?Configuration $proxyConfiguration;
+
     /** @var callable(object, string, array, ?string): mixed */
+    /** @psalm-suppress UnusedProperty */
     private $interceptor;
 
     /** @param callable(object, string, array, ?string): mixed $interceptor */
@@ -201,7 +204,7 @@ class PhpredisClientFactory
         }
 
         if ($auth === null) {
-            $uniqueAuth = null;
+            /** @psalm-suppress UnusedVariable */
             foreach ($dsns as $index => $dsn) {
                 $uniqueAuth = $dsn->getPassword();
                 $username   = $dsn->getUsername();

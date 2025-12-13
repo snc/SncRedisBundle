@@ -14,7 +14,7 @@ use function is_a;
 use function sprintf;
 
 /** @internal */
-class PredisParametersFactory
+final class PredisParametersFactory
 {
     /**
      * @param class-string<ParametersInterface> $class

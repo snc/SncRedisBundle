@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\DependencyInjection\Compiler;
 
+use Override;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,10 +25,11 @@ use function constant;
 use function is_int;
 use function strtoupper;
 
-class MonologPass implements CompilerPassInterface
+final class MonologPass implements CompilerPassInterface
 {
     public const SERVICE_ID = 'snc_redis.monolog.handler';
 
+    #[Override]
     public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(self::SERVICE_ID)) {

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
+use Override;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
@@ -26,7 +27,8 @@ use Symfony\Contracts\Service\ResetInterface;
 
 use function assert;
 
-class IntegrationTest extends WebTestCase
+/** @psalm-suppress UnusedClass */
+final class IntegrationTest extends WebTestCase
 {
     private ?KernelBrowser $client = null;
 
@@ -35,6 +37,7 @@ class IntegrationTest extends WebTestCase
      *
      * @group legacy
      */
+    #[Override]
     protected function setUp(): void
     {
         $fs = new Filesystem();
@@ -53,6 +56,7 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $commandTester->execute(['query' => ['flushall'], '-n' => true]));
     }
 
+    #[Override]
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -94,6 +98,7 @@ class IntegrationTest extends WebTestCase
         return $client->getResponse();
     }
 
+    #[Override]
     protected static function getKernelClass(): string
     {
         require_once __DIR__ . '/App/Kernel.php';
