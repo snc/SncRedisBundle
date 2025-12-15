@@ -89,6 +89,11 @@
                 <file name="tests/Factory/PhpredisClientFactoryTest.php"/>
             </errorLevel>
         </ArgumentTypeCoercion>
+        <MissingClosureReturnType>
+            <errorLevel type="suppress">
+                <file name="src/Factory/PhpredisClientFactory.php"/>
+            </errorLevel>
+        </MissingClosureReturnType>
         <PossiblyFalseArgument>
             <errorLevel type="suppress">
                 <file name="src/Factory/PhpredisClientFactory.php"/>

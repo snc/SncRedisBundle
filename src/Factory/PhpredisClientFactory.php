@@ -78,12 +78,12 @@ final class PhpredisClientFactory
      * @param list<string|list<string>> $dsns    Multiple DSN string
      * @param mixed[]                   $options Options provided in bundle client config
      *
-     * @return Redis|RedisCluster|Relay
+     * @return Redis|RedisCluster|Relay|Relay\Relay
      *
      * @throws InvalidConfigurationException
      * @throws LogicException
      */
-    public function create(string $class, array $dsns, array $options, string $alias, bool $loggingEnabled)
+    public function create(string $class, array $dsns, array $options, string $alias, bool $loggingEnabled): Relay\Relay|Relay|RedisCluster|Redis
     {
         $isRedis    = is_a($class, Redis::class, true);
         $isRelay    = is_a($class, Relay::class, true);
@@ -195,7 +195,7 @@ final class PhpredisClientFactory
      * @throws InvalidConfigurationException
      * @throws LogicException
      */
-    private function createClusterClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisCluster
+    private function createClusterClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): Redis|RedisCluster|Relay\Relay
     {
         $auth     = $options['parameters']['password'] ?? null;
         $username = $options['parameters']['username'] ?? null;
@@ -241,6 +241,7 @@ final class PhpredisClientFactory
             $client->setOption(RedisCluster::OPT_SLAVE_FAILOVER, $this->loadSlaveFailoverType($options['slave_failover']));
         }
 
+        /** @var Redis|RedisCluster|Relay\Relay $client */
         return $loggingEnabled ? $this->createLoggingProxy($client, $alias) : $client;
     }
 
@@ -254,6 +255,7 @@ final class PhpredisClientFactory
         $client = new $class();
 
         if ($loggingEnabled) {
+            /** @psalm-suppress ArgumentTypeCoercion */
             $client = $this->createLoggingProxy($client, $alias);
         }
 
@@ -394,9 +396,9 @@ final class PhpredisClientFactory
                 $returnEarly = true;
                 $listArgs    = [];
 
-                foreach ($args as $argName => &$argValue) {
+                foreach ($args as $argName => $argValue) {
                     if (!in_array($argName, $variadicParameters, true)) {
-                        $listArgs[] = &$argValue;
+                        $listArgs[] = $argValue;
                         continue;
                     }
 
