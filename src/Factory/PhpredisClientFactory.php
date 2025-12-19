@@ -217,6 +217,11 @@ class PhpredisClientFactory
             }
         }
 
+        $context = [];
+        if (isset($options['parameters']['ssl_context'])) {
+            $context['stream'] = $options['parameters']['ssl_context'];
+        }
+
         $client = new $class(
             null,
             array_map(static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(), $dsns),
@@ -224,6 +229,7 @@ class PhpredisClientFactory
             $options['read_write_timeout'] ?? 0,
             (bool) $options['connection_persistent'],
             $auth,
+            $context
         );
 
         if (isset($options['prefix'])) {
