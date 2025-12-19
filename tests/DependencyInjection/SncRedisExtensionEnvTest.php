@@ -237,6 +237,40 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
+    public function testPhpRedisClusterOptionWithSSLContextConfig(): void
+    {
+        $container        = $this->getConfiguredContainer('env_phpredis_cluster_ssl_context');
+        $clientDefinition = $container->findDefinition('snc_redis.phprediscluster');
+
+        $this->assertSame(RedisCluster::class, $clientDefinition->getClass());
+        $this->assertSame(RedisCluster::class, $clientDefinition->getArgument(0));
+        $this->assertStringContainsString('REDIS_URL', $clientDefinition->getArgument(1)[0]);
+        $this->assertSame('phprediscluster', $clientDefinition->getArgument(3));
+        $this->assertFalse($clientDefinition->getArgument(4));
+
+        $this->assertSame(
+            [
+                'cluster' => true,
+                'connection_async' => false,
+                'connection_persistent' => false,
+                'connection_timeout' => 5,
+                'scan' => null,
+                'read_write_timeout' => null,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+                'serialization' => 'default',
+                'prefix' => null,
+                'service' => null,
+                'ssl' => [
+                    'verify_peer' => false,
+                    'allow_self_signed' => true,
+                    'verify_peer_name' => false,
+                ],
+            ],
+            $clientDefinition->getArgument(2),
+        );
+    }
+
     public function testPhpRedisSentinelOption(): void
     {
         $container        = $this->getConfiguredContainer('env_phpredis_sentinel');

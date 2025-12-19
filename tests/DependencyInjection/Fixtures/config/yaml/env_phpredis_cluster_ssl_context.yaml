@@ -1,0 +1,13 @@
+parameters:
+    env(REDIS_URL): rediss://localhost
+
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsn: "%env(REDIS_URL)%"
+            options:
+                cluster: true
+                parameters:
+                    ssl_context: {'verify_peer': false, 'allow_self_signed': true, 'verify_peer_name': false}
