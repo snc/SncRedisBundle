@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\DependencyInjection\Configuration;
 
 use Monolog\Handler\RedisHandler;
+use Override;
 use Predis\Client;
 use Predis\Configuration\Options;
 use Predis\Connection\Parameters;
@@ -43,6 +44,7 @@ class Configuration implements ConfigurationInterface
         $this->debug = $debug;
     }
 
+    #[Override]
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('snc_redis');

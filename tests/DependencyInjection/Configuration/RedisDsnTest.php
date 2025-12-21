@@ -18,7 +18,7 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 class RedisDsnTest extends TestCase
 {
-    /** @return list<list<string>> */
+    /** @return list<array{string, string}> */
     public static function hostValues(): array
     {
         return [

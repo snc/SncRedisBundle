@@ -204,10 +204,8 @@ class SncRedisExtensionTest extends TestCase
         $extension->load([$config], $container);
 
         $loggerDefinition = $container->getDefinition('snc_redis.monolog.handler');
-        $calls            = $loggerDefinition->getMethodCalls();
         $this->assertTrue($loggerDefinition->hasMethodCall('setFormatter'));
-        $calls = $loggerDefinition->getMethodCalls();
-        foreach ($calls as $call) {
+        foreach ($loggerDefinition->getMethodCalls() as $call) {
             if ($call[0] === 'setFormatter') {
                 $this->assertEquals('my_monolog_formatter', (string) $call[1][0]);
                 break;

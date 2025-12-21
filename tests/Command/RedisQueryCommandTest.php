@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Command;
 
 use ArrayIterator;
+use Override;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
@@ -35,6 +36,7 @@ class RedisQueryCommandTest extends TestCase
 
     private CommandTester $tester;
 
+    #[Override]
     public function setUp(): void
     {
         $this->container    = $this->getMockBuilder(ContainerInterface::class)->getMock();

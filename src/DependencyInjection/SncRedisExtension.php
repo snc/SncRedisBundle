@@ -15,6 +15,7 @@ namespace Snc\RedisBundle\DependencyInjection;
 
 use InvalidArgumentException;
 use LogicException;
+use Override;
 use Predis\Client;
 use RedisSentinel;
 use Relay\Sentinel;
@@ -43,6 +44,7 @@ use function version_compare;
 class SncRedisExtension extends Extension
 {
     /** @param mixed[] $configs */
+    #[Override]
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -80,11 +82,13 @@ class SncRedisExtension extends Extension
         $this->loadMonolog($config, $container);
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod (Symfony < 8.0) */
     public function getNamespace(): string
     {
         return 'http://symfony.com/schema/dic/redis';
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod (Symfony < 8.0) */
     public function getXsdValidationBasePath(): string
     {
         return __DIR__ . '/../Resources/config/schema';
@@ -278,6 +282,7 @@ class SncRedisExtension extends Extension
     }
 
     /** @param mixed[] $config */
+    #[Override]
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration((bool) $container->getParameter('kernel.debug'));

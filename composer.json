@@ -36,6 +36,7 @@
         "monolog/monolog": "*",
         "phpunit/phpunit": "^9.5.28 || ^10",
         "predis/predis": "^2.0 || ^3.0",
+        "psalm/plugin-phpunit": "^0.19.3",
         "seec/phpunit-consecutive-params": "^1.1.4",
         "symfony/browser-kit": "^6.4 || ^7.3 || ^8.0",
         "symfony/cache": "^6.4 || ^7.3 || ^8.0",
@@ -47,7 +48,7 @@
         "symfony/twig-bundle": "^6.4 || ^7.3 || ^8.0",
         "symfony/web-profiler-bundle": "^6.4 || ^7.3 || ^8.0",
         "symfony/yaml": "^6.4 || ^7.3 || ^8.0",
-        "vimeo/psalm": "^5 || ^6"
+        "vimeo/psalm": "^5 || ^6 || ^7"
     },
     "conflict": {
         "ext-redis": "<5.3.2",
@@ -58,7 +59,7 @@
         "predis/predis": "If you want to use predis.",
         "symfony/console": "If you want to use commands to interact with the redis database"
     },
-    "minimum-stability": "RC",
+    "minimum-stability": "beta",
     "autoload": {
         "psr-4": {
             "Snc\\RedisBundle\\": "src/"

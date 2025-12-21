@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Client\Predis\Connection;
 
+use Override;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Command\Redis\EXISTS;
@@ -22,6 +23,7 @@ class ConnectionWrapperTest extends TestCase
     private RedisLogger $redisLogger;
     private ConnectionWrapper $wrapper;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->connection = $this->createMock(NodeConnectionInterface::class);

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\DataCollector;
 
+use Override;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,11 +29,13 @@ class RedisDataCollector extends DataCollector implements LateDataCollectorInter
 {
     protected RedisLogger $logger;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function __construct(RedisLogger $logger)
     {
         $this->logger = $logger;
     }
 
+    #[Override]
     public function reset(): void
     {
         $this->data = [];
@@ -44,31 +47,37 @@ class RedisDataCollector extends DataCollector implements LateDataCollectorInter
         return $this->data['commands'];
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getCommandCount(): int
     {
         return count($this->data['commands']);
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getErroredCommandsCount(): int
     {
         return count(array_filter($this->data['commands'], static fn (array $command) => $command['error'] !== false));
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getTime(): float
     {
         return array_reduce($this->data['commands'], static fn (float $carry, array $command) => $carry + $command['executionMS'], 0);
     }
 
+    #[Override]
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
         $this->data = ['commands' => $this->logger->getCommands()];
     }
 
+    #[Override]
     public function getName(): string
     {
         return 'redis';
     }
 
+    #[Override]
     public function lateCollect(): void
     {
         $this->data = ['commands' => $this->logger->getCommands()];

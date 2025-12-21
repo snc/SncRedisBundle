@@ -201,7 +201,6 @@ class PhpredisClientFactory
         }
 
         if ($auth === null) {
-            $uniqueAuth = null;
             foreach ($dsns as $index => $dsn) {
                 $uniqueAuth = $dsn->getPassword();
                 $username   = $dsn->getUsername();

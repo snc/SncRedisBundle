@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Command;
 
+use Override;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,11 +45,7 @@ class RedisQueryCommand extends Command
         $this->cloner        = $cloner ?: new VarCloner();
     }
 
-    public function setClientLocator(ContainerInterface $clientLocator): void
-    {
-        $this->clientLocator = $clientLocator;
-    }
-
+    #[Override]
     protected function configure(): void
     {
         $this
@@ -67,6 +64,7 @@ class RedisQueryCommand extends Command
             ->addUsage('del foo_bar');
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $client          = $input->getOption('client');

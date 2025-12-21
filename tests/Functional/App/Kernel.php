@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App;
 
+use Override;
 use ReflectionObject;
 use Snc\RedisBundle\SncRedisBundle;
 use Snc\RedisBundle\Tests\Functional\App\Controller\Controller;
@@ -35,6 +36,7 @@ class Kernel extends BaseKernel
     public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     /** @inheritDoc */
+    #[Override]
     public function registerBundles(): iterable
     {
         return [
@@ -45,6 +47,7 @@ class Kernel extends BaseKernel
         ];
     }
 
+    #[Override]
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/config.yaml');
@@ -70,6 +73,7 @@ class Kernel extends BaseKernel
         });
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function loadRoutes(LoaderInterface $loader): RouteCollection
     {
         $file         = (new ReflectionObject($this))->getFileName();
@@ -84,13 +88,9 @@ class Kernel extends BaseKernel
         return $collection;
     }
 
+    #[Override]
     public function getProjectDir(): string
     {
         return __DIR__;
-    }
-
-    public function getRootDir(): string
-    {
-        return __DIR__ . '/var';
     }
 }

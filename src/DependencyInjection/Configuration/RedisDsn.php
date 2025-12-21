@@ -116,6 +116,7 @@ class RedisDsn
         return $this->role;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getPersistentId(): string
     {
         return md5($this->dsn);

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Logger;
 
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -69,6 +70,7 @@ class RedisLogger implements ResetInterface
         return $this->commands;
     }
 
+    #[Override]
     public function reset(): void
     {
         $this->commands   = [];

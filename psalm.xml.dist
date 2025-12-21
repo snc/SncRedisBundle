@@ -14,21 +14,13 @@
         <directory name="tests"/>
     </projectFiles>
     <issueHandlers>
-        <UndefinedDocblockClass>
+        <UnusedMethodCall>
             <errorLevel type="suppress">
-                <referencedClass name="UnitEnum" />
+                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeBuilder::end"/>
             </errorLevel>
-        </UndefinedDocblockClass>
-        <UndefinedInterfaceMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeParentInterface::scalarNode" />
-            </errorLevel>
-        </UndefinedInterfaceMethod>
-        <UndefinedMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::children" />
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeDefinition::prototype" />
-            </errorLevel>
-        </UndefinedMethod>
+        </UnusedMethodCall>
     </issueHandlers>
+    <plugins>
+        <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+    </plugins>
 </psalm>

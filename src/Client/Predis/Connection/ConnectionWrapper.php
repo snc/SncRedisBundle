@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
 use Closure;
+use Override;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
@@ -67,76 +68,90 @@ class ConnectionWrapper implements NodeConnectionInterface
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function connect()
     {
         return $this->connection->connect();
     }
 
+    #[Override]
     public function disconnect(): void
     {
         $this->connection->disconnect();
     }
 
+    #[Override]
     public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
 
+    #[Override]
     public function hasDataToRead(): bool
     {
         return $this->connection->hasDataToRead();
     }
 
+    #[Override]
     public function writeRequest(CommandInterface $command): void
     {
         $this->execute($command, fn (CommandInterface $command) => $this->connection->writeRequest($command));
     }
 
     /** @return mixed */
+    #[Override]
     public function readResponse(CommandInterface $command)
     {
         return $this->connection->readResponse($command);
     }
 
+    #[Override]
     public function __toString(): string
     {
         return (string) $this->connection;
     }
 
+    #[Override]
     public function getClientId(): ?int
     {
         return $this->connection->getClientId();
     }
 
     /** @return resource */
+    #[Override]
     public function getResource()
     {
         return $this->connection->getResource();
     }
 
+    #[Override]
     public function getParameters(): ParametersInterface
     {
         return $this->connection->getParameters();
     }
 
+    #[Override]
     public function addConnectCommand(CommandInterface $command): void
     {
         $this->connection->addConnectCommand($command);
     }
 
     /** @return mixed */
+    #[Override]
     public function read()
     {
         return $this->connection->read();
     }
 
+    #[Override]
     public function write(string $buffer): void
     {
         $this->connection->write($buffer);
     }
 
-    /** @return mixed */
-    public function executeCommand(CommandInterface $command)
+    /** @psalm-suppress PossiblyUnusedReturnValue */
+    #[Override]
+    public function executeCommand(CommandInterface $command): mixed
     {
         return $this->execute($command, fn (CommandInterface $command) => $this->connection->executeCommand($command));
     }
@@ -161,9 +176,11 @@ class ConnectionWrapper implements NodeConnectionInterface
     }
 
     /**
-     * @param Closure(CommandInterface): mixed $execute
+     * @param Closure(CommandInterface): T $execute
      *
-     * @return mixed
+     * @return T
+     *
+     * @template T
      */
     private function execute(CommandInterface $command, Closure $execute)
     {
@@ -191,7 +208,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         /** @psalm-suppress NoInterfaceProperties */
         $this->logger->logCommand(
             $this->commandToString($command),
-            (microtime(true) - $startTime) * 1000,
+            (microtime(true) - $startTime) * 1000.0,
             $this->getParameters()->alias,
             $result instanceof Error ? $result->getMessage() : false,
         );

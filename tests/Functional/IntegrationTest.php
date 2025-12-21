@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional;
 
+use Override;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
@@ -30,11 +31,7 @@ class IntegrationTest extends WebTestCase
 {
     private ?KernelBrowser $client = null;
 
-    /**
-     * Muted deprecation "Passing null to parameter #1 ($async) of type bool is deprecated" - would be fixed by next phpredis release with fixed reflection on its own
-     *
-     * @group legacy
-     */
+    #[Override]
     protected function setUp(): void
     {
         $fs = new Filesystem();
@@ -53,6 +50,7 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $commandTester->execute(['query' => ['flushall'], '-n' => true]));
     }
 
+    #[Override]
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -94,6 +92,7 @@ class IntegrationTest extends WebTestCase
         return $client->getResponse();
     }
 
+    #[Override]
     protected static function getKernelClass(): string
     {
         require_once __DIR__ . '/App/Kernel.php';

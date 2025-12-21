@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Client\Predis\Connection;
 
+use Override;
 use Predis\Connection\Factory;
 use Predis\Connection\NodeConnectionInterface;
 use Snc\RedisBundle\Logger\RedisLogger;
@@ -27,11 +28,13 @@ class ConnectionFactory extends Factory
 
     protected ?Stopwatch $stopwatch = null;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function setLogger(?RedisLogger $logger = null): void
     {
         $this->logger = $logger;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function setStopwatch(?Stopwatch $stopwatch): void
     {
         $this->stopwatch = $stopwatch;
@@ -42,13 +45,20 @@ class ConnectionFactory extends Factory
      * connection object and enable logging.
      *
      * @param class-string<ConnectionWrapper> $class Fully qualified name of the connection wrapper class.
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function setConnectionWrapperClass(string $class): void
     {
         $this->wrapper = $class;
     }
 
-    /** @param mixed $parameters */
+    /**
+     * @param mixed $parameters
+     *
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    #[Override]
     public function create($parameters): NodeConnectionInterface
     {
         if (isset($parameters->parameters)) {
