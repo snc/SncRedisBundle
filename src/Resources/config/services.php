@@ -21,6 +21,7 @@ return static function (ContainerConfigurator $configurator): void {
 
     $container->set('snc_redis.logger', '%snc_redis.logger.class%')
         ->tag('monolog.logger', ['channel' => 'snc_redis'])
+        ->tag('kernel.reset', ['method' => 'reset'])
         ->args([(new ReferenceConfigurator('logger'))->nullOnInvalid()]);
 
     $container->set('snc_redis.data_collector', '%snc_redis.data_collector.class%')
