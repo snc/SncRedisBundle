@@ -16,7 +16,6 @@ namespace Snc\RedisBundle\DependencyInjection;
 use InvalidArgumentException;
 use LogicException;
 use Override;
-use Predis\Client;
 use RedisSentinel;
 use Relay\Sentinel;
 use Snc\RedisBundle\DependencyInjection\Configuration\Configuration;
@@ -39,7 +38,6 @@ use function class_exists;
 use function count;
 use function is_string;
 use function sprintf;
-use function version_compare;
 
 class SncRedisExtension extends Extension
 {
@@ -145,17 +143,8 @@ class SncRedisExtension extends Extension
         // Handle connection_persistent as bool|string
         if (is_string($client['options']['connection_persistent'])) {
             $client['options']['persistent'] = true;
-            // For predis, use the string value as conn_uid (requires predis >= 2.4.0)
-            if (class_exists(Client::class)) {
-                if (!version_compare(Client::VERSION, '2.4.0', '>=')) {
-                    throw new InvalidConfigurationException(
-                        'Using connection_persistent as string for Predis requires predis/predis version 2.4.0 or higher. ' .
-                        sprintf('Current version: %s', Client::VERSION),
-                    );
-                }
-
-                $client['options']['conn_uid'] = $client['options']['connection_persistent'];
-            }
+            // For predis, use the string value as conn_uid
+            $client['options']['conn_uid'] = $client['options']['connection_persistent'];
         } else {
             $client['options']['persistent'] = $client['options']['connection_persistent'];
         }

@@ -40,7 +40,6 @@ use function class_exists;
 use function count;
 use function current;
 use function sys_get_temp_dir;
-use function version_compare;
 
 /**
  * SncRedisExtensionTest
@@ -747,10 +746,6 @@ YAML;
             $this->markTestSkipped('Predis not available');
         }
 
-        if (version_compare(Client::VERSION, '2.4.0', '<')) {
-            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent');
-        }
-
         $extension = new SncRedisExtension();
         $config    = $this->parseYaml($this->getPredisWithConnectionPersistentBoolYamlConfig());
         $extension->load([$config], $container = $this->getContainer());
@@ -758,17 +753,13 @@ YAML;
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
         $this->assertTrue($definition->getArgument(0)['persistent']);
-        $this->assertNull($definition->getArgument(0)['conn_uid']);
+        $this->assertArrayNotHasKey('conn_uid', $definition->getArgument(0));
     }
 
     public function testPredisWithConnectionPersistentString(): void
     {
         if (!class_exists(Client::class)) {
             $this->markTestSkipped('Predis not available');
-        }
-
-        if (version_compare(Client::VERSION, '2.4.0', '<')) {
-            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent');
         }
 
         $extension = new SncRedisExtension();
@@ -779,24 +770,6 @@ YAML;
         $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
         $this->assertTrue($definition->getArgument(0)['persistent']);
         $this->assertSame('my_custom_conn_uid', $definition->getArgument(0)['conn_uid']);
-    }
-
-    public function testPredisWithConnectionPersistentVersionTooOld(): void
-    {
-        if (!class_exists(Client::class)) {
-            $this->markTestSkipped('Predis not available');
-        }
-
-        if (version_compare(Client::VERSION, '2.4.0', '>=')) {
-            $this->markTestSkipped('This test requires Predis version < 2.4.0');
-        }
-
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Using connection_persistent as string for Predis requires predis/predis version 2.4.0 or higher');
-
-        $extension = new SncRedisExtension();
-        $config    = $this->parseYaml($this->getPredisWithConnectionPersistentStringYamlConfig());
-        $extension->load([$config], $container = $this->getContainer());
     }
 
     private function getPredisWithConnectionPersistentBoolYamlConfig(): string
@@ -833,10 +806,6 @@ YAML;
             $this->markTestSkipped('Predis not available');
         }
 
-        if (version_compare(Client::VERSION, '2.4.0', '<')) {
-            $this->markTestSkipped('Predis version 2.4.0 or higher required for connection_persistent');
-        }
-
         $extension = new SncRedisExtension();
         $config    = $this->parseYaml($this->getPredisWithConnectionPersistentFalseYamlConfig());
         $extension->load([$config], $container = $this->getContainer());
@@ -844,7 +813,7 @@ YAML;
         $this->assertTrue($container->hasDefinition('snc_redis.default'));
         $definition = $container->getDefinition('snc_redis.connection.default_parameters.default');
         $this->assertFalse($definition->getArgument(0)['persistent']);
-        $this->assertNull($definition->getArgument(0)['conn_uid']);
+        $this->assertArrayNotHasKey('conn_uid', $definition->getArgument(0));
     }
 
     private function getPredisWithConnectionPersistentFalseYamlConfig(): string

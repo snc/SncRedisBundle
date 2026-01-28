@@ -86,6 +86,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->isConnected();
     }
 
+    #[Override]
     public function hasDataToRead(): bool
     {
         return $this->connection->hasDataToRead();
@@ -110,6 +111,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return (string) $this->connection;
     }
 
+    #[Override]
     public function getClientId(): ?int
     {
         return $this->connection->getClientId();
@@ -141,6 +143,7 @@ class ConnectionWrapper implements NodeConnectionInterface
         return $this->connection->read();
     }
 
+    #[Override]
     public function write(string $buffer): void
     {
         $this->connection->write($buffer);

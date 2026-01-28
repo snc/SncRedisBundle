@@ -34,9 +34,10 @@
         "doctrine/coding-standard": "^12.0",
         "friendsofphp/proxy-manager-lts": "^1.0.6",
         "monolog/monolog": "*",
-        "phpunit/phpunit": "^9.5.28 || ^10",
-        "predis/predis": "^2.0 || ^3.0",
+        "phpunit/phpunit": "^9.6.34 || ^10.5.63",
+        "predis/predis": "^3.1",
         "psalm/plugin-phpunit": "^0.19.3",
+        "psr/http-message": "^2",
         "seec/phpunit-consecutive-params": "^1.1.4",
         "symfony/browser-kit": "^6.4 || ^7.3 || ^8.0",
         "symfony/cache": "^6.4 || ^7.3 || ^8.0",
@@ -52,7 +53,7 @@
     },
     "conflict": {
         "ext-redis": "<5.3.2",
-        "predis/predis": "<2.0"
+        "predis/predis": "<3.1"
     },
     "suggest": {
         "monolog/monolog": "If you want to use the monolog redis handler.",
