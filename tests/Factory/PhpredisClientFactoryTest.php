@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Factory;
 
 use Override;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -17,6 +18,7 @@ use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
+use function assert;
 use function class_exists;
 use function fsockopen;
 use function phpversion;
@@ -180,6 +182,45 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0, $client->getOption(Redis::OPT_SERIALIZER));
         $this->assertSame(5., $client->getTimeout());
         $this->assertSame('sncredis', $client->getAuth());
+    }
+
+    /**
+     * @testWith ["RedisSentinel"]
+     *           ["Relay\\Relay"]
+     */
+    public function testCreateSentinelTlsConfig(string $sentinelClass): void
+    {
+        if (!@fsockopen('127.0.0.1', 26380)) {
+            $this->markTestSkipped(sprintf('The %s requires a TLS Redis Sentinel listening on %s:26380.', __METHOD__, '127.0.0.1'));
+        }
+
+        if (!class_exists($sentinelClass)) {
+            $this->markTestSkipped(sprintf('The %s requires the %s class to be available.', __METHOD__, $sentinelClass));
+        }
+
+        $client = (new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger)))->create(
+            $sentinelClass,
+            ['rediss://127.0.0.1:26380'],
+            [
+                'connection_timeout'    => 5,
+                'connection_persistent' => false,
+                'service'               => 'MasterNode',
+                'parameters'            => [
+                    'password'          => 'examplepassword',
+                    'sentinel_username' => null,
+                    'sentinel_password' => null,
+                    'ssl_context'       => [
+                        'verify_peer'      => false,
+                        'verify_peer_name' => false,
+                    ],
+                ],
+            ],
+            'phpredissentineltls',
+            false,
+        );
+        assert($client instanceof Redis || $client instanceof Relay);
+        $this->assertSame('examplepassword', $client->getAuth());
+        $this->assertTrue($client->ping());
     }
 
     public function testCreateFullConfig(): void

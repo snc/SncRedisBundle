@@ -136,7 +136,7 @@ class PhpredisClientFactory
 
         foreach ($dsns as $dsn) {
             $args = [
-                'host' => $dsn->getHost(),
+                'host' => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost(),
                 'port' => (int) $dsn->getPort(),
                 'connectTimeout' => $connectionTimeout,
                 'persistent' => $connectionPersistent,
@@ -144,6 +144,10 @@ class PhpredisClientFactory
                 'readTimeout' => $readTimeout,
                 'auth' => [$parameters['sentinel_username'], $parameters['sentinel_password']],
             ];
+            if ($dsn->getTls()) {
+                $args['ssl'] = $parameters['ssl_context'] ?? [];
+            }
+
             try {
                 if ($isRelay || version_compare(phpversion('redis'), '6.0', '<')) {
                     $sentinel = new $sentinelClass(...array_values($args));

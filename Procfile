@@ -7,3 +7,5 @@ redis-node3: sh -c 'cp -R .github/workflows/redis-configs/redis-node3 /tmp/ && c
 redis-node4: sh -c 'cp -R .github/workflows/redis-configs/redis-node4 /tmp/ && cd /tmp/redis-node4 && redis-server redis.conf --port 7082'
 redis-node5: sh -c 'cp -R .github/workflows/redis-configs/redis-node5 /tmp/ && cd /tmp/redis-node5 && redis-server redis.conf --port 7083'
 redis-node6: sh -c 'cp -R .github/workflows/redis-configs/redis-node6 /tmp/ && cd /tmp/redis-node6 && redis-server redis.conf --port 7084'
+redis-tls-master: sh -c '.github/workflows/redis-configs/gen-tls-certs.sh && cp .github/workflows/redis-configs/redis-tls-master.conf /tmp/ && redis-server /tmp/redis-tls-master.conf'
+redis-tls-sentinel: sh -c '.github/workflows/redis-configs/gen-tls-certs.sh && cp .github/workflows/redis-configs/redis-tls-sentinel.conf /tmp/ && redis-server /tmp/redis-tls-sentinel.conf --sentinel'
