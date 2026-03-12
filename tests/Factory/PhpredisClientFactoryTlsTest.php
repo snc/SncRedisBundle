@@ -54,9 +54,9 @@ class PhpredisClientFactoryTlsTest extends TestCase
     {
         $this->logger->expects($this->never())->method('debug');
 
-        $sentinelDsn     = sprintf('rediss://%s:26380', $this->sentinelHost);
-        $masterName      = $_ENV['REDIS_SENTINEL_SERVICE'] ?? 'MasterNode';
-        $redisPassword   = $_ENV['REDIS_PASSWORD'] ?? 'examplepassword';
+        $sentinelDsn   = sprintf('rediss://%s:26380', $this->sentinelHost);
+        $masterName    = $_ENV['REDIS_SENTINEL_SERVICE'] ?? 'MasterNode';
+        $redisPassword = $_ENV['REDIS_PASSWORD'] ?? 'examplepassword';
 
         $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
 

@@ -147,6 +147,7 @@ class PhpredisClientFactory
             if ($dsn->getTls()) {
                 $args['ssl'] = $parameters['ssl_context'] ?? [];
             }
+
             try {
                 if ($isRelay || version_compare(phpversion('redis'), '6.0', '<')) {
                     $sentinel = new $sentinelClass(...array_values($args));
