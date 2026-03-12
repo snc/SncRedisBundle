@@ -83,6 +83,6 @@ class PhpredisClientFactoryTlsTest extends TestCase
 
         $this->assertInstanceOf($outputClass, $client);
         $this->assertSame($redisPassword, $client->getAuth());
-        $this->assertTrue($client->ping());
+        $this->assertTrue($client->ping('ping'));
     }
 }
