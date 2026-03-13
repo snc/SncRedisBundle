@@ -24,10 +24,10 @@ composer require snc/redis-bundle
 [Read the documentation in docs/](docs/)
 
 ## Contributing
-Running full test suite requires PHP installed with certain PHP extensions and redis server, 
+Running full test suite requires PHP installed with certain PHP extensions and redis server,
 as well as [overmind](https://github.com/DarthSim/overmind) to start the fleet of redis processes.
 
-Because of this, we use [Nix](https://nixos.org/) for local development. 
+Because of this, we use [Nix](https://nixos.org/) for local development.
 
 After you [install Nix](https://github.com/DeterminateSystems/nix-installer), make sure you are in directory with SncRedisBundle.
 Within it, you can run
