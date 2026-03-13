@@ -9,10 +9,12 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
+use RedisSentinel;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
 
+use function assert;
 use function class_exists;
 use function fsockopen;
 use function sprintf;
@@ -80,9 +82,10 @@ class PhpredisClientFactoryTlsTest extends TestCase
             'phpredissentineltls',
             false,
         );
+        assert($client instanceof Redis || $client instanceof RedisSentinel);
 
         $this->assertInstanceOf($outputClass, $client);
         $this->assertSame($redisPassword, $client->getAuth());
-        $this->assertTrue($client->ping('ping'));
+        $this->assertTrue($client->ping());
     }
 }
