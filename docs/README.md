@@ -126,14 +126,15 @@ snc_redis:
 ```
 
 The `service` is the name of the set of Redis instances.
-The optional parameters option can be used to set parameters like the 
-database number and password for the master/slave connections, 
+The optional parameters option can be used to set parameters like the
+database number and password for the master/slave connections,
 they don't apply for the connection to sentinel.
 If you use a password, it must be in the password parameter and must
 be omitted from the DSNs. Also make sure to use the sentinel port number
 (26379 by default) in the DSNs, and not the default Redis port.
 You can find more information about this on [Configuring Sentinel](https://redis.io/topics/sentinel#configuring-sentinel).
-A setup using `RedisCluster` from `phpredis`  could look like this:
+
+A setup using `RedisCluster` from `phpredis` could look like this:
 
 ``` yaml
 snc_redis:
@@ -170,6 +171,36 @@ snc_redis:
 ```
 
 It also works for the Phpredis Cluster mode.
+
+#### TLS / encrypted Sentinel connections (`phpredis`)
+
+When your Sentinel instances are behind TLS, use the `rediss://` scheme in the DSNs.
+`PhpredisClientFactory` will automatically prepend `tls://` to the sentinel host and
+pass the SSL context to the underlying `RedisSentinel` connection.
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsn:
+                - rediss://sentinel-host1:26379
+                - rediss://sentinel-host2:26379
+            options:
+                replication: sentinel
+                service: mymaster
+                parameters:
+                    database: 1
+                    password: pass
+                    ssl_context:
+                        verify_peer: true
+                        verify_peer_name: true
+                        cafile: /path/to/ca.crt
+```
+
+The `ssl_context` keys map directly to [PHP SSL stream context options](https://www.php.net/manual/en/context.ssl.php).
+Omit `ssl_context` (or leave it empty) to use the default SSL settings.
 
 ### Persistent Connections ###
 

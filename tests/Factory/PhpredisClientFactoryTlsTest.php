@@ -4,88 +4,126 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Factory;
 
-use Override;
-use PHPUnit\Framework\MockObject\MockObject;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Redis;
-use RedisSentinel;
+use RedisException;
 use Snc\RedisBundle\Factory\PhpredisClientFactory;
 use Snc\RedisBundle\Logger\RedisCallInterceptor;
 use Snc\RedisBundle\Logger\RedisLogger;
 
-use function assert;
 use function class_exists;
-use function fsockopen;
 use function sprintf;
 
 class PhpredisClientFactoryTlsTest extends TestCase
 {
-    private string $sentinelHost;
-    private MockObject $logger;
-    private RedisLogger $redisLogger;
-
-    #[Override]
-    protected function setUp(): void
+    /**
+     * Verifies that a rediss:// DSN causes the sentinel host to be prefixed
+     * with tls:// and that the ssl context arg is set.
+     */
+    public function testSentinelReceivesTlsPrefixAndSslContext(): void
     {
         if (!class_exists(Redis::class)) {
             $this->markTestSkipped(sprintf('The %s requires phpredis extension.', self::class));
         }
 
-        $this->sentinelHost = $_ENV['REDIS_SENTINEL_TLS_HOST'] ?? '127.0.0.1';
+        $factory = new class (
+            new RedisCallInterceptor(new RedisLogger()),
+        ) extends PhpredisClientFactory {
+            /** @var array<string, mixed>|null */
+            public ?array $capturedArgs = null;
 
-        if (!@fsockopen($this->sentinelHost, 26380)) {
-            $this->markTestSkipped(sprintf('The %s requires a TLS Redis Sentinel listening on %s:26380.', self::class, $this->sentinelHost));
+            protected function createSentinelInstance(string $sentinelClass, array $args, bool $useNamedParams): object
+            {
+                $this->capturedArgs = $args;
+
+                throw new RedisException('spy: short-circuit before real connection');
+            }
+        };
+
+        try {
+            $factory->create(
+                'RedisSentinel',
+                ['rediss://my-sentinel-host:26380'],
+                [
+                    'connection_timeout'    => 5,
+                    'connection_persistent' => false,
+                    'service'               => 'mymaster',
+                    'parameters'            => [
+                        'password'          => 'secret',
+                        'sentinel_username' => null,
+                        'sentinel_password' => null,
+                        'ssl_context'       => ['verify_peer' => false],
+                    ],
+                ],
+                'phpredissentineltls',
+                false,
+            );
+            $this->fail('Expected RedisException to be thrown');
+        } catch (RedisException) {
+            // expected — factory catches and retries all DSNs, then throws InvalidArgumentException
+        } catch (InvalidArgumentException) {
+            // also acceptable — means the factory exhausted the DSN list
         }
 
-        $this->logger      = $this->getMockBuilder(LoggerInterface::class)->getMock();
-        $this->redisLogger = new RedisLogger($this->logger);
+        $capturedArgs = $factory->capturedArgs;
+
+        $this->assertNotNull($capturedArgs, 'createSentinelInstance should have been called');
+        $this->assertStringStartsWith('tls://', $capturedArgs['host'], 'Sentinel host must use tls:// prefix for rediss:// DSN');
+        $this->assertSame('tls://my-sentinel-host', $capturedArgs['host']);
+        $this->assertSame(26380, $capturedArgs['port']);
+        $this->assertArrayHasKey('ssl', $capturedArgs, 'SSL context must be set for TLS DSN');
+        $this->assertSame(['verify_peer' => false], $capturedArgs['ssl']);
     }
 
     /**
-     * Tests that RedisSentinel connects via TLS when the DSN scheme is rediss://.
-     *
-     * Before this fix, PhpredisClientFactory passed the sentinel host without the
-     * required "tls://" prefix and without an SSL context, causing phpredis to
-     * attempt a plain-text handshake on the TLS port and fail with:
-     *   SSL routines::wrong version number
-     *
-     * @testWith ["RedisSentinel", "Redis"]
+     * Verifies that a plain redis:// DSN does NOT add tls:// prefix.
      */
-    public function testCreateSentinelTlsConfig(string $sentinelClass, string $outputClass): void
+    public function testSentinelDoesNotUseTlsForPlainDsn(): void
     {
-        $this->logger->expects($this->never())->method('debug');
+        if (!class_exists(Redis::class)) {
+            $this->markTestSkipped(sprintf('The %s requires phpredis extension.', self::class));
+        }
 
-        $sentinelDsn   = sprintf('rediss://%s:26380', $this->sentinelHost);
-        $masterName    = $_ENV['REDIS_SENTINEL_SERVICE'] ?? 'MasterNode';
-        $redisPassword = $_ENV['REDIS_PASSWORD'] ?? 'examplepassword';
+        $factory = new class (
+            new RedisCallInterceptor(new RedisLogger()),
+        ) extends PhpredisClientFactory {
+            /** @var array<string, mixed>|null */
+            public ?array $capturedArgs = null;
 
-        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+            protected function createSentinelInstance(string $sentinelClass, array $args, bool $useNamedParams): object
+            {
+                $this->capturedArgs = $args;
 
-        $client = $factory->create(
-            $sentinelClass,
-            [$sentinelDsn],
-            [
-                'connection_timeout'    => 5,
-                'connection_persistent' => false,
-                'service'               => $masterName,
-                'parameters'            => [
-                    'password'          => $redisPassword,
-                    'sentinel_username' => null,
-                    'sentinel_password' => null,
-                    'ssl_context'       => [
-                        'verify_peer'      => false,
-                        'verify_peer_name' => false,
+                throw new RedisException('spy: short-circuit before real connection');
+            }
+        };
+
+        try {
+            $factory->create(
+                'RedisSentinel',
+                ['redis://my-sentinel-host:26379'],
+                [
+                    'connection_timeout'    => 5,
+                    'connection_persistent' => false,
+                    'service'               => 'mymaster',
+                    'parameters'            => [
+                        'password'          => 'secret',
+                        'sentinel_username' => null,
+                        'sentinel_password' => null,
                     ],
                 ],
-            ],
-            'phpredissentineltls',
-            false,
-        );
-        assert($client instanceof Redis || $client instanceof RedisSentinel);
+                'phpredissentinel',
+                false,
+            );
+        } catch (RedisException | InvalidArgumentException) {
+            // expected
+        }
 
-        $this->assertInstanceOf($outputClass, $client);
-        $this->assertSame($redisPassword, $client->getAuth());
-        $this->assertTrue($client->ping());
+        $capturedArgs = $factory->capturedArgs;
+
+        $this->assertNotNull($capturedArgs, 'createSentinelInstance should have been called');
+        $this->assertSame('my-sentinel-host', $capturedArgs['host'], 'Sentinel host must NOT have tls:// prefix for redis:// DSN');
+        $this->assertArrayNotHasKey('ssl', $capturedArgs, 'SSL context must NOT be set for plain DSN');
     }
 }

@@ -144,16 +144,17 @@ class PhpredisClientFactory
                 'readTimeout' => $readTimeout,
                 'auth' => [$parameters['sentinel_username'], $parameters['sentinel_password']],
             ];
+
             if ($dsn->getTls()) {
                 $args['ssl'] = $parameters['ssl_context'] ?? [];
             }
 
             try {
-                if ($isRelay || version_compare(phpversion('redis'), '6.0', '<')) {
-                    $sentinel = new $sentinelClass(...array_values($args));
-                } else {
-                    $sentinel = new $sentinelClass($args);
-                }
+                $sentinel = $this->createSentinelInstance(
+                    $sentinelClass,
+                    $args,
+                    !$isRelay && !version_compare(phpversion('redis'), '6.0', '<'),
+                );
 
                 $address = $sentinel->getMasterAddrByName($masterName);
             } catch (RedisException | RelayException $e) {
@@ -411,5 +412,11 @@ class PhpredisClientFactory
 
         return (new AccessInterceptorValueHolderFactory($this->proxyConfiguration))
             ->createProxy($client, $prefixInterceptors);
+    }
+
+    /** @param array<string, mixed> $args */
+    protected function createSentinelInstance(string $sentinelClass, array $args, bool $useNamedParams): object
+    {
+        return $useNamedParams ? new $sentinelClass($args) : new $sentinelClass(...array_values($args));
     }
 }
