@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Factory;
 
 use InvalidArgumentException;
+use Override;
 use PHPUnit\Framework\TestCase;
 use Redis;
 use RedisException;
@@ -33,6 +34,7 @@ class PhpredisClientFactoryTlsTest extends TestCase
             /** @var array<string, mixed>|null */
             public ?array $capturedArgs = null;
 
+            #[Override]
             protected function createSentinelInstance(string $sentinelClass, array $args, bool $useNamedParams): object
             {
                 $this->capturedArgs = $args;
@@ -91,6 +93,7 @@ class PhpredisClientFactoryTlsTest extends TestCase
             /** @var array<string, mixed>|null */
             public ?array $capturedArgs = null;
 
+            #[Override]
             protected function createSentinelInstance(string $sentinelClass, array $args, bool $useNamedParams): object
             {
                 $this->capturedArgs = $args;
