@@ -10,12 +10,11 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 use function array_filter;
 use function array_merge;
+use function constant;
+use function defined;
 use function is_a;
 use function sprintf;
-
-use const STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT;
-use const STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
-use const STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+use function str_replace;
 
 /** @internal */
 class PredisParametersFactory
@@ -32,12 +31,12 @@ class PredisParametersFactory
 
         $defaultOptions = ['timeout' => null]; // Allow to be consistent with old version of Predis where default timeout was 5
         $dsnOptions     = static::parseDsn(new RedisDsn($dsn));
-
-        // Merge ssl arrays so that DSN tls_version does not erase ssl_context from config
-        $sslOptions = array_merge($options['ssl'] ?? [], $dsnOptions['ssl'] ?? []);
-        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
-        if ($sslOptions !== []) {
-            $dsnOptions['ssl'] = $sslOptions;
+        $dsnOptions     = array_merge($defaultOptions, $options, $dsnOptions);
+        $ssl            = array_merge($options['ssl'] ?? [], $dsnOptions['ssl'] ?? []);
+        if ($ssl !== []) {
+            $dsnOptions['ssl'] = $ssl;
+        } else {
+            unset($dsnOptions['ssl']);
         }
 
         if (!empty($dsnOptions['persistent']) && !empty($dsnOptions['database'])) {
@@ -95,11 +94,12 @@ class PredisParametersFactory
 
     private static function tlsVersionToCryptoType(string $version): int
     {
-        return match ($version) {
-            '1.0' => STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT,
-            '1.1' => STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT,
-            '1.2' => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
-            default => throw new InvalidArgumentException(sprintf('Unsupported TLS version "%s". Supported versions: 1.0, 1.1, 1.2.', $version)),
-        };
+        $constant = sprintf('STREAM_CRYPTO_METHOD_TLSv%s_CLIENT', str_replace('.', '_', $version));
+
+        if (!defined($constant)) {
+            throw new InvalidArgumentException(sprintf('Unsupported TLS version "%s".', $version));
+        }
+
+        return constant($constant);
     }
 }

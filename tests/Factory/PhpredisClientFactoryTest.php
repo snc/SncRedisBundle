@@ -534,4 +534,29 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertInstanceOf(Redis::class, $client);
         $this->assertNull($client->getPersistentID());
     }
+
+    public function testTlsVersionDsnConfig(): void
+    {
+        if (!@fsockopen('127.0.0.1', 6391)) {
+            $this->markTestSkipped(sprintf('The %s requires a TLS Redis server at 127.0.0.1:6391.', __METHOD__));
+        }
+
+        $this->logger->expects($this->atLeastOnce())
+            ->method('debug')
+            ->with($this->stringContains('CONNECT tlsv1.2://127.0.0.1'));
+
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+        $factory->create(
+            Redis::class,
+            ['rediss://127.0.0.1:6391?tls_version=1.2'],
+            [
+                'connection_timeout' => 5,
+                'parameters' => [
+                    'ssl_context' => ['verify_peer' => false, 'verify_peer_name' => false],
+                ],
+            ],
+            'default',
+            true,
+        );
+    }
 }
