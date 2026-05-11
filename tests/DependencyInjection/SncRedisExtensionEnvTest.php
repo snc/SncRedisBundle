@@ -57,6 +57,24 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
+    public function testPredisJsonEnvDsnWithCluster(): void
+    {
+        $container = $this->getConfiguredContainer('env_predis_json_dsn_with_cluster');
+
+        $this->assertSame(
+            [PredisParametersFactory::class, 'createFromDsns'],
+            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
+        );
+
+        $clientDefinition = $container->findDefinition('snc_redis.default');
+
+        // Single Reference (not [Reference]) prevents nested-array [[p1,p2]] when env resolves to multiple DSNs.
+        $this->assertSame(
+            'snc_redis.connection.default_parameters.default',
+            (string) $clientDefinition->getArgument(0),
+        );
+    }
+
     public function testPredisDefaultParameterConfig(): void
     {
         $container = $this->getConfiguredContainer('env_predis_ssl_context');

@@ -1,0 +1,11 @@
+parameters:
+    env(REDIS_DSNS): '["redis://localhost1","redis://localhost2"]'
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: "%env(json:REDIS_DSNS)%"
+            options:
+                cluster: "predis"
