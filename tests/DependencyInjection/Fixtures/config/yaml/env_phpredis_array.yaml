@@ -1,0 +1,14 @@
+parameters:
+    env(REDIS_URL_1): redis://localhost:7079
+    env(REDIS_URL_2): redis://localhost:7080
+
+snc_redis:
+    clients:
+        phpredisarray:
+            type: phpredis
+            alias: phpredisarray
+            dsn:
+                - "%env(REDIS_URL_1)%"
+                - "%env(REDIS_URL_2)%"
+            options:
+                array: true

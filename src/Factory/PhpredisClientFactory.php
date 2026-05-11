@@ -10,6 +10,7 @@ use ProxyManager\Configuration;
 use ProxyManager\Factory\AccessInterceptorValueHolderFactory;
 use ProxyManager\Proxy\AccessInterceptorInterface;
 use Redis;
+use RedisArray;
 use RedisCluster;
 use RedisException;
 use RedisSentinel;
@@ -25,6 +26,7 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_values;
+use function assert;
 use function class_exists;
 use function count;
 use function get_class;
@@ -75,7 +77,7 @@ class PhpredisClientFactory
      * @param list<string|list<string>> $dsns    Multiple DSN string
      * @param mixed[]                   $options Options provided in bundle client config
      *
-     * @return Redis|RedisCluster|Relay
+     * @return Redis|RedisArray|RedisCluster|Relay
      *
      * @throws InvalidConfigurationException
      * @throws LogicException
@@ -86,9 +88,10 @@ class PhpredisClientFactory
         $isRelay    = is_a($class, Relay::class, true);
         $isSentinel = is_a($class, RedisSentinel::class, true) || is_a($class, Sentinel::class, true);
         $isCluster  = is_a($class, RedisCluster::class, true);
+        $isArray    = class_exists(RedisArray::class, false) && is_a($class, RedisArray::class, true);
 
-        if (!$isRedis && !$isRelay && !$isSentinel && !$isCluster) {
-            throw new LogicException(sprintf('The factory can only instantiate Redis|Relay\Relay|RedisCluster|RedisSentinel|Relay\Sentinel classes: "%s" asked', $class));
+        if (!$isRedis && !$isRelay && !$isSentinel && !$isCluster && !$isArray) {
+            throw new LogicException(sprintf('The factory can only instantiate Redis|Relay\Relay|RedisCluster|RedisSentinel|Relay\Sentinel|RedisArray classes: "%s" asked', $class));
         }
 
         // Normalize the DSNs, because using processed environment variables could lead to nested values.
@@ -96,9 +99,13 @@ class PhpredisClientFactory
 
         $parsedDsns = array_map(static fn (string $dsn) => new RedisDsn($dsn), $dsns);
 
+        if ($isArray) {
+            return $this->createArrayClient($parsedDsns, $class, $alias, $options, $loggingEnabled);
+        }
+
         if ($isRedis || $isRelay) {
             if (count($parsedDsns) > 1) {
-                throw new LogicException('Cannot have more than 1 dsn with \Redis and \RedisArray is not supported yet.');
+                throw new LogicException('Cannot have more than 1 dsn with \Redis.');
             }
 
             return $this->createClient($parsedDsns[0], $class, $alias, $options, $loggingEnabled);
@@ -187,6 +194,47 @@ class PhpredisClientFactory
                 var_export($dsns, true),
             ),
         );
+    }
+
+    /**
+     * @param RedisDsn[] $dsns
+     * @param mixed[]    $options
+     */
+    private function createArrayClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisArray
+    {
+        $hosts = array_map(
+            static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(),
+            $dsns,
+        );
+
+        $arrayOptions = [];
+
+        if (isset($options['connection_timeout'])) {
+            $arrayOptions['connect_timeout'] = (float) $options['connection_timeout'];
+        }
+
+        if (isset($options['read_write_timeout'])) {
+            $arrayOptions['read_timeout'] = (float) $options['read_write_timeout'];
+        }
+
+        $password = $options['parameters']['password'] ?? null;
+        $username = $options['parameters']['username'] ?? null;
+        if ($password !== null) {
+            $arrayOptions['auth'] = $username !== null ? [$username, $password] : $password;
+        }
+
+        $client = new $class($hosts, $arrayOptions);
+        assert($client instanceof RedisArray);
+
+        if (isset($options['prefix'])) {
+            $client->setOption(Redis::OPT_PREFIX, $options['prefix']);
+        }
+
+        if (isset($options['serialization'])) {
+            $client->setOption(Redis::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
+        }
+
+        return $loggingEnabled ? $this->createLoggingProxy($client, $alias) : $client;
     }
 
     /**
@@ -359,7 +407,7 @@ class PhpredisClientFactory
      *
      * @return T
      *
-     * @template T of Redis|Relay|RedisCluster
+     * @template T of Redis|Relay|RedisCluster|RedisArray
      */
     private function createLoggingProxy(object $client, string $alias): object
     {
