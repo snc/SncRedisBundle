@@ -231,6 +231,7 @@ class PhpredisClientFactory
         }
 
         if (isset($options['serialization'])) {
+            /** @psalm-suppress InvalidArgument */
             $client->setOption(Redis::OPT_SERIALIZER, $this->loadSerializationType($options['serialization']));
         }
 
