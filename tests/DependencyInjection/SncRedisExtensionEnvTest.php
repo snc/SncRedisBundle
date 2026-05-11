@@ -26,7 +26,7 @@ class SncRedisExtensionEnvTest extends TestCase
         $container = $this->getConfiguredContainer('env_predis_minimal');
 
         $this->assertSame(
-            [PredisParametersFactory::class, 'create'],
+            [PredisParametersFactory::class, 'createFromDsns'],
             $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
         );
     }
@@ -36,8 +36,24 @@ class SncRedisExtensionEnvTest extends TestCase
         $container = $this->getConfiguredContainer('env_predis_ssl_context');
 
         $this->assertSame(
-            [PredisParametersFactory::class, 'create'],
+            [PredisParametersFactory::class, 'createFromDsns'],
             $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
+        );
+    }
+
+    public function testPredisJsonEnvDsn(): void
+    {
+        $container = $this->getConfiguredContainer('env_predis_json_dsn');
+
+        $this->assertSame(
+            [PredisParametersFactory::class, 'createFromDsns'],
+            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
+        );
+
+        $clientDefinition = $container->findDefinition('snc_redis.default');
+        $this->assertSame(
+            'snc_redis.connection.default_parameters.default',
+            (string) $clientDefinition->getArgument(0),
         );
     }
 

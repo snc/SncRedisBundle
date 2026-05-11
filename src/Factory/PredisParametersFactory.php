@@ -9,16 +9,46 @@ use Predis\Connection\ParametersInterface;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 use function array_filter;
+use function array_map;
 use function array_merge;
 use function constant;
+use function count;
 use function defined;
 use function is_a;
+use function is_array;
+use function is_string;
 use function sprintf;
 use function str_replace;
 
 /** @internal */
 class PredisParametersFactory
 {
+    /**
+     * @param class-string<ParametersInterface>      $class
+     * @param array<string, mixed>                   $options
+     * @param string|list<string>|list<list<string>> $dsns
+     *
+     * @return ParametersInterface|list<ParametersInterface>
+     */
+    public static function createFromDsns(array $options, string $class, string|array $dsns): ParametersInterface|array
+    {
+        if (is_string($dsns)) {
+            $dsns = [$dsns];
+        }
+
+        // json:/csv: env processors can produce a single-element array wrapping the actual list
+        if (count($dsns) === 1 && is_array($dsns[0])) {
+            $dsns = $dsns[0];
+        }
+
+        $parameters = array_map(
+            static fn (string $d) => static::create($options, $class, $d),
+            $dsns,
+        );
+
+        return count($parameters) === 1 ? $parameters[0] : $parameters;
+    }
+
     /**
      * @param class-string<ParametersInterface> $class
      * @param array<string, mixed>              $options

@@ -185,4 +185,39 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertSame(STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, $ssl['crypto_type']);
         $this->assertFalse($ssl['verify_peer']);
     }
+
+    public function testCreateFromDsnsString(): void
+    {
+        $parameters = PredisParametersFactory::createFromDsns([], Parameters::class, 'redis://localhost');
+        $this->assertInstanceOf(Parameters::class, $parameters);
+        $this->assertSame('localhost', $parameters->host);
+    }
+
+    public function testCreateFromDsnsSingleElementArray(): void
+    {
+        $parameters = PredisParametersFactory::createFromDsns([], Parameters::class, ['redis://localhost']);
+        $this->assertInstanceOf(Parameters::class, $parameters);
+        $this->assertSame('localhost', $parameters->host);
+    }
+
+    public function testCreateFromDsnsMultiple(): void
+    {
+        $result = PredisParametersFactory::createFromDsns([], Parameters::class, ['redis://host1', 'redis://host2']);
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertInstanceOf(Parameters::class, $result[0]);
+        $this->assertInstanceOf(Parameters::class, $result[1]);
+        $this->assertSame('host1', $result[0]->host);
+        $this->assertSame('host2', $result[1]->host);
+    }
+
+    public function testCreateFromDsnsNestedArray(): void
+    {
+        $result = PredisParametersFactory::createFromDsns([], Parameters::class, [['redis://host1', 'redis://host2']]);
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertInstanceOf(Parameters::class, $result[0]);
+        $this->assertSame('host1', $result[0]->host);
+        $this->assertSame('host2', $result[1]->host);
+    }
 }

@@ -210,7 +210,7 @@ class SncRedisExtension extends Extension
         $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
 
         $parameterDef = new Definition($parametersClass);
-        $parameterDef->setFactory([PredisParametersFactory::class, 'create']);
+        $parameterDef->setFactory([PredisParametersFactory::class, $dsn instanceof RedisEnvDsn ? 'createFromDsns' : 'create']);
         $parameterDef->addArgument($options);
         $parameterDef->addArgument($parametersClass);
         $parameterDef->addArgument((string) $dsn);
