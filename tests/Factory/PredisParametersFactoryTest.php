@@ -181,7 +181,7 @@ class PredisParametersFactoryTest extends TestCase
             Parameters::class,
             'rediss://localhost:6379?tls_version=1.2',
         );
-        $ssl = $parameters->toArray()['ssl'];
+        $ssl        = $parameters->toArray()['ssl'];
         $this->assertSame(STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, $ssl['crypto_type']);
         $this->assertFalse($ssl['verify_peer']);
     }
