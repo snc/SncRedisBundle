@@ -356,6 +356,33 @@ snc_redis:
         key: monolog
 ```
 
+## Forcing the TLS version
+
+By default, PHP >= 7.4 negotiates TLS 1.3, which can cause random frozen connections with some Redis servers
+(see [phpredis#1726](https://github.com/phpredis/phpredis/issues/1726)).
+You can force a specific TLS version via the `tls_version` query parameter in the DSN:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: phpredis   # or predis
+            dsn: 'rediss://my-redis-server:6379?tls_version=1.2'
+```
+
+Supported values: `1.0`, `1.1`, `1.2`.
+
+Works with Symfony environment variables:
+
+``` yaml
+# Whole DSN as env var (tls_version included)
+dsn: '%env(REDIS_URL)%'
+# REDIS_URL=rediss://my-redis-server:6379?tls_version=1.2
+
+# Only the version as env var
+dsn: 'rediss://my-redis-server:6379?tls_version=%env(REDIS_TLS_VERSION)%'
+```
+
 ## Usage with `symfony/web-profiler-bundle`
 
 If you are using [`symfony/web-profiler-bundle`](https://github.com/symfony/web-profiler-bundle)

@@ -54,6 +54,8 @@ class RedisDsn
 
     protected ?string $prefix = null;
 
+    protected ?string $tlsVersion = null;
+
     public function __construct(string $dsn)
     {
         $this->dsn = $dsn;
@@ -125,6 +127,11 @@ class RedisDsn
     public function getPrefix(): ?string
     {
         return $this->prefix;
+    }
+
+    public function getTlsVersion(): ?string
+    {
+        return $this->tlsVersion;
     }
 
     public function isValid(): bool
@@ -212,6 +219,10 @@ class RedisDsn
 
         if (!empty($params['prefix'])) {
             $this->prefix = $params['prefix'];
+        }
+
+        if (!empty($params['tls_version'])) {
+            $this->tlsVersion = $params['tls_version'];
         }
 
         return '';

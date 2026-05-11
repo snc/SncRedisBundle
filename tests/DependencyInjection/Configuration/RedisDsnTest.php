@@ -301,4 +301,24 @@ class RedisDsnTest extends TestCase
         $this->assertSame($weight, $dsn->getWeight());
         $this->assertSame($alias, $dsn->getAlias());
     }
+
+    /** @return list<array{0: string, 1: ?string}> */
+    public static function tlsVersionValues(): array
+    {
+        return [
+            ['redis://localhost', null],
+            ['rediss://localhost', null],
+            ['rediss://localhost?tls_version=1.0', '1.0'],
+            ['rediss://localhost?tls_version=1.1', '1.1'],
+            ['rediss://localhost?tls_version=1.2', '1.2'],
+            ['redis://localhost?tls_version=1.2', '1.2'],
+        ];
+    }
+
+    /** @dataProvider tlsVersionValues */
+    public function testTlsVersion(string $dsn, ?string $tlsVersion): void
+    {
+        $dsn = new RedisDsn($dsn);
+        $this->assertSame($tlsVersion, $dsn->getTlsVersion());
+    }
 }

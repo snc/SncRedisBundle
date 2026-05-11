@@ -13,6 +13,10 @@ use function array_merge;
 use function is_a;
 use function sprintf;
 
+use const STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT;
+use const STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+use const STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+
 /** @internal */
 class PredisParametersFactory
 {
@@ -28,7 +32,13 @@ class PredisParametersFactory
 
         $defaultOptions = ['timeout' => null]; // Allow to be consistent with old version of Predis where default timeout was 5
         $dsnOptions     = static::parseDsn(new RedisDsn($dsn));
-        $dsnOptions     = array_merge($defaultOptions, $options, $dsnOptions);
+
+        // Merge ssl arrays so that DSN tls_version does not erase ssl_context from config
+        $sslOptions = array_merge($options['ssl'] ?? [], $dsnOptions['ssl'] ?? []);
+        $dsnOptions = array_merge($defaultOptions, $options, $dsnOptions);
+        if ($sslOptions !== []) {
+            $dsnOptions['ssl'] = $sslOptions;
+        }
 
         if (!empty($dsnOptions['persistent']) && !empty($dsnOptions['database'])) {
             $dsnOptions['persistent'] = (int) $dsnOptions['database'];
@@ -54,6 +64,11 @@ class PredisParametersFactory
             $options['scheme'] = $dsn->getTls() ? 'tls' : 'tcp';
             $options['host']   = $dsn->getHost();
             $options['port']   = $dsn->getPort();
+
+            if ($dsn->getTls() && $dsn->getTlsVersion() !== null) {
+                $options['ssl'] = ['crypto_type' => self::tlsVersionToCryptoType($dsn->getTlsVersion())];
+            }
+
             if ($dsn->getDatabase() !== null) {
                 $options['path'] = $dsn->getDatabase();
             }
@@ -76,5 +91,15 @@ class PredisParametersFactory
         }
 
         return array_filter($options, static fn ($value) => $value !== null);
+    }
+
+    private static function tlsVersionToCryptoType(string $version): int
+    {
+        return match ($version) {
+            '1.0' => STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT,
+            '1.1' => STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT,
+            '1.2' => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
+            default => throw new InvalidArgumentException(sprintf('Unsupported TLS version "%s". Supported versions: 1.0, 1.1, 1.2.', $version)),
+        };
     }
 }
