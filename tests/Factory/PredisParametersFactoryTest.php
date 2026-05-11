@@ -190,14 +190,14 @@ class PredisParametersFactoryTest extends TestCase
     {
         $parameters = PredisParametersFactory::createFromDsns([], Parameters::class, 'redis://localhost');
         $this->assertInstanceOf(Parameters::class, $parameters);
-        $this->assertSame('localhost', $parameters->host);
+        $this->assertSame('localhost', $parameters->toArray()['host']);
     }
 
     public function testCreateFromDsnsSingleElementArray(): void
     {
         $parameters = PredisParametersFactory::createFromDsns([], Parameters::class, ['redis://localhost']);
         $this->assertInstanceOf(Parameters::class, $parameters);
-        $this->assertSame('localhost', $parameters->host);
+        $this->assertSame('localhost', $parameters->toArray()['host']);
     }
 
     public function testCreateFromDsnsMultiple(): void
@@ -207,8 +207,8 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertCount(2, $result);
         $this->assertInstanceOf(Parameters::class, $result[0]);
         $this->assertInstanceOf(Parameters::class, $result[1]);
-        $this->assertSame('host1', $result[0]->host);
-        $this->assertSame('host2', $result[1]->host);
+        $this->assertSame('host1', $result[0]->toArray()['host']);
+        $this->assertSame('host2', $result[1]->toArray()['host']);
     }
 
     public function testCreateFromDsnsNestedArray(): void
@@ -217,7 +217,8 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertInstanceOf(Parameters::class, $result[0]);
-        $this->assertSame('host1', $result[0]->host);
-        $this->assertSame('host2', $result[1]->host);
+        $this->assertInstanceOf(Parameters::class, $result[1]);
+        $this->assertSame('host1', $result[0]->toArray()['host']);
+        $this->assertSame('host2', $result[1]->toArray()['host']);
     }
 }
