@@ -878,6 +878,42 @@ clients:
 YAML;
     }
 
+    public function testPredisCustomClass(): void
+    {
+        if (!class_exists(Client::class)) {
+            $this->markTestSkipped('Predis not available');
+        }
+
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml(<<<'YAML'
+clients:
+    default:
+        type: predis
+        alias: default
+        dsn: redis://localhost
+        class: Predis\Client
+YAML);
+        $extension->load([$config], $container = $this->getContainer());
+
+        $this->assertSame(Client::class, $container->getDefinition('snc_redis.default')->getClass());
+    }
+
+    public function testPhpRedisCustomClass(): void
+    {
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml(<<<'YAML'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://localhost
+        class: Redis
+YAML);
+        $extension->load([$config], $container = $this->getContainer());
+
+        $this->assertSame(Redis::class, $container->getDefinition('snc_redis.default')->getClass());
+    }
+
     private function getContainer(): ContainerBuilder
     {
         return new ContainerBuilder(new ParameterBag([

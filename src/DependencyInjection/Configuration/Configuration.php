@@ -125,6 +125,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('alias')->isRequired()->end()
+                            ->scalarNode('class')->defaultNull()->end()
                             ->booleanNode('logging')->defaultValue($this->debug)->end()
                             ->arrayNode('dsns')
                                 ->isRequired()

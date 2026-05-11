@@ -54,6 +54,29 @@ container will contain the service `snc_redis.default` which will return a
 
 Available types are `predis`, `phpredis` and `relay`.
 
+### Custom client class
+
+You can override the client class for a specific client using the `class` option.
+This is useful when you need to extend the default client with custom behavior
+(e.g. a custom replication strategy).
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: predis
+            dsn: redis://localhost
+            class: App\Redis\CustomPredisClient   # must extend Predis\Client
+        cache:
+            type: phpredis
+            dsn: redis://localhost
+            class: App\Redis\CustomRedis          # must extend Redis
+```
+
+The `class` option overrides the default class for that client only.
+It takes precedence over the global `snc_redis.class.client` (predis)
+or `snc_redis.class.phpredis_client` (phpredis) settings.
+
 A more complex setup which contains a clustered client could look like this:
 
 ``` yaml

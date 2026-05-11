@@ -183,7 +183,7 @@ class SncRedisExtension extends Extension
         $optionDef = new Definition((string) $container->getParameter('snc_redis.client_options.class'));
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
-        $clientDef = new Definition((string) $container->getParameter('snc_redis.client.class'));
+        $clientDef = new Definition($client['class'] ?? (string) $container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
         if ($connectionCount === 1 && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
@@ -234,7 +234,7 @@ class SncRedisExtension extends Extension
             throw new LogicException('You cannot have both cluster and sentinel enabled for same redis connection');
         }
 
-        $phpredisClientClass = (string) $container->getParameter(
+        $phpredisClientClass = $options['class'] ?? (string) $container->getParameter(
             sprintf('snc_redis.%s_%sclient.class', $options['type'], $hasClusterOption ? 'cluster' : ($hasArrayOption ? 'array' : '')),
         );
 
