@@ -35,11 +35,9 @@ snc_redis:
         cluster:
             type: predis
             alias: cluster
-            dsn:
-              - redis://sncredis@127.0.0.1/3
-              - redis://sncredis@127.0.0.1/4
-              - redis://sncredis@127.0.0.1/5
+            dsn: "%env(json:REDIS_DSNS)%"
             options:
+                cluster: predis
                 prefix: foo
                 connection_timeout: 10
                 connection_persistent: true

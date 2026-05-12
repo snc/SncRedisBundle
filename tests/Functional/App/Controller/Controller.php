@@ -13,18 +13,23 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
-use Redis;
+use Predis\ClientInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
-    public function __invoke(Redis $redis): JsonResponse
+    public function __construct(#[Autowire(service: 'snc_redis.cluster')] private ClientInterface $cluster)
     {
-        $redis->set('foo', 'bar');
+    }
+
+    public function __invoke(): JsonResponse
+    {
+        $this->cluster->set('foo', 'bar');
 
         return new JsonResponse([
-            'result' => $redis->get('foo'),
+            'result' => $this->cluster->get('foo'),
         ]);
     }
 }
