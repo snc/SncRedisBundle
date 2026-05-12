@@ -20,8 +20,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
-    public function __construct(#[Autowire(service: 'snc_redis.cluster')] private ClientInterface $cluster)
-    {
+    public function __construct(
+        #[Autowire(service: 'snc_redis.cluster')]
+        private ClientInterface $cluster,
+    ) {
     }
 
     public function __invoke(): JsonResponse
