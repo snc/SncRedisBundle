@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <psalm
     errorLevel="4"
+    findUnusedIssueHandlerSuppression="false"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -19,8 +20,16 @@
                 <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeBuilder::end"/>
             </errorLevel>
         </UnusedMethodCall>
+        <UndefinedInterfaceMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeParentInterface::end"/>
+            </errorLevel>
+        </UndefinedInterfaceMethod>
     </issueHandlers>
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
+            <containerXml>tests/Functional/App/var/cache/test/Snc_RedisBundle_Tests_Functional_App_KernelTestDebugContainer.xml</containerXml>
+        </pluginClass>
     </plugins>
 </psalm>

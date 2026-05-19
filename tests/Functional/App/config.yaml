@@ -35,11 +35,9 @@ snc_redis:
         cluster:
             type: predis
             alias: cluster
-            dsn:
-              - redis://sncredis@127.0.0.1/3
-              - redis://sncredis@127.0.0.1/4
-              - redis://sncredis@127.0.0.1/5
+            dsn: "%env(json:REDIS_DSNS)%"
             options:
+                cluster: predis
                 prefix: foo
                 connection_timeout: 10
                 connection_persistent: true
@@ -59,20 +57,14 @@ snc_redis:
         with_acl:
             type: predis
             alias: with_acl
-            dsn: redis://localhost/1
+            dsn: redis://snc_redis:snc_password@localhost:7099/1
             logging: false
-            options:
-                parameters:
-                    username: my_user
-                    password: sncredis
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
         public: false
-        bind:
-            Predis\Client $predisReplication: '@snc_redis.predis_replication'
 
     Redis: '@snc_redis.default'
 
@@ -86,6 +78,14 @@ services:
     Snc\RedisBundle\Tests\Functional\App\Controller\:
         resource: './Controller'
         tags: ['controller.service_arguments']
+
+    Snc\RedisBundle\Tests\Functional\App\Controller\PredisReplication:
+        bind:
+            Predis\Client $predisReplication: '@snc_redis.predis_replication'
+
+    Snc\RedisBundle\Tests\Functional\App\Controller\Controller:
+        arguments:
+            $clients: !tagged_iterator snc_redis.client
 
     var_dumper.cli_dumper:
         class: Symfony\Component\VarDumper\Dumper\CliDumper

@@ -185,4 +185,28 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertSame(STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, $ssl['crypto_type']);
         $this->assertFalse($ssl['verify_peer']);
     }
+
+    /**
+     * @testWith ["redis://localhost"]
+     *           [["redis://localhost"]]
+     *           [[["redis://localhost"]]]
+     */
+    public function testCreateReturnsSingleParameters(string|array $dsn): void
+    {
+        $result = PredisParametersFactory::create([], Parameters::class, $dsn);
+        $this->assertInstanceOf(Parameters::class, $result);
+    }
+
+    /**
+     * @param array<int, string|array<int, string>> $dsn
+     *
+     * @testWith [["redis://host1", "redis://host2"]]
+     *           [[["redis://host1", "redis://host2"]]]
+     */
+    public function testCreateReturnsMultipleParameters(array $dsn): void
+    {
+        $result = PredisParametersFactory::create([], Parameters::class, $dsn);
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+    }
 }

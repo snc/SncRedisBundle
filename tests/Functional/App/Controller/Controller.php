@@ -13,18 +13,28 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
+use Predis\ClientInterface;
 use Redis;
+use RedisArray;
+use Relay\Relay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
-    public function __invoke(Redis $redis): JsonResponse
+    /** @param iterable<Redis|ClientInterface|Relay|RedisArray> $clients */
+    public function __construct(private iterable $clients)
     {
-        $redis->set('foo', 'bar');
+    }
 
-        return new JsonResponse([
-            'result' => $redis->get('foo'),
-        ]);
+    public function __invoke(): JsonResponse
+    {
+        $result = null;
+        foreach ($this->clients as $client) {
+            $client->set('foo', 'bar');
+            $result = $client->get('foo');
+        }
+
+        return new JsonResponse(['result' => $result]);
     }
 }
