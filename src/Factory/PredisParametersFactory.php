@@ -10,8 +10,11 @@ use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
 use function array_filter;
 use function array_merge;
+use function constant;
+use function defined;
 use function is_a;
 use function sprintf;
+use function str_replace;
 
 /** @internal */
 class PredisParametersFactory
@@ -29,6 +32,12 @@ class PredisParametersFactory
         $defaultOptions = ['timeout' => null]; // Allow to be consistent with old version of Predis where default timeout was 5
         $dsnOptions     = static::parseDsn(new RedisDsn($dsn));
         $dsnOptions     = array_merge($defaultOptions, $options, $dsnOptions);
+        $ssl            = array_merge($options['ssl'] ?? [], $dsnOptions['ssl'] ?? []);
+        if ($ssl !== []) {
+            $dsnOptions['ssl'] = $ssl;
+        } else {
+            unset($dsnOptions['ssl']);
+        }
 
         if (!empty($dsnOptions['persistent']) && !empty($dsnOptions['database'])) {
             $dsnOptions['persistent'] = (int) $dsnOptions['database'];
@@ -54,6 +63,11 @@ class PredisParametersFactory
             $options['scheme'] = $dsn->getTls() ? 'tls' : 'tcp';
             $options['host']   = $dsn->getHost();
             $options['port']   = $dsn->getPort();
+
+            if ($dsn->getTls() && $dsn->getTlsVersion() !== null) {
+                $options['ssl'] = ['crypto_type' => self::tlsVersionToCryptoType($dsn->getTlsVersion())];
+            }
+
             if ($dsn->getDatabase() !== null) {
                 $options['path'] = $dsn->getDatabase();
             }
@@ -76,5 +90,16 @@ class PredisParametersFactory
         }
 
         return array_filter($options, static fn ($value) => $value !== null);
+    }
+
+    private static function tlsVersionToCryptoType(string $version): int
+    {
+        $constant = sprintf('STREAM_CRYPTO_METHOD_TLSv%s_CLIENT', str_replace('.', '_', $version));
+
+        if (!defined($constant)) {
+            throw new InvalidArgumentException(sprintf('Unsupported TLS version "%s".', $version));
+        }
+
+        return constant($constant);
     }
 }

@@ -12,6 +12,8 @@ use stdClass;
 
 use function sprintf;
 
+use const STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+
 class PredisParametersFactoryTest extends TestCase
 {
     /** @return array<array{0: string, 1: array<string, mixed>, 2: array<string, mixed>}> */
@@ -164,5 +166,23 @@ class PredisParametersFactoryTest extends TestCase
 
         /** @psalm-suppress InvalidArgument */
         PredisParametersFactory::create([], stdClass::class, 'redis://localhost');
+    }
+
+    public function testCreateWithTlsVersion(): void
+    {
+        $parameters = PredisParametersFactory::create([], Parameters::class, 'rediss://localhost:6379?tls_version=1.2');
+        $this->assertSame(STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, $parameters->toArray()['ssl']['crypto_type']);
+    }
+
+    public function testCreateMergesSslWithTlsVersion(): void
+    {
+        $parameters = PredisParametersFactory::create(
+            ['ssl' => ['verify_peer' => false]],
+            Parameters::class,
+            'rediss://localhost:6379?tls_version=1.2',
+        );
+        $ssl        = $parameters->toArray()['ssl'];
+        $this->assertSame(STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, $ssl['crypto_type']);
+        $this->assertFalse($ssl['verify_peer']);
     }
 }

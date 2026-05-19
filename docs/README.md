@@ -324,6 +324,11 @@ snc_redis:
             dsn: redis://localhost
             logging: '%kernel.debug%'
             class: App\Redis\MyPredisClient
+        secure:
+            type: predis
+            alias: secure
+            dsn: rediss://localhost?tls_version=1.2
+            logging: false
         cache:
             type: predis
             alias: cache
