@@ -149,6 +149,24 @@ snc_redis:
                 cluster: true
 ```
 
+A setup using `RedisArray` (phpredis client-side sharding) could look like this:
+
+``` yaml
+snc_redis:
+    clients:
+        default:
+            type: phpredis
+            alias: default
+            dsn:
+                - redis://localhost:7000
+                - redis://localhost:7001
+                - redis://localhost:7002
+            options:
+                array: true
+```
+
+`RedisArray` implements consistent hashing across multiple Redis nodes without requiring a Redis Cluster setup. It is only available with the `phpredis` client type.
+
 #### Authentication using Redis ACL
 
 Starting with redis 6.0, it is possible to use an [ACL](https://redis.io/docs/manual/security/acl/) system that only allows users with valid username and password to log in.

@@ -297,12 +297,25 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
-    public function testPhpRedisArrayIsNotSupported(): void
+    public function testPhpRedisMultiDsnWithoutModeThrows(): void
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
+        $this->expectExceptionMessage('Use options "cluster", "sentinel", or "array" to enable support for multi DSN instances.');
 
         $this->getConfiguredContainer('env_phpredis_array_not_supported');
+    }
+
+    public function testPhpRedisArrayOption(): void
+    {
+        $container        = $this->getConfiguredContainer('env_phpredis_array');
+        $clientDefinition = $container->findDefinition('snc_redis.phpredisarray');
+
+        $this->assertSame('RedisArray', $clientDefinition->getClass());
+        $this->assertSame('RedisArray', $clientDefinition->getArgument(0));
+        $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
+        $this->assertStringContainsString('REDIS_URL_2', $clientDefinition->getArgument(1)[1]);
+        $this->assertSame('phpredisarray', $clientDefinition->getArgument(3));
+        $this->assertFalse($clientDefinition->getArgument(4));
     }
 
     private function getConfiguredContainer(string $file): ContainerBuilder

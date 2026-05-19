@@ -62,6 +62,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('phpredis_client')->defaultValue(Redis::class)->end()
                         ->scalarNode('relay_client')->defaultValue(Relay::class)->end()
                         ->scalarNode('phpredis_clusterclient')->defaultValue(RedisCluster::class)->end()
+                        ->scalarNode('phpredis_arrayclient')->defaultValue('RedisArray')->end()
                         ->scalarNode('logger')->defaultValue(RedisLogger::class)->end()
                         ->scalarNode('data_collector')->defaultValue(RedisDataCollector::class)->end()
                         ->scalarNode('monolog_handler')->defaultValue(RedisHandler::class)->end()
@@ -109,6 +110,18 @@ class Configuration implements ConfigurationInterface
                             })
                             ->thenInvalid('You must install "ocramius/proxy-manager" or "friendsofphp/proxy-manager-lts" in order to enable logging for phpredis client')
                         ->end()
+                        ->validate()
+                            ->ifTrue(static function (array $clientConfig): bool {
+                                return !empty($clientConfig['options']['array']) && $clientConfig['type'] !== 'phpredis';
+                            })
+                            ->thenInvalid('The "array" option is only supported for the "phpredis" client type.')
+                        ->end()
+                        ->validate()
+                            ->ifTrue(static function (array $clientConfig): bool {
+                                return !empty($clientConfig['options']['array']) && !class_exists('RedisArray');
+                            })
+                            ->thenInvalid('The "RedisArray" class is not available. Make sure the phpredis extension is installed with RedisArray support.')
+                        ->end()
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('alias')->isRequired()->end()
@@ -142,6 +155,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
                                     ->scalarNode('serialization')->defaultValue('default')->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
+                                    ->booleanNode('array')->defaultFalse()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
                                     ->enumNode('replication')
                                         ->values([true, 'predis', 'sentinel'])

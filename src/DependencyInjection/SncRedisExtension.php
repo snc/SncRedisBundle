@@ -157,6 +157,7 @@ class SncRedisExtension extends Extension
         unset($client['options']['connection_timeout']);
         unset($client['options']['connection_persistent']);
         unset($client['options']['throw_errors']);
+        unset($client['options']['array']);
         unset($client['options']['parameters']['ssl_context']);
 
         $connectionAliases = [];
@@ -223,9 +224,10 @@ class SncRedisExtension extends Extension
         $connectionCount   = count($options['dsns']);
         $hasClusterOption  = $options['options']['cluster'] !== null;
         $hasSentinelOption = isset($options['options']['replication']);
+        $hasArrayOption    = !empty($options['options']['array']);
 
-        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption) {
-            throw new LogicException('Use options "cluster" or "sentinel" to enable support for multi DSN instances.');
+        if ($connectionCount > 1 && !$hasClusterOption && !$hasSentinelOption && !$hasArrayOption) {
+            throw new LogicException('Use options "cluster", "sentinel", or "array" to enable support for multi DSN instances.');
         }
 
         if ($hasClusterOption && $hasSentinelOption) {
@@ -233,10 +235,11 @@ class SncRedisExtension extends Extension
         }
 
         $phpredisClientClass = (string) $container->getParameter(
-            sprintf('snc_redis.%s_%sclient.class', $options['type'], ($hasClusterOption ? 'cluster' : '')),
+            sprintf('snc_redis.%s_%sclient.class', $options['type'], $hasClusterOption ? 'cluster' : ($hasArrayOption ? 'array' : '')),
         );
 
         unset($options['options']['commands']);
+        unset($options['options']['array']);
         $sentinelClass = $options['type'] === 'relay' ? Sentinel::class : RedisSentinel::class;
 
         $phpredisDef = new Definition($phpredisClientClass, [

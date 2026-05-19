@@ -10,6 +10,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
+use RedisArray;
 use RedisCluster;
 use Relay\Relay;
 use SEEC\PhpUnit\Helper\ConsecutiveParams;
@@ -86,6 +87,26 @@ class PhpredisClientFactoryTest extends TestCase
         $this->assertSame(0, $client->getDBNum());
         $this->assertNull($client->getAuth());
         $this->assertNull($client->getPersistentID());
+    }
+
+    public function testCreateRedisArray(): void
+    {
+        $factory = new PhpredisClientFactory(new RedisCallInterceptor($this->redisLogger));
+
+        $client = $factory->create(
+            RedisArray::class,
+            ['redis://localhost:6379', 'redis://localhost:6379'],
+            [
+                'connection_timeout' => 5,
+                'parameters' => ['password' => 'sncredis'],
+            ],
+            'phpredisarray',
+            false,
+        );
+
+        $this->assertInstanceOf(RedisArray::class, $client);
+        $client->set('snc_redis_array_test', 'ok');
+        $this->assertSame('ok', $client->get('snc_redis_array_test'));
     }
 
     public function testCreateMinimalClusterConfig(): void
