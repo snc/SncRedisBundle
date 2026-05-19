@@ -884,10 +884,6 @@ YAML;
      */
     public function testCustomClientClass(string $type, string $customClass): void
     {
-        if ($type === 'predis' && !class_exists(Client::class)) {
-            $this->markTestSkipped('Predis not available');
-        }
-
         $extension = new SncRedisExtension();
         $config    = $this->parseYaml(<<<YAML
 clients:
