@@ -180,10 +180,10 @@ class SncRedisExtension extends Extension
         }
 
         $optionId  = sprintf('snc_redis.client.%s_options', $client['alias']);
-        $optionDef = new Definition((string) $container->getParameter('snc_redis.client_options.class'));
+        $optionDef = new Definition($container->getParameter('snc_redis.client_options.class'));
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
-        $clientDef = new Definition($client['class'] ?? (string) $container->getParameter('snc_redis.client.class'));
+        $clientDef = new Definition($client['class'] ?? $container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
 
         if ($connectionCount === 1 && !isset($client['options']['replication'])) {
@@ -207,7 +207,7 @@ class SncRedisExtension extends Extension
      */
     private function loadPredisConnectionParameters(string $clientAlias, array $options, ContainerBuilder $container, object $dsn): void
     {
-        $parametersClass = (string) $container->getParameter('snc_redis.connection_parameters.class');
+        $parametersClass = $container->getParameter('snc_redis.connection_parameters.class');
         $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
 
         $parameterDef = new Definition($parametersClass);
@@ -262,7 +262,7 @@ class SncRedisExtension extends Extension
     {
         $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
 
-        $def = new Definition((string) $container->getParameter('snc_redis.monolog_handler.class'), [
+        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), [
             $ref,
             $config['monolog']['key'],
         ]);
@@ -278,6 +278,6 @@ class SncRedisExtension extends Extension
     #[Override]
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
-        return new Configuration((bool) $container->getParameter('kernel.debug'));
+        return new Configuration($container->getParameter('kernel.debug'));
     }
 }

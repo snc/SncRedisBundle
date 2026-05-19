@@ -13,19 +13,10 @@
         <directory name="src"/>
         <directory name="tests"/>
     </projectFiles>
-    <issueHandlers>
-        <UnusedMethodCall>
-            <errorLevel type="suppress">
-                <referencedMethod name="Symfony\Component\Config\Definition\Builder\NodeBuilder::end"/>
-            </errorLevel>
-        </UnusedMethodCall>
-        <PossiblyUnusedMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Snc\RedisBundle\Tests\Functional\App\Controller\Controller::__construct"/>
-            </errorLevel>
-        </PossiblyUnusedMethod>
-    </issueHandlers>
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
+            <containerXml>tests/Functional/App/var/cache/test/Snc_RedisBundle_Tests_Functional_App_KernelTestDebugContainer.xml</containerXml>
+        </pluginClass>
     </plugins>
 </psalm>
