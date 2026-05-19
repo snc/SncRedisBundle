@@ -200,6 +200,8 @@ class PredisParametersFactoryTest extends TestCase
     /**
      * @testWith [["redis://host1", "redis://host2"]]
      *           [[["redis://host1", "redis://host2"]]]
+     *
+     * @param array<int, string|array<int, string>> $dsn
      */
     public function testCreateReturnsMultipleParameters(array $dsn): void
     {

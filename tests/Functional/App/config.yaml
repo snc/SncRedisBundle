@@ -65,8 +65,6 @@ services:
         autowire: true
         autoconfigure: true
         public: false
-        bind:
-            Predis\Client $predisReplication: '@snc_redis.predis_replication'
 
     Redis: '@snc_redis.default'
 
@@ -80,6 +78,14 @@ services:
     Snc\RedisBundle\Tests\Functional\App\Controller\:
         resource: './Controller'
         tags: ['controller.service_arguments']
+
+    Snc\RedisBundle\Tests\Functional\App\Controller\PredisReplication:
+        bind:
+            Predis\Client $predisReplication: '@snc_redis.predis_replication'
+
+    Snc\RedisBundle\Tests\Functional\App\Controller\Controller:
+        arguments:
+            $clients: !tagged_iterator snc_redis.client
 
     var_dumper.cli_dumper:
         class: Symfony\Component\VarDumper\Dumper\CliDumper

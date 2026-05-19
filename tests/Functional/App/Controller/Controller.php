@@ -14,16 +14,13 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
     /** @param iterable<object> $clients */
-    public function __construct(
-        #[TaggedIterator('snc_redis.client')]
-        private iterable $clients,
-    ) {
+    public function __construct(private iterable $clients)
+    {
     }
 
     public function __invoke(): JsonResponse
