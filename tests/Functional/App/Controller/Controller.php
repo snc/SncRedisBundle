@@ -15,12 +15,14 @@ namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
 use Predis\ClientInterface;
 use Redis;
+use RedisArray;
+use Relay\Relay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
-    /** @param iterable<Redis|ClientInterface> $clients */
+    /** @param iterable<Redis|ClientInterface|Relay|RedisArray> $clients */
     public function __construct(private iterable $clients)
     {
     }
