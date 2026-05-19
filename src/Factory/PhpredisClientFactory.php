@@ -26,7 +26,6 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_values;
-use function assert;
 use function class_exists;
 use function count;
 use function get_class;
@@ -88,7 +87,7 @@ class PhpredisClientFactory
         $isRelay    = is_a($class, Relay::class, true);
         $isSentinel = is_a($class, RedisSentinel::class, true) || is_a($class, Sentinel::class, true);
         $isCluster  = is_a($class, RedisCluster::class, true);
-        $isArray    = class_exists(RedisArray::class, false) && is_a($class, RedisArray::class, true);
+        $isArray    = is_a($class, RedisArray::class, true);
 
         if (!$isRedis && !$isRelay && !$isSentinel && !$isCluster && !$isArray) {
             throw new LogicException(sprintf('The factory can only instantiate Redis|Relay\Relay|RedisCluster|RedisSentinel|Relay\Sentinel|RedisArray classes: "%s" asked', $class));
@@ -197,16 +196,12 @@ class PhpredisClientFactory
     }
 
     /**
-     * @param RedisDsn[] $dsns
-     * @param mixed[]    $options
+     * @param RedisDsn[]               $dsns
+     * @param class-string<RedisArray> $class
+     * @param mixed[]                  $options
      */
     private function createArrayClient(array $dsns, string $class, string $alias, array $options, bool $loggingEnabled): RedisArray
     {
-        $hosts = array_map(
-            static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(),
-            $dsns,
-        );
-
         $arrayOptions = [];
 
         if (isset($options['connection_timeout'])) {
@@ -223,8 +218,13 @@ class PhpredisClientFactory
             $arrayOptions['auth'] = $username !== null ? [$username, $password] : $password;
         }
 
-        $client = new $class($hosts, $arrayOptions);
-        assert($client instanceof RedisArray);
+        $client = new $class(
+            array_map(
+                static fn (RedisDsn $dsn) => ($dsn->getTls() ? 'tls://' : '') . $dsn->getHost() . ':' . $dsn->getPort(),
+                $dsns,
+            ),
+            $arrayOptions,
+        );
 
         if (isset($options['prefix'])) {
             $client->setOption(Redis::OPT_PREFIX, $options['prefix']);

@@ -110,6 +110,18 @@ class Configuration implements ConfigurationInterface
                             })
                             ->thenInvalid('You must install "ocramius/proxy-manager" or "friendsofphp/proxy-manager-lts" in order to enable logging for phpredis client')
                         ->end()
+                        ->validate()
+                            ->ifTrue(static function (array $clientConfig): bool {
+                                return !empty($clientConfig['options']['array']) && $clientConfig['type'] !== 'phpredis';
+                            })
+                            ->thenInvalid('The "array" option is only supported for the "phpredis" client type.')
+                        ->end()
+                        ->validate()
+                            ->ifTrue(static function (array $clientConfig): bool {
+                                return !empty($clientConfig['options']['array']) && !class_exists('RedisArray');
+                            })
+                            ->thenInvalid('The "RedisArray" class is not available. Make sure the phpredis extension is installed with RedisArray support.')
+                        ->end()
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('alias')->isRequired()->end()

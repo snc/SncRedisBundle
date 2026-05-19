@@ -234,10 +234,6 @@ class SncRedisExtension extends Extension
             throw new LogicException('You cannot have both cluster and sentinel enabled for same redis connection');
         }
 
-        if ($hasArrayOption && $options['type'] !== 'phpredis') {
-            throw new LogicException('The "array" option is only supported for the "phpredis" client type.');
-        }
-
         $phpredisClientClass = (string) $container->getParameter(
             sprintf('snc_redis.%s_%sclient.class', $options['type'], $hasClusterOption ? 'cluster' : ($hasArrayOption ? 'array' : '')),
         );
