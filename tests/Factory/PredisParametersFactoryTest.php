@@ -186,34 +186,23 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertFalse($ssl['verify_peer']);
     }
 
-    public function testCreateFromDsnsString(): void
+    public function testCreateWithString(): void
     {
-        $parameters = PredisParametersFactory::createFromDsns([], Parameters::class, 'redis://localhost');
+        $parameters = PredisParametersFactory::create([], Parameters::class, 'redis://localhost');
         $this->assertInstanceOf(Parameters::class, $parameters);
         $this->assertSame('localhost', $parameters->toArray()['host']);
     }
 
-    public function testCreateFromDsnsSingleElementArray(): void
+    public function testCreateWithSingleElementArray(): void
     {
-        $parameters = PredisParametersFactory::createFromDsns([], Parameters::class, ['redis://localhost']);
+        $parameters = PredisParametersFactory::create([], Parameters::class, ['redis://localhost']);
         $this->assertInstanceOf(Parameters::class, $parameters);
         $this->assertSame('localhost', $parameters->toArray()['host']);
     }
 
-    public function testCreateFromDsnsMultiple(): void
+    public function testCreateWithMultipleDsns(): void
     {
-        $result = PredisParametersFactory::createFromDsns([], Parameters::class, ['redis://host1', 'redis://host2']);
-        $this->assertIsArray($result);
-        $this->assertCount(2, $result);
-        $this->assertInstanceOf(Parameters::class, $result[0]);
-        $this->assertInstanceOf(Parameters::class, $result[1]);
-        $this->assertSame('host1', $result[0]->toArray()['host']);
-        $this->assertSame('host2', $result[1]->toArray()['host']);
-    }
-
-    public function testCreateFromDsnsNestedArray(): void
-    {
-        $result = PredisParametersFactory::createFromDsns([], Parameters::class, [['redis://host1', 'redis://host2']]);
+        $result = PredisParametersFactory::create([], Parameters::class, ['redis://host1', 'redis://host2']);
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertInstanceOf(Parameters::class, $result[0]);

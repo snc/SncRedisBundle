@@ -26,24 +26,24 @@ class PredisParametersFactory
     /**
      * @param class-string<ParametersInterface>      $class
      * @param array<string, mixed>                   $options
-     * @param string|list<string>|list<list<string>> $dsns
+     * @param string|list<string>|list<list<string>> $dsn
      *
      * @return ParametersInterface|list<ParametersInterface>
      */
-    public static function createFromDsns(array $options, string $class, string|array $dsns): ParametersInterface|array
+    public static function create(array $options, string $class, string|array $dsn): ParametersInterface|array
     {
-        if (is_string($dsns)) {
-            $dsns = [$dsns];
+        if (is_string($dsn)) {
+            $dsn = [$dsn];
         }
 
         // json:/csv: env processors can produce a single-element array wrapping the actual list
-        if (count($dsns) === 1 && is_array($dsns[0])) {
-            $dsns = $dsns[0];
+        if (count($dsn) === 1 && is_array($dsn[0])) {
+            $dsn = $dsn[0];
         }
 
         $parameters = array_map(
-            static fn (string $d) => static::create($options, $class, $d),
-            $dsns,
+            static fn (string $d) => static::createFromSingleDsn($options, $class, $d),
+            $dsn,
         );
 
         return count($parameters) === 1 ? $parameters[0] : $parameters;
@@ -53,7 +53,7 @@ class PredisParametersFactory
      * @param class-string<ParametersInterface> $class
      * @param array<string, mixed>              $options
      */
-    public static function create(array $options, string $class, string $dsn): ParametersInterface
+    private static function createFromSingleDsn(array $options, string $class, string $dsn): ParametersInterface
     {
         if (!is_a($class, ParametersInterface::class, true)) {
             throw new InvalidArgumentException(sprintf('%s::%s requires $class argument to implement %s', self::class, __METHOD__, ParametersInterface::class));

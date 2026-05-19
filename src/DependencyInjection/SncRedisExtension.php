@@ -185,11 +185,11 @@ class SncRedisExtension extends Extension
         $container->setDefinition($optionId, $optionDef);
         $clientDef = new Definition($client['class'] ?? (string) $container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
-        // When a single env-var DSN uses json:/csv: processors it may resolve to N parameters at runtime;
-        // pass the Reference directly so Predis receives [p1,p2,...] instead of [[p1,p2,...]].
-        $singleEnvDsn = $connectionCount === 1 && $client['dsns'][0] instanceof RedisEnvDsn;
 
-        if ($connectionCount === 1 && (!isset($client['options']['cluster']) && !isset($client['options']['replication'])) || $singleEnvDsn) {
+        $singleEnvDsn   = $connectionCount === 1 && $client['dsns'][0] instanceof RedisEnvDsn;
+        $hasAggregation = !$singleEnvDsn && (isset($client['options']['cluster']) || isset($client['options']['replication']));
+
+        if ($connectionCount === 1 && !$hasAggregation) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = [];
@@ -214,7 +214,7 @@ class SncRedisExtension extends Extension
         $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
 
         $parameterDef = new Definition($parametersClass);
-        $parameterDef->setFactory([PredisParametersFactory::class, $dsn instanceof RedisEnvDsn ? 'createFromDsns' : 'create']);
+        $parameterDef->setFactory([PredisParametersFactory::class, 'create']);
         $parameterDef->addArgument($options);
         $parameterDef->addArgument($parametersClass);
         $parameterDef->addArgument((string) $dsn);
