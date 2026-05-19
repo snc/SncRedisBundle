@@ -321,9 +321,14 @@ snc_redis:
         default:
             type: predis
             alias: default
-            dsn: redis://localhost  # or: rediss://localhost?tls_version=1.2 to force TLS 1.2 (1.0, 1.1, 1.2 supported)
+            dsn: redis://localhost
             logging: '%kernel.debug%'
             class: App\Redis\MyPredisClient
+        secure:
+            type: predis
+            alias: secure
+            dsn: rediss://localhost?tls_version=1.2
+            logging: false
         cache:
             type: predis
             alias: cache
