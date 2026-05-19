@@ -13,12 +13,14 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
+use Predis\ClientInterface;
+use Redis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
-    /** @param iterable<object> $clients */
+    /** @param iterable<Redis|ClientInterface> $clients */
     public function __construct(private iterable $clients)
     {
     }
@@ -27,9 +29,7 @@ class Controller extends AbstractController
     {
         $result = null;
         foreach ($this->clients as $client) {
-            /** @psalm-suppress MixedMethodCall */
             $client->set('foo', 'bar');
-            /** @psalm-suppress MixedMethodCall */
             $result = $client->get('foo');
         }
 
