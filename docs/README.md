@@ -323,6 +323,7 @@ snc_redis:
             alias: default
             dsn: redis://localhost
             logging: '%kernel.debug%'
+            class: App\Redis\MyPredisClient
         cache:
             type: predis
             alias: cache

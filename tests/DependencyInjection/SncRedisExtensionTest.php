@@ -878,6 +878,26 @@ clients:
 YAML;
     }
 
+    /**
+     * @testWith ["predis", "App\\Custom\\MyPredisClient"]
+     *           ["phpredis", "App\\Custom\\MyPhpRedisClient"]
+     */
+    public function testCustomClientClass(string $type, string $customClass): void
+    {
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml(<<<YAML
+clients:
+    default:
+        type: $type
+        alias: default
+        dsn: redis://localhost
+        class: $customClass
+YAML);
+        $extension->load([$config], $container = $this->getContainer());
+
+        $this->assertSame($customClass, $container->getDefinition('snc_redis.default')->getClass());
+    }
+
     private function getContainer(): ContainerBuilder
     {
         return new ContainerBuilder(new ParameterBag([
