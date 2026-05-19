@@ -15,8 +15,6 @@ use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Reference;
-
 use function array_key_exists;
 use function sys_get_temp_dir;
 
@@ -39,41 +37,6 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame(
             [PredisParametersFactory::class, 'create'],
             $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
-        );
-    }
-
-    public function testPredisJsonEnvDsn(): void
-    {
-        $container = $this->getConfiguredContainer('env_predis_json_dsn');
-
-        $this->assertSame(
-            [PredisParametersFactory::class, 'create'],
-            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
-        );
-
-        $clientDefinition = $container->findDefinition('snc_redis.default');
-        $this->assertSame(
-            'snc_redis.connection.default_parameters.default',
-            (string) $clientDefinition->getArgument(0),
-        );
-    }
-
-    public function testPredisJsonEnvDsnWithCluster(): void
-    {
-        $container = $this->getConfiguredContainer('env_predis_json_dsn_with_cluster');
-
-        $this->assertSame(
-            [PredisParametersFactory::class, 'create'],
-            $container->findDefinition('snc_redis.connection.default_parameters.default')->getFactory(),
-        );
-
-        $clientDefinition = $container->findDefinition('snc_redis.default');
-
-        // The client receives a single Reference even with cluster enabled, so that
-        // PredisParametersFactory::create() can return a list of parameters at runtime.
-        $this->assertInstanceOf(
-            Reference::class,
-            $clientDefinition->getArgument(0),
         );
     }
 

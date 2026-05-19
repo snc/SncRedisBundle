@@ -13,25 +13,29 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\Functional\App\Controller;
 
-use Predis\ClientInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Controller extends AbstractController
 {
+    /** @param iterable<object> $clients */
     public function __construct(
-        #[Autowire(service: 'snc_redis.cluster')]
-        private ClientInterface $cluster,
+        #[TaggedIterator('snc_redis.client')]
+        private iterable $clients,
     ) {
     }
 
     public function __invoke(): JsonResponse
     {
-        $this->cluster->set('foo', 'bar');
+        $result = null;
+        foreach ($this->clients as $client) {
+            /** @psalm-suppress MixedMethodCall */
+            $client->set('foo', 'bar');
+            /** @psalm-suppress MixedMethodCall */
+            $result = $client->get('foo');
+        }
 
-        return new JsonResponse([
-            'result' => $this->cluster->get('foo'),
-        ]);
+        return new JsonResponse(['result' => $result]);
     }
 }

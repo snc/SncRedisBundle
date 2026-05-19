@@ -1,9 +1,0 @@
-parameters:
-    env(REDIS_DSNS): '"redis://localhost"'
-
-snc_redis:
-    clients:
-        default:
-            type: predis
-            alias: default
-            dsn: "%env(json:REDIS_DSNS)%"

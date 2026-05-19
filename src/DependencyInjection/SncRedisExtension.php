@@ -186,10 +186,7 @@ class SncRedisExtension extends Extension
         $clientDef = new Definition($client['class'] ?? (string) $container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
 
-        $singleEnvDsn   = $connectionCount === 1 && $client['dsns'][0] instanceof RedisEnvDsn;
-        $hasAggregation = !$singleEnvDsn && (isset($client['options']['cluster']) || isset($client['options']['replication']));
-
-        if ($connectionCount === 1 && !$hasAggregation) {
+        if ($connectionCount === 1 && !isset($client['options']['replication'])) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = [];

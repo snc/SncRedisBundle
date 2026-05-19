@@ -57,12 +57,8 @@ snc_redis:
         with_acl:
             type: predis
             alias: with_acl
-            dsn: redis://localhost/1
+            dsn: redis://snc_redis:snc_password@localhost:7099/1
             logging: false
-            options:
-                parameters:
-                    username: my_user
-                    password: sncredis
 
 services:
     _defaults:
