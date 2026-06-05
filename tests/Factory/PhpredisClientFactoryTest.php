@@ -10,6 +10,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Redis;
+use ReflectionClass;
 use RedisArray;
 use RedisCluster;
 use Relay\Relay;
@@ -452,13 +453,15 @@ class PhpredisClientFactoryTest extends TestCase
     /** @return list<array{0: string, 1: int}> */
     public static function compressionTypes(): array
     {
-        $r     = new \ReflectionClass(Redis::class);
+        $r     = new ReflectionClass(Redis::class);
         $types = [['none', Redis::COMPRESSION_NONE]];
 
         foreach (['lzf' => 'COMPRESSION_LZF', 'zstd' => 'COMPRESSION_ZSTD', 'lz4' => 'COMPRESSION_LZ4'] as $name => $const) {
-            if ($r->hasConstant($const)) {
-                $types[] = [$name, $r->getConstant($const)];
+            if (!$r->hasConstant($const)) {
+                continue;
             }
+
+            $types[] = [$name, $r->getConstant($const)];
         }
 
         return $types;

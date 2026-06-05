@@ -236,10 +236,12 @@ class PhpredisClientFactory
         }
 
         if (isset($options['compression'])) {
+            /** @psalm-suppress InvalidArgument */
             $client->setOption(Redis::OPT_COMPRESSION, $this->loadCompressionType($options['compression']));
         }
 
         if (isset($options['compression_level'])) {
+            /** @psalm-suppress InvalidArgument */
             $client->setOption(Redis::OPT_COMPRESSION_LEVEL, $options['compression_level']);
         }
 
