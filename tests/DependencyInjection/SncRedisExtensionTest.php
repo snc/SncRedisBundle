@@ -280,6 +280,20 @@ class SncRedisExtensionTest extends TestCase
     }
 
     /**
+     * Test valid config of the compression option
+     */
+    public function testClientCompressionOption(): void
+    {
+        $extension = new SncRedisExtension();
+        $config    = $this->parseYaml($this->getCompressionYamlConfig());
+        $extension->load([$config], $container = $this->getContainer());
+
+        $defaultParameters = $container->getDefinition('snc_redis.default');
+        $this->assertSame('lzf', $defaultParameters->getArgument(2)['compression']);
+        $this->assertSame(5, $defaultParameters->getArgument(2)['compression_level']);
+    }
+
+    /**
      * Test valid config of the single host sentinel replication option
      */
     public function testSingleSentinelOption(): void
@@ -443,6 +457,20 @@ class SncRedisExtensionTest extends TestCase
         $parser = new Parser();
 
         return $parser->parse($yaml);
+    }
+
+    private function getCompressionYamlConfig(): string
+    {
+        return <<<'EOF'
+clients:
+    default:
+        type: phpredis
+        alias: default
+        dsn: redis://localhost
+        options:
+            compression: "lzf"
+            compression_level: 5
+EOF;
     }
 
     private function getSerializationYamlConfig(): string

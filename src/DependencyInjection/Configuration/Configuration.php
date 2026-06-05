@@ -155,6 +155,8 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('iterable_multibulk')->defaultFalse()->end()
                                     ->booleanNode('throw_errors')->defaultTrue()->end()
                                     ->scalarNode('serialization')->defaultValue('default')->end()
+                                    ->scalarNode('compression')->defaultNull()->end()
+                                    ->integerNode('compression_level')->defaultNull()->end()
                                     ->scalarNode('cluster')->defaultNull()->end()
                                     ->booleanNode('array')->defaultFalse()->end()
                                     ->scalarNode('prefix')->defaultNull()->end()
