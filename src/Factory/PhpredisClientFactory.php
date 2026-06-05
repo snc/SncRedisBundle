@@ -27,7 +27,9 @@ use function array_keys;
 use function array_map;
 use function array_values;
 use function class_exists;
+use function constant;
 use function count;
+use function defined;
 use function get_class;
 use function implode;
 use function in_array;
@@ -37,6 +39,7 @@ use function is_string;
 use function phpversion;
 use function spl_autoload_register;
 use function sprintf;
+use function strtoupper;
 use function var_export;
 use function version_compare;
 
@@ -416,18 +419,13 @@ class PhpredisClientFactory
     /** @throws InvalidConfigurationException */
     private function loadCompressionType(string $type): int
     {
-        $types = [
-            'none' => 0, // Redis::COMPRESSION_NONE
-            'lzf'  => 1, // Redis::COMPRESSION_LZF
-            'zstd' => 2, // Redis::COMPRESSION_ZSTD
-            'lz4'  => 3, // Redis::COMPRESSION_LZ4
-        ];
+        $const = 'Redis::COMPRESSION_' . strtoupper($type);
 
-        if (array_key_exists($type, $types)) {
-            return $types[$type];
+        if (!defined($const)) {
+            throw new InvalidConfigurationException(sprintf('"%s" is not a valid compression type.', $type));
         }
 
-        throw new InvalidConfigurationException(sprintf('%s is not a valid compression type. Valid types: %s', $type, implode(', ', array_keys($types))));
+        return (int) constant($const);
     }
 
     private function loadSlaveFailoverType(string $type): int
