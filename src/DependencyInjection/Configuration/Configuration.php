@@ -81,6 +81,7 @@ class Configuration implements ConfigurationInterface
      */
     private function addClientsSection(ArrayNodeDefinition $rootNode): void
     {
+        /** @psalm-suppress UndefinedInterfaceMethod the symfony plugin mistypes a chained end() as NodeParentInterface::end */
         $rootNode
             ->fixXmlConfig('client')
             ->children()
@@ -202,6 +203,7 @@ class Configuration implements ConfigurationInterface
      */
     private function addMonologSection(ArrayNodeDefinition $rootNode): void
     {
+        /** @psalm-suppress UnusedMethodCall the final chained end() closes the tree builder root and has no further use */
         $rootNode
             ->children()
                 ->arrayNode('monolog')

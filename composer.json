@@ -37,6 +37,7 @@
         "phpunit/phpunit": "^9.6.34 || ^10.5.63",
         "predis/predis": "^3.1",
         "psalm/plugin-phpunit": "^0.19.3",
+        "psalm/plugin-symfony": "^5.0",
         "psr/http-message": "^2",
         "seec/phpunit-consecutive-params": "^1.1.4",
         "symfony/browser-kit": "^6.4 || ^7.3 || ^8.0",
@@ -49,7 +50,7 @@
         "symfony/twig-bundle": "^6.4 || ^7.3 || ^8.0",
         "symfony/web-profiler-bundle": "^6.4 || ^7.3 || ^8.0",
         "symfony/yaml": "^6.4 || ^7.3 || ^8.0",
-        "vimeo/psalm": "^5 || ^6 || ^7"
+        "vimeo/psalm": "^6 || ^7"
     },
     "conflict": {
         "ext-redis": "<6.1.0",

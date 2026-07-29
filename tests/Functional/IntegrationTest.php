@@ -69,8 +69,8 @@ class IntegrationTest extends WebTestCase
         $this->assertInstanceOf(RedisDataCollector::class, $collector);
         $this->assertInstanceOf(ResetInterface::class, $container = $this->client->getKernel()->getContainer());
         $this->assertInstanceOf(RedisLogger::class, $redisLogger = $container->get('test.snc_redis.logger'));
-        $this->assertSame(5, $redisLogger->getNbCommands());
-        $this->assertCount(5, $collector->getCommands());
+        $this->assertSame(13, $redisLogger->getNbCommands());
+        $this->assertCount(13, $collector->getCommands());
         $container->reset();
         $this->assertSame(0, $redisLogger->getNbCommands());
     }

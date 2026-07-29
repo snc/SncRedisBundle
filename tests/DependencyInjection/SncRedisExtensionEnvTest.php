@@ -15,6 +15,7 @@ use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 use function array_key_exists;
 use function sys_get_temp_dir;
@@ -67,6 +68,9 @@ class SncRedisExtensionEnvTest extends TestCase
                 'compression_level' => null,
                 'prefix' => null,
                 'service' => null,
+                // An env var DSN is opaque at build time, so it defaults to predis client-side
+                // clustering in case it expands to several connections at runtime.
+                'cluster' => 'predis',
                 'async_connect' => false,
                 'timeout' => 5,
                 'persistent' => false,
@@ -214,6 +218,28 @@ class SncRedisExtensionEnvTest extends TestCase
 
         $this->assertIsArray($container->findTaggedServiceIds('snc_redis.client'));
         $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
+    }
+
+    public function testPredisJsonEnvDsnPassesSingleReference(): void
+    {
+        // A predis DSN given as a runtime env var (e.g. %env(json:REDIS_DSNS)%) is opaque at build time,
+        // so the client always gets a single parameters reference regardless of any aggregate option; the
+        // factory expands it to one or many connections at runtime. See #483.
+        $container = $this->getConfiguredContainer('env_predis_json_dsn');
+
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertInstanceOf(Reference::class, $parameters);
+        $this->assertSame('snc_redis.connection.default_parameters.default', (string) $parameters);
+
+        $this->assertSame(
+            [PredisParametersFactory::class, 'create'],
+            $container->findDefinition((string) $parameters)->getFactory(),
+        );
+
+        // Without an explicit aggregation mode the client defaults to predis clustering, so the DSN keeps
+        // working if the env var expands to several connections.
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertSame('predis', $options['cluster']);
     }
 
     public function testPhpRedisClusterOption(): void

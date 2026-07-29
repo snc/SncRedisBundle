@@ -131,10 +131,22 @@ class SncRedisExtension extends Extension
     /** @param mixed[] $client */
     private function loadPredisClient(array $client, ContainerBuilder $container): void
     {
+        $connectionCount            = count($client['dsns']);
+        $mayHaveMultipleConnections = $connectionCount > 1
+            || ($connectionCount === 1 && $client['dsns'][0] instanceof RedisEnvDsn);
+
         if ($client['options']['cluster'] === null) {
             unset($client['options']['cluster']);
         } else {
             unset($client['options']['replication']);
+        }
+
+        // Predis rejects an indexed list of connection parameters unless an aggregation mode is set. A DSN
+        // that resolves to several connections — multiple literal DSNs, or an %env()% placeholder that
+        // expands to a list at runtime — therefore defaults to predis client-side clustering unless the
+        // user chose a mode, so growing a DSN from one to many connections keeps working untouched.
+        if ($mayHaveMultipleConnections && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
+            $client['options']['cluster'] = 'predis';
         }
 
         // predis connection parameters have been renamed in v0.8
@@ -161,7 +173,6 @@ class SncRedisExtension extends Extension
         unset($client['options']['parameters']['ssl_context']);
 
         $connectionAliases = [];
-        $connectionCount   = count($client['dsns']);
 
         foreach ($client['dsns'] as $i => $dsn) {
             assert($dsn instanceof RedisEnvDsn || $dsn instanceof RedisDsn);
@@ -180,12 +191,21 @@ class SncRedisExtension extends Extension
         }
 
         $optionId  = sprintf('snc_redis.client.%s_options', $client['alias']);
-        $optionDef = new Definition((string) $container->getParameter('snc_redis.client_options.class'));
+        $optionDef = new Definition($container->getParameter('snc_redis.client_options.class'));
         $optionDef->addArgument($client['options']);
         $container->setDefinition($optionId, $optionDef);
-        $clientDef = new Definition($client['class'] ?? (string) $container->getParameter('snc_redis.client.class'));
+        $clientDef = new Definition($client['class'] ?? $container->getParameter('snc_redis.client.class'));
         $clientDef->addTag('snc_redis.client', ['alias' => $client['alias']]);
-        if ($connectionCount === 1 && !isset($client['options']['cluster']) && !isset($client['options']['replication'])) {
+
+        // A runtime env var DSN (e.g. %env(json:REDIS_DSNS)%) is opaque at build time: it is passed as a
+        // single parameters reference whose factory expands it to one or many connections at runtime,
+        // which Predis then aggregates according to the cluster/replication option. A single literal DSN
+        // is also a single reference, unless an aggregate (cluster/replication) is configured, in which
+        // case Predis requires the parameters wrapped in a list even for one host. Multiple literal DSNs
+        // are always passed as a list.
+        $isAggregate = isset($client['options']['cluster']) || isset($client['options']['replication']);
+
+        if ($connectionCount === 1 && ($client['dsns'][0] instanceof RedisEnvDsn || !$isAggregate)) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = [];
@@ -206,7 +226,7 @@ class SncRedisExtension extends Extension
      */
     private function loadPredisConnectionParameters(string $clientAlias, array $options, ContainerBuilder $container, object $dsn): void
     {
-        $parametersClass = (string) $container->getParameter('snc_redis.connection_parameters.class');
+        $parametersClass = $container->getParameter('snc_redis.connection_parameters.class');
         $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
 
         $parameterDef = new Definition($parametersClass);
@@ -261,7 +281,7 @@ class SncRedisExtension extends Extension
     {
         $ref = new Reference(sprintf('snc_redis.%s', $config['monolog']['client']));
 
-        $def = new Definition((string) $container->getParameter('snc_redis.monolog_handler.class'), [
+        $def = new Definition($container->getParameter('snc_redis.monolog_handler.class'), [
             $ref,
             $config['monolog']['key'],
         ]);
@@ -277,6 +297,6 @@ class SncRedisExtension extends Extension
     #[Override]
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
-        return new Configuration((bool) $container->getParameter('kernel.debug'));
+        return new Configuration($container->getParameter('kernel.debug'));
     }
 }

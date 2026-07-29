@@ -18,11 +18,18 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          extensions: "relay"
+          extensions: "redis, relay"
           php-version: "8.4"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
+
+      - name: "Compile Symfony container"
+        run: |
+          php -r "
+            require 'vendor/autoload.php';
+            (new Snc\RedisBundle\Tests\Functional\App\Kernel('test', true))->boot();
+          "
 
       - name: "Run a static analysis with vimeo/psalm"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"

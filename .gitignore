@@ -3,6 +3,7 @@
 /composer.lock
 /composer.phar
 /.phpunit.result.cache
+/.phpunit.cache/
 /vendor/
 /.phpcs-cache
 /.github/workflows/redis-configs/*/nodes.conf
