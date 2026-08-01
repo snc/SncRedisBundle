@@ -209,4 +209,19 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
     }
+
+    /**
+     * @param string|array<int, string|array<int, string>> $dsn
+     *
+     * @testWith ["redis://localhost"]
+     *           [["redis://localhost"]]
+     *           [[["redis://localhost"]]]
+     */
+    public function testCreateAsListReturnsListForSingleDsn(string|array $dsn): void
+    {
+        $result = PredisParametersFactory::create([], Parameters::class, $dsn, true);
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(Parameters::class, $result[0]);
+    }
 }

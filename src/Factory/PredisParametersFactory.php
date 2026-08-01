@@ -27,10 +27,14 @@ class PredisParametersFactory
      * @param class-string<ParametersInterface>      $class
      * @param array<string, mixed>                   $options
      * @param string|list<string>|list<list<string>> $dsn
+     * @param bool                                   $asList  Always return a list, even for a single DSN.
+     *                                                        Required when an aggregate mode (cluster/replication)
+     *                                                        is configured, since Predis only engages its aggregate
+     *                                                        connection initializers for a list of parameters.
      *
      * @return ParametersInterface|list<ParametersInterface>
      */
-    public static function create(array $options, string $class, string|array $dsn): ParametersInterface|array
+    public static function create(array $options, string $class, string|array $dsn, bool $asList = false): ParametersInterface|array
     {
         if (is_string($dsn)) {
             $dsn = [$dsn];
@@ -46,7 +50,7 @@ class PredisParametersFactory
             $dsn,
         );
 
-        return count($parameters) === 1 ? $parameters[0] : $parameters;
+        return !$asList && count($parameters) === 1 ? $parameters[0] : $parameters;
     }
 
     /**

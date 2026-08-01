@@ -1,0 +1,12 @@
+parameters:
+    env(REDIS_URL): redis://localhost:7079
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: "%env(REDIS_URL)%"
+            options:
+                replication: sentinel
+                service: mymaster

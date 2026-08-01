@@ -242,6 +242,27 @@ class SncRedisExtensionEnvTest extends TestCase
         $this->assertSame('predis', $options['cluster']);
     }
 
+    public function testPredisEnvDsnWithSentinelReplicationForcesParametersList(): void
+    {
+        // With an explicit aggregate mode (here sentinel replication), the parameters factory must
+        // always return a list — even when the env var expands to a single DSN at runtime — because
+        // Predis only engages its aggregate connection initializers for a list of parameters.
+        $container = $this->getConfiguredContainer('env_predis_sentinel');
+
+        $parameters = $container->getDefinition('snc_redis.default')->getArgument(0);
+        $this->assertInstanceOf(Reference::class, $parameters);
+        $this->assertSame('snc_redis.connection.default_parameters.default', (string) $parameters);
+
+        $parametersDefinition = $container->findDefinition((string) $parameters);
+        $this->assertSame([PredisParametersFactory::class, 'create'], $parametersDefinition->getFactory());
+        $this->assertTrue($parametersDefinition->getArgument(3));
+
+        $options = $container->getDefinition('snc_redis.client.default_options')->getArgument(0);
+        $this->assertSame('sentinel', $options['replication']);
+        $this->assertSame('mymaster', $options['service']);
+        $this->assertFalse(array_key_exists('cluster', $options));
+    }
+
     public function testPhpRedisClusterOption(): void
     {
         $container        = $this->getConfiguredContainer('env_phpredis_cluster');
