@@ -131,9 +131,11 @@ class SncRedisExtension extends Extension
     /** @param mixed[] $client */
     private function loadPredisClient(array $client, ContainerBuilder $container): void
     {
-        $connectionCount            = count($client['dsns']);
-        $mayHaveMultipleConnections = $connectionCount > 1
-            || ($connectionCount === 1 && $client['dsns'][0] instanceof RedisEnvDsn);
+        $connectionCount = count($client['dsns']);
+        // A single %env()% DSN is opaque at build time: it may expand to one or many connections at runtime.
+        $singleEnvDsn               = $connectionCount === 1 && $client['dsns'][0] instanceof RedisEnvDsn;
+        $mayHaveMultipleConnections = $connectionCount > 1 || $singleEnvDsn;
+        $userDefinedAggregate       = isset($client['options']['cluster']) || isset($client['options']['replication']);
 
         if ($client['options']['cluster'] === null) {
             unset($client['options']['cluster']);
@@ -174,6 +176,11 @@ class SncRedisExtension extends Extension
 
         $connectionAliases = [];
 
+        // When the user explicitly configured an aggregate mode (cluster/replication), Predis needs the
+        // connection parameters as a list even if the env var DSN expands to a single connection at
+        // runtime, otherwise the aggregate initializer (e.g. sentinel) is bypassed entirely.
+        $envDsnAsList = $singleEnvDsn && $userDefinedAggregate;
+
         foreach ($client['dsns'] as $i => $dsn) {
             assert($dsn instanceof RedisEnvDsn || $dsn instanceof RedisDsn);
             $connectionAlias = $dsn instanceof RedisDsn ? $dsn->getAlias() : null;
@@ -187,7 +194,7 @@ class SncRedisExtension extends Extension
             $connection['logging'] = $client['logging'];
             $connection['alias']   = $connectionAlias;
 
-            $this->loadPredisConnectionParameters($client['alias'], $connection, $container, $dsn);
+            $this->loadPredisConnectionParameters($client['alias'], $connection, $container, $dsn, $envDsnAsList);
         }
 
         $optionId  = sprintf('snc_redis.client.%s_options', $client['alias']);
@@ -203,9 +210,11 @@ class SncRedisExtension extends Extension
         // is also a single reference, unless an aggregate (cluster/replication) is configured, in which
         // case Predis requires the parameters wrapped in a list even for one host. Multiple literal DSNs
         // are always passed as a list.
+        // Note: this mirrors $userDefinedAggregate but is evaluated *after* normalization, so it also reflects
+        // the auto-injected cluster => 'predis' default — the two are not interchangeable, keep both.
         $isAggregate = isset($client['options']['cluster']) || isset($client['options']['replication']);
 
-        if ($connectionCount === 1 && ($client['dsns'][0] instanceof RedisEnvDsn || !$isAggregate)) {
+        if ($singleEnvDsn || ($connectionCount === 1 && !$isAggregate)) {
             $clientDef->addArgument(new Reference(sprintf('snc_redis.connection.%s_parameters.%s', $connectionAliases[0], $client['alias'])));
         } else {
             $connections = [];
@@ -224,7 +233,7 @@ class SncRedisExtension extends Extension
      * @param mixed[]              $options
      * @param RedisEnvDsn|RedisDsn $dsn
      */
-    private function loadPredisConnectionParameters(string $clientAlias, array $options, ContainerBuilder $container, object $dsn): void
+    private function loadPredisConnectionParameters(string $clientAlias, array $options, ContainerBuilder $container, object $dsn, bool $asList = false): void
     {
         $parametersClass = $container->getParameter('snc_redis.connection_parameters.class');
         $parameterId     = sprintf('snc_redis.connection.%s_parameters.%s', $options['alias'], $clientAlias);
@@ -234,6 +243,7 @@ class SncRedisExtension extends Extension
         $parameterDef->addArgument($options);
         $parameterDef->addArgument($parametersClass);
         $parameterDef->addArgument((string) $dsn);
+        $parameterDef->addArgument($asList);
         $parameterDef->addTag('snc_redis.connection_parameters', ['clientAlias' => $clientAlias]);
         $container->setDefinition($parameterId, $parameterDef);
     }
