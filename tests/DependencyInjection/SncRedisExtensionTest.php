@@ -15,11 +15,15 @@ namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\RedisHandler;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Predis\Configuration\Options;
 use Predis\Connection\Parameters;
 use Redis;
+use RedisCluster;
 use RedisException;
 use Relay\Relay;
 use Snc\RedisBundle\Client\Predis\Connection\ConnectionFactory;
@@ -70,12 +74,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertArrayNotHasKey('snc_redis.client', $container->getDefinitions());
     }
 
-    /**
-     * @param string $name     Name
-     * @param string $expected Expected value
-     *
-     * @dataProvider parameterValues
-     */
+    #[DataProvider('parameterValues')]
     public function testDefaultParameterConfigLoad(string $name, string $expected): void
     {
         $extension = new SncRedisExtension();
@@ -85,12 +84,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals($expected, $container->getParameter($name));
     }
 
-    /**
-     * @param string $name     Name
-     * @param string $expected Expected value
-     *
-     * @dataProvider parameterValues
-     */
+    #[DataProvider('parameterValues')]
     public function testNoClientsConfigLoad(string $name, string $expected): void
     {
         $extension = new SncRedisExtension();
@@ -132,7 +126,7 @@ class SncRedisExtensionTest extends TestCase
         $this->assertEquals(['snc_redis.default' => [['alias' => 'default']]], $container->findTaggedServiceIds('snc_redis.client'));
     }
 
-    /** @group legacy */
+    #[Group('legacy')]
     public function testFullConfigLoad(): void
     {
         $extension = new SncRedisExtension();
@@ -416,7 +410,7 @@ class SncRedisExtensionTest extends TestCase
 
         $redis = $container->get('snc_redis.default');
 
-        $this->assertInstanceOf('\RedisCluster', $redis);
+        $this->assertInstanceOf(RedisCluster::class, $redis);
     }
 
     /**
@@ -906,10 +900,8 @@ clients:
 YAML;
     }
 
-    /**
-     * @testWith ["predis", "App\\Custom\\MyPredisClient"]
-     *           ["phpredis", "App\\Custom\\MyPhpRedisClient"]
-     */
+    #[TestWith(['predis', 'App\Custom\MyPredisClient'])]
+    #[TestWith(['phpredis', 'App\Custom\MyPhpRedisClient'])]
     public function testCustomClientClass(string $type, string $customClass): void
     {
         $extension = new SncRedisExtension();

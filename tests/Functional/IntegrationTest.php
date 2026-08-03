@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Functional;
 
 use Override;
+use PHPUnit\Framework\Attributes\Group;
 use Snc\RedisBundle\DataCollector\RedisDataCollector;
 use Snc\RedisBundle\Logger\RedisLogger;
 use Snc\RedisBundle\Tests\Functional\App\Kernel;
@@ -75,7 +76,7 @@ class IntegrationTest extends WebTestCase
         $this->assertSame(0, $redisLogger->getNbCommands());
     }
 
-    /** @group legacy */
+    #[Group('legacy')]
     public function testPredisReplication(): void
     {
         $this->client->request('GET', '/predis_replication');

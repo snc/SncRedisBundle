@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Factory;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Predis\Connection\Parameters;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
@@ -148,9 +150,8 @@ class PredisParametersFactoryTest extends TestCase
     /**
      * @param array<string, mixed> $options
      * @param array<string, mixed> $expectedParameters
-     *
-     * @dataProvider createDp
      */
+    #[DataProvider('createDp')]
     public function testCreate(string $dsn, array $options, array $expectedParameters): void
     {
         $parameters = PredisParametersFactory::create($options, Parameters::class, $dsn);
@@ -186,23 +187,18 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertFalse($ssl['verify_peer']);
     }
 
-    /**
-     * @testWith ["redis://localhost"]
-     *           [["redis://localhost"]]
-     *           [[["redis://localhost"]]]
-     */
+    #[TestWith(['redis://localhost'])]
+    #[TestWith([['redis://localhost']])]
+    #[TestWith([[['redis://localhost']]])]
     public function testCreateReturnsSingleParameters(string|array $dsn): void
     {
         $result = PredisParametersFactory::create([], Parameters::class, $dsn);
         $this->assertInstanceOf(Parameters::class, $result);
     }
 
-    /**
-     * @param array<int, string|array<int, string>> $dsn
-     *
-     * @testWith [["redis://host1", "redis://host2"]]
-     *           [[["redis://host1", "redis://host2"]]]
-     */
+    /** @param array<int, string|array<int, string>> $dsn */
+    #[TestWith([['redis://host1', 'redis://host2']])]
+    #[TestWith([[['redis://host1', 'redis://host2']]])]
     public function testCreateReturnsMultipleParameters(array $dsn): void
     {
         $result = PredisParametersFactory::create([], Parameters::class, $dsn);
@@ -210,13 +206,10 @@ class PredisParametersFactoryTest extends TestCase
         $this->assertCount(2, $result);
     }
 
-    /**
-     * @param string|array<int, string|array<int, string>> $dsn
-     *
-     * @testWith ["redis://localhost"]
-     *           [["redis://localhost"]]
-     *           [[["redis://localhost"]]]
-     */
+    /** @param string|array<int, string|array<int, string>> $dsn */
+    #[TestWith(['redis://localhost'])]
+    #[TestWith([['redis://localhost']])]
+    #[TestWith([[['redis://localhost']]])]
     public function testCreateAsListReturnsListForSingleDsn(string|array $dsn): void
     {
         $result = PredisParametersFactory::create([], Parameters::class, $dsn, true);

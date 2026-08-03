@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\DependencyInjection;
 
 use LogicException;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Redis;
+use RedisArray;
 use RedisCluster;
 use RedisSentinel;
+use Relay\Relay;
 use Snc\RedisBundle\DependencyInjection\SncRedisExtension;
 use Snc\RedisBundle\Factory\PredisParametersFactory;
 use Symfony\Component\Config\FileLocator;
@@ -85,10 +88,8 @@ class SncRedisExtensionEnvTest extends TestCase
         );
     }
 
-    /**
-     * @testWith ["env_phpredis_minimal", "Redis"]
-     *           ["env_relay_minimal", "Relay\\Relay"]
-     */
+    #[TestWith(['env_phpredis_minimal', Redis::class])]
+    #[TestWith(['env_relay_minimal', Relay::class])]
     public function testPhpredisDefaultParameterConfig(string $config, string $class): void
     {
         $container = $this->getConfiguredContainer($config);
@@ -371,8 +372,8 @@ class SncRedisExtensionEnvTest extends TestCase
         $container        = $this->getConfiguredContainer('env_phpredis_array');
         $clientDefinition = $container->findDefinition('snc_redis.phpredisarray');
 
-        $this->assertSame('RedisArray', $clientDefinition->getClass());
-        $this->assertSame('RedisArray', $clientDefinition->getArgument(0));
+        $this->assertSame(RedisArray::class, $clientDefinition->getClass());
+        $this->assertSame(RedisArray::class, $clientDefinition->getArgument(0));
         $this->assertStringContainsString('REDIS_URL_1', $clientDefinition->getArgument(1)[0]);
         $this->assertStringContainsString('REDIS_URL_2', $clientDefinition->getArgument(1)[1]);
         $this->assertSame('phpredisarray', $clientDefinition->getArgument(3));

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Snc\RedisBundle\Tests\Client\Predis\Connection;
 
 use Override;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Predis\Command\Redis\EXISTS;
 use Predis\Command\Redis\SCAN;
@@ -18,7 +20,7 @@ use Snc\RedisBundle\Logger\RedisLogger;
 
 class ConnectionWrapperTest extends TestCase
 {
-    private MockObject $connection;
+    private Stub $connection;
     private MockObject $logger;
     private RedisLogger $redisLogger;
     private ConnectionWrapper $wrapper;
@@ -26,7 +28,7 @@ class ConnectionWrapperTest extends TestCase
     #[Override]
     protected function setUp(): void
     {
-        $this->connection = $this->createMock(NodeConnectionInterface::class);
+        $this->connection = $this->createStub(NodeConnectionInterface::class);
         $this->connection->method('getParameters')->willReturn(new Parameters(['alias' => 'default']));
         $this->connection->method('executeCommand')->willReturn('');
         $this->redisLogger = new RedisLogger($this->logger = $this->createMock(LoggerInterface::class));
@@ -43,6 +45,7 @@ class ConnectionWrapperTest extends TestCase
         $this->wrapper->executeCommand($command);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testReturnWrappedConnectionAfterException(): void
     {
         $command = new EXISTS();

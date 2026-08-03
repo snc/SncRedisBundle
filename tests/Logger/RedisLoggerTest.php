@@ -64,7 +64,7 @@ class RedisLoggerTest extends TestCase
     {
         $this->setUpWithPsrLogger();
 
-        $this->logger->expects($this->any())->method('debug');
+        $this->logger->expects($this->exactly(3))->method('debug');
 
         for ($i = 0; $i < 3; $i++) {
             $this->redisLogger->logCommand('foo' . $i, 10, 'connection');
@@ -77,8 +77,8 @@ class RedisLoggerTest extends TestCase
     {
         $this->setUpWithPsrLogger();
 
-        $this->logger->expects($this->any())->method('debug');
-        $this->logger->expects($this->any())->method('error');
+        $this->logger->expects($this->exactly(2))->method('debug');
+        $this->logger->expects($this->once())->method('error');
 
         for ($i = 0; $i < 3; $i++) {
             $this->redisLogger->logCommand('foo' . $i, ($i + 1) * 10, 'connection', $i % 2 ? 'error message' : false);

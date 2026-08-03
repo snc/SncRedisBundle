@@ -15,7 +15,6 @@
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          config.allowInsecurePredicate = pkg: pkgs.lib.getName pkg == "openssl";
         };
         php = pkgs.php84.buildEnv {
           extensions = (
@@ -30,8 +29,8 @@
                   src = pkgs.fetchFromGitHub {
                     repo = "phpredis";
                     owner = "phpredis";
-                    rev = "52e90650b10893e294ec0bceba697ab8a23c469a";
-                    sha256 = "sha256-J0uxXLAoacxLUXXI0+1MoJupJ6NrcMfVu6keXK8TSH8=";
+                    rev = "dd15a7dd90738e840ce43b5815ddbff7fe6d123b";
+                    sha256 = "sha256-xndHEcNt8cQZ2fwcGSxeoJv/MkBprwmjR8KiuxqjpUI=";
                   };
                 }))
                 # relay section https://relay.so/docs/1.x/installation#manual-installation

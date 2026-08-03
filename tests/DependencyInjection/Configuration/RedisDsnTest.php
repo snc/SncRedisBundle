@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Snc\RedisBundle\Tests\DependencyInjection\Configuration;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Snc\RedisBundle\DependencyInjection\Configuration\RedisDsn;
 
@@ -66,12 +67,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @param string $dsn  DSN
-     * @param string $host Host
-     *
-     * @dataProvider hostValues
-     */
+    #[DataProvider('hostValues')]
     public function testHost(string $dsn, string $host): void
     {
         $dsn = new RedisDsn($dsn);
@@ -95,12 +91,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @param string $dsn    DSN
-     * @param string $socket Socket
-     *
-     * @dataProvider socketValues
-     */
+    #[DataProvider('socketValues')]
     public function testSocket(string $dsn, string $socket): void
     {
         $dsn = new RedisDsn($dsn);
@@ -116,7 +107,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /** @dataProvider tlsValues */
+    #[DataProvider('tlsValues')]
     public function testTls(string $dsn, bool $tls): void
     {
         $dsn = new RedisDsn($dsn);
@@ -149,11 +140,8 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @param int|string $port Port
-     *
-     * @dataProvider portValues
-     */
+    /** @param int|string $port Port */
+    #[DataProvider('portValues')]
     public function testPort(string $dsn, $port): void
     {
         $dsn = new RedisDsn($dsn);
@@ -190,11 +178,8 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @param int|string|null $database
-     *
-     * @dataProvider databaseValues
-     */
+    /** @param int|string|null $database */
+    #[DataProvider('databaseValues')]
     public function testDatabase(string $dsn, $database): void
     {
         $dsn = new RedisDsn($dsn);
@@ -230,7 +215,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /** @dataProvider authenticationParametersValues */
+    #[DataProvider('authenticationParametersValues')]
     public function testAuthenticationParameters(string $dsn, ?string $username, ?string $password): void
     {
         $dsn = new RedisDsn($dsn);
@@ -264,12 +249,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /**
-     * @param string $dsn   DSN
-     * @param bool   $valid Valid
-     *
-     * @dataProvider isValidValues
-     */
+    #[DataProvider('isValidValues')]
     public function testIsValid(string $dsn, bool $valid): void
     {
         $dsn = new RedisDsn($dsn);
@@ -294,7 +274,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /** @dataProvider parameterValues */
+    #[DataProvider('parameterValues')]
     public function testParameterValues(string $dsn, ?int $weight, ?string $alias): void
     {
         $dsn = new RedisDsn($dsn);
@@ -315,7 +295,7 @@ class RedisDsnTest extends TestCase
         ];
     }
 
-    /** @dataProvider tlsVersionValues */
+    #[DataProvider('tlsVersionValues')]
     public function testTlsVersion(string $dsn, ?string $tlsVersion): void
     {
         $dsn = new RedisDsn($dsn);
